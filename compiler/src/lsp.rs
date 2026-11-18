@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 114] = [
+const KALIP_KELIMELERI: [&str; 115] = [
     "yaz",
     "olsun",
     "ise",
@@ -108,6 +108,7 @@ const KALIP_KELIMELERI: [&str; 114] = [
     "kırpılmışı",
     "arasındaki",
     "günler",
+    "önbelleklenebilir",
     "önekli",
     "kalanı",
     "GET",
@@ -153,7 +154,7 @@ const KALIP_KELIMELERI: [&str; 114] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 63] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 64] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -193,6 +194,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 63] = [
     ("yönlendir", "Web: tarayıcıyı başka adrese gönderir (303).\n\n`\"/liste\" adresine yönlendir`"),
     ("çerezine", "Web: yanıtla Set-Cookie gönderir; okumak için rota içinde `çerezler` sözlüğü hazırdır.\n\n`\"oturum\" çerezine kimlik yaz`"),
     ("herkese", "Durum değiştiren rotanın açık erişim politikasıdır; CSRF yine zorunludur.\n\n`herkese açık`"),
+    ("önbelleklenebilir", "GET/HEAD rotasının açık politikası: oturum/CSRF/çerez kullanmayan 200 yanıtı paylaşılan önbelleğe `public, max-age=0, s-maxage=N` ile açar; Set-Cookie'li yanıt `no-store` kalır.\n\n`herkese açık önbelleklenebilir 300 saniye`"),
     ("oturum", "Kimliği doğrulanmış kullanıcı isteyen rota politikasıdır.\n\n`oturum gerekli`"),
     ("yetkisi", "Sunucu tarafı rozet denetimi yapan rota politikasıdır.\n\n`\"yönetici\" yetkisi gerekli`"),
     ("istemci", "Handler için oran sınırıyla aynı trusted IP metni.\n\n`ip istemci adresi olsun`"),

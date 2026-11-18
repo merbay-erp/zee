@@ -2402,8 +2402,9 @@ artık istek kapsamlı: çerez/oturum commit'i geri alınır, tek stderr satır�
 bağlantı izni iade, worker sonraki isteği alır. Kanıt `web_cok_surec_testi`
 (2 MiB + RST, 100 ardışık kopma, izin/RSS sızıntısı yok), regression
 `yanit-yazimi-kopmasi` (`native-web-kopma`). Talepteki W2 (süreç içi
-eşzamanlılık), W3 (rota önbellek başlığı) ve W4 (açılışta tek sefer) açık;
-ayrı karar/PR ister. W2 K-336'da, W4 K-337'de kapandı (ADR-161).
+eşzamanlılık), W3 (rota önbellek başlığı) ve W4 (açılışta tek sefer) ayrı
+karar/PR'larla kapandı: W2 K-336'da, W4 K-337'de (ADR-161), W3 K-335'te
+(ADR-160).
 
 ## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi
 
@@ -2512,3 +2513,19 @@ yeniden başlatılan işçi ikincildir. Kilit ve yeni koşul biçimi reddedildi.
 Kanıt: `web_cok_surec_testi::isci_grubu_acilisi_*`, `io_izi_testi::birincil_surec_*`,
 dogfood `zee-cekirdek/cok-isci`. Açık: elle kurulan ayrı portlu süreçlerde
 birincillik, `--ayar` alanı.
+
+## K-335 — Herkese açık rota için önbellek başlığı
+
+**Durum: KAPALI.** ADR-160/RFC-0037: zee-cekirdek talebi W3 (P1, exact
+`abaca3a`). Çalışma zamanı her yanıta sabit `no-store` yazıyordu; ürün
+oturumsuz site sayfalarını ön kapıda yol eşlemesiyle önbelleğe alıyordu ve
+eşleme yanılırsa oturum sızabilirdi. Rota politikası
+`herkese açık önbelleklenebilir N saniye` (1–86400) eklendi: GET/HEAD dışı
+T056, gövdede ya da geçişli çağrıda oturum/CSRF/çerez T057; çalışma zamanı
+bu rotaya boş oturum/çerez verir ve yalnız Set-Cookie'siz, oturuma
+dokunmamış 200 GET/HEAD yanıtında `public, max-age=0, s-maxage=N` yazar
+(GB-134). Kanıt: `web_testi::onbellek*`,
+`web_cok_surec_testi::onbelleklenebilir_rota_set_cookie_uretince_asla_public_olmaz`
+(kayar yenileme Set-Cookie'si `no-store`), dogfood
+`zee-cekirdek/onbellek-basligi`. Açık: `Vary`/ETag/purge; ürün rotalarının
+geçişi ürün tarafında.

@@ -191,12 +191,10 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             web_oturumu_ekle(*satir, bilgi);
             ifade_bilgisi(ad, bilgi);
         }
-        Cumle::RotaPolitikasi {
-            erisim: RotaErisimi::HerkeseAcik,
-            satir,
-        } => bilgi.ekle(Yetkinlik::AgSunucusu, (*satir, 1, 1)),
-        Cumle::RotaPolitikasi { satir, .. } => web_oturumu_ekle(*satir, bilgi),
-        Cumle::RotaAlaniGerekli { satir, .. } => {
+        Cumle::RotaPolitikasi { erisim, satir, .. } if *erisim != RotaErisimi::HerkeseAcik => {
+            web_oturumu_ekle(*satir, bilgi)
+        }
+        Cumle::RotaPolitikasi { satir, .. } | Cumle::RotaAlaniGerekli { satir, .. } => {
             bilgi.ekle(Yetkinlik::AgSunucusu, (*satir, 1, 1));
         }
         Cumle::OturumAc {

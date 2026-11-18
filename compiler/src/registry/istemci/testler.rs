@@ -12,11 +12,7 @@ struct GeciciKlasor(PathBuf);
 impl GeciciKlasor {
     fn yeni() -> Self {
         let sira = GECICI_SAYACI.fetch_add(1, Ordering::Relaxed);
-        let yol = std::env::temp_dir().join(format!(
-            "zee-registry-istemci-test-{}-{}",
-            std::process::id(),
-            sira
-        ));
+        let yol = std::env::temp_dir().join(format!("zee-ri-{}-{}", std::process::id(), sira));
         std::fs::create_dir(&yol).expect("geçici klasör");
         Self(yol)
     }

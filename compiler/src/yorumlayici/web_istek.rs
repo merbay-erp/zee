@@ -80,9 +80,13 @@ pub(super) fn web_istegini_calistir(
             continue;
         }
 
-        let erisim = match govde.first() {
-            Some(Cumle::RotaPolitikasi { erisim, .. }) => erisim.clone(),
-            _ => RotaErisimi::HerkeseAcik,
+        let (erisim, onbellek_saniye) = match govde.first() {
+            Some(Cumle::RotaPolitikasi {
+                erisim,
+                onbellek_saniye,
+                ..
+            }) => (erisim.clone(), *onbellek_saniye),
+            _ => (RotaErisimi::HerkeseAcik, None),
         };
         let csrf = veriler
             .iter()
@@ -99,12 +103,21 @@ pub(super) fn web_istegini_calistir(
             break;
         }
 
+        // K-335: önbelleklenebilir rota oturum/çerez görmez; T057'nin statik
+        // kapısını aşan bir yol olsa bile paylaşılan yanıt kimliğe bağlanamaz.
+        let (cerez_sozlugu, oturum_sozlugu) = match onbellek_saniye {
+            Some(saniye) => {
+                io.yanit_onbellegine_izin_ver(saniye);
+                (Deger::Sozluk(Vec::new()), Deger::Sozluk(Vec::new()))
+            }
+            None => (cerez_sozlugu.clone(), oturum_sozlugu.clone()),
+        };
         ortama_yazma_butcesini_tuket(&rota_ortami, "istek", &istek_sozlugu, *satir)?;
         rota_ortami.insert("istek".into(), istek_sozlugu.clone());
         ortama_yazma_butcesini_tuket(&rota_ortami, "çerezler", &cerez_sozlugu, *satir)?;
-        rota_ortami.insert("çerezler".into(), cerez_sozlugu.clone());
+        rota_ortami.insert("çerezler".into(), cerez_sozlugu);
         ortama_yazma_butcesini_tuket(&rota_ortami, "oturum", &oturum_sozlugu, *satir)?;
-        rota_ortami.insert("oturum".into(), oturum_sozlugu.clone());
+        rota_ortami.insert("oturum".into(), oturum_sozlugu);
         let zaman_asimi = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
             .http()
             .calistirma_zaman_asimi_ms();

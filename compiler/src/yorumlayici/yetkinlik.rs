@@ -170,6 +170,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_oturumu_gerektir()?;
         self.ic.cerez_sil(ad)
     }
+    fn yanit_onbellegine_izin_ver(&mut self, saniye: u32) {
+        self.ic.yanit_onbellegine_izin_ver(saniye)
+    }
     fn rota_guvenligini_denetle(
         &mut self,
         erisim: &RotaErisimi,
@@ -192,7 +195,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_oturumu_gerektir()?;
         self.ic.oturum_ac(kullanici, rol)
     }
-
     fn oturum_kapat(&mut self) -> Result<(), String> {
         self.web_oturumu_gerektir()?;
         self.ic.oturum_kapat()
@@ -203,11 +205,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     ) -> Result<Vec<Vec<(String, String)>>, String> {
         web::oturumlari_listele(self, kullanici)
     }
-
     fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
         web::oturumu_iptal_et(self, kimlik)
     }
-
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         self.politika.izin_verir(Yetkinlik::Kriptografi) && self.ic.parola_dogrula(parola, ozet)
     }

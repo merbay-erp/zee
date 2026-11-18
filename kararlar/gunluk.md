@@ -5160,3 +5160,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   işçi ikincildir. Windows açık sınır (çıkış 2). Core freeze altında
   dogfood-change; iki yeni kalıp kelimesi (`birincil`, `süreç`) freeze özetine
   işlendi (ADR-161, RFC-0038, GB-133). Ürün adı ADR-087 gereği anonimdir.
+
+## K-335 — Herkese açık rota için önbellek başlığı (18 Kasım 2026)
+
+- K-335 (18.11.2026): zee-cekirdek web talebi W3 (P1, exact `abaca3a`):
+  sabit `no-store` yüzünden ürün oturumsuz site sayfalarını ön kapıda yol
+  eşlemesiyle önbelleğe alıyordu; karar kaynaktan uzaktaydı ve yanılırsa
+  oturum sızardı. Core freeze altında dogfood-change: mevcut `herkese açık`
+  politikasının tek contextual biçimi `herkese açık önbelleklenebilir N
+  saniye` (yeni kalıp kelimesi `önbelleklenebilir`, 1–86400), yeni tanılar
+  T056 (GET/HEAD dışı) ve T057 (geçişli oturum/CSRF/çerez). Çalışma zamanı
+  izni yalnız Set-Cookie'siz, oturuma dokunmamış 200 GET/HEAD yanıtında
+  `public, max-age=0, s-maxage=N` yapar; kayar yenileme dahil her Set-Cookie
+  `no-store` bırakır. Reddedilen: ayrı önsöz cümlesi (kimlikli rotayla
+  birleşebilirdi), `proje.dil` yol listesi, genel başlık yazma, tarayıcı
+  `max-age`, yalnız uyarı (ADR-160, RFC-0037, GB-134). Ürün adı ADR-087
+  gereği anonimdir.

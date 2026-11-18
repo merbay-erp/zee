@@ -91,6 +91,11 @@ pub enum RotaErisimi {
     Rol(String),
 }
 
+/// K-335: `herkese açık önbelleklenebilir N saniye` için kabul edilen paylaşılan
+/// önbellek ömrü aralığı (s-maxage). Üst sınır bir gündür.
+pub const ROTA_ONBELLEK_ALT_SANIYE: u32 = 1;
+pub const ROTA_ONBELLEK_UST_SANIYE: u32 = 86_400;
+
 impl HttpYontemi {
     pub fn ayristir(yazim: &str) -> Option<Self> {
         match yazim {
@@ -721,7 +726,13 @@ pub enum Cumle {
     /// `"oturum" çerezini sil` — tarayıcıya Max-Age=0 gönderilir (K-073).
     CerezSil { ad: Ifade, satir: usize },
     /// `herkese açık` / `oturum gerekli` / `"rol" yetkisi gerekli`.
-    RotaPolitikasi { erisim: RotaErisimi, satir: usize },
+    /// K-335: `herkese açık önbelleklenebilir N saniye` aynı açık politikadır;
+    /// `onbellek_saniye` paylaşılan önbellek ömrünü (s-maxage) taşır.
+    RotaPolitikasi {
+        erisim: RotaErisimi,
+        onbellek_saniye: Option<u32>,
+        satir: usize,
+    },
     /// `"alan" alanı gerekli` — eksik/boş form-sorgu değeri 400'dür.
     RotaAlaniGerekli { ad: String, satir: usize },
     /// `"Mustafa" kullanıcısını "yönetici" rolüyle oturuma al`.

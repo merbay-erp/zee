@@ -140,6 +140,8 @@ kalır (ADR-025).
 | T053 | Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor | Öğeyi döngü adıyla güncelle; ekleme/silmeyi ayrı listede toplayıp gezme bitince uygula |
 | T054 | Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor | Yetkiyi ve gerekiyorsa tam şema+host+port hedefini `proje.dil` içinde bilinçli olarak bildir |
 | T055 | Görünüm metni/özniteliği Metin (ya da bayrak için Mantıksal) değil | Sayıyı metne çevir; bayrak öznitelik için `doğru`/`yanlış` ver |
+| T056 | Önbelleklenebilir rota politikası GET/HEAD dışı rotada | Durum değiştiren rotada `herkese açık` yaz; önbellek iznini salt-okuma GET/HEAD rotasına taşı (K-335) |
+| T057 | Önbelleklenebilir rota oturum, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; oturuma bağlı parçayı ayrı rotaya taşı ya da `önbelleklenebilir` iznini kaldır; paylaşılan yanıt kimliğe bağlanamaz (K-335) |
 
 ## C — Çalışma zamanı
 

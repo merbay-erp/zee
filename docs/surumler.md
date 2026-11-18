@@ -31,6 +31,17 @@ Bu kayıt yeni sürüm etiketi değildir.
   açılış_sahibi ise
       uzlastirma yarım yüklemeleri uzlaştır olsun
   ```
+- **Önbelleklenebilir herkese açık rota (K-335, ADR-160):** Oturumsuz
+  GET/HEAD rotası artık açık politikasını
+  `herkese açık önbelleklenebilir 300 saniye` biçiminde yazabilir (1–86400
+  saniye). Bu rotanın Set-Cookie taşımayan 200 yanıtı
+  `Cache-Control: public, max-age=0, s-maxage=300` alır; böylece CDN ya da
+  ters vekil yanıtı paylaşılan önbellekte tutabilir, tarayıcı tutmaz. Yanıt
+  çerez taşıyorsa (ör. kayar oturum yenilemesi), hata/yönlendirme ise ya da
+  rota başka yöntemdeyse başlık eskisi gibi `no-store` kalır.
+- **Yeni tanılar T056/T057:** Önbellek izni GET/HEAD dışı rotada T056;
+  önbelleklenebilir rota `oturum`/`çerezler` okur, `csrf belirteci` üretir,
+  çerez yazar ya da bunları yapan bir işlemi çağırırsa T057 ile derlenmez.
 
 ### Uyumluluk ve göç
 
@@ -39,6 +50,11 @@ Bu kayıt yeni sürüm etiketi değildir.
   `--web-oran-deposu bellek` işçi başınadır (etkin sınır işçi sayısı katı).
 - Windows'ta `--web-isci-sayisi` desteklenmez (çıkış 2); ayrı portlu süreçler
   ve proxy dengelemesi kullanılır.
+- Mevcut programlar değişmeden çalışır; izin yazılmayan her rota `no-store`
+  göndermeye devam eder. Önbelleği bugün ön kapıda (`proxy_hide_header
+  Cache-Control` + yol eşlemesi) açan projeler, oturumsuz rotalara yeni
+  politikayı yazıp ön kapıda yalnız worker'ın başlığına güvenebilir. Sorgu
+  dizgisini önbellek anahtarında tutmak ön kapının görevidir.
 
 ### Düzeltilenler
 

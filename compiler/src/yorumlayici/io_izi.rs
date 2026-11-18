@@ -595,6 +595,11 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
+    /// Önbellek izni yanıt başlığı ayrıntısıdır, nondeterministik girdi değil;
+    /// izde kayıt açmadan iç adaptöre iletilir.
+    fn yanit_onbellegine_izin_ver(&mut self, saniye: u32) {
+        self.ic.yanit_onbellegine_izin_ver(saniye)
+    }
     fn rota_guvenligini_denetle(
         &mut self,
         erisim: &RotaErisimi,

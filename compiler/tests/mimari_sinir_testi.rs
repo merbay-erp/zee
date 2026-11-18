@@ -55,6 +55,8 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/cumle/dosya.rs", 80),
         ("src/ayristirici/cumle.rs", 540),
         ("src/ayristirici/cumle/web.rs", 80),
+        ("src/ayristirici/cumle/onbellek.rs", 60),
+        ("src/cozumleyici/etki/onbellek.rs", 120),
         ("src/ayristirici/cumle/gorunum.rs", 220),
         ("src/ayristirici/kimlik_iletisim.rs", 180),
         ("src/ayristirici/ifade.rs", 1_220),

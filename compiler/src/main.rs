@@ -1889,6 +1889,10 @@ struct GercekIo {
     kayar_oturum_belirteci: Option<String>,
     web_istek_yedegi: Option<WebIstekYedegi>,
     bekleyen_web_yaniti: Option<WebYanitTaslagi>,
+    /// K-335: eşleşen rotanın önbellek izni ve bu isteğin oturum yüzeyine
+    /// dokunup dokunmadığı; ikisi de her istek başında sıfırlanır.
+    yanit_onbellegi: Option<u32>,
+    istek_oturuma_dokundu: bool,
     politika: dil::yetkinlik::YetkinlikPolitikasi,
     dosya_siniri_koku: std::path::PathBuf,
     veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
@@ -2024,6 +2028,8 @@ impl GercekIo {
             kayar_oturum_belirteci: None,
             web_istek_yedegi: None,
             bekleyen_web_yaniti: None,
+            yanit_onbellegi: None,
+            istek_oturuma_dokundu: false,
             politika,
             dosya_siniri_koku: std::fs::canonicalize(dosya_siniri_koku)
                 .unwrap_or_else(|_| dosya_siniri_koku.to_path_buf()),
@@ -2170,6 +2176,20 @@ impl GercekIo {
         });
     }
 
+    /// K-335: rota izni yalnız Set-Cookie'siz, oturuma dokunmamış GET/HEAD
+    /// 200 yanıtında geçerlidir; izin ve dokunuş her istek başında sıfırlanır.
+    fn onbellek_kararini_uygula(&mut self, basliklar: String, cerezler: &str) -> String {
+        let izin = self.yanit_onbellegi.take().filter(|_| {
+            cerezler.is_empty()
+                && !std::mem::take(&mut self.istek_oturuma_dokundu)
+                && matches!(
+                    self.son_istek.as_ref().map(|(yontem, _)| yontem.as_str()),
+                    Some("GET" | "HEAD")
+                )
+        });
+        onbellek_basligini_uygula(basliklar, izin)
+    }
+
     fn guvenlik_basliklari(&self) -> String {
         guvenlik_basliklari(self.guvenli_proxy_origin().is_some())
     }
@@ -2266,6 +2286,8 @@ impl GercekIo {
                     self.guvenlik_basliklari()
                 };
                 let cerezler = self.cerez_basliklarini_al();
+                let guvenlik_basliklari =
+                    self.onbellek_kararini_uygula(guvenlik_basliklari, &cerezler);
                 let baslik = format!(
                     "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\n{}{}Connection: close\r\n\r\n",
                     tur,
@@ -2446,6 +2468,21 @@ fn guvenlik_basliklari(https: bool) -> String {
         sonuc.push_str("Strict-Transport-Security: max-age=31536000\r\n");
     }
     sonuc
+}
+
+/// K-335: önbellek izni yalnız çağıranın Set-Cookie'siz, oturuma dokunmamış
+/// 200 GET/HEAD yanıtı için `Some` geçirdiği durumda `no-store`u değiştirir.
+/// `max-age=0` tarayıcı önbelleğini kapalı tutar; ömür yalnız paylaşılan
+/// önbelleğe (CDN/ters vekil) `s-maxage` ile verilir.
+fn onbellek_basligini_uygula(basliklar: String, saniye: Option<u32>) -> String {
+    match saniye {
+        Some(saniye) => basliklar.replacen(
+            "Cache-Control: no-store\r\n",
+            &format!("Cache-Control: public, max-age=0, s-maxage={saniye}\r\n"),
+            1,
+        ),
+        None => basliklar,
+    }
 }
 
 fn html_guvenlik_basliklari(https: bool, govde: &str) -> String {
@@ -3413,6 +3450,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_yukleme = yukleme;
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
             self.son_istek = Some((baslik.yontem().to_string(), baslik.hedef().to_string()));
+            (self.yanit_onbellegi, self.istek_oturuma_dokundu) = (None, false);
             let ham = format!(
                 "{} {}\n{}{}",
                 baslik.yontem(),
@@ -3679,6 +3717,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.web_yanit_taslagini_yaz(WebYanitTaslagi::Yonlendirme(adres.to_string()))
             .map(|_| ())
     }
+    fn yanit_onbellegine_izin_ver(&mut self, saniye: u32) {
+        self.yanit_onbellegi = Some(saniye);
+    }
     fn rota_guvenligini_denetle(
         &mut self,
         erisim: &dil::agac::RotaErisimi,
@@ -3746,6 +3787,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.istek_oturuma_dokundu = true;
         let an = web_duvar_saati_ms();
         let (csrf, yeni) = self
             .web_guvenligi
@@ -3758,6 +3800,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.istek_oturuma_dokundu = true;
         let an = web_duvar_saati_ms();
         let yeni = self.web_guvenligi.oturum_ac(
             kullanici.to_string(),
@@ -3771,6 +3814,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn oturum_kapat(&mut self) -> Result<(), String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.istek_oturuma_dokundu = true;
         self.web_guvenligi.oturum_kapat();
         self.bekleyen_silinen_cerezler
             .push(self.oturum_cerez_adi().to_string());
@@ -3782,6 +3826,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     ) -> Result<Vec<Vec<(String, String)>>, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.istek_oturuma_dokundu = true;
         self.web_guvenligi
             .kullanici_oturumlarini_listele(kullanici, web_duvar_saati_ms())
             .map(|oturumlar| {
@@ -3794,6 +3839,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.istek_oturuma_dokundu = true;
         let mevcut = self
             .web_guvenligi
             .oturum_bilgisi(web_duvar_saati_ms())
@@ -4565,6 +4611,23 @@ mod web_profili_testleri {
         let ipv6 = AgHedefi::https_origininden("https://[2001:db8::1]:8443").unwrap();
         let ipv6_istegi = "POST /kaydet HTTP/1.1\r\nHost: [2001:0DB8:0:0::1]:8443\r\nForwarded: for=203.0.113.7;proto=https;host=\"[2001:0db8:0:0::1]:8443\"\r\nOrigin: https://[2001:0DB8:0:0::1]:8443\r\n\r\n";
         assert!(proxy_istegini_denetle(ipv6_istegi, &ipv6, "POST").is_ok());
+    }
+
+    #[test]
+    fn onbellek_izni_yalniz_no_store_satirini_public_s_maxage_yapar() {
+        let varsayilan = guvenlik_basliklari(true);
+        assert_eq!(
+            onbellek_basligini_uygula(varsayilan.clone(), None),
+            varsayilan
+        );
+        let izinli = onbellek_basligini_uygula(varsayilan.clone(), Some(300));
+        assert!(izinli.starts_with("Cache-Control: public, max-age=0, s-maxage=300\r\n"));
+        assert!(!izinli.contains("no-store"));
+        assert_eq!(
+            izinli.replace("public, max-age=0, s-maxage=300", "no-store"),
+            varsayilan,
+            "yalnız Cache-Control değişir; nosniff/CSP/HSTS korunur"
+        );
     }
 
     #[test]
