@@ -50,6 +50,8 @@ pub struct ToplayanIo {
 struct ToplayanWebIstekYedegi {
     yazilan_cerez_sayisi: usize,
     guvenli_cerez_sayisi: usize,
+    /// K-330: kayar kipte bu isteğin ham oturum belirteci; commit'te çerez yenilenir.
+    kayar_oturum_belirteci: Option<String>,
 }
 
 enum SunucuYanitTaslagi {
@@ -100,6 +102,13 @@ impl ToplayanIo {
             web_istek_yedegi: None,
             bekleyen_sunucu_yaniti: None,
         }
+    }
+
+    /// K-330/ADR-158 eki: proje bildirimindeki kimlikli oturum ömrü/kayar
+    /// ayarını hermetik adaptöre uygular; `dil dene` gerçek runtime ile aynı
+    /// `OturumAyari`'yı kullanır.
+    pub fn oturum_ayarini_belirle(&mut self, ayar: crate::web_guvenligi::OturumAyari) {
+        self.web_guvenligi.oturum_ayarini_belirle(ayar);
     }
 
     fn oturum_cerezini_yaz(&mut self, yeni: YeniOturum) {
@@ -275,6 +284,7 @@ impl GirdiCikti for ToplayanIo {
         self.web_istek_yedegi = Some(ToplayanWebIstekYedegi {
             yazilan_cerez_sayisi: self.yazilan_cerezler.len(),
             guvenli_cerez_sayisi: self.guvenli_cerezler.len(),
+            kayar_oturum_belirteci: None,
         });
         self.bekleyen_sunucu_yaniti = None;
         if self
@@ -284,6 +294,15 @@ impl GirdiCikti for ToplayanIo {
         {
             self.web_istek_yedegi = None;
             return None;
+        }
+        // K-330: gerçek runtime gibi kayar yenilemede aynı belirteç yeni Max-Age ile yazılır.
+        if let Some(yedek) = &mut self.web_istek_yedegi {
+            yedek.kayar_oturum_belirteci = self
+                .web_guvenligi
+                .kayar_cerez_omru()
+                .and(belirtec)
+                .filter(|deger| crate::web_guvenligi::cerez_degeri_gecerli(deger))
+                .map(str::to_string);
         }
         let bilgi = self.web_guvenligi.oturum_bilgisi(self.an_son_degeri);
         let ham = dogrulanmis_oturumu_istege_ekle(&ham, bilgi.as_ref());
@@ -296,7 +315,23 @@ impl GirdiCikti for ToplayanIo {
             return Ok(());
         };
         if let Some(taslak) = self.bekleyen_sunucu_yaniti.take() {
+            // Giriş/çıkış/iptal bu istekte kayar süresini düşürdüyse omur None'dır;
+            // bu istekte yazılmış oturum çerezi varsa o kazanır (gerçek runtime ile aynı).
+            let kayar = yedek
+                .kayar_oturum_belirteci
+                .zip(self.web_guvenligi.kayar_cerez_omru())
+                .filter(|_| {
+                    !self.guvenli_cerezler[yedek.guvenli_cerez_sayisi..]
+                        .iter()
+                        .any(|cerez| cerez.ad == "__Host-zee-oturum")
+                });
             self.web_guvenligi.istegi_tamamla(self.an_son_degeri)?;
+            if let Some((belirtec, omur)) = kayar {
+                self.oturum_cerezini_yaz(YeniOturum {
+                    belirtec,
+                    azami_omur_saniye: omur,
+                });
+            }
             self.sunucu_yanitini_uygula(taslak);
         } else {
             self.web_guvenligi.istegi_geri_al();

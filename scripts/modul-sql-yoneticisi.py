@@ -23,7 +23,7 @@ try:
         if not stat.S_ISREG(info.st_mode) or info.st_size > 32768:
             raise ValueError()
         raw = os.read(fd, 32769)
-        if hashlib.sha256(raw).hexdigest() != '84752ef56d5c1d347f2e211ebe721def648aa5e496df1bd8bfec2375933237b6':
+        if hashlib.sha256(raw).hexdigest() != '385e5916af27a80038c798c2d400d5ecc9d9be11f1c1f1dea172e75d0914b6ce':
             raise ValueError()
         after = os.fstat(fd)
         path = helper.stat(follow_symlinks=False)

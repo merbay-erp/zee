@@ -328,7 +328,9 @@ fn kok_sembol_sahibi(sembol: &str) -> &str {
         | "kaynagi_fazli_derle_kokenlerle"
         | "kaynagi_tanilari"
         | "kaynagi_tanilari_kokenlerle" => "faz",
-        "programi_dene" | "programi_dene_baglanmis" => "yorumlayici",
+        "programi_dene" | "programi_dene_baglanmis" | "programi_dene_oturum_ayariyla" => {
+            "yorumlayici"
+        }
         _ => "lib",
     }
 }
