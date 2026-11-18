@@ -1,0 +1,7 @@
+# K-332 eki: süreç istek ortasında ölünce kalan, 15 dakikadan eski runtime adlı `.parca` worker açılışında süpürülür; genç (canlı) ve ürün adlı dosyaya dokunulmaz.
+# yetim-parca-supurmesi
+
+8080 kapısında sunucu başlat
+
+GET "/form" adresine istek geldiğinde
+    "hazır" yanıtını gönder
