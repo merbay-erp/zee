@@ -5144,3 +5144,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   durdurma 1,5 sn'den kısa sürmeli; SIGTERM'i yok sayan grup üyesi yine
   öldürülmeli. Linux konteynerinde eski çekirdek ilk testte 3,00 sn ile düştü,
   yeni çekirdek iki testi de geçti; macOS'ta 39/39.
+
+## K-336/K-337 — Resmî çok işçi web profili ve açılış birincilliği (18 Kasım 2026)
+
+- zee-cekirdek (`ca3870d`) W2: işçi sıralı, ölçek elle açılan ayrı portlu
+  süreçlerden. W4: açılış uzlaştırması her süreçte; yeniden başlayan işçi
+  yüklenmekte olan geçici dosyayı silebilir. Karar: süreç içi iş parçacığı
+  (W2-a) reddedildi (yorumlayıcı `Rc`/`RefCell`, tek IO adaptörü ve istek
+  transaction'ı süreç başına); resmî çok işçi profili (W2-b) seçildi:
+  `--web-isci-sayisi N` yöneticisi tek loopback dinleyiciyi N işçiye devreder,
+  SO_REUSEPORT (macOS dağıtmaz, Windows'ta yok) ve relay reddedildi. W4 için
+  kilit (sıraya koyar, tekliği vermez) ve `açılışta bir kez`/`birincil süreç ise`
+  grameri reddedildi; sıfır argümanlı `birincil süreç` + yöneticinin
+  ikincilleri birincil hazır olunca başlatması seçildi, yeniden başlatılan
+  işçi ikincildir. Windows açık sınır (çıkış 2). Core freeze altında
+  dogfood-change; iki yeni kalıp kelimesi (`birincil`, `süreç`) freeze özetine
+  işlendi (ADR-161, RFC-0038, GB-133). Ürün adı ADR-087 gereği anonimdir.

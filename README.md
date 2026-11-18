@@ -200,10 +200,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **1077** |
+| Rust + doctest vakası | **1085** |
 | Tanı kimliği | **162 etkin + 3 ayrılmış** |
-| RFC | **36** (3 kabul, 30 geçici kabul, 3 taslak) |
-| ADR | **154** (154 kabul) |
+| RFC | **37** (4 kabul, 30 geçici kabul, 3 taslak) |
+| ADR | **155** (155 kabul) |
 | Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -266,6 +266,13 @@ paylaşımı sürer; restart ve ayrı worker sayaçları ayrıdır.
 Bu kipte `--web-oran-siniri`, `--web-oran-kapasitesi` ve
 `--web-oran-doluluk en-eski` seçilebilir. Tahliye uç nokta kotasını sıfırlayabilir;
 giriş/CSRF canlı sayaçları korunur. [Ayarlar](adr/090-web-oran-ayarlari.md).
+
+Unix'te `--web-worker-port P --web-isci-sayisi N` tek komutla N işçi açar:
+yönetici loopback dinleyiciyi işçilere devreder, çöken işçiyi yeniden
+başlatır ve isteğe bağlı `--web-saglik-port` ile `/saglik` yanıtlar; oturum,
+CSRF ve oran sınırı tek süreçle aynıdır. Açılış işi `birincil süreç` ile tek
+işçiye bağlanır. Windows'ta bu profil yoktur.
+[Karar ve sınırlar](adr/161-cok-isci-web-profili-ve-acilis-birincilligi.md).
 
 Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızlıkları
 `Sonuç` olarak yönetir. Ortam sırları explicit proje listesiyle okunur;

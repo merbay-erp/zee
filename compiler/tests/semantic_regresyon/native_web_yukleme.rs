@@ -98,7 +98,7 @@ fn yetim_calistir(proje: &Path, ana: &Path) -> (i64, Vec<String>) {
             .expect("mtime");
     }
     let kapi = bos_kapi();
-    let mut worker = worker_baslat(ana, kapi, Stdio::null());
+    let mut worker = worker_baslat(ana, kapi, Stdio::null);
     dinlemeyi_bekle(kapi);
     // Açılış süpürmesi `sunucu kur` içinde bind'dan sonra koşar; ilk yanıt onu izler.
     let hazir = istek(
@@ -145,7 +145,7 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
         return yetim_calistir(&proje, &ana);
     }
     let kapi = bos_kapi();
-    let mut worker = worker_baslat(&ana, kapi, Stdio::null());
+    let mut worker = worker_baslat(&ana, kapi, Stdio::null);
     dinlemeyi_bekle(kapi);
 
     let form = istek(

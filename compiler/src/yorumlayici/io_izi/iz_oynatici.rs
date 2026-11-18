@@ -206,6 +206,10 @@ impl GirdiCikti for IzYenidenOynatici {
         istemci::yeniden_oynat(self)
     }
 
+    fn birincil_surec(&mut self) -> bool {
+        istemci::birincil_oynat(self)
+    }
+
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         let sonuc = self.siradaki("csrf_belirteci", Vec::new());
         self.metin_sonuc("csrf_belirteci", sonuc)

@@ -1,0 +1,254 @@
+{
+  "schema": "zee-k336-olcum-1",
+  "binary_sha256": "53ff9d8ff1c413cfc6524929859a7b4466e95f643abae14ba20cb644a4be369d",
+  "build": "{\"schema\":\"zee-build-v1\",\"version\":\"1.0.0-dev\",\"source_sha\":\"9e51868caedbf1f1c42ab0b7f050b592f835fb1d\",\"source_date\":\"2026-11-18\",\"channel\":\"development\",\"dirty\":false}",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "cpu_sayisi": 14,
+  "python": "3.13.3",
+  "workload_sha256": "a1218bd3b81f2b84ffe36201a0351098674b837b2c21aab6a4a46d7b440e4077",
+  "tur": 5,
+  "isinma_istek": 8,
+  "senaryolar": [
+    {
+      "isci": 1,
+      "cikis": 0,
+      "turlar": [
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 9.222,
+            "p50_ms": 108.6,
+            "p95_ms": 117.9,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 9.189,
+            "p50_ms": 431.6,
+            "p95_ms": 463.7,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 9.365,
+            "p50_ms": 106.3,
+            "p95_ms": 116.1,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 9.933,
+            "p50_ms": 391.8,
+            "p95_ms": 432.5,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 10.182,
+            "p50_ms": 97.2,
+            "p95_ms": 107.5,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 10.195,
+            "p50_ms": 390.3,
+            "p95_ms": 419.2,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 10.058,
+            "p50_ms": 97.8,
+            "p95_ms": 109.9,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 10.234,
+            "p50_ms": 389.0,
+            "p95_ms": 407.2,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 10.018,
+            "p50_ms": 98.3,
+            "p95_ms": 114.6,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 9.791,
+            "p50_ms": 395.0,
+            "p95_ms": 542.1,
+            "durumlar": [
+              200
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "isci": 4,
+      "cikis": 0,
+      "turlar": [
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 8.8,
+            "p50_ms": 100.6,
+            "p95_ms": 182.2,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 35.546,
+            "p50_ms": 108.9,
+            "p95_ms": 129.6,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 10.09,
+            "p50_ms": 98.8,
+            "p95_ms": 104.9,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 37.591,
+            "p50_ms": 102.2,
+            "p95_ms": 121.5,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 9.681,
+            "p50_ms": 102.1,
+            "p95_ms": 121.6,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 26.697,
+            "p50_ms": 133.0,
+            "p95_ms": 304.8,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 9.933,
+            "p50_ms": 100.7,
+            "p95_ms": 105.1,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 36.954,
+            "p50_ms": 103.5,
+            "p95_ms": 137.2,
+            "durumlar": [
+              200
+            ]
+          }
+        },
+        {
+          "c1": {
+            "istek": 40,
+            "eszamanlilik": 1,
+            "istek_sn": 9.893,
+            "p50_ms": 100.9,
+            "p95_ms": 108.0,
+            "durumlar": [
+              200
+            ]
+          },
+          "c4": {
+            "istek": 80,
+            "eszamanlilik": 4,
+            "istek_sn": 36.802,
+            "p50_ms": 103.2,
+            "p95_ms": 129.5,
+            "durumlar": [
+              200
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dort_isci_c4_c1_orani": [
+    4.039,
+    3.726,
+    2.758,
+    3.72,
+    3.72
+  ],
+  "dort_isci_c4_c1_orani_medyan": 3.72,
+  "kabul_esigi": 3.5
+}

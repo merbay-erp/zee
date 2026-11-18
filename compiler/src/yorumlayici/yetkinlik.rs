@@ -161,7 +161,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_gerektir()?;
         self.ic.yonlendir_gonder(adres)
     }
-
     fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
         self.web_oturumu_gerektir()?;
         self.ic.cerez_yaz(ad, deger)
@@ -179,11 +178,12 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     ) -> Result<(), WebReddi> {
         web::rota_denetle(self, erisim, csrf, csrf_gerekli)
     }
-
     fn istemci_adresi(&mut self) -> String {
         web::istemci_adresi(self)
     }
-
+    fn birincil_surec(&mut self) -> bool {
+        web::birincil_surec(self)
+    }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.web_oturumu_gerektir()?;
         self.ic.csrf_belirteci()

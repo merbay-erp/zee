@@ -18,6 +18,34 @@ geçersiz kılınır; rota ve uygulama kaynağı iki süreçte aynıdır. Proxy 
 loopback dışına açılmaz; listener `127.0.0.1`e bind eder ve kabul edilen socket
 peer'inin loopback olduğunu ayrıca doğrular.
 
+## Tek komutla çok işçi (K-336/K-337, Unix)
+
+```sh
+dil çalıştır --web-proxy https://panel.example --web-worker-port 18091 \
+  --web-isci-sayisi 4 --web-saglik-port 18099 uygulama.dil
+```
+
+Yönetici süreç `127.0.0.1:18091`'i bir kez bağlar ve aynı dinleyiciyi dört
+işçiye devreder; proxy tek hedefe (`server 127.0.0.1:18091;`) gider. Oturum,
+CSRF ve varsayılan ortak oran deposu tek süreçle aynı davranır. Açılış işini
+koruyun:
+
+```zee
+açılış_sahibi birincil süreç olsun
+açılış_sahibi ise
+    uzlastirma yarım yüklemeleri uzlaştır olsun
+```
+
+İkincil işçiler birincil `sunucu başlat`a ulaşmadan başlamaz; çöken işçi
+ikincil olarak yeniden başlar ve açılışı tekrarlamaz. `systemctl stop` (SIGTERM)
+kabul edilmiş istekleri tamamlatıp grubu kapatır; unit'te `KillMode=mixed`
+ya da varsayılan `control-group` uygundur, `TimeoutStopSec` en az 45 sn olmalı.
+`curl http://127.0.0.1:18099/saglik` bütün işçiler yaşıyorsa 200 döner.
+`--web-oran-deposu bellek` işçi başınadır (sınır N katı); tek süreçle aynı
+oran davranışı için varsayılan ortak depoyu kullanın. Windows'ta bu profil
+yoktur: yukarıdaki ayrı portlu süreçler + proxy dengelemesi kullanılır.
+Normatif metin spec/12 §7, karar ADR-161.
+
 ## Ortak durum
 
 Production worker'ları proje kökündeki `.zee/web-durumu-v1.json` dosyasını

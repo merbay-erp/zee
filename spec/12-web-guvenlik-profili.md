@@ -237,8 +237,9 @@ sorumluluğudur.
 V1 HTTP server modeli process başına tek worker/thread'dir: bir bağlantıyı
 okur, bir Zee isteğini yürütür ve yanıtı bitirmeden yenisini kabul etmez.
 Production concurrency'si aynı proje kökünü ve `.zee/web-durumu-v1.json`
-dosyasını paylaşan N ayrı süreçle kurulur; her süreç kaynak portunu
-`--web-worker-port N` ile farklı loopback porta geçirir. Thread-pool veya aynı
+dosyasını paylaşan N ayrı süreçle kurulur: Unix'te tek komutluk resmî çok işçi
+profiliyle (§7, `--web-isci-sayisi N`) ya da her süreç kaynak portunu
+`--web-worker-port N` ile farklı loopback porta geçirerek. Thread-pool veya aynı
 process içinde paralel Zee request yürütümü vaat edilmez. Kalıcı adaptör aynı
 makine veya güvenilir kilit+atomik replace semantiği sunan ortak dosya
 sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky session
@@ -294,3 +295,21 @@ ZORUNLU: Kayar açıkken her kimlikli istek, istek başındaki kalıcı depo gü
 YASAK: Kayar yenileme anonim (giriş öncesi) oturumu uzatamaz ve yeni belirteç üretemez. Aynı istekte giriş, `oturumu kapat` ya da kendi oturumunun kimlikle iptali varsa yenileme çerezi yazılmaz; çıkış sunucu kaydını commit ile hemen siler ve yanıt yalnız `Max-Age=0` silme çerezini taşır.
 
 ZORUNLU: `dil dene` bir proje klasörüyle koşulduğunda her testin hermetik web adaptörü aynı `oturum_ömrü_saniye`/`oturum_kayar` ayarını gerçek runtime ile aynı kurallarla uygular: kimlikli oturum seçilen ömürde biter, kayar kipte kimlikli istek ömrü yeniden başlatır ve aynı belirteçle yenilenmiş `Max-Age` çerezi yazar, mutlak kipte erişim ömrü uzatmaz. Proje bildirimi olmadan koşulan dosya ve gömme `programi_dene` varsayılan 1800 sn mutlak ömürde kalır.
+
+## 7. Çok işçi profili ve açılış birincilliği (K-336/K-337)
+
+TANIMLI: `dil çalıştır --web-proxy <origin> --web-worker-port P --web-isci-sayisi N [--web-saglik-port S] <kaynak>` (1 ≤ N ≤ 64) bir yönetici süreç açar. Yönetici `127.0.0.1:P` dinleyicisini bir kez bağlar ve aynı açık dinleyiciyi N işçi sürecine devreder; bağlantıyı boştaki işçi `accept` ile alır. Yönetici Zee kaynağını yürütmez; her işçi kaynağı baştan yürüten §5 tek süreç çalışma zamanıdır. SO_REUSEPORT ya da proxy aktarımı kullanılmaz.
+
+ZORUNLU: Oturum, CSRF, revoke ve varsayılan ortak oran deposu davranışı N işçide tek süreçle aynıdır: işçiler aynı proje kökünü ve `.zee/web-durumu-v1.json` durumunu paylaşır, bir işçide açılan oturum ve verilen CSRF belirteci ötekinde geçerli, çıkış her işçide 401, giriş deneme sınırı grup genelinde tek sayaçtır. Explicit `--web-oran-deposu bellek` seçimi işçi başınadır ve etkin oran sınırını N katına çıkarır; yönetici açılışta bunu uyarır.
+
+TANIMLI: `birincil süreç` argümansız Mantıksal ifadedir (`ağ-sunucusu` yetkinliği). Tek süreçte ve sunucu yetkinliği olmayan politikada `doğru`; çok işçi grubunda yalnız grubun ilk açılan birincil işçisinde `doğru`, ikincil ve yeniden başlatılan her işçide `yanlış`. Değer süreç ömrü boyunca değişmez; IO izinde `birincil_surec` olayı `0`/`1` sonucuyla kaydedilir ve oynatılır.
+
+ZORUNLU: Yönetici ikincil işçileri birincil işçi `sunucu başlat`a ulaşmadan başlatmaz. Böylece `birincil süreç` doğruyken koşan açılış bloğu grubun ilk açılışında hiçbir işçi istek kabul etmeden ve yalnız bir kez koşar; yeniden başlatılan işçi ikincil olduğundan çalışan işçilerin o an yüklediği geçici dosyaları açılış taramasına kaptırmaz. Birincil `sunucu başlat`a ulaşmadan çıkarsa grup başlatılmaz ve yönetici onun sıfır olmayan çıkış koduyla (yoksa 1) biter.
+
+TANIMLI: Beklenmedik biçimde çıkan işçi aynı yuvada ikincil olarak 250 ms'den 5 sn'ye katlanan gecikmeyle yeniden başlatılır; 10 sn dolmadan art arda 10 kez çıkan yuva grubu durdurur (çıkış 1). SIGTERM ya da SIGINT alan yönetici işçilere SIGTERM iletir; işçi kabul ettiği isteği tamamlar ve yeni bağlantı almaz; 40 sn içinde bitmeyen işçi sonlandırılır. Yönetici kaybolursa (SIGKILL) işçiler en çok bir boşta yoklama aralığında (100 ms) yeni istek kabul etmeyi bırakıp çıkar.
+
+TANIMLI: `--web-saglik-port S` yalnız `127.0.0.1:S` üzerinde `GET /saglik` ve `HEAD /saglik` yanıtlar: birincil hazır ve N işçi süreci yaşıyorsa 200, aksi hâlde 503; gövde `durum` (`basliyor`/`hazir`/`eksik`/`kapaniyor`), `isci`, `canli`, `yeniden_baslatma` ve `surecler` (işçi PID'leri) alanlı JSON'dur. Başka yol 404'tür. Sağlık yanıtı uygulama hazırlığı (DB/göç) kanıtı değildir.
+
+YASAK: `--web-isci-sayisi` `--deneysel-web` ile, worker portu verilmemiş proxy ile, `--web-saglik-port` da `--web-isci-sayisi` olmadan kullanılamaz; 1..64 dışı değer ve `dil çalıştır` dışındaki komut çıkış 2 ile reddedilir. Native listener devri (`--web-listener-fd` …) ve `--web-metrik-fd` çok işçi profiliyle birleşmez.
+
+AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` Windows'ta çıkış 2 ile reddedilir ve eşzamanlılık ayrı `--web-worker-port` süreçleri ile önlerindeki proxy dengelemesiyle kurulur. Bağlantıların işçilere dağılımı çekirdeğe bağlıdır (macOS'ta eşit değildir); `birincil süreç` yalnız resmî grupta anlamlıdır, elle kurulan ayrı portlu süreçlerin her biri kendini birincil görür. `--ayar` dosyası işçi sayısı alanı taşımaz.

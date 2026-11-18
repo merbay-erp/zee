@@ -28,6 +28,8 @@ mod dil_web_test;
 
 #[path = "cli/registry.rs"]
 mod dil_registry;
+#[path = "cli/web_isci_grubu.rs"]
+mod web_isci_grubu;
 #[cfg(unix)]
 mod web_kapanis;
 mod web_listener;
@@ -262,6 +264,48 @@ fn main() -> ExitCode {
     }
 }
 
+/// SIGTERM ya da (K-336) yönetici kaybı yeni istek kabulünü durdurur.
+#[cfg(unix)]
+fn web_kapanisi_istendi(kapanis: &Option<web_kapanis::WebKapanis>) -> bool {
+    kapanis.as_ref().is_some_and(|k| k.istendi()) || web_isci_grubu::ebeveyn_kayboldu()
+}
+
+/// K-336: `--web-isci-sayisi` yalnız güvenli proxy + açık worker portu ile
+/// yönetici sürece dönüşür; Zee kaynağını yönetici değil işçiler yürütür.
+fn isci_grubunu_yonet(ayar: web_isci_grubu::Ayar, web_modu: &WebModu, metrik: bool) -> ExitCode {
+    let WebModu::GuvenliProxy {
+        worker_kapi: Some(kapi),
+        oran_ayari,
+        listener_profile: None,
+        ..
+    } = web_modu
+    else {
+        eprintln!(
+            "{} yalnız --web-proxy ve --web-worker-port ile kullanılabilir; native listener profiliyle birleşmez",
+            web_isci_grubu::ISCI_BAYRAGI
+        );
+        return ExitCode::from(2);
+    };
+    if metrik {
+        eprintln!(
+            "{} ile --web-metrik-fd birlikte kullanılamaz",
+            web_isci_grubu::ISCI_BAYRAGI
+        );
+        return ExitCode::from(2);
+    }
+    if oran_ayari.is_some() {
+        eprintln!(
+            "Uyarı: bellek oran deposu işçi başınadır; {} işçide etkin oran sınırı {} katına çıkar. Tek süreçle aynı oran davranışı varsayılan ortak depodadır.",
+            ayar.isci, ayar.isci
+        );
+    }
+    let mut cocuk_argumanlari: Vec<String> = std::env::args().skip(1).collect();
+    if web_isci_grubu::ayikla(&mut cocuk_argumanlari).is_err() {
+        return ExitCode::from(2);
+    }
+    web_isci_grubu::yonet(ayar, *kapi, cocuk_argumanlari)
+}
+
 fn metrik_fd_ayikla(args: &mut Vec<String>) -> Result<Option<i32>, String> {
     // Program arguments after the source belong to the application.
     let mut positions = Vec::new();
@@ -285,6 +329,8 @@ fn metrik_fd_ayikla(args: &mut Vec<String>) -> Result<Option<i32>, String> {
             | "--web-oran-siniri"
             | "--web-oran-kapasitesi"
             | "--web-oran-doluluk"
+            | "--web-isci-sayisi"
+            | "--web-saglik-port"
             | "--kapsam"
             | "--web-suite"
             | "--web-suite-sha256"
@@ -312,12 +358,18 @@ fn metrik_fd_ayikla(args: &mut Vec<String>) -> Result<Option<i32>, String> {
     Ok(Some(fd))
 }
 
-fn test_araclarini_ayikla(
-    argumanlar: &mut Vec<String>,
-) -> Result<(Option<dil_web_test::Plan>, Option<dil_kapsam::Rapor>), String> {
+type AracPlanlari = (
+    Option<dil_web_test::Plan>,
+    Option<dil_kapsam::Rapor>,
+    Option<web_isci_grubu::Ayar>,
+);
+
+/// Test aracı, kapsam ve (K-336) web işçi grubu seçenekleri.
+fn test_araclarini_ayikla(argumanlar: &mut Vec<String>) -> Result<AracPlanlari, String> {
+    let isci_grubu = web_isci_grubu::hazirla(argumanlar)?;
     let native_test = dil_web_test::ayikla(argumanlar)?;
     let kapsam = dil_kapsam::ayikla(argumanlar)?;
-    Ok((native_test, kapsam))
+    Ok((native_test, kapsam, isci_grubu))
 }
 
 fn govde() -> ExitCode {
@@ -345,7 +397,7 @@ fn govde() -> ExitCode {
     if web_listener::quiet_preflight(&argumanlar).is_err() {
         return ExitCode::from(2);
     }
-    let (native_test, kapsam) = match test_araclarini_ayikla(&mut argumanlar) {
+    let (native_test, kapsam, isci_grubu) = match test_araclarini_ayikla(&mut argumanlar) {
         Ok(planlar) => planlar,
         Err(hata) => {
             eprintln!("{hata}");
@@ -402,6 +454,9 @@ fn govde() -> ExitCode {
     } else {
         None
     };
+    if let Some(ayar) = isci_grubu {
+        return isci_grubunu_yonet(ayar, &web_modu, metrik.is_some());
+    }
     match argumanlar.first().map(|s| s.as_str()) {
         Some("çalıştır") | Some("calistir") => {
             if guvenli {
@@ -542,6 +597,7 @@ fn kullanim() {
     eprintln!("  dil çalıştır --güvenli ... çocuk modu: ağ kapalı, dosyalar klasörle sınırlı");
     eprintln!("  dil çalıştır --deneysel-web ... localhost web prototipine açıkça izin verir");
     eprintln!("  dil çalıştır --web-proxy https://host [--web-worker-port N] [--web-oran-deposu bellek] ... güvenli yerel TLS-proxy profili");
+    eprintln!("  dil çalıştır --web-proxy https://host --web-worker-port P --web-isci-sayisi N [--web-saglik-port S] ... N işçili ortak dinleyici (Unix)");
     eprintln!("    bellek ayarları: --web-oran-siniri 1..1000000 (60 sn), --web-oran-kapasitesi 1..32768, --web-oran-doluluk reddet|en-eski");
     eprintln!("  dil parola-özeti           parolayı gizli okuyup Argon2id PHC özeti üretir");
     eprintln!(
@@ -2886,6 +2942,8 @@ fn program_argumanlari() -> Vec<String> {
                         | "--web-oran-siniri"
                         | "--web-oran-kapasitesi"
                         | "--web-oran-doluluk"
+                        | "--web-isci-sayisi"
+                        | "--web-saglik-port"
                 ))
                 || arguman == "--web-proxy"
                 || arguman == "--güvenli-web-proxy"
@@ -3200,6 +3258,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         };
         #[cfg(not(unix))]
         let inherited: Option<std::net::TcpListener> = None;
+        // K-336: yönetici sürecin devrettiği ortak dinleyici (yalnız güvenli proxy).
+        #[cfg(unix)]
+        let inherited = match (inherited, &self.web_modu) {
+            (None, WebModu::GuvenliProxy { .. }) => web_isci_grubu::devralinan_dinleyici()
+                .map(|fd| web_listener::adopt_group(fd, gercek_kapi as u16))
+                .transpose()?,
+            (inherited, _) => inherited,
+        };
         let dinleyici = if let Some(listener) = inherited {
             listener
         } else {
@@ -3230,6 +3296,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if let Some(control) = &mut self.native_control {
             control.announce()?;
         }
+        web_isci_grubu::hazir_bildir();
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
@@ -3239,7 +3306,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         #[cfg(unix)]
         if let Some(control) = &mut self.native_control {
             if control
-                .wait(|| self.web_kapanis.as_ref().is_some_and(|k| k.istendi()))
+                .wait(|| web_kapanisi_istendi(&self.web_kapanis))
                 .is_err()
             {
                 self.dinleyici = None;
@@ -3248,7 +3315,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         loop {
             #[cfg(unix)]
-            if self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
+            if web_kapanisi_istendi(&self.web_kapanis) {
                 // istek_al runs after the admitted handler/transaction/response.
                 // Stop admission of the next request and release the listener.
                 self.dinleyici = None;
@@ -3273,7 +3340,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 }
             }
             #[cfg(unix)]
-            if !self.native_taken && self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
+            if !self.native_taken && web_kapanisi_istendi(&self.web_kapanis) {
                 // A signal racing with nonblocking accept must not admit a new
                 // handler; dropping this stream and listener closes its backlog.
                 self.dinleyici = None;
@@ -3665,6 +3732,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
         }
         Ok(())
+    }
+    fn birincil_surec(&mut self) -> bool {
+        web_isci_grubu::birincil_mi()
     }
     fn istemci_adresi(&mut self) -> String {
         if self.web_istek_yedegi.is_some() {
