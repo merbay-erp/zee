@@ -2088,6 +2088,20 @@ impl GercekIo {
         });
     }
 
+    /// K-335: rota izni yalnız Set-Cookie'siz, oturuma dokunmamış GET/HEAD
+    /// 200 yanıtında geçerlidir; izin ve dokunuş her istek başında sıfırlanır.
+    fn onbellek_kararini_uygula(&mut self, basliklar: String, cerezler: &str) -> String {
+        let izin = self.yanit_onbellegi.take().filter(|_| {
+            cerezler.is_empty()
+                && !std::mem::take(&mut self.istek_oturuma_dokundu)
+                && matches!(
+                    self.son_istek.as_ref().map(|(yontem, _)| yontem.as_str()),
+                    Some("GET" | "HEAD")
+                )
+        });
+        onbellek_basligini_uygula(basliklar, izin)
+    }
+
     fn guvenlik_basliklari(&self) -> String {
         guvenlik_basliklari(self.guvenli_proxy_origin().is_some())
     }
@@ -2166,8 +2180,6 @@ impl GercekIo {
             .ok_or_else(|| "yanıt bekleyen web bağlantısı yok".to_string())?;
         let _baglanti_izni = self.bekleyen_baglanti_izni.take();
         let head = std::mem::take(&mut self.bekleyen_head);
-        let onbellek = self.yanit_onbellegi.take();
-        let oturuma_dokundu = std::mem::take(&mut self.istek_oturuma_dokundu);
         let status = match &taslak {
             WebYanitTaslagi::Govde(_) => 200,
             WebYanitTaslagi::Durum(status, _) => *status,
@@ -2186,17 +2198,8 @@ impl GercekIo {
                     self.guvenlik_basliklari()
                 };
                 let cerezler = self.cerez_basliklarini_al();
-                let guvenlik_basliklari = onbellek_basligini_uygula(
-                    guvenlik_basliklari,
-                    onbellek.filter(|_| {
-                        cerezler.is_empty()
-                            && !oturuma_dokundu
-                            && matches!(
-                                self.son_istek.as_ref().map(|(yontem, _)| yontem.as_str()),
-                                Some("GET" | "HEAD")
-                            )
-                    }),
-                );
+                let guvenlik_basliklari =
+                    self.onbellek_kararini_uygula(guvenlik_basliklari, &cerezler);
                 let baslik = format!(
                     "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\n{}{}Connection: close\r\n\r\n",
                     tur,
@@ -2305,8 +2308,6 @@ impl GercekIo {
             bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
         });
         self.bekleyen_web_yaniti = None;
-        self.yanit_onbellegi = None;
-        self.istek_oturuma_dokundu = false;
         let baslatma = self
             .web_guvenligi
             .istegi_baslat_kimlikle(oturum, &istemci_kimligi, an);
@@ -3348,6 +3349,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_yukleme = yukleme;
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
             self.son_istek = Some((baslik.yontem().to_string(), baslik.hedef().to_string()));
+            (self.yanit_onbellegi, self.istek_oturuma_dokundu) = (None, false);
             let ham = format!(
                 "{} {}\n{}{}",
                 baslik.yontem(),

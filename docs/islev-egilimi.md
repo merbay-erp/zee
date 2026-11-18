@@ -20,7 +20,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/ayristirici.rs::islem_ayristir#1` | 146→146 (+0/+15) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/ayristirici.rs::kullanilan_birimler#1` | 46→46 (+0/+8) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/ayristirici.rs::yapi_ayristir#1` | 86→86 (+0/+9) | 7→7 (+0/+2) | SABİT |
-| `compiler/src/ayristirici/cumle.rs::cumle_ayristir#1` | 485→498 (+13/+24) | 33→34 (+1/+5) | PAY İÇİNDE |
+| `compiler/src/ayristirici/cumle.rs::cumle_ayristir#1` | 485→504 (+19/+24) | 33→34 (+1/+5) | PAY İÇİNDE |
 | `compiler/src/ayristirici/cumle/gorunum.rs::gorunum_dugumu_kur#1` | 91→91 (+0/+10) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/ayristirici/ifade.rs::kosul_atomu_ic#1` | 183→186 (+3/+19) | 12→12 (+0/+3) | PAY İÇİNDE |
 | `compiler/src/ayristirici/ifade.rs::yapili_kalip_ic#1` | 427→424 (-3/+24) | 54→54 (+0/+5) | İYİLEŞTİ |
@@ -33,11 +33,11 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/cozumleyici/cagri.rs::cagri_denetle#1` | 301→301 (+0/+24) | 7→7 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/cumle.rs::blok_denetle#1` | 1121→1123 (+2/+24) | 3→3 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/donus.rs::donusleri_birlestir#1` | 87→87 (+0/+9) | 9→9 (+0/+2) | SABİT |
-| `compiler/src/cozumleyici/etki.rs::cumle_bilgisi#1` | 178→183 (+5/+18) | 12→13 (+1/+3) | PAY İÇİNDE |
-| `compiler/src/cozumleyici/etki.rs::denetle#1` | 133→134 (+1/+14) | 5→5 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/cozumleyici/etki.rs::ifade_bilgisi#1` | 119→120 (+1/+12) | 7→7 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/etki.rs::cumle_bilgisi#1` | 178→184 (+6/+18) | 12→13 (+1/+3) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/etki.rs::denetle#1` | 133→135 (+2/+14) | 5→5 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/etki.rs::ifade_bilgisi#1` | 119→121 (+2/+12) | 7→7 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/ifade.rs::ifade_denetle_ic#1` | 964→966 (+2/+24) | 37→37 (+0/+5) | PAY İÇİNDE |
-| `compiler/src/cozumleyici/yetkinlik.rs::cumle_bilgisi#1` | 173→176 (+3/+18) | 8→8 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/yetkinlik.rs::cumle_bilgisi#1` | 173→174 (+1/+18) | 8→9 (+1/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/yetkinlik.rs::ifade_bilgisi#1` | 112→112 (+0/+12) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/eposta.rs::gonder_ic#1` | 87→87 (+0/+9) | 7→7 (+0/+2) | SABİT |
 | `compiler/src/eposta/mime.rs::ileti_kur#1` | 93→98 (+5/+10) | 8→8 (+0/+2) | PAY İÇİNDE |
@@ -61,7 +61,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::govde#1` | 150→161 (+11/+15) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→108 (+0/+11) | 10→10 (+0/+2) | SABİT |
-| `compiler/src/main.rs::istek_al#1` | 113→118 (+5/+12) | 12→12 (+0/+3) | PAY İÇİNDE |
+| `compiler/src/main.rs::istek_al#1` | 113→119 (+6/+12) | 12→12 (+0/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::istek_govdesini_oku#1` | 79→85 (+6/+8) | 12→13 (+1/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::web_istegini_baslat#1` | 85→94 (+9/+9) | 6→7 (+1/+2) | PAY İÇİNDE |
 | `compiler/src/main.rs::web_modunu_ayikla#1` | 88→16 (-72/+9) | 4→2 (-2/+2) | İYİLEŞTİ |
@@ -87,7 +87,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→159 (+10/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/kimlik_iletisim.rs::intrinsic_degerlendir#1` | 125→125 (+0/+13) | 4→4 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→114 (+1/+12) | 9→9 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→125 (+12/+12) | 9→10 (+1/+2) | PAY İÇİNDE |
 
 Eşik aşımı otomatik bir tasarım hükmü değildir; işi durdurup işlevi bölme veya
 gerekçeli yeni tabanı aynı kod incelemesinde kabul etme zorunluluğudur. Düşüşler
