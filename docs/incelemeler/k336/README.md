@@ -23,10 +23,25 @@ python3 -I -B ../docs/incelemeler/k336/olcum.py target/release/dil <çıktı.jso
 
 ## Sonuç
 
-Exact temiz kaynak ölçümü kaynak commit'inin beyan commit'inde `olcum.json`
-olarak bu klasöre eklenir. Geliştirme sırasında kirli ağaçta
-iki gözlem: 4 işçi c4/c1 = 3,93 (35,93 / 9,14 istek/sn) ve 3,52 / 4,03 (iki
-tur); 1 işçi c4 = 9,20 istek/sn, medyan gecikme 404,8 ms (sıralı işleme).
+Kaynak `9e51868caedbf1f1c42ab0b7f050b592f835fb1d` temiz exact checkout'ta
+(`dirty:false`) `cargo build --locked --release --bin dil`; ikili SHA-256
+`53ff9d8ff1c413cfc6524929859a7b4466e95f643abae14ba20cb644a4be369d`. Apple M4
+Pro (14 çekirdek), 24 GiB, macOS 26.6.2, Rust 1.93.1, release; 5 tur, 8
+istek ısınma. Ham dağılım [`olcum.json`](olcum.json).
+
+| Senaryo | c1 istek/sn (tur medyanı) | c4 istek/sn (tur medyanı) | c4 p50 |
+|---|---:|---:|---:|
+| 1 işçi | 10,02 | 9,93 | 391,8 ms |
+| 4 işçi | 9,89 | 36,80 | 103,5 ms |
+
+4 işçide tur başı c4/c1 oranı 4,04 / 3,73 / 2,76 / 3,72 / 3,72; **medyan 3,72
+≥ 3,5** (kabul). Bütün yanıtlar 200, iki grup da SIGTERM ile 0 çıktı. Üçüncü
+turdaki 2,76 aynı makinede eşzamanlı başka derleme oturumları (yük ortalaması
+13–15) sırasında p95 304,8 ms ile görüldü; tek tur ayrık gözlemdir. 1 işçide
+c4 gecikmesi c1'in yaklaşık dört katıdır (sıralı işleme), 4 işçide c1 ile
+aynıdır.
+
+Geliştirme sırasında kirli ağaç gözlemleri (kayıt dışı): 3,93 ve 3,52/4,03.
 
 ## Sınır
 

@@ -73,9 +73,9 @@ birincili olduğunu bilemez; elle üç süreç açmak açılış sırası vermez
 
 ## Sonuçlar
 
-- Ölçüm (gözlemsel, ADR-045/049 tabanı değil): 4 işçi, ~110 ms CPU rotası,
-  eşzamanlılık 4 → tek isteğin 3,93 katı işlem hacmi
-  ([kanıt](../docs/incelemeler/k336/README.md)).
+- Ölçüm (gözlemsel, ADR-045/049 tabanı değil): exact `9e51868` temiz release,
+  4 işçi, ~100 ms CPU rotası, eşzamanlılık 4 / tek istek tur medyanı 3,72
+  (5 tur: 4,04–2,76; [kanıt](../docs/incelemeler/k336/README.md)).
 - Yeni kalıp kelimeleri `birincil`, `süreç`; API `web.birincil_surec`,
   `io-izi.birincil_surec`; CLI profilleri `cli-web-isci-sayisi`,
   `cli-web-saglik-port` (ADR-064). Tanı kodu eklenmedi: CLI reddi çıkış 2 metni.
