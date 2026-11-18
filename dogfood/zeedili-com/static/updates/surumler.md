@@ -10,6 +10,52 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **Tek komutla çok işçi web sunucusu (K-336, ADR-161):** Unix'te
+  `dil çalıştır --web-proxy https://site.example --web-worker-port 8096
+  --web-isci-sayisi 4 .` dört işçi süreci açar; yönetici `127.0.0.1:8096`
+  dinleyicisini bir kez bağlayıp işçilere devreder, çöken işçiyi yeniden
+  başlatır, SIGTERM'de kabul edilmiş istekleri tamamlatıp kapanır.
+  `--web-saglik-port 8099` ile `http://127.0.0.1:8099/saglik` bütün işçiler
+  yaşıyorsa 200 döner. Oturum, CSRF ve oran sınırı tek süreçle aynı davranır;
+  ölçümde dört işçi eşzamanlı dört istekte tek isteğin yaklaşık dört katı
+  işlem hacmi verdi.
+- **`birincil süreç` (K-337):** Açılış işini (yarım yükleme uzlaştırması gibi)
+  tek işçiye bağlar. Tek süreçte her zaman `doğru`; çok işçide yalnız ilk
+  açılan birincil işçide `doğru`. Diğer işçiler birincil sunucuyu başlatana
+  dek beklenir; yeniden başlatılan işçi açılışı tekrarlamaz.
+
+  ```zee
+  açılış_sahibi birincil süreç olsun
+  açılış_sahibi ise
+      uzlastirma yarım yüklemeleri uzlaştır olsun
+  ```
+- **Önbelleklenebilir herkese açık rota (K-335, ADR-160):** Oturumsuz
+  GET/HEAD rotası artık açık politikasını
+  `herkese açık önbelleklenebilir 300 saniye` biçiminde yazabilir (1–86400
+  saniye). Bu rotanın Set-Cookie taşımayan 200 yanıtı
+  `Cache-Control: public, max-age=0, s-maxage=300` alır; böylece CDN ya da
+  ters vekil yanıtı paylaşılan önbellekte tutabilir, tarayıcı tutmaz. Yanıt
+  çerez taşıyorsa (ör. kayar oturum yenilemesi), hata/yönlendirme ise ya da
+  rota başka yöntemdeyse başlık eskisi gibi `no-store` kalır.
+- **Yeni tanılar T056/T057:** Önbellek izni GET/HEAD dışı rotada T056;
+  önbelleklenebilir rota `oturum`/`çerezler` okur, `csrf belirteci` üretir,
+  çerez yazar ya da bunları yapan bir işlemi çağırırsa T057 ile derlenmez.
+
+### Uyumluluk ve göç
+
+- Elle açılan ayrı portlu işçiler (`--web-worker-port 8096`, `8097`, …) aynen
+  çalışır; tek komutluk profile geçince proxy hedef listesi tek porta iner.
+  `--web-oran-deposu bellek` işçi başınadır (etkin sınır işçi sayısı katı).
+- Windows'ta `--web-isci-sayisi` desteklenmez (çıkış 2); ayrı portlu süreçler
+  ve proxy dengelemesi kullanılır.
+- Mevcut programlar değişmeden çalışır; izin yazılmayan her rota `no-store`
+  göndermeye devam eder. Önbelleği bugün ön kapıda (`proxy_hide_header
+  Cache-Control` + yol eşlemesi) açan projeler, oturumsuz rotalara yeni
+  politikayı yazıp ön kapıda yalnız worker'ın başlığına güvenebilir. Sorgu
+  dizgisini önbellek anahtarında tutmak ön kapının görevidir.
+
 ### Düzeltilenler
 
 - **`dil dene` proje oturum ömrünü uygular (K-330, ADR-158 eki):** Proje
@@ -28,6 +74,11 @@ Bu kayıt yeni sürüm etiketi değildir.
   `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
   rakam ve tire taşıdığı için nokta artık tireye çevrilir
   (`/belge/surum-v1-0-0-rc-1-kaniti/`). Dil ve derleyici davranışı değişmedi.
+- **zeedili.com güncel sürümü gösterir:** Ana sayfa rozeti, yol haritası,
+  kurulum örneği ve yapılandırılmış veri hâlâ eski `0.8.0-dev`/`0.7.0`
+  etiketlerini gösteriyordu; artık son etiket v1.0.0-rc.1 ve geliştirme
+  sürümü 1.0.0-dev yazılır. Gelişmeler bölümüne çok işçi profili, önbellek
+  izni ve dosya imzası eklendi; site worker'ı güncel derleyiciyle koşar.
 
 ## 17 Kasım 2026 — Geliştirme güncellemeleri
 
