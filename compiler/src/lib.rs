@@ -739,11 +739,23 @@ fn test_kokeniyle(tani: Tani, test: &Test) -> Tani {
 /// Programın testlerini koşar. v0: her test taze ortamda ve dış dünyaya
 /// dokunmayan hermetik IO ile çalışır (gerçek dosya/ağ erişimi yok).
 pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
+    programi_dene_oturum_ayariyla(program, None)
+}
+
+/// `programi_dene` gibi; `ayar` verilirse proje bildirimindeki kimlikli oturum
+/// ömrü/kayar ayarı her testin hermetik adaptörüne uygulanır (K-330/ADR-158).
+pub fn programi_dene_oturum_ayariyla(
+    program: &Program,
+    ayar: Option<yorumlayici::OturumAyari>,
+) -> Vec<TestSonucu> {
     program
         .testler
         .iter()
         .map(|test| {
             let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
+            if let Some(ayar) = ayar {
+                io.oturum_ayarini_belirle(ayar);
+            }
             let hata = yorumlayici::test_calistir(program, test, &mut io)
                 .map_err(|tani| test_kokeniyle(tani, test))
                 .err();

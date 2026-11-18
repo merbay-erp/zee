@@ -5015,6 +5015,11 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   Restart ve çok worker paylaşımı K-137 kalıcı deposuyla zaten vardı; yeni
   gerçek iki-worker testi kayar kipte de kanıtlar. Ayrı mutlak tavan anahtarı
   ve `oturumu yenile` kalıbı reddedildi. Ürün adı ADR-087 gereği anonimdir.
+- K-330 açığı (18.11.2026): hermetik `dil dene` adaptörü proje ayarını yok
+  sayıyordu; ömrü 300 sn bildiren projede 301 sn sonra oturum hâlâ
+  listeleniyordu. `dil dene <proje>` artık gerçek runtime'ın `OturumAyari`'sını
+  her testin `ToplayanIo` örneğine verir; adaptör kayar yenileme çerezini de
+  yazar. Grammar, tanı, CLI ve `dil::api::v1` değişmedi (ADR-158 eki).
 
 ## K-331 — ctutils RustSec yükseltmesi (28 Ekim 2026)
 
