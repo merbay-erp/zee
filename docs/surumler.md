@@ -5,6 +5,18 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 18 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **zeedili.com belge adları:** Adında nokta bulunan belge (ör.
+  `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
+  rakam ve tire taşıdığı için nokta artık tireye çevrilir
+  (`/belge/surum-v1-0-0-rc-1-kaniti/`). Dil ve derleyici davranışı değişmedi.
+
 ## 17 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

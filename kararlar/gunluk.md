@@ -5087,3 +5087,11 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   çözülür. Eski SHA adlı canlı ikililer yeniden derlenmez.
 - K-334 son adım (18.11.2026): tarihçe temizliğinden sonra iç koşucunun
   bileşik adı HMAC politikasına eklendi (23 kural); tam tarihçe kapısı geçti.
+
+## Site — noktalı belge adı (18 Kasım 2026)
+
+- zeedili.com belge üreticisi `belgeAdi`, adında nokta olan belgeyi
+  (`surum-v1.0.0-rc.1-kaniti`) noktalarla adlandırıyordu; site ve bağlantı
+  denetimi yalnız `a-z0-9-` kabul ettiği için sayfa açılmıyor, üretici kırık
+  bağlantıyla duruyordu. Nokta tireye çevrilir; birim testine vaka eklendi.
+  Compiler kaynağı değişmedi.

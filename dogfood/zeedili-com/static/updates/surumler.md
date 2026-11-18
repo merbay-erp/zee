@@ -5,6 +5,216 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 18 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **zeedili.com belge adları:** Adında nokta bulunan belge (ör.
+  `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
+  rakam ve tire taşıdığı için nokta artık tireye çevrilir
+  (`/belge/surum-v1-0-0-rc-1-kaniti/`). Dil ve derleyici davranışı değişmedi.
+
+## 17 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **Açık depo kapısı anahtarlı (K-334, ADR-087, GB-131):** Müşteri/altyapı
+  adlarını yakalayan kapının politikası artık gizli anahtarlı HMAC-SHA256
+  taşır; önceki tuzsuz listenin sözlükle çözülebildiği bir dış taramada
+  görüldü. Dil, derleyici, CLI ve API davranışı değişmedi.
+
+### Uyumluluk ve göç
+
+- Depo katkıcıları kapıyı yerelde çalıştırmak için anahtarı
+  `ZEE_ACIK_DEPO_ANAHTARI` ortam değişkeninde ya da
+  `~/.config/zee/acik-depo-anahtari` dosyasında tutar; anahtarsız koşu
+  "çalışamadı" (çıkış 3) der, fork PR'ında açıkça "ATLANDI" yazar.
+- **Depo geçmişi yeniden yazıldı (18 Kasım 2026):** 18 Eylül sonrası commit'lerin
+  SHA'ları değişti; eski→yeni karşılık
+  [K-334 eşlemesinde](incelemeler/k334/sha-esleme-v1.tsv). Kod ve davranış
+  aynıdır. `dil-kur@<sha>` gibi SHA'ya sabitlenmiş kullanımlar yeni SHA'ya
+  taşınmalı; eski SHA ile derlenmiş ikililer yeniden derleme gerektirmez.
+  Yerel klonlar `git fetch` + `git reset --hard origin/master` ile güncellenir.
+- Commit yazar e-postası olarak GitHub noreply adresi kullanılır
+  (`git config user.email "<id>+<kullanıcı>@users.noreply.github.com"`).
+
+## 12 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **Yüklenen dosyanın içerik imzası okunabilir (K-333, ADR-159,
+  RFC-0036):** Web'den yüklenen bir dosyanın gerçekten bildirilen türde
+  olup olmadığı (ör. `.pdf` uzantılı dosyanın `%PDF-` ile başlaması) artık
+  kabul anında denetlenebilir:
+
+  ```text
+  imza yol dosyasının ilk 5 baytını onaltılık okumayı dene olsun
+  ```
+
+  Sonuç `Metin sonucu`dur: dosyanın ilk N baytı küçük harf onaltılık
+  (`%PDF-` → `"255044462d"`); dosya daha kısaysa olan kadarı. N 1 ile 64
+  arasında olmalıdır. `dosya-okuma` yetkinliği gerekir; yol kuralları
+  `sha256 özetini almayı dene` ile aynıdır. Sınır dışı sayı, bulunmayan ya da
+  normal olmayan dosya ve proje sınırı reddi C013 başarısız Sonuç verir.
+  İmza eşleşmesi dosyanın zararsız olduğunu kanıtlamaz.
+
+### Düzeltilenler
+
+- **Reddedilen dosya yüklemeleri artık diskte iz bırakmaz (K-332,
+  GB-129):** `application/octet-stream` gövdesi `.zee/yuklemeler/*.parca`
+  dosyasına akıyor, istek sonra CSRF/oturum eksikliği (403), bulunmayan
+  adres (404/405), kısa gövde (400) ya da rota hatasıyla reddedilse veya rota
+  dosyayı taşımadan yanıt verse bile dosya sunucu yeniden başlayana dek
+  kalıyordu. Oturumsuz bir istemci her istekte 16 MiB'a kadar bırakarak diski
+  doldurabiliyordu. Artık `GET`/`HEAD` dışındaki yükleme `X-Zee-CSRF` başlığı
+  ve oturum çerezi olmadan gövde hiç okunmadan `403` alır; akış yarıda kalan ya
+  da rotaca taşınmayan geçici dosya istek biterken silinir. Dosyayı aynı
+  istekte `atomik taşımayı dene` ile taşıyan rotalar değişmeden çalışır.
+
+### Uyumluluk ve göç
+
+K-332: sözdizimi, tanı kimliği ve sınır değerleri değişmedi. `yukleme_gecici_yolu`
+yalnız geldiği istek içinde geçerlidir: dosyayı sonraki bir isteğe saklayan
+rota (bilinen bir kullanım yok) aynı istekte kalıcı bir yola taşımalıdır.
+CSRF başlığı ya da oturum çerezi olmadan yapılan yükleme, adres var olmasa
+bile artık `404` yerine `403` alır.
+K-333: yeni ifadedir; mevcut programlar değişmez. Kullanan program eski derleyicide
+S004 ile reddedilir; önce derleyiciyi yükseltin. Yeni kalıp kelimesi:
+`onaltılık`.
+
+## 28 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **Web oturumu ömrü proje başına seçilebilir, isteğe bağlı kayar (K-330,
+  ADR-158):** Giriş yapan kullanıcının oturumu bugüne kadar oluşturma anından
+  itibaren kesin 30 dakikada bitiyordu; gün boyu açık kalan formlarda
+  kullanıcı iş ortasında girişe düşüyordu. Ana `proje.dil` artık şunları
+  kabul eder:
+
+  ```text
+  oturum_ömrü_saniye 28800 olsun
+  oturum_kayar doğru olsun
+  ```
+
+  `oturum_ömrü_saniye` 300 ile 2592000 saniye (5 dakika – 30 gün) arasında
+  olmalıdır. `oturum_kayar doğru` iken her kimlikli istek oturumu ve çerezini
+  ömür kadar ileri taşır; böylece ömür bir boşta kalma süresine dönüşür.
+  Güvenlik için oturum, oluşturulduğu andan sayılan 30 günü hiçbir kullanımla
+  aşamaz; giriş öncesi form oturumu 10 dakika kalır; `oturumu kapat` oturumu
+  sunucuda hemen bitirir. Oturumlar proje kökündeki `.zee/web-durumu-v1.json`
+  dosyasında bütün worker'larca paylaşılır; worker yeniden başlatma ve dağıtım
+  kullanıcıyı çıkışa düşürmez.
+
+### Düzeltilenler
+
+- **Sabit zamanlı karşılaştırma bağımlılığı güncellendi (K-331):**
+  RustCrypto `digest` zincirinin kullandığı `ctutils` 0.4.6'ya yükseltildi
+  (RUSTSEC-2026-0385: maske üretimi ve `u128` karşılaştırmaları sabit zamanlı
+  değildi). Parola özeti (argon2), imza (ed25519), PostgreSQL SCRAM (hmac) ve
+  özet işlevleri bu zinciri kullanır. Dil davranışı ve çıktılar değişmez.
+
+### Uyumluluk ve göç
+
+Alanlar isteğe bağlıdır; eklemeyen projeler aynı kalır (30 dakika, mutlak).
+İki alan da `web-oturumu` yetkinliği ister; sınır dışı ömür ve yetkinliksiz
+kullanım P015, yanlış tür P001 verir. Bu alanları kullanan proje eski
+derleyicide P001 ("proje bildirimi alanı değil") ile reddedilir; önce
+derleyiciyi yükseltin. Dağıtımda `.zee/web-durumu-v1.json` dosyasını silmeyin.
+
+## 21 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Ayrı bağlama noktaları arasında dosya taşıma artık çalışır (K-329,
+  ADR-061 eki):** `kaynak dosyasını hedef yoluna atomik taşımayı dene`
+  yalnız `rename` kullandığı için yükleme dizini (`.zee/yuklemeler`) ile hedef
+  (`medya`, `dosya`) ayrı bağlıyken — örneğin systemd `ProtectSystem=strict`
+  ve her yolu ayrı listeleyen `ReadWritePaths=` ile, aynı disk üzerinde bile —
+  `dosya atomik taşınamadı: Invalid cross-device link (os error 18)` ile
+  başarısız oluyordu. Artık runtime hedef klasöründe geçici kopya, fsync ve
+  atomik adlandırma ile taşır, kaynağı en son siler; dosya izinleri korunur,
+  yarım dosya kalmaz. Diğer taşıma hataları ve var olan hedefin reddi aynıdır.
+
+### Uyumluluk ve göç
+
+Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. Ayrı bağlı yollar
+arasında taşıma artık kopya maliyetini taşır (yükleme başına en çok 16 MiB);
+`ReadWritePaths=…/kaynak` gibi tek bağlama ile hızlı rename yolu korunur.
+Unit'i bu hata yüzünden değiştirmiş dağıtımların geri dönmesi gerekmez.
+
+## 20 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Yanıt yazılırken kopan istemci artık sunucuyu düşürmez (K-327, ADR-157
+  eki):** İstemci ya da önündeki proxy büyük bir yanıtın (ör. birkaç MB'lık
+  site haritası) yazımı sırasında bağlantıyı keserse worker önceden
+  `C022 … HTTP yanıtı yazılamadı: Broken pipe` ile çıkıyordu. Artık yalnız o
+  istek etkilenir: çerez/oturum değişikliği geri alınır, stderr'e
+  `zee-web istemci yanıt sırasında koptu: durum=200 yöntem=GET yol="/…"
+  hata="…"` satırı yazılır, native metrikte `final_write_errors` artar ve
+  worker sonraki isteği kabul eder.
+- **Tek ağır istek artık sunucuyu düşürmez (K-323):** Web rotasında adım/çıktı
+  (C023) veya heap (C024) bütçesi aşılırsa yalnız o istek “istek güvenli
+  kaynak bütçesini aştı; otomatik tekrar yok” gövdeli 503 alır. Worker süreci
+  çıkmaz; sonraki istek taze bütçeyle çalışır (`--deneysel-web` ve
+  `--web-proxy`). Önceden aşım bütün worker'ı sonlandırıyor, ardından gelen
+  herkes 503 alıyordu.
+- **Döngüde metin biriktirmek bütçeyi karesel tüketmez (K-323):**
+  `x x ile y olsun` hedef metinse yerinde büyür; 64 MiB zarfından yalnız
+  kapasite artışı düşülür. Döngüde HTML kuran birkaç bin satırlık sayfa artık
+  C024 vermez. C024 önerisi liste + `birleşmişi` kalıbını da gösterir.
+- **Rota hatası artık sunucuyu kapatmaz (K-324, RFC-0035/ADR-157):** Web
+  rotasında C000 dışındaki her çalışma tanısı (ör. `?n=abc` ile C004, sıfıra
+  bölme C003, derinlik C019, `olmalı` D001, güvensiz yönlendirme hedefinde
+  C022) yalnız o isteği taslağı geri alınmış “istek işlenemedi; sunucu hatası”
+  gövdeli 500 ile bitirir; worker sonraki isteği kabul eder. Mevcut 503/504
+  yanıtları aynıdır. İstek düzeyine çevrilen her tanı stderr'e tek satır
+  yazılır: `zee-web istek-hatası durum=500 kod=C004 satır=5 yöntem=GET
+  yol="/sayi" mesaj="…"` (sorgu yazılmaz, denetim karakterleri kaçışlanır).
+
+- **HTTPS sertifika doğrulama bağımlılıkları güncellendi (K-328):**
+  Native çıkış HTTPS istemcisinin zincir doğrulamasında kullanılan
+  `rustls-webpki` 0.103.16'ya (RUSTSEC-2026-0382: güvenilmezleştirilmiş ara
+  sertifikalar) ve kök sertifika kümesi `webpki-roots` 1.0.10'a
+  (RUSTSEC-2026-0381: güvenilmeyen emSign ara sertifikaları) yükseltildi.
+  Dil davranışı değişmez; artık güvenilmeyen bu ara sertifikalarla kurulan
+  bağlantılar reddedilir.
+
+### Uyumluluk ve göç
+
+Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. Web rotasındaki çalışma
+hataları artık süreci bitirmez: süreç çıkışını hata sinyali sayan dağıtımlar
+stderr'deki `zee-web istek-hatası` satırlarını izlemelidir. Yanıt yazımında
+kopan istemci de süreci bitirmez; bunun izi `zee-web istemci yanıt sırasında
+koptu` satırı ve `final_write_errors` sayacıdır. CLI ve `dil dene`
+davranışı değişmedi.
+
+Depo geçmişi (K-326): 14–17 Ekim belge sürümlerindeki altyapı izleri
+temizlendi ve ana dal geçmişi yeniden yazıldı; dosyaların son hâli aynıdır.
+Eski bir klonu güncellemek için `git fetch origin` ve ardından
+`git reset --hard origin/master` (yerel değişiklik varsa önce ayrı dala
+alın) ya da yeniden klonlayın. `v1.0.0-rc.1` paketleri ve imzaları değişmedi.
+
 ## v1.0.0-rc.1 — 19 Ekim 2026 (sürüm adayı)
 
 **Durum:** V1'in ilk sürüm adayı; GitHub'da ön-sürüm olarak yayımlanır. Bu
