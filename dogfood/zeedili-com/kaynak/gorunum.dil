@@ -46,7 +46,7 @@ işlem altBolumuHazirla
 işlem yazilimSemasiniHazirla
     Metin döndürür
 
-    "<script type='application/ld+json'>{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"Zee\",\"alternateName\":\"Zee Türkçe Programlama Dili\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Linux, macOS, Windows\",\"url\":\"https://zeedili.com/\",\"downloadUrl\":\"https://github.com/merbay-erp/zee\",\"softwareVersion\":\"0.8.0-dev\",\"inLanguage\":\"tr\",\"description\":\"Çocuğun başlayabildiği, profesyonelin bırakmak zorunda kalmadığı Türkçe programlama dili.\",\"isAccessibleForFree\":true}</script>" döndür
+    "<script type='application/ld+json'>{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"Zee\",\"alternateName\":\"Zee Türkçe Programlama Dili\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Linux, macOS, Windows\",\"url\":\"https://zeedili.com/\",\"downloadUrl\":\"https://github.com/merbay-erp/zee\",\"softwareVersion\":\"1.0.0-rc.1\",\"inLanguage\":\"tr\",\"description\":\"Çocuğun başlayabildiği, profesyonelin bırakmak zorunda kalmadığı Türkçe programlama dili.\",\"isAccessibleForFree\":true}</script>" döndür
 
 işlem sayfaAciklamasiniHazirla
     yolu Metin olarak al

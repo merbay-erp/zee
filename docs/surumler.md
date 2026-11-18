@@ -74,6 +74,11 @@ Bu kayıt yeni sürüm etiketi değildir.
   `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
   rakam ve tire taşıdığı için nokta artık tireye çevrilir
   (`/belge/surum-v1-0-0-rc-1-kaniti/`). Dil ve derleyici davranışı değişmedi.
+- **zeedili.com güncel sürümü gösterir:** Ana sayfa rozeti, yol haritası,
+  kurulum örneği ve yapılandırılmış veri hâlâ eski `0.8.0-dev`/`0.7.0`
+  etiketlerini gösteriyordu; artık son etiket v1.0.0-rc.1 ve geliştirme
+  sürümü 1.0.0-dev yazılır. Gelişmeler bölümüne çok işçi profili, önbellek
+  izni ve dosya imzası eklendi; site worker'ı güncel derleyiciyle koşar.
 
 ## 17 Kasım 2026 — Geliştirme güncellemeleri
 
