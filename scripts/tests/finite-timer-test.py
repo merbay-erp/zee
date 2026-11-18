@@ -198,11 +198,44 @@ runpy.run_path(sys.argv[0],run_name='__main__')
   copy=self.root/'bad-helper';copy.mkdir(mode=0o700);(copy/'finite_timer.py').write_bytes((HERE/'finite_timer.py').read_bytes());(copy/'lifecycle_core.py').write_bytes(b'raise RuntimeError("must never execute")')
   result=subprocess.run([sys.executable,'-I','-B',str(copy/'finite_timer.py'),'--config','/unread','--state','/unread-state'],capture_output=True,timeout=3);self.assertEqual(result.returncode,2);self.assertEqual(result.stdout+result.stderr,b'')
  def test_narrow_core_exact_lineage_without_artifact_entrypoints(self):
-  lineage=json.loads((HERE.parent/'compiler/tests/fixtures/sonlu-dispatcher-lineage-v1.json').read_text());core=(HERE/'lifecycle_core.py').read_text();self.assertEqual(hashlib.sha256(core.encode()).hexdigest(),lineage['core_sha256']);self.assertEqual(lineage['source_sha256'],'509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8')
+  fixtures=HERE.parent/'compiler/tests/fixtures';v1raw=(fixtures/'sonlu-dispatcher-lineage-v1.json').read_bytes();v1=json.loads(v1raw);lineage=json.loads((fixtures/'sonlu-dispatcher-lineage-v2.json').read_text());core=(HERE/'lifecycle_core.py').read_text()
+  # K-319: v1 stays byte-identical; v2 chains to it and owns the current core.
+  self.assertEqual(hashlib.sha256(v1raw).hexdigest(),'0bf093964398a75635935ee7dba5668aa7eeb874af062c8447e3a8a0161c692f');self.assertEqual(v1['source_sha256'],'509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8')
+  self.assertEqual(lineage['previous'],{'path':'compiler/tests/fixtures/sonlu-dispatcher-lineage-v1.json','sha256':hashlib.sha256(v1raw).hexdigest(),'core_sha256':v1['core_sha256']})
+  self.assertEqual(hashlib.sha256(core.encode()).hexdigest(),lineage['core_sha256']);self.assertEqual(lineage['globals_unchanged'],v1['globals_unchanged'])
   after={n.name:ast.get_source_segment(core,n) for n in ast.parse(core).body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
   self.assertEqual(set(after),set(lineage['functions_exact_source_sha256']))
   for name in after:self.assertEqual(hashlib.sha256(after[name].encode()).hexdigest(),lineage['functions_exact_source_sha256'][name])
+  delta=lineage['delta']['K-319'];self.assertEqual(delta['changed'],['stop_owned']);self.assertEqual(delta['added'],['linux_group_live'])
+  self.assertEqual(sorted(lineage['unchanged_from_previous']+delta['changed']),sorted(v1['functions_exact_source_sha256']))
+  for name in lineage['unchanged_from_previous']:self.assertEqual(lineage['functions_exact_source_sha256'][name],v1['functions_exact_source_sha256'][name])
+  self.assertEqual(set(after),set(v1['functions_exact_source_sha256'])|set(delta['added']))
   self.assertEqual(M.D.MAX_CAPTURE,8*1024*1024);self.assertFalse(M.D.CANCELLED);self.assertNotIn('tomllib',core);self.assertNotIn('def deliver(',core);self.assertNotIn('source_zip',core)
+ def test_owned_stop_returns_when_leader_exits_without_waiting_full_grace(self):
+  # K-319: Linux held zombie leader used to keep killpg(pgid,0) alive for the whole grace.
+  child=subprocess.Popen([sys.executable,'-I','-B','-c','import sys,time\nsys.stdout.write("r");sys.stdout.flush();time.sleep(60)'],stdout=subprocess.PIPE,start_new_session=True)
+  try:
+   self.assertEqual(child.stdout.read(1),b'r');start=time.monotonic();self.assertEqual(M.D.stop_owned(child,grace=3),-signal.SIGTERM)
+   self.assertLess(time.monotonic()-start,1.5)
+  finally:
+   child.stdout.close()
+   if child.returncode is None:child.kill();child.wait()
+ def test_owned_stop_still_kills_term_ignoring_group_member(self):
+  code='import os,signal,sys,time\nif os.fork()==0:\n signal.signal(signal.SIGTERM,signal.SIG_IGN);sys.stdout.write(str(os.getpid())+"\\n");sys.stdout.flush();time.sleep(60)\nelse:\n time.sleep(60)'
+  child=subprocess.Popen([sys.executable,'-I','-B','-c',code],stdout=subprocess.PIPE,start_new_session=True)
+  try:
+   member=int(child.stdout.readline() or b'0');self.assertGreater(member,0);start=time.monotonic();M.D.stop_owned(child,grace=.5)
+   self.assertGreaterEqual(time.monotonic()-start,.4)
+   for _ in range(200):
+    try:os.kill(member,0)
+    except ProcessLookupError:break
+    time.sleep(.01)
+   else:self.fail('term-ignoring group member survived owned stop')
+  finally:
+   child.stdout.close()
+   if child.returncode is None:
+    with contextlib.suppress(ProcessLookupError):os.killpg(child.pid,signal.SIGKILL)
+    child.wait()
  def test_reconcile_latch_changed_during_receipt_write_is_not_removed(self):
   with self.pinned(),mock.patch.object(M.D,'run',side_effect=OSError()),self.assertRaises(M.Paused):M.execute(self.c,self.state)
   p,pin=self.receipt(self.review());store=M.store

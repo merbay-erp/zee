@@ -89,7 +89,7 @@ class Contracts(unittest.TestCase):
             self.assertEqual((root/'sql-state.json').read_bytes(),M.encode(old));self.assertTrue((root/'sql-pending.json').exists())
     def test_old_module_helper_bytes_unchanged_and_new_loader_verified(self):
         self.assertIsNotNone(M.BASE)
-        self.assertEqual(M.digest((ROOT/'scripts/modul-yoneticisi.py').read_bytes()),'84752ef56d5c1d347f2e211ebe721def648aa5e496df1bd8bfec2375933237b6')
+        self.assertEqual(M.digest((ROOT/'scripts/modul-yoneticisi.py').read_bytes()),'385e5916af27a80038c798c2d400d5ecc9d9be11f1c1f1dea172e75d0914b6ce')
 TARGET=ROOT/'scripts/tests/modul-sql-native.py'
 
 class NativeCleanupContracts(unittest.TestCase):

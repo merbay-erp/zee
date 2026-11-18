@@ -5110,3 +5110,24 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   aynı committe güncellendi. Python sürümü 3.13.3 ve `ubuntu-24.04` Linux
   matrisi değişmez; derleyici, dil yüzeyi ve kullanıcıya görünen davranış
   değişmedi (`docs/surumler.md` etkilenmez).
+
+## K-319 eki — `lifecycle_core.py` Linux zombi lider (18 Kasım 2026)
+
+- `worker-supervisor.py` için düzeltilen kalıp ortak `lifecycle_core.py`
+  `stop_owned` içinde de vardı: Linux'ta WNOWAIT ile tutulan çıkmış lider
+  `killpg(pgid, 0)` için grubu canlı gösterir; her durdurma tam bütçeyi bekleyip
+  SIGKILL gönderiyordu. Tutulan lider çıkmışsa `/proc` üzerinde zombi olmayan
+  grup üyesi aranır (`/proc` okunamazsa eski muhafazakâr davranış). Lider reap
+  edilene kadar PGID ayrılmış olduğundan Linux'ta reap öncesi grup yine SIGKILL
+  ile süpürülür; tarama yarışında kaçan üye kalamaz. Darwin yolu değişmedi.
+- Pinli kanıt zinciri: `sonlu-dispatcher-lineage-v1.json` bayt bayt korunur;
+  ayrı `-v2.json` kaydı v1'in SHA-256'sına zincirlenir, değişmeyen sekiz tanımı
+  v1 hash'leriyle, tek değişen (`stop_owned`) ve tek eklenen
+  (`linux_group_live`) tanımı açıkça kaydeder. Canlı sabitler (7 betik/test +
+  `modul-yoneticisi.py` hash'ine bağlı 2 dosya) yeni çekirdek SHA'sına taşındı;
+  eski SHA'yı taşıyan tarihsel kanıt/kabul belgeleri exact commit'lerine bağlı
+  kaldığından değiştirilmedi.
+- Kanıt: `finite-timer-test.py` 37 → 39 test. Lider SIGTERM'de çıkınca
+  durdurma 1,5 sn'den kısa sürmeli; SIGTERM'i yok sayan grup üyesi yine
+  öldürülmeli. Linux konteynerinde eski çekirdek ilk testte 3,00 sn ile düştü,
+  yeni çekirdek iki testi de geçti; macOS'ta 39/39.

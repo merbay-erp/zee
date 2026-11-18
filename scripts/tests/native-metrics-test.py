@@ -479,7 +479,7 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--dil',type=Path,required=True);p.add_argument('--framework-root',type=Path,required=True);p.add_argument('--postgres-bin-dir',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     root=a.framework_root.resolve(strict=True);binary=a.dil.resolve(strict=True)
     need(binary.parent.name in ('release','debug') and binary==root/'compiler/target'/binary.parent.name/'dil','canonical native Cargo binary/profile')
-    need(sha(root/'scripts/lifecycle_core.py')=='e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9' and sha(root/'scripts/tests/native-pg-owner.py')=='6e5f004a99af5685bcd9625b73df2ae574f21854f0b0bff06dc8013c18b4d9c2','unchanged shared lifecycle and foreground PG helpers')
+    need(sha(root/'scripts/lifecycle_core.py')=='ae1c19b615f4d52f5eb9100fd30cc6d61f881b76a58f39dac43a858d7b03f4bb' and sha(root/'scripts/tests/native-pg-owner.py')=='6e5f004a99af5685bcd9625b73df2ae574f21854f0b0bff06dc8013c18b4d9c2','unchanged shared lifecycle and foreground PG helpers')
     H=runpy.run_path(str(root/'scripts/lifecycle_core.py'));H=H['run'].__globals__
     PG=runpy.run_path(str(root/'scripts/tests/native-pg-owner.py'))
     need(all(H[name].__globals__ is H for name in ('run','held_status','stop_owned')),'actual lifecycle owner globals')

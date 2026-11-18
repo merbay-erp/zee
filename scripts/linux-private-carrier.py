@@ -7,7 +7,7 @@ def need(ok):
  if not ok:raise Reject('private-carrier-rejected')
 HERE=Path(__file__).resolve().parent
 P_SHA='3b1e487235987b53a8ef63811b72a98878816295be1d7cfb0d972794cd671b4d'
-H_SHA='e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9'
+H_SHA='ae1c19b615f4d52f5eb9100fd30cc6d61f881b76a58f39dac43a858d7b03f4bb'
 def helper(name,pin):
  path=HERE/name;fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
  try:

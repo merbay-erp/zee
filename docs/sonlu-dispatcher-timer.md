@@ -5,7 +5,7 @@ This is an external preparation package against the existing CLI at source
 changes no compiler, grammar, source tree or supported API. No service was
 installed, linked, started or enabled. No actual native dispatcher/PG job was
 run by this package. The development machine is macOS; Linux user-systemd
-acceptance remains open. The 37 tests are wrapper/model/short owned Python
+acceptance remains open. The 39 tests are wrapper/model/short owned Python
 fixtures, not native jobs, not systemd tests and not provider acceptance.
 
 The existing CLI accepts only the fixed SQL-intent pilot: reap/claim/begin/
@@ -19,7 +19,7 @@ attempt behavior, and passes no optional arbitrary command or descriptor list.
 
 finite_timer.py uses lifecycle_core.py, a narrow extraction of nine exact
 reviewed509106d7 function/class definitions. [portable lineage fixture](../compiler/tests/fixtures/sonlu-dispatcher-lineage-v1.json) binds original and
-extracted bytes plus each definition; no artifact, ZIP, bundle, release CLI or
+extracted bytes plus each definition. The [K-319 lineage v2 record](../compiler/tests/fixtures/sonlu-dispatcher-lineage-v2.json) keeps v1 byte-identical, chains to it by SHA-256 and records the only delta: on Linux a held (unreaped) zombie leader keeps `killpg(pgid,0)` succeeding, so `stop_owned` now ends the wait when the held leader has exited and `/proc` shows no non-zombie group member, then still sweeps the held PGID with SIGKILL before reaping; no artifact, ZIP, bundle, release CLI or
 tomllib code is shipped. This extraction receives its own independent review. Python >=3.11 and Unix WNOWAIT are prerequisites. Config is
 owner-only0600, single-link, canonical, <=16KiB and exact-key JSON. It contains
 paths and pins, never URL/password/key/SQL/body values. Required fields:
