@@ -18,6 +18,8 @@ işlem belgeAdi
     değilse yol "editors/" ile başlıyorsa
         ad yolun "editors/" yerine "editor-" değişmişi olsun
     ad adın ".md" yerine "" değişmişi olsun
+    # Site yolu yalnız a-z, 0-9 ve tire taşır; sürüm numaralı adlardaki nokta tire olur.
+    ad adın "." yerine "-" değişmişi olsun
     ad adın küçük harflisi olsun
     ad adın "-readme" yerine "" değişmişi olsun
     ad döndür
@@ -513,6 +515,8 @@ test "belge adı depo yolundan türetilir"
     b "spec" e eşit olmalı
     c "adr/081-resmi-site-ve-uretim-siniri.md" için belgeAdi olsun
     c "adr-081-resmi-site-ve-uretim-siniri" ye eşit olmalı
+    d "docs/surum-v1.0.0-rc.1-kaniti.md" için belgeAdi olsun
+    d "surum-v1-0-0-rc-1-kaniti" ye eşit olmalı
 
 test "başlık kimliği GitHub çapalarıyla uyumludur"
     k "Kullanıcı kurulumu" için basliktanKimlik olsun

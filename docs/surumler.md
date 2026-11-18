@@ -5,6 +5,18 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 18 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **zeedili.com belge adları:** Adında nokta bulunan belge (ör.
+  `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
+  rakam ve tire taşıdığı için nokta artık tireye çevrilir
+  (`/belge/surum-v1-0-0-rc-1-kaniti/`). Dil ve derleyici davranışı değişmedi.
+
 ## 17 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
@@ -12,10 +24,10 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
-- **Açık depo kapısı anahtarlı (K-334, ADR-087, GB-131):** Müşteri/altyapı
-  adlarını yakalayan kapının politikası artık gizli anahtarlı HMAC-SHA256
-  taşır; önceki tuzsuz listenin sözlükle çözülebildiği bir dış taramada
-  görüldü. Dil, derleyici, CLI ve API davranışı değişmedi.
+- **Açık depo kapısı anahtarlı (K-334, ADR-087):** Depoya özel bilgi
+  girmesini engelleyen gizlilik kapısının politikası artık yalnız gizli
+  anahtarlı HMAC-SHA256 değerleri taşır. Dil, derleyici, CLI ve API
+  davranışı değişmedi.
 
 ### Uyumluluk ve göç
 
