@@ -4,7 +4,7 @@
 - **Tarih:** 18 Kasım 2026
 - **İlgili kayıt:** K-335, RFC-0037, ADR-059 (core freeze), ADR-064 (dil
   yüzeyi), ADR-067 (dogfood korpusu), ADR-034 (web güvenlik profili),
-  ADR-158 (kayar oturum), spec/12 §1 ve §K-335, GB-132
+  ADR-158 (kayar oturum), spec/12 §1 ve §K-335, GB-134
 
 ## Bağlam
 

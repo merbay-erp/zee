@@ -161,7 +161,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_gerektir()?;
         self.ic.yonlendir_gonder(adres)
     }
-
     fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
         self.web_oturumu_gerektir()?;
         self.ic.cerez_yaz(ad, deger)
@@ -185,6 +184,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn istemci_adresi(&mut self) -> String {
         web::istemci_adresi(self)
     }
+    fn birincil_surec(&mut self) -> bool {
+        web::birincil_surec(self)
+    }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.web_oturumu_gerektir()?;
         self.ic.csrf_belirteci()
@@ -203,11 +205,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     ) -> Result<Vec<Vec<(String, String)>>, String> {
         web::oturumlari_listele(self, kullanici)
     }
-
     fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
         web::oturumu_iptal_et(self, kimlik)
     }
-
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         self.politika.izin_verir(Yetkinlik::Kriptografi) && self.ic.parola_dogrula(parola, ozet)
     }

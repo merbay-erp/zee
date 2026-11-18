@@ -12,28 +12,81 @@ use std::time::{Duration, Instant};
 
 pub const PROXY: &str = "https://panel.example";
 
+/// Süreç içinde benzersiz boş kapı. Seçilen kapı bırakılıp worker sonra
+/// bağladığından, aynı test ikilisinde paralel koşan iki test aynı kapıyı
+/// alamamalıdır; aksi hâlde biri bağlayamaz ve istekleri ötekinin worker'ına
+/// gider (Windows CI'da 401/"dinlemeye geçmedi").
 pub fn bos_kapi() -> u16 {
-    TcpListener::bind(("127.0.0.1", 0))
-        .expect("boş kapı")
-        .local_addr()
-        .expect("yerel adres")
-        .port()
+    static VERILEN: std::sync::Mutex<Vec<u16>> = std::sync::Mutex::new(Vec::new());
+    let mut verilen = VERILEN.lock().unwrap_or_else(|e| e.into_inner());
+    loop {
+        let kapi = TcpListener::bind(("127.0.0.1", 0))
+            .expect("boş kapı")
+            .local_addr()
+            .expect("yerel adres")
+            .port();
+        if !verilen.contains(&kapi) {
+            verilen.push(kapi);
+            return kapi;
+        }
+    }
 }
 
-pub fn worker_baslat(kaynak: &Path, kapi: u16, stderr: Stdio) -> Child {
-    Command::new(env!("CARGO_BIN_EXE_dil"))
-        .args([
-            "çalıştır",
-            "--web-proxy",
-            PROXY,
-            "--web-worker-port",
-            &kapi.to_string(),
-            kaynak.to_str().expect("UTF-8 kaynak yolu"),
-        ])
-        .stdout(Stdio::null())
-        .stderr(stderr)
-        .spawn()
-        .expect("web worker süreci")
+/// `komut`u stdout borusuyla başlatır ve sürecin kendi "Sunucu dinliyor"
+/// satırını bekler: kapıyı gerçekten bu süreç bağlamıştır. Süreç satırdan
+/// önce çıkarsa (kapı geçici olarak meşgul: TIME_WAIT, istemci geçici kapısı
+/// ya da yeniden başlatılan worker) aynı komut sınırlı kez yeniden denenir.
+pub fn dinleyene_dek_baslat(mut komut: impl FnMut() -> Command) -> Child {
+    let son = Instant::now() + Duration::from_secs(30);
+    let mut son_durum = String::new();
+    while Instant::now() < son {
+        let mut cocuk = komut()
+            .stdout(Stdio::piped())
+            .spawn()
+            .expect("web worker süreci");
+        let cikti = cocuk.stdout.take().expect("worker stdout borusu");
+        let (gonder, al) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            use std::io::BufRead;
+            let mut satirlar = std::io::BufReader::new(cikti).lines();
+            let mut bildirildi = false;
+            for satir in satirlar.by_ref().map_while(Result::ok) {
+                if !bildirildi && satir.starts_with("Sunucu dinliyor") {
+                    bildirildi = true;
+                    let _ = gonder.send(());
+                }
+            }
+        });
+        match al.recv_timeout(son.saturating_duration_since(Instant::now())) {
+            Ok(()) => return cocuk,
+            Err(_) => {
+                let _ = cocuk.kill();
+                son_durum = cocuk
+                    .wait()
+                    .map(|d| d.to_string())
+                    .unwrap_or_else(|e| e.to_string());
+                std::thread::sleep(Duration::from_millis(200));
+            }
+        }
+    }
+    panic!("web worker 30 sn içinde dinlemeye geçmedi; son durum: {son_durum}");
+}
+
+pub fn worker_baslat(kaynak: &Path, kapi: u16, stderr: impl Fn() -> Stdio) -> Child {
+    dinleyene_dek_baslat(|| {
+        let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+        komut
+            .args([
+                "çalıştır",
+                "--web-proxy",
+                PROXY,
+                "--web-worker-port",
+                &kapi.to_string(),
+                kaynak.to_str().expect("UTF-8 kaynak yolu"),
+            ])
+            .stderr(stderr());
+        komut
+    })
 }
 
 fn ham_istek(yontem_hedef: &str, kimlik: &str) -> String {
@@ -46,7 +99,10 @@ fn ham_istek(yontem_hedef: &str, kimlik: &str) -> String {
 pub fn tam_istek(kapi: u16, yontem_hedef: &str, kimlik: &str) -> Option<String> {
     let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
     let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(2)).ok()?;
-    akis.set_read_timeout(Some(Duration::from_secs(10))).ok()?;
+    // Runtime yanıt yazımına 10 sn socket zaman aşımı tanır (spec/12 §5);
+    // kopan bir önceki yanıt en kötü bu süre kadar sürebilir. İstemci bütçesi
+    // bu sözleşmeye eşit olursa yarış olur; açıkça üstünde tutulur.
+    akis.set_read_timeout(Some(Duration::from_secs(25))).ok()?;
     akis.write_all(ham_istek(yontem_hedef, kimlik).as_bytes())
         .ok()?;
     let mut yanit = Vec::new();
@@ -154,7 +210,7 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         let kopan = baslik_degeri(&kaynak, "# web-istegi: ");
         let sonraki = baslik_degeri(&kaynak, "# web-sonraki: ");
         let kapi = bos_kapi();
-        let mut worker = worker_baslat(kaynak_yolu, kapi, Stdio::null());
+        let mut worker = worker_baslat(kaynak_yolu, kapi, Stdio::piped);
         dinlemeyi_bekle(kapi);
         let ilk = yazim_ortasinda_kopar(kapi, kopan, "198.51.100.1");
         assert!(
@@ -162,7 +218,9 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
             "kopan istek yazıma başlamış olmalı: {}",
             String::from_utf8_lossy(&ilk)
         );
+        let baslangic = Instant::now();
         let yanit = tam_istek(kapi, sonraki, "198.51.100.2");
+        let sure = baslangic.elapsed();
         // Yanıt alınamadıysa worker çıkıyor olabilir; çıkış kodunu sınırlı bekle.
         let son = Instant::now() + Duration::from_secs(if yanit.is_some() { 0 } else { 5 });
         let cikis = loop {
@@ -174,6 +232,16 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         };
         let _ = worker.kill();
         let _ = worker.wait();
+        if yanit.is_none() {
+            // Tanı: CI'da gözlenen yanıtsızlığın nedeni stderr ve süreyle görünür.
+            let mut hata = String::new();
+            if let Some(mut boru) = worker.stderr.take() {
+                let _ = boru.read_to_string(&mut hata);
+            }
+            eprintln!(
+                "native-web-kopma: sonraki istek {sure:?} sonra yanıtsız; worker stderr:\n{hata}"
+            );
+        }
         let cikti = yanit
             .map(|yanit| {
                 let durum = yanit.split_whitespace().nth(1).unwrap_or("").to_string();

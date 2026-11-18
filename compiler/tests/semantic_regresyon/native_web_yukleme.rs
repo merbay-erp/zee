@@ -75,6 +75,52 @@ fn parca_sayisi(proje: &Path) -> usize {
         .unwrap_or(0)
 }
 
+/// K-332 eki fixture işareti: worker açılmadan önce yetim/canlı/yabancı
+/// dosyalar dikilir, açılış süpürmesinden sonra kalanlar sayılır.
+const YETIM_ISARETI: &str = "# yetim-parca-supurmesi";
+
+/// Süreç ölümü taklidi: worker'dan önce `.zee/yuklemeler` altına 16 dakikalık
+/// runtime adlı yetim, 1 dakikalık canlı (başka worker'ın akışı) ve 16
+/// dakikalık ürün adlı dosya bırakılır. Çıktı her dosyanın kalıp kalmadığıdır.
+fn yetim_calistir(proje: &Path, ana: &Path) -> (i64, Vec<String>) {
+    let dizin = proje.join(".zee/yuklemeler");
+    std::fs::create_dir_all(&dizin).expect("yükleme dizini");
+    let simdi = std::time::SystemTime::now();
+    let dosyalar = [
+        ("yetim", format!("{}.parca", "a".repeat(64)), 16 * 60),
+        ("canli", format!("{}.parca", "b".repeat(64)), 60),
+        ("urun", "eski-medya.parca".to_string(), 16 * 60),
+    ];
+    for (_, ad, yas) in &dosyalar {
+        let dosya = std::fs::File::create(dizin.join(ad)).expect("dikilen dosya");
+        dosya
+            .set_modified(simdi - Duration::from_secs(*yas))
+            .expect("mtime");
+    }
+    let kapi = bos_kapi();
+    let mut worker = worker_baslat(ana, kapi, Stdio::null);
+    dinlemeyi_bekle(kapi);
+    // Açılış süpürmesi `sunucu kur` içinde bind'dan sonra koşar; ilk yanıt onu izler.
+    let hazir = istek(
+        kapi,
+        &format!("GET /form HTTP/1.1\r\n{}\r\n", ortak_basliklar()),
+        b"",
+        false,
+    );
+    let calisiyor = worker.try_wait().expect("worker durumu").is_none();
+    let _ = worker.kill();
+    let _ = worker.wait();
+    let mut cikti = vec![format!("{} hazır", durum(&hazir))];
+    for (etiket, ad, _) in &dosyalar {
+        let kaldi = dizin.join(ad).exists();
+        cikti.push(format!(
+            "{etiket} {}",
+            if kaldi { "kaldı" } else { "silindi" }
+        ));
+    }
+    (if calisiyor { 0 } else { 1 }, cikti)
+}
+
 /// Çıktı: her senaryonun `durum senaryo` satırı, ardından kalan `.parca`
 /// sayısı ve taşınan dosyanın bayt sayısı. Exit, worker hâlâ çalışıyorsa 0.
 pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
@@ -91,8 +137,15 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
     std::fs::create_dir_all(proje.join("kalici")).expect("proje klasörü");
     let ana = proje.join("ana.dil");
     std::fs::copy(kaynak, &ana).expect("kaynak kopyası");
+    let yetim_vakasi = std::fs::read_to_string(kaynak)
+        .expect("kaynak okunmalı")
+        .lines()
+        .any(|satir| satir == YETIM_ISARETI);
+    if yetim_vakasi {
+        return yetim_calistir(&proje, &ana);
+    }
     let kapi = bos_kapi();
-    let mut worker = worker_baslat(&ana, kapi, Stdio::null());
+    let mut worker = worker_baslat(&ana, kapi, Stdio::null);
     dinlemeyi_bekle(kapi);
 
     let form = istek(

@@ -12,6 +12,7 @@ api	guvenlik.totp_dogrula	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const TO
 api	iletisim.eposta_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 api	iletisim.eposta_gonder_baglantili	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
 api	iletisim.eposta_mime_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_MIME_GONDER: &str = "iletisim.eposta_mime_gonder";
+api	io-izi.birincil_surec	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"birincil_surec"
 api	io-izi.dosya_ilk_baytlari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_ilk_baytlari"
 api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
 api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
@@ -22,6 +23,7 @@ api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	
 api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
 api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
+api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
@@ -109,6 +111,7 @@ kalip	başarılıysa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	başarısızsa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	belirteci	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	birimini	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	birincil	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	birleşmişi	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	bitir	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	böl	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -175,6 +178,7 @@ kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sözlüğünü	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	sürece	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	süreç	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sıralanmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	tekrarla	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	test	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -251,6 +255,8 @@ profil	cli-test-output	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--test-
 profil	cli-test-postgres-bin	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--test-postgres-bin"
 profil	cli-test-python	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--test-python"
 profil	cli-web-fixtures	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--web-fixtures"
+profil	cli-web-isci-sayisi	aktif	1.0.0-dev	compiler/src/cli/web_isci_grubu.rs	pub(crate) const ISCI_BAYRAGI: &str = "--web-isci-sayisi";
+profil	cli-web-saglik-port	aktif	1.0.0-dev	compiler/src/cli/web_isci_grubu.rs	pub(crate) const SAGLIK_BAYRAGI: &str = "--web-saglik-port";
 profil	cli-web-suite	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--web-suite"
 profil	cli-web-suite-sha256	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--web-suite-sha256"
 profil	credential-native-listener-fd	aktif	0.8.0-dev	scripts/native-capabilities.py	--native-listener-fd

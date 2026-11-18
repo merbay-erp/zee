@@ -5,7 +5,7 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	e50457119150c294a78343b81352a939bbd21b2f9c26a62d4ebed88c0f138d1b
+dondurulmus_sha256	e8b45faed26c141a82e959eddc75022f020b243ea345eea1ef86c00fffe71def
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
@@ -16,5 +16,7 @@ dondurulmus_sha256	e50457119150c294a78343b81352a939bbd21b2f9c26a62d4ebed88c0f138
 # K-232/ADR-096/RFC-0034: exact cd5d12f gerçek katalog PDF/B2 ihtiyacına tek contextual ekli kalıp eklendi. 14 Ekim–11 Kasım syntax gözlem penceresi aynı gün yeniden başlar; insan/RC ve tam ürün kabulü açık kalır.
 
 # K-333/ADR-159/RFC-0036: 14 Ekim–11 Kasım penceresi sıfır syntax değişikliğiyle doldu. 12 Kasım zee-cekirdek e8beb39 başvuru formu talebiyle tek contextual kalıp kelimesi (`onaltılık`; `ilk N baytını onaltılık okumayı dene`) pencere SONRASI eklendi; pencere tarihleri tarihsel kayıt olarak korunur, yeni pencere açma kararı merkezdedir.
+
+# K-337/ADR-161/RFC-0038: zee-cekirdek W4 (çok süreçte açılışın tekliği) talebiyle tek contextual sıfır argümanlı kalıp (`birincil süreç` → Mantıksal; iki yeni kalıp kelimesi) pencere SONRASI eklendi. Koşul grameri, yeni AST/değer türü ve eski kalıp kaldırması yoktur; doğrudan koşul biçimi (`birincil süreç ise`) bilinçli olarak açılmadı.
 
 # K-335/ADR-160/RFC-0037: 18 Kasım zee-cekirdek abaca3a W3 talebiyle mevcut `herkese açık` politikasının tek contextual biçimi (`herkese açık önbelleklenebilir N saniye`; yeni kalıp kelimesi `önbelleklenebilir`) pencere SONRASI eklendi; pencere tarihleri tarihsel kayıt olarak korunur, yeni pencere açma kararı merkezdedir.

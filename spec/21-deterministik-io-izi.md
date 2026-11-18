@@ -63,3 +63,6 @@ işlemlerini de kapsar. Argümanlar exact göreli yollar (imza okumasında ayrı
 onluk bayt sayısı); sonuçlar başarı etiketiyle sayı/liste/özet/onaltılık imza
 veya hata mesajıdır. Replay hiçbir fiziksel taşıma, silme, listeleme, hashing
 ya da okuma yapmaz.
+
+K-337 `birincil_surec` olayı argümansızdır ve tek `0`/`1` sonucu taşır; replay
+yönetici ya da işçi grubu kurmaz, kayıtlı rolü döndürür.

@@ -17,7 +17,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
 | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 15 | 15 | 0 | 0 |
-| `spec/12-web-guvenlik-profili.md` | 25 | 24 | 0 | 1 |
+| `spec/12-web-guvenlik-profili.md` | 33 | 29 | 2 | 2 |
 | `spec/13-surumlu-morfoloji-profili.md` | 8 | 8 | 0 | 0 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
@@ -31,16 +31,18 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 26 | 26 | 0 | 0 |
 | `spec/24-kaynak-guvenlik-profili.md` | 9 | 9 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 9 | 7 | 1 | 1 |
-| `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 5 | 5 | 0 | 0 |
+| `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 6 | 6 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **248** | **239** | **5** | **4** |
+| **Toplam** | **257** | **245** | **7** | **5** |
 
 ## Kısmi kanıtlı maddeler
 
 - `spec/08-kalici-dosya.md#532a9e61aa1fe70f` — - Dayanıklılık/kilit primitive'leri bulunmayan platform işlemi reddetmek… — Primitive'siz platform reddi yalnız desteklenen üç platformda derlenen koda bağlı; böyle bir platform CI matrisinde yok.
+- `spec/12-web-guvenlik-profili.md#8c4653a789a1416e` — TANIMLI: Beklenmedik biçimde çıkan işçi aynı yuvada ikincil olarak 250 m… — Yeniden başlatma, SIGTERM boşaltma/başarılı çıkış ve yönetici SIGKILL sonrası işçi çıkışı kanıtlı; art arda 10 hızlı çıkış durdurması ve 40 sn zorla sonlandırma ayrı vaka ile sınanmadı.
+- `spec/12-web-guvenlik-profili.md#9b8585ed285b952c` — TANIMLI: `--web-saglik-port S` yalnız `127.0.0.1:S` üzerinde `GET /sagli… — 200/hazir, canli, yeniden_baslatma ve surecler alanları gerçek grupta kanıtlı; 503 ara durumları, HEAD ve 404 yolu ayrı vaka ile sınanmadı.
 - `spec/18-paket-yayini.md#2af407978947e1d4` — Üretici dört dosyayı yazmadan önce bütün kümeyi tüketici doğrulayıcıyla … — Yazmadan önce tam doğrulama ve yarım küme reddi kanıtlı; süreç çökmesi ortasında yarım küme senaryosu enjekte edilmiyor (söz de verilmiyor).
 - `spec/22-deterministik-io-profili.md#d68db0760744fd45` — Profilin bu gözlemlerinden birini kıran değişiklik yeni profil kimliği, … — Snapshot gözlem değişikliğini yakalar; yeni profil kimliği/RFC zorunluluğu süreç kuralıdır, makinece yalnız snapshot farkıyla görünür.
 - `spec/25-postgresql-veri-erisimi.md#61d77038cc9e2321` — `sslmode=require`, `<BAĞLANTI_DEĞİŞKENİ>_TLS_CA_PEM` ortam değişkeninde … — K-222 izole gerçek PostgreSQL kapısı CA/hostname reddi ve TLS 1.2 olumlusunu dört sıfır-atlamalı vakada zorlar; bağımsız TLS 1.1 sunucusu downgrade reddi henüz sınanmadığı için protokol tabanı maddesi kısmi kalır.
@@ -48,6 +50,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 ## Açık maddeler
 
+- `spec/12-web-guvenlik-profili.md#719ea76513c32dd4` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım ve elle kurulumda tek birincil açık; Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.
 - `spec/12-web-guvenlik-profili.md#d0c68c44c7c98c4b` — AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek t… — K-335 kapsamı dışı; Vary/ETag/purge ve sorgu anahtarı ön kapının sorumluluğundadır.
 - `spec/25-postgresql-veri-erisimi.md#f94f82cb0245cf0a` — Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe … — K-169/K-173 release tatbikatı ve çok-worker toplam bütçe provası bekliyor; async driver, PostgreSQL dışı DB ve ORM vaat edilmiyor.
 - `spec/27-uyumluluk-ve-surumleme.md#285d87941dc0c3ba` — 1.0 sonrasında dondurulmuş yüzeylerde kırıcı değişiklik yalnız yeni ana … — Edition alanının `proje.dil` sözdizimi ayrı RFC ister; 1.0 öncesi bağlayıcı yalnız RFC-0028 çerçevesidir.

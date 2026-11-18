@@ -73,6 +73,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "cerez_sil"
             | "rota_guvenligini_denetle"
             | "istemci_adresi"
+            | "birincil_surec"
             | "csrf_belirteci"
             | "oturum_ac"
             | "oturum_kapat"
@@ -180,6 +181,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
             }
         }
         "istemci_adresi" => istemci::semayi_denetle(olay),
+        "birincil_surec" => istemci::birincil_semasi(olay),
         "dosya_oku" | "csrf_belirteci" => {
             metin_sonuc_semasi(olay, usize::from(olay.islem == "dosya_oku"))
         }
@@ -615,6 +617,10 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
 
     fn istemci_adresi(&mut self) -> String {
         istemci::kaydet(self)
+    }
+
+    fn birincil_surec(&mut self) -> bool {
+        istemci::birincil_kaydet(self)
     }
 
     fn csrf_belirteci(&mut self) -> Result<String, String> {

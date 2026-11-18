@@ -32,7 +32,7 @@ rota, Set-Cookie'siz 200 yanıtında `Cache-Control: public, max-age=0,
 s-maxage=N`; diğer her durumda `no-store`. Karar
 [ADR-160](../../../adr/160-rota-onbellek-basligi.md),
 [RFC-0037](../../../rfcs/0037-rota-onbellek-basligi.md),
-[spec/12 §7](../../../spec/12-web-guvenlik-profili.md).
+[spec/12 §K-335](../../../spec/12-web-guvenlik-profili.md).
 
 `dil denetle .` bu klasörde hermetik geçer; gerçek worker kanıtı
 `compiler/tests/web_cok_surec_testi.rs::onbelleklenebilir_rota_set_cookie_uretince_asla_public_olmaz`.

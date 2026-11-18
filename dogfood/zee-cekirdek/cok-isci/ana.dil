@@ -1,0 +1,25 @@
+# K-336/K-337 — zee-cekirdek W2/W4 anonim kesiti.
+# Ürün açılışta yarım yüklemeleri ve sahipsiz geçici dosyaları uzlaştırır.
+# Çok işçide bu yalnız bir kez ve hiçbir işçi istek almadan koşmalı:
+# dil çalıştır --web-proxy https://urun.test --web-worker-port 8096 --web-isci-sayisi 4 .
+# Yönetici ikincil işçileri birincil `sunucu başlat`a ulaşınca başlatır;
+# yeniden başlatılan işçi ikincildir ve uzlaştırmayı tekrarlamaz.
+
+işlem yarım yüklemeleri uzlaştır
+    # Üründe: hazırlanıyor kayıtlarını tamamla, sahipsiz geçici dosyaları sil.
+    ".zee/acilis-gunlugu" dosyasına "uzlaştırma" ekle
+    "tamam" döndür
+
+açılış_sahibi birincil süreç olsun
+açılış_sahibi ise
+    uzlastirma yarım yüklemeleri uzlaştır olsun
+    uzlastirma "tamam" eşit değilse
+        "Varlık uzlaştırması tamamlanamadı; sunucu başlatılmadı." yaz
+        programı bitir
+değilse
+    "İkincil işçi: açılış uzlaştırması birincil işçide." yaz
+
+8096 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder

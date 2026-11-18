@@ -45,6 +45,7 @@ pub(super) fn sifir_argumanli(n: usize, ilk: Option<&str>, son: &str) -> Option<
     let kimlik = match (ilk, son) {
         (Some("csrf"), "belirteci") => crate::intrinsic::CSRF_BELIRTECI,
         (Some("istemci"), "adresi") => crate::intrinsic::ISTEMCI_ADRESI,
+        (Some("birincil"), "süreç") => crate::intrinsic::WEB_BIRINCIL_SUREC,
         _ => return None,
     };
     Some(Ifade::Intrinsic {

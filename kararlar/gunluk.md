@@ -5052,6 +5052,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   iki ZORUNDA maddesiyle değişti. Grammar, tanı kimliği, dil yüzeyi ve
   `dil::api::v1` değişmedi.
 
+- K-332 eki (18.11.2026): süreç istek ortasında ölünce Drop koşmadığından
+  `.parca` ürün açılış süpürgesine kalıyordu; o süpürge yaş bakmadığı için
+  başka worker'ın canlı yüklemesini silebiliyor, RFC-0038 birincilliğinde ise
+  ölen ikincil işçinin yetimini hiç görmüyordu. Native adaptör açılışta ve en
+  sık 5 dk'da bir yalnız `<64 hex>.parca` adlı, bağ olmayan, 15 dk'dan eski
+  dosyaları siler; eşik canlı ömrün (10+30+10 sn) en az on katı, derleme
+  zamanı assert'li; kilit yok (ADR-061 eki, GB-132).
+
 ## K-333 — Yüklenen dosyanın ilk baytlarını okuma (12 Kasım 2026)
 
 - K-333 (12.11.2026): zee-cekirdek 1.18.0 (`e8beb39`) oturumsuz kariyer
@@ -5137,6 +5145,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   öldürülmeli. Linux konteynerinde eski çekirdek ilk testte 3,00 sn ile düştü,
   yeni çekirdek iki testi de geçti; macOS'ta 39/39.
 
+## K-336/K-337 — Resmî çok işçi web profili ve açılış birincilliği (18 Kasım 2026)
+
+- zee-cekirdek (`ca3870d`) W2: işçi sıralı, ölçek elle açılan ayrı portlu
+  süreçlerden. W4: açılış uzlaştırması her süreçte; yeniden başlayan işçi
+  yüklenmekte olan geçici dosyayı silebilir. Karar: süreç içi iş parçacığı
+  (W2-a) reddedildi (yorumlayıcı `Rc`/`RefCell`, tek IO adaptörü ve istek
+  transaction'ı süreç başına); resmî çok işçi profili (W2-b) seçildi:
+  `--web-isci-sayisi N` yöneticisi tek loopback dinleyiciyi N işçiye devreder,
+  SO_REUSEPORT (macOS dağıtmaz, Windows'ta yok) ve relay reddedildi. W4 için
+  kilit (sıraya koyar, tekliği vermez) ve `açılışta bir kez`/`birincil süreç ise`
+  grameri reddedildi; sıfır argümanlı `birincil süreç` + yöneticinin
+  ikincilleri birincil hazır olunca başlatması seçildi, yeniden başlatılan
+  işçi ikincildir. Windows açık sınır (çıkış 2). Core freeze altında
+  dogfood-change; iki yeni kalıp kelimesi (`birincil`, `süreç`) freeze özetine
+  işlendi (ADR-161, RFC-0038, GB-133). Ürün adı ADR-087 gereği anonimdir.
+
 ## K-335 — Herkese açık rota için önbellek başlığı (18 Kasım 2026)
 
 - K-335 (18.11.2026): zee-cekirdek web talebi W3 (P1, exact `abaca3a`):
@@ -5150,5 +5174,5 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `public, max-age=0, s-maxage=N` yapar; kayar yenileme dahil her Set-Cookie
   `no-store` bırakır. Reddedilen: ayrı önsöz cümlesi (kimlikli rotayla
   birleşebilirdi), `proje.dil` yol listesi, genel başlık yazma, tarayıcı
-  `max-age`, yalnız uyarı (ADR-160, RFC-0037, GB-132). Ürün adı ADR-087
+  `max-age`, yalnız uyarı (ADR-160, RFC-0037, GB-134). Ürün adı ADR-087
   gereği anonimdir.

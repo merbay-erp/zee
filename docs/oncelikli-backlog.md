@@ -2401,9 +2401,10 @@ artık istek kapsamlı: çerez/oturum commit'i geri alınır, tek stderr satır�
 (`zee-web istemci yanıt sırasında koptu: …`), `final_write_errors` metriği,
 bağlantı izni iade, worker sonraki isteği alır. Kanıt `web_cok_surec_testi`
 (2 MiB + RST, 100 ardışık kopma, izin/RSS sızıntısı yok), regression
-`yanit-yazimi-kopmasi` (`native-web-kopma`). Talepteki W3 (rota önbellek
-başlığı) K-335'te kapandı; W2 (süreç içi eşzamanlılık) ve W4 (açılışta tek
-sefer) açık; ayrı karar/PR ister.
+`yanit-yazimi-kopmasi` (`native-web-kopma`). Talepteki W2 (süreç içi
+eşzamanlılık), W3 (rota önbellek başlığı) ve W4 (açılışta tek sefer) ayrı
+karar/PR'larla kapandı: W2 K-336'da, W4 K-337'de (ADR-161), W3 K-335'te
+(ADR-160).
 
 ## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi
 
@@ -2455,8 +2456,11 @@ ve taşımayan rota da dosya bırakıyordu. Geçici dosya artık isteğe ait Dro
 korumasıyla istek sonunda silinir; `GET`/`HEAD` dışındaki yükleme CSRF
 başlığı ve oturum çerezi olmadan gövde okunmadan 403 alır. Kanıt:
 `web_yukleme`/`main.rs` birim testleri, regression
-`reddedilen-yukleme-parcasi` (`native-web-yukleme`). Açık: süreç istek
-ortasında ölürse orphan restart uzlaştırıcısına kalır.
+`reddedilen-yukleme-parcasi` (`native-web-yukleme`). Süreç istek ortasında
+ölünce kalan yetim `.parca` artık runtime'ca süpürülür (18 Kasım 2026,
+ADR-061 eki, GB-132): açılışta ve en sık 5 dakikada bir yalnız runtime adlı,
+15 dakikadan eski dosyalar; canlı yükleme yaşla, kilitsiz korunur. Kanıt:
+`web_yukleme` birim testleri, regression `yetim-yukleme-parcasi`.
 
 ## K-333 — Yüklenen dosyanın ilk baytlarını okuma (içerik imzası)
 
@@ -2484,6 +2488,32 @@ envanter cümleleri genelleştirildi, noreply yazar kuralı. Kanıt:
 eşleme `docs/incelemeler/k334/sha-esleme-v1.tsv`). Açık: GitHub PR
 ref/önbellek destek teyidi.
 
+## K-336 — Resmî çok işçi web profili (zee-cekirdek W2)
+
+**Durum: KAPALI.** ADR-161/RFC-0038: işçi istekleri sıralı işliyordu; ürün
+ölçeği elle açılan ayrı portlu süreçlerle alıyordu. `dil çalıştır --web-proxy …
+--web-worker-port P --web-isci-sayisi N [--web-saglik-port S]` yönetici süreci
+`127.0.0.1:P`'yi bir kez bağlar ve N işçiye devreder (pre-fork; SO_REUSEPORT,
+relay ve süreç içi iş parçacığı yok). Çöken işçi yeniden başlar, SIGTERM
+boşaltılarak iletilir, yönetici kaybolursa işçiler çıkar, loopback
+`/saglik`. Windows'ta çıkış 2 (açık sınır). Kanıt:
+`web_cok_surec_testi::isci_grubu_*` (tek süreçle aynı 21 adımlık
+oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
+`web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
+eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
+
+## K-337 — Çok süreçte açılış uzlaştırmasının tekliği (zee-cekirdek W4)
+
+**Durum: KAPALI.** ADR-161: ürün açılışı (yarım yükleme uzlaştırması,
+sahipsiz geçici dosya taraması) her işçide koşuyor, yeniden başlayan işçi
+ötekinin yüklediği geçici dosyayı silebiliyordu. `birincil süreç` (Mantıksal,
+`ağ-sunucusu`; tek süreçte doğru, grupta yalnız ilk birincil işçide) ve
+yöneticinin ikincilleri birincil `sunucu başlat`a ulaşınca başlatması;
+yeniden başlatılan işçi ikincildir. Kilit ve yeni koşul biçimi reddedildi.
+Kanıt: `web_cok_surec_testi::isci_grubu_acilisi_*`, `io_izi_testi::birincil_surec_*`,
+dogfood `zee-cekirdek/cok-isci`. Açık: elle kurulan ayrı portlu süreçlerde
+birincillik, `--ayar` alanı.
+
 ## K-335 — Herkese açık rota için önbellek başlığı
 
 **Durum: KAPALI.** ADR-160/RFC-0037: zee-cekirdek talebi W3 (P1, exact
@@ -2494,7 +2524,7 @@ eşleme yanılırsa oturum sızabilirdi. Rota politikası
 T056, gövdede ya da geçişli çağrıda oturum/CSRF/çerez T057; çalışma zamanı
 bu rotaya boş oturum/çerez verir ve yalnız Set-Cookie'siz, oturuma
 dokunmamış 200 GET/HEAD yanıtında `public, max-age=0, s-maxage=N` yazar
-(GB-132). Kanıt: `web_testi::onbellek*`,
+(GB-134). Kanıt: `web_testi::onbellek*`,
 `web_cok_surec_testi::onbelleklenebilir_rota_set_cookie_uretince_asla_public_olmaz`
 (kayar yenileme Set-Cookie'si `no-store`), dogfood
 `zee-cekirdek/onbellek-basligi`. Açık: `Vary`/ETag/purge; ürün rotalarının

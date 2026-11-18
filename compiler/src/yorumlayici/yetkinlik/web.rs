@@ -22,6 +22,11 @@ pub(super) fn istemci_adresi<T: GirdiCikti>(io: &mut PolitikaliIo<T>) -> String 
     }
 }
 
+/// K-337: sunucu yetkinliği yoksa süreç tek başınadır; açılış onundur.
+pub(super) fn birincil_surec<T: GirdiCikti>(io: &mut PolitikaliIo<T>) -> bool {
+    !io.politika.izin_verir(Yetkinlik::AgSunucusu) || io.ic.birincil_surec()
+}
+
 pub(super) fn istek_al<T: GirdiCikti>(io: &mut PolitikaliIo<T>) -> Option<String> {
     io.politika
         .izin_verir(Yetkinlik::AgSunucusu)

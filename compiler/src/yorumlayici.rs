@@ -56,7 +56,8 @@ use crate::intrinsic::{
     DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI,
     EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR, ISTEMCI_ADRESI,
     PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
-    TOTP_ANAHTARI, TOTP_DOGRULA, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
+    TOTP_ANAHTARI, TOTP_DOGRULA, WEB_BIRINCIL_SUREC, WEB_OTURUMLARINI_LISTELE,
+    WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -467,6 +468,11 @@ pub trait GirdiCikti {
     fn istemci_adresi(&mut self) -> String {
         String::new()
     }
+    /// K-337: açılış işinin sahibi. Tek süreçte doğru; yalnız çok işçi
+    /// grubunun ikincil/yeniden başlatılan işçisinde host yanlış verir.
+    fn birincil_surec(&mut self) -> bool {
+        true
+    }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         Err("IO adaptörü CSRF oturumu desteklemiyor".into())
     }
@@ -681,6 +687,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn istemci_adresi(&mut self) -> String {
         self.ic.borrow_mut().istemci_adresi()
+    }
+    fn birincil_surec(&mut self) -> bool {
+        self.ic.borrow_mut().birincil_surec()
     }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.ic.borrow_mut().csrf_belirteci()

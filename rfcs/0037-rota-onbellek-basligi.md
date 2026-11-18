@@ -4,7 +4,7 @@
   spec/12 §K-335, karar ADR-160.
 - **Tarih:** 18 Kasım 2026
 - **İş:** K-335 (kaynak: zee-cekirdek `docs/dil-talepleri/2026-10-20-web-eszamanlilik-ve-kopma.md` W3, exact `abaca3a`)
-- **İlgili belgeler:** spec/12, ADR-059, ADR-064, ADR-158, GB-132
+- **İlgili belgeler:** spec/12, ADR-059, ADR-064, ADR-158, GB-134
 - **Freeze sınıfı:** `dogfood-change` — mevcut `herkese açık` politikasının
   tek contextual biçimi; yeni değer türü, bağımlılık veya `dil::api::v1`
   facade değişikliği yok. Yeni tanılar T056/T057.

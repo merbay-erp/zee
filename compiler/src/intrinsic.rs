@@ -10,6 +10,9 @@ pub const HTTP_GIZLI_ORTAM: &str = "ag.http_gizli_ortam";
 pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
 pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
+/// K-337: `birincil süreç` — çok işçi grubunun ilk birincil işçisinde ve tek
+/// süreçte doğru; ikincil ya da yeniden başlatılan işçide yanlış.
+pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
 pub const PAROLA_DOGRULA: &str = "guvenlik.parola_dogrula";
 pub const WEB_OTURUMLARINI_LISTELE: &str = "web.oturumlarini_listele";
 pub const WEB_OTURUMUNU_IPTAL_ET: &str = "web.oturumunu_iptal_et";
@@ -162,6 +165,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::Metin,
         etki: IntrinsicEtkisi::WebAdaptoru,
         tur_hatasi: "İstemci adresi argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_BIRINCIL_SUREC,
+        yetkinlik: Yetkinlik::AgSunucusu,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::Mantiksal,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "Birincil süreç argüman almaz.",
     },
     IntrinsicTanimi {
         kimlik: CSRF_BELIRTECI,
