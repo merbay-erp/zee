@@ -295,6 +295,8 @@ ZORUNLU: Kayar açıkken her kimlikli istek, istek başındaki kalıcı depo gü
 
 YASAK: Kayar yenileme anonim (giriş öncesi) oturumu uzatamaz ve yeni belirteç üretemez. Aynı istekte giriş, `oturumu kapat` ya da kendi oturumunun kimlikle iptali varsa yenileme çerezi yazılmaz; çıkış sunucu kaydını commit ile hemen siler ve yanıt yalnız `Max-Age=0` silme çerezini taşır.
 
+ZORUNLU: `dil dene` bir proje klasörüyle koşulduğunda her testin hermetik web adaptörü aynı `oturum_ömrü_saniye`/`oturum_kayar` ayarını gerçek runtime ile aynı kurallarla uygular: kimlikli oturum seçilen ömürde biter, kayar kipte kimlikli istek ömrü yeniden başlatır ve aynı belirteçle yenilenmiş `Max-Age` çerezi yazar, mutlak kipte erişim ömrü uzatmaz. Proje bildirimi olmadan koşulan dosya ve gömme `programi_dene` varsayılan 1800 sn mutlak ömürde kalır.
+
 ## K-335 — Önbelleklenebilir herkese açık rota
 
 TANIMLI: Rota önsözünün politika cümlesi `herkese açık önbelleklenebilir N saniye` biçiminde yazılabilir; N 1–86400 arası sabit TamSayıdır. Bu cümle erişim bakımından `herkese açık` ile aynıdır ve önsözün ilk ve tek politika cümlesi kuralına (T050) uyar. Başka sayı, birim ya da eksik parça S043'tür.

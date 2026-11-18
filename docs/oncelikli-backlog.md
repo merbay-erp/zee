@@ -2342,8 +2342,10 @@ yeşil. Python 3.13.3 pini; Linux native kampanyalarına özel tek bağlantılı
 worker-supervisor zombi lider düzeltmesi; Windows `zee.ayar` sürücü öneki ve
 `@unix` faz seçicileri; Playground kapsam bağımlılığı. `surum-adayi` aynı
 commit'te üç platform imzalı ([kanıt](urunlesme-p125-imzali-surum-20261019.md)).
-Açık kalan: `lifecycle_core.py` Linux zombi lider kalıbı (pinli kanıt zinciri),
-`acik-depo`/`tedarik` iş akışlarında eski geçmiş bulguları (geçmiş yeniden yazılmaz).
+`lifecycle_core.py` Linux zombi lider kalıbı 18.11.2026'da kapandı: v1 soy
+kaydı korunarak ayrı v2 kaydıyla zincirlendi, Linux'ta kanıtlandı (eski çekirdek
+3,0 sn bekliyordu, yeni 0,02 sn). Açık kalan: `acik-depo`/`tedarik` iş
+akışlarında eski geçmiş bulguları (geçmiş yeniden yazılmaz).
 
 ## K-320 — Kullanılabilirlik oturum yürütücüsü
 
@@ -2432,7 +2434,9 @@ Max-Age'ini yeniler, oluşturmadan 30 günlük mutlak tavan aşılmaz, anonim
 oturum ve çıkış değişmez (GB-128). Kalıcı ortak depo restart/çok worker
 paylaşımını zaten sağlıyordu; düzeltme gerekmedi. Kanıt: `web_guvenligi`
 birim testleri, `proje_testi`, `web_cok_surec_testi::kayar_oturum_*`.
-Açık: hermetik `dil dene` adaptörü ayarı uygulamaz.
+Hermetik `dil dene` adaptörü de proje ayarını uygular (18 Kasım 2026,
+ADR-158 eki): `proje_testi::dene_hermetik_adaptoru_proje_oturum_omrunu_uygular`,
+`web_testi::hermetik_adaptor_proje_oturum_omrunu_kayar_ve_mutlak_uygular`.
 
 ## K-331 — ctutils RustSec yükseltmesi
 

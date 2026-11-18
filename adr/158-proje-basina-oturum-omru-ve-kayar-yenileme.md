@@ -39,8 +39,9 @@ ağ hedefi ve sır değişkeni adı gibi politika kararlarını taşır.
 5. Giriş, `oturumu kapat` ve kendi oturumunun kimlikle iptali aynı istekte
    kayar çerez yenilemesini düşürür; çıkış yanıtı yalnız `Max-Age=0` silme
    çerezini taşır ve sunucu kaydı commit ile hemen silinir.
-6. Hermetik `dil dene` adaptörü proje ayarını uygulamaz; varsayılan 30
-   dakika mutlak kalır (açık sınır, testler zamanı açıkça sürer).
+6. Hermetik `dil dene` adaptörü proje klasörüyle koşulduğunda aynı ayarı
+   uygular (18 Kasım 2026 eki, aşağıda); proje bildirimi olmadan koşulan
+   dosya ve gömme `programi_dene` varsayılan 30 dakika mutlakta kalır.
 
 ## Güvenlik gerekçesi
 
@@ -81,7 +82,27 @@ ADR-018 davranışında kalır.
   yerine makul bir boşta kalma ömrü (ör. 8 saat) + kayar önerilir.
 - Tarayıcı kapanınca çerez silinmez (Max-Age taşır); paylaşılan bilgisayar
   riski ürünün ömür seçimine aittir.
-- Hermetik `dil dene` adaptörü ayarı uygulamaz (madde 6).
+
+## Ek — hermetik `dil dene` adaptörü (18 Kasım 2026)
+
+İlk kabulde madde 6 hermetik adaptörü açık sınır olarak bırakmıştı. Bu, bir
+`dil dene` testinin üretimden farklı bir oturum ömrü görmesi demekti: ömrü
+300 sn bildiren projede 301 sn sanal bekleme sonrası oturum hâlâ
+listeleniyordu (varsayılan 1800 sn). Test dünyası üretim politikasını
+yansıtmadığı için ürünün ömür testleri yanlış güven verebiliyordu.
+
+Karar: `dil dene <proje>` gerçek runtime'ın kullandığı aynı
+`OturumAyari`'yı (aynı fail-closed aralık denetimiyle) her testin taze
+`ToplayanIo` örneğine verir. Adaptör kayar kipte gerçek runtime gibi aynı
+belirteçle yenilenmiş `Max-Age` çerez kaydı yazar; giriş/çıkış/iptal aynı
+istekte yenilemeyi düşürür, o istekte yazılmış oturum çerezi kazanır.
+Yeni dil kalıbı, tanı kodu, CLI seçeneği ya da `dil::api::v1` ihracatı
+yoktur; crate kökünde destek sözü dışındaki `programi_dene_oturum_ayariyla`
+eklenir, `programi_dene` davranışı değişmez. Kanıt:
+`compiler/tests/proje_testi.rs::dene_hermetik_adaptoru_proje_oturum_omrunu_uygular`
+(ayarlı 300 sn biter/yaşar, ayarsız 1800 sn, eski davranış D001) ve
+`compiler/tests/web_testi.rs::hermetik_adaptor_proje_oturum_omrunu_kayar_ve_mutlak_uygular`
+(kayar üç ardışık yenileme + boşta 401, mutlak kipte yenileme yok + 401).
 
 ## Reddedilen seçenekler
 

@@ -45,6 +45,8 @@ pub use self::veritabani::ToplayanVeritabani;
 pub use self::web_istek::istek_hatasi_yaniti;
 use self::web_istek::web_istegini_calistir;
 pub use self::yetkinlik::{GuvenliIo, PolitikaliIo};
+/// Hermetik adaptörün kabul ettiği proje oturum ayarı (K-330); `dil dene` girişi.
+pub use crate::web_guvenligi::OturumAyari;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,

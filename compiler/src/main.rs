@@ -1630,19 +1630,18 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().http_gizli_degiskenleri.clone())
             .unwrap_or_default();
-        if let Some(bildirim) = self
-            .proje
-            .as_ref()
-            .and_then(|proje| proje.ana_bildirim().web_oturumu)
-        {
-            // Bildirim aralığı `proje` katmanında P015 ile denetlendi; burada yalnız savunma.
-            if let Ok(ayar) =
-                dil::web_guvenligi::OturumAyari::yeni(bildirim.omur_saniye, bildirim.kayar)
-            {
-                io.web_guvenligi.oturum_ayarini_belirle(ayar);
-            }
+        if let Some(ayar) = self.oturum_ayari() {
+            io.web_guvenligi.oturum_ayarini_belirle(ayar);
         }
         io
+    }
+
+    /// K-330: proje bildirimindeki kimlikli oturum ayarı; gerçek runtime ve
+    /// hermetik `dil dene` adaptörü aynı değeri kullanır (ADR-158 eki).
+    fn oturum_ayari(&self) -> Option<dil::web_guvenligi::OturumAyari> {
+        let bildirim = self.proje.as_ref()?.ana_bildirim().web_oturumu?;
+        // Bildirim aralığı `proje` katmanında P015 ile denetlendi; burada yalnız savunma.
+        dil::web_guvenligi::OturumAyari::yeni(bildirim.omur_saniye, bildirim.kayar).ok()
     }
 
     fn birim_yukle(&self, istek: dil::BirimIstegi<'_>) -> Result<dil::YuklenenBirim, String> {
@@ -4183,7 +4182,7 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
         },
         None => None,
     };
-    let sonuclar = dil::programi_dene(&program);
+    let sonuclar = dil::programi_dene_oturum_ayariyla(&program, girdi.oturum_ayari());
     if let (Some(n), Some(r)) = (nobetci, girdi.kapsam.as_ref()) {
         if let Err(hata) = n
             .bitir(sonuclar.iter().all(|s| s.hata.is_none()))

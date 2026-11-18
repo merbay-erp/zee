@@ -1122,6 +1122,71 @@ fn oturum_omru_sinir_disi_tur_ve_yetkinlik_hatalari_tani_verir() {
     assert!(tani.mesaj.contains("web-oturumu"));
 }
 
+/// K-330/ADR-158 eki: hermetik `dil dene` adaptörü proje bildirimindeki
+/// kimlikli oturum ömrünü gerçek runtime ile aynı uygular; ayarsız proje
+/// varsayılan 30 dakikada kalır.
+#[test]
+fn dene_hermetik_adaptoru_proje_oturum_omrunu_uygular() {
+    fn dene(bildirim_eki: &str, bekleme_sn: i64, beklenen_adet: i64) -> std::process::Output {
+        let gecici = GeciciKlasor::yeni();
+        std::fs::write(
+            gecici.yol().join("proje.dil"),
+            format!("{WEB_OTURUMU_BASI}{bildirim_eki}"),
+        )
+        .unwrap();
+        std::fs::write(
+            gecici.yol().join("ana.dil"),
+            r#"8093 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "a" yanıtını gönder
+
+test "oturum ömrü"
+    "m" kullanıcısını "k" rolüyle oturuma al
+    BEKLEME saniye bekle
+    oturumlar "m" ile web oturumlarını listelemeyi dene olsun
+    adet -1 olsun
+    oturumlar başarılıysa
+        liste oturumların değeri olsun
+        adet listenin adedi olsun
+    adet BEKLENEN eşit olmalı
+"#
+            .replace("BEKLEME", &bekleme_sn.to_string())
+            .replace("BEKLENEN", if beklenen_adet == 0 { "0 a" } else { "1 e" }),
+        )
+        .unwrap();
+        Command::new(env!("CARGO_BIN_EXE_dil"))
+            .arg("dene")
+            .arg(gecici.yol())
+            .output()
+            .expect("dil dene")
+    }
+    let gecmeli = |ek: &str, bekleme: i64, adet: i64| {
+        let cikti = dene(ek, bekleme, adet);
+        assert!(
+            cikti.status.success(),
+            "{ek} / {bekleme} sn / {adet}: {}{}",
+            String::from_utf8_lossy(&cikti.stdout),
+            String::from_utf8_lossy(&cikti.stderr)
+        );
+    };
+    let omur = "oturum_ömrü_saniye 300 olsun\n";
+    let kayar = "oturum_ömrü_saniye 300 olsun\noturum_kayar doğru olsun\n";
+    // Olumlu: bildirilen 300 sn ömür hermetik adaptörde de geçerlidir.
+    gecmeli(omur, 299, 1);
+    gecmeli(omur, 301, 0);
+    gecmeli(kayar, 301, 0);
+    // Ayarsız proje: varsayılan 30 dakika mutlak.
+    gecmeli("", 301, 1);
+    gecmeli("", 1801, 0);
+    // Olumsuz: düzeltme öncesi davranış (ayar yok sayılıp oturum yaşar) D001 ile kalır.
+    let eski = dene(omur, 301, 1);
+    assert!(!eski.status.success());
+    let stderr = String::from_utf8_lossy(&eski.stderr);
+    assert!(stderr.contains("D001"), "{stderr}");
+    assert!(stderr.contains("Beklenen: 1"), "{stderr}");
+}
+
 /// K-331: gerçek IO adaptörü ilk baytları ikili dosyadan okur; proje dosya
 /// sınırı, üst sınır ve yetkinlik `sha256 özetini almayı dene` ile aynıdır.
 #[cfg(unix)]
