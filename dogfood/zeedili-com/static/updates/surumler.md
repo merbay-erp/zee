@@ -24,10 +24,10 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
-- **Açık depo kapısı anahtarlı (K-334, ADR-087, GB-131):** Müşteri/altyapı
-  adlarını yakalayan kapının politikası artık gizli anahtarlı HMAC-SHA256
-  taşır; önceki tuzsuz listenin sözlükle çözülebildiği bir dış taramada
-  görüldü. Dil, derleyici, CLI ve API davranışı değişmedi.
+- **Açık depo kapısı anahtarlı (K-334, ADR-087):** Depoya özel bilgi
+  girmesini engelleyen gizlilik kapısının politikası artık yalnız gizli
+  anahtarlı HMAC-SHA256 değerleri taşır. Dil, derleyici, CLI ve API
+  davranışı değişmedi.
 
 ### Uyumluluk ve göç
 
