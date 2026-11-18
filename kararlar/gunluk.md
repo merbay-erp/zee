@@ -5096,6 +5096,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   bağlantıyla duruyordu. Nokta tireye çevrilir; birim testine vaka eklendi.
   Compiler kaynağı değişmedi.
 
+## CI — actions/setup-python v7.1.0 pini (18 Kasım 2026)
+
+- Dependabot PR'ı (merbay-erp/zee#9) yalnız `uses:` satırını değiştirdiği için
+  `tedarik_kapisi_testi` (`github_actionlari_incelenmis_immutable_commitlere_sabitlidir`)
+  üç platformda kırmızıydı: pin envanteri eski sürümü gösteriyordu. PR ayrıca
+  K-334 tarihçe yeniden yazımından önceki bir tabana dayanır; push koşularındaki
+  diğer kırmızılar (ubuntu-latest 26.04'te 3.13.3 yok, eksik açık depo
+  politikası, RustSec) o eski tabana aittir ve güncel master'da yeşildir.
+- Yükseltme güncel master'da elle yapıldı: `5fda3b9` (v7.0.0) → `6d4fd22`
+  (v7.1.0 etiketinin commit'i, yayın 2026-10-22; `mirror` girdileri, hata
+  mesajı ve bağımlılık güncellemeleri). `docs/github-actions-pinleri-v1.tsv`
+  aynı committe güncellendi. Python sürümü 3.13.3 ve `ubuntu-24.04` Linux
+  matrisi değişmez; derleyici, dil yüzeyi ve kullanıcıya görünen davranış
+  değişmedi (`docs/surumler.md` etkilenmez).
+
 ## K-335 — Herkese açık rota için önbellek başlığı (18 Kasım 2026)
 
 - K-335 (18.11.2026): zee-cekirdek web talebi W3 (P1, exact `abaca3a`):
