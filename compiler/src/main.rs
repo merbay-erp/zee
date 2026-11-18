@@ -42,6 +42,14 @@ const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_s
         .http()
         .istek_okuma_saniyesi(),
 );
+/// K-332 eki: canlı `.parca`'nın son yazımından sonra yaşayabileceği en uzun
+/// süre — gövde okuma son tarihi, rota çalıştırma bütçesi, yanıt yazım zaman aşımı.
+const CANLI_PARCA_AZAMI_SANIYE: u64 = {
+    let http = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
+    2 * http.istek_okuma_saniyesi() + (http.calistirma_zaman_asimi_ms() as u64).div_ceil(1000)
+};
+// Yetim eşiği canlı ömrün en az on katı olmalıdır; sınırlar büyürse derleme kırılır.
+const _: () = assert!(web_yukleme::YETIM_PARCA_YASI.as_secs() >= 10 * CANLI_PARCA_AZAMI_SANIYE);
 const WEB_BIND_IP: std::net::Ipv4Addr = std::net::Ipv4Addr::LOCALHOST;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -1869,6 +1877,8 @@ struct GercekIo {
     /// K-332: bu isteğin binary yükleme geçici dosyası; istek tamamlanınca ya
     /// da geri alınınca düşer ve rotanın taşımadığı `.parca`'yı siler.
     bekleyen_yukleme: Option<web_yukleme::IstekYuklemesi>,
+    /// K-332 eki: son yetim `.parca` süpürmesinin anı (açılışta ve aralıkla).
+    son_parca_supurmesi: Option<std::time::Instant>,
     bekleyen_head: bool,
     /// Operatör günlüğü için son isteğin yöntemi ve hedefi (K-324).
     son_istek: Option<(String, String)>,
@@ -2006,6 +2016,7 @@ impl GercekIo {
             metrik: None,
             bekleyen_baglanti_izni: None,
             bekleyen_yukleme: None,
+            son_parca_supurmesi: None,
             bekleyen_head: false,
             son_istek: None,
             eylem_yedekleri: Vec::new(),
@@ -2118,6 +2129,28 @@ impl GercekIo {
         match &self.web_modu {
             WebModu::GuvenliProxy { worker_kapi, .. } => *worker_kapi,
             WebModu::Kapali | WebModu::Deneysel => None,
+        }
+    }
+
+    /// K-332 eki: süreç ölümünden kalan yaşlı `.parca` dosyalarını açılışta ve
+    /// en sık `YETIM_SUPURME_ARALIGI`'nda bir süpürür; kilit gerekmez (ADR-061 eki).
+    fn yetim_parcalari_supur(&mut self) {
+        if self
+            .son_parca_supurmesi
+            .is_some_and(|an| an.elapsed() < web_yukleme::YETIM_SUPURME_ARALIGI)
+        {
+            return;
+        }
+        self.son_parca_supurmesi = Some(std::time::Instant::now());
+        let silinen = web_yukleme::yetim_parcalari_supur(
+            &self.kok,
+            std::time::SystemTime::now(),
+            web_yukleme::YETIM_PARCA_YASI,
+        );
+        if silinen > 0 {
+            eprintln!(
+                "zee-web süreç ölümünden kalan {silinen} yetim yükleme parçası süpürüldü (.zee/yuklemeler)"
+            );
         }
     }
 
@@ -3258,6 +3291,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
         }
         self.dinleyici = Some(dinleyici);
+        self.yetim_parcalari_supur();
         #[cfg(unix)]
         if let Some(control) = &mut self.native_control {
             control.announce()?;
@@ -3268,6 +3302,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn istek_al(&mut self) -> Option<String> {
         // K-332 yedeği: önceki isteğin yüklemesi hiçbir yolda kalmasın.
         self.bekleyen_yukleme = None;
+        self.yetim_parcalari_supur();
         #[cfg(unix)]
         if let Some(control) = &mut self.native_control {
             if control

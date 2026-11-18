@@ -2455,8 +2455,11 @@ ve taşımayan rota da dosya bırakıyordu. Geçici dosya artık isteğe ait Dro
 korumasıyla istek sonunda silinir; `GET`/`HEAD` dışındaki yükleme CSRF
 başlığı ve oturum çerezi olmadan gövde okunmadan 403 alır. Kanıt:
 `web_yukleme`/`main.rs` birim testleri, regression
-`reddedilen-yukleme-parcasi` (`native-web-yukleme`). Açık: süreç istek
-ortasında ölürse orphan restart uzlaştırıcısına kalır.
+`reddedilen-yukleme-parcasi` (`native-web-yukleme`). Süreç istek ortasında
+ölünce kalan yetim `.parca` artık runtime'ca süpürülür (18 Kasım 2026,
+ADR-061 eki, GB-132): açılışta ve en sık 5 dakikada bir yalnız runtime adlı,
+15 dakikadan eski dosyalar; canlı yükleme yaşla, kilitsiz korunur. Kanıt:
+`web_yukleme` birim testleri, regression `yetim-yukleme-parcasi`.
 
 ## K-333 — Yüklenen dosyanın ilk baytlarını okuma (içerik imzası)
 
@@ -2496,7 +2499,7 @@ boşaltılarak iletilir, yönetici kaybolursa işçiler çıkar, loopback
 `web_cok_surec_testi::isci_grubu_*` (tek süreçle aynı 21 adımlık
 oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
-eşzamanlılık 4 / tek istek ≥ 3,5×). GB-132.
+eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
 ## K-337 — Çok süreçte açılış uzlaştırmasının tekliği (zee-cekirdek W4)
 

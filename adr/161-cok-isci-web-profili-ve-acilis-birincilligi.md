@@ -5,7 +5,7 @@
 - **İlgili kayıt:** K-336, K-337, RFC-0038, ADR-034 (production web
   profili), ADR-059 (core freeze), ADR-064 (dil yüzeyi), ADR-087 (açık depo),
   ADR-118 (native listener), ADR-157 (istek-yerel hata sınırı), spec/12 §7,
-  spec/21, GB-132
+  spec/21, GB-133
 
 ## Bağlam
 
@@ -81,7 +81,7 @@ birincili olduğunu bilemez; elle üç süreç açmak açılış sırası vermez
   `cli-web-saglik-port` (ADR-064). Tanı kodu eklenmedi: CLI reddi çıkış 2 metni.
 - Derleyici/LSP önbelleği ya da büyüyen tampon yok; yönetici sabit boyutlu
   yuva dizisi tutar, soak kapısı (ADR-069) gerektirmez.
-- Güvenlik sınırı GB-132: devralınan descriptor doğrulanır, ortam silinir,
+- Güvenlik sınırı GB-133: devralınan descriptor doğrulanır, ortam silinir,
   sağlık uç noktası loopback ve PID listesi yalnız yerel operatöre.
 
 ## Açık

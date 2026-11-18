@@ -6,7 +6,7 @@
 - **İş:** K-336, K-337 (kaynak: zee-cekirdek
   `docs/dil-talepleri/2026-10-20-web-eszamanlilik-ve-kopma.md` W2/W4, exact `ca3870d`)
 - **İlgili belgeler:** spec/12, spec/21, ADR-034, ADR-059, ADR-064, ADR-087,
-  ADR-118, ADR-157, GB-132
+  ADR-118, ADR-157, GB-133
 - **Freeze sınıfı:** `dogfood-change` — iki CLI seçeneği ve tek contextual
   sıfır argümanlı ifade; koşul grameri, AST/değer türü, tanı kodu, bağımlılık
   ya da `dil::api::v1` değişikliği yok.
