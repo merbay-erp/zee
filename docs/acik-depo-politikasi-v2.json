@@ -85,6 +85,11 @@
     },
     {
       "kind": "term",
+      "length": 12,
+      "hmac": "b42ad6c530cd84f9f6cf80bd5695e63a142662afecbaeda99b9c8ea7425d5864"
+    },
+    {
+      "kind": "term",
       "length": 10,
       "hmac": "ce67c62fc3536868233b5bdc638a648f765d324022a1b0b95d86d5e02ce68e8c"
     },
