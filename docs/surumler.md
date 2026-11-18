@@ -12,6 +12,12 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Yarım kalan yükleme dosyaları temizlenir (K-332, ADR-061 eki):** Web
+  sunucusu bir yükleme sürerken beklenmedik biçimde kapanırsa geride kalan
+  `.zee/yuklemeler/*.parca` geçici dosyası artık sunucu açılışında ve
+  çalışırken en sık 5 dakikada bir silinir; yalnız 15 dakikadan eski runtime
+  dosyalarına dokunulur, aynı anda çalışan başka işçinin süren yüklemesi
+  korunur. Göç gerekmez.
 - **zeedili.com belge adları:** Adında nokta bulunan belge (ör.
   `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
   rakam ve tire taşıdığı için nokta artık tireye çevrilir

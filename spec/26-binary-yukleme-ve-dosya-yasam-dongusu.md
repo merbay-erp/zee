@@ -31,8 +31,18 @@ tamamlanmış yükleme ise istek bittiğinde — CSRF/oturum/Origin reddi, oran
 sınırı, 404/405, rota tanısı ya da rotanın dosyayı taşımadan yanıt vermesi
 dahil. Rota dosyayı aynı istekte taşıdıysa silme etkisizdir; geçici yol
 sonraki isteklerde geçerli değildir. Yalnız süreç istek ortasında sonlanırsa
-(ölümcül tanı, sinyal, çökme) kalan dosya restart uzlaştırıcısının görebileceği
-orphan'dır.
+(ölümcül tanı, sinyal, çökme) dosya yetim kalır ve aşağıdaki yaş tabanlı
+süpürmeye düşer.
+
+Native web worker, `sunucu başlat` dinleyiciyi kurduktan sonra ve çalışırken
+en sık 5 dakikada bir, `.zee/yuklemeler` altında yalnız runtime adlandırmasına
+(64 küçük onaltılık karakter + `.parca`) uyan, sembolik bağ olmayan ve son
+değişikliği 15 dakikadan eski normal dosyaları silmek ZORUNDADIR. Eşik, canlı
+bir yüklemenin son yazımından sonra yaşayabileceği en uzun sürenin (gövde okuma
+son tarihi, rota çalıştırma bütçesi ve yanıt yazımı) en az on katıdır; aynı
+kökü paylaşan başka worker'ın canlı yüklemesi kilit olmadan korunur ve
+eşzamanlı süpürmeler birbirini bozmaz. Başka adlı dosyaya, alt dizine, bağa ve
+gelecek tarihli dosyaya dokunmak YASAKTIR; tek tur en çok 10 000 girdi inceler.
 
 ## Beklenen dosya işlemleri
 

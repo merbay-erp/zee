@@ -5047,6 +5047,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   iki ZORUNDA maddesiyle değişti. Grammar, tanı kimliği, dil yüzeyi ve
   `dil::api::v1` değişmedi.
 
+- K-332 eki (18.11.2026): süreç istek ortasında ölünce Drop koşmadığından
+  `.parca` ürün açılış süpürgesine kalıyordu; o süpürge yaş bakmadığı için
+  başka worker'ın canlı yüklemesini silebiliyor, RFC-0038 birincilliğinde ise
+  ölen ikincil işçinin yetimini hiç görmüyordu. Native adaptör açılışta ve en
+  sık 5 dk'da bir yalnız `<64 hex>.parca` adlı, bağ olmayan, 15 dk'dan eski
+  dosyaları siler; eşik canlı ömrün (10+30+10 sn) en az on katı, derleme
+  zamanı assert'li; kilit yok (ADR-061 eki, GB-132).
+
 ## K-333 — Yüklenen dosyanın ilk baytlarını okuma (12 Kasım 2026)
 
 - K-333 (12.11.2026): zee-cekirdek 1.18.0 (`e8beb39`) oturumsuz kariyer
