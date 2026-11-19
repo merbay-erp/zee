@@ -716,6 +716,7 @@ fn grubu_baslat(kaynak: &Path, kapi: u16, isci: u16, saglik: Option<u16>) -> Sun
 /// bağlantısı aynı anda başlatılan işçiye miras kalabilir: yanıt tam gelir ama
 /// EOF işçi çıkana dek gelmez (ürün hatası, K-345). Okuma hatası yeni
 /// bağlantıyla yeniden denenir; toplam bütçe cömert ama sınırlıdır.
+#[cfg(unix)]
 const SAGLIK_BUTCESI: Duration = Duration::from_secs(60);
 
 /// İşçi grubunu başlatır; işçilerin stdout satırlarını (stdout satır
