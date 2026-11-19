@@ -67,3 +67,12 @@ bug SHA veya yeni regression.dil icat edilmez.
 S common dedicated credential-listener model5 ve actualnative5 aynı cleanS binary/source pinleriyle geçti; credential14 ve metric composition kendi ayrı kohortlarıdır, unique toplam yapılmaz. Actual owned overlap/startup/admission/generation ve metricbest-effort sınırları korundu. Genel secretstore/rotation/provider/liveadoption/Windows/fullP25 açık.
 
 [Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).
+
+## 19 Kasım 2026 — K-339 notu
+
+Native CLI artık proje gizli değer bağlarını `$CREDENTIALS_DIRECTORY`
+dosyasından doğrudan okuyabilir ([ADR-105 eki](105-credential-host-koprusu.md)).
+Typed listener route'unun descriptor sözleşmesi değişmez. Launcher ile
+eşlenen ad aynı anda credential dizininde de bulunursa native okuma çakışma
+olarak reddeder; systemd altında launcher eşlemesi yerine doğrudan
+credential tercih edilmelidir.
