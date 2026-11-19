@@ -1,0 +1,13 @@
+# K-346: eylem geri alması, eylemin yedeğini ve bıraktığı içeriği yazma kilidi dışında okuduğundan araya giren başka sürecin başarılı eklemesini siliyordu.
+
+eylem kaydıDene
+    satırı Metin olarak al
+    TamSayı sonucu döndürür
+    "ortak.txt" dosyasına satır ekle
+    satır "yok" e eşitse
+        1 döndür
+    "vazgeçildi" hatasını döndür
+
+1 den 1000 e kadar her sayı için
+    satır "a-" ile sayı olsun
+    sonuç satır ile kaydıDene olsun
