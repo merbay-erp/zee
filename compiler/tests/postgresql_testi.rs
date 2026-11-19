@@ -115,6 +115,54 @@ fn izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur() {
         .expect("sağlıklı transaction commit olmalı");
 }
 
+// Spec25 TLS kök maddesi: CA PEM ağ bağlantısından önce boş, 256 KiB üstü ve
+// geçersiz biçimde reddedilir. Port 1 hiç dinlenmez; beklenen mesaj ağ hatası
+// olamayacağı için reddin bağlantı denemesinden önce olduğunu da kanıtlar.
+#[test]
+fn tls_koku_bos_asiri_buyuk_ve_gecersiz_pem_baglantidan_once_reddedilir() {
+    let degisken = "ZEE_TEST_SPEC25_TLS_KOKU_URL";
+    std::env::set_var(
+        degisken,
+        "postgresql://kullanici@127.0.0.1:1/uygulama?sslmode=require",
+    );
+    let bildirim = dil::veritabani_modeli::VeritabaniBildirimi {
+        hedef: dil::veritabani_modeli::VeritabaniHedefi::ayristir(
+            "postgresql://127.0.0.1:1/uygulama",
+        )
+        .unwrap(),
+        baglanti_degiskeni: degisken.into(),
+        gocler: "unused".into(),
+        istek_baglami_cozucusu: None,
+    };
+    let ca = format!("{degisken}_TLS_CA_PEM");
+    let sinir = "PostgreSQL TLS kök sertifikası boş olamaz ve 256 KiB sınırını aşamaz";
+    for (pem, beklenen) in [
+        (String::new(), sinir),
+        ("A".repeat(256 * 1024 + 1), sinir),
+        (
+            "-----BEGIN CERTIFICATE-----\nzee\n-----END CERTIFICATE-----\n".to_string(),
+            "PostgreSQL TLS kök sertifikası geçerli PEM değil",
+        ),
+    ] {
+        std::env::set_var(&ca, pem);
+        let hata = match dil::postgresql::PostgresqlOturumu::baglan(&bildirim, 0) {
+            Ok(_) => panic!("geçersiz TLS kökü bağlantı kurmamalı"),
+            Err(hata) => hata,
+        };
+        assert_eq!(hata.mesaj, beklenen);
+    }
+    std::env::remove_var(&ca);
+    let hata = match dil::postgresql::PostgresqlOturumu::baglan(&bildirim, 0) {
+        Ok(_) => panic!("köksüz require bağlantı kurmamalı"),
+        Err(hata) => hata,
+    };
+    assert_eq!(
+        hata.mesaj,
+        format!("TLS PostgreSQL bağlantısı sabit kök sertifikayı {ca} ortam değişkeninde ister")
+    );
+    std::env::remove_var(degisken);
+}
+
 #[test]
 fn okuma_parametreyi_sql_metininden_ayri_tasir() {
     let kaynak = r#"
