@@ -78,7 +78,8 @@ Bu kayıt yeni sürüm etiketi değildir.
   kurulum örneği ve yapılandırılmış veri hâlâ eski `0.8.0-dev`/`0.7.0`
   etiketlerini gösteriyordu; artık son etiket v1.0.0-rc.1 ve geliştirme
   sürümü 1.0.0-dev yazılır. Gelişmeler bölümüne çok işçi profili, önbellek
-  izni ve dosya imzası eklendi; site worker'ı güncel derleyiciyle koşar.
+  izni ve dosya imzası eklendi; site worker'ı güncel derleyiciyle koşar. Üst menüdeki logo
+  rozeti de `0.8-dev` yerine `v1.0.0-rc.1` gösterir.
 
 ## 17 Kasım 2026 — Geliştirme güncellemeleri
 
