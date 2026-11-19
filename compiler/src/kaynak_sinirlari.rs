@@ -5,6 +5,7 @@
 //! dönüş yoktur.
 
 mod baglanti;
+pub(crate) mod degistirme_penceresi;
 mod okuma;
 mod posta;
 mod profiller;

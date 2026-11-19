@@ -42,10 +42,16 @@ türü `InvalidInput` ile, eski nesne değiştirilmeden reddedilir.
 - Bu kapsamın uygulanamadığı destekli platform hata vermek ZORUNDADIR;
   best-effort metadata düşürme YASAKTIR.
 
-Windows'ta `ReplaceFileW` hedefi iki yeniden adlandırmayla değiştirir; aradaki
-anda yolu açan okuyucu dosyayı bulamayabilir. Resmî okuma yolu bu pencerede
-kısa ve sınırlı süre yeniden dener (K-182); böylece okuyucu yine eski ya da
-yeni bütün içeriği görür.
+Windows'ta `ReplaceFileW` hedefi iki yeniden adlandırmayla değiştirir ve
+değiştirme bitene kadar yeni hedefi paylaşımsız açık tutar; aradaki anda yolu
+açan okuyucu dosyayı bulamayabilir ya da paylaşım ihlali alabilir. Resmî okuma
+yolu bu pencerede yeniden dener (K-182): ilk 50 ms koşulsuz; sonrasında yalnız
+hedefle aynı klasörde ona ait `.<ad>.zee-gecici-*` geçici ya da yedek dosyası
+durdukça, yazma kilidinin 5 sn bütçesine kadar (K-342). Yüklü makinede yazar
+değiştirmenin ortasında kesilse de okuyucu böylece yine eski ya da yeni bütün
+içeriği görür; iz yoksa gerçekten olmayan ya da başka süreçte kilitli dosya
+50 ms sonra hata verir. Çökmüş bir yazarın bıraktığı iz yalnız o hedefin
+olmayan-dosya hatasını en çok 5 sn geciktirir.
 
 İçerik değişikliğinde Unix mtime/ctime korunmaz. Görünmeyen Linux `trusted.*`,
 Windows SACL/owner SID ve dosya sistemine özel immutable bayraklar verilmiş söz
