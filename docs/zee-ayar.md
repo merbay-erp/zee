@@ -50,6 +50,14 @@ CLI override'dan önce doğrulanır.
 | `oran-siniri` | tam sayı 1..1000000 | `--web-oran-siniri`, bellek deposunda 60 sn penceresi |
 | `oran-kapasitesi` | tam sayı 1..32768 | `--web-oran-kapasitesi`, bellek deposunda |
 | `oran-doluluk` | `reddet`, `en-eski` | `--web-oran-doluluk`, bellek deposunda |
+| `isci-sayisi` | tam sayı 1..64 | `--web-isci-sayisi` (K-340, ADR-161); `web-modu` `proxy` ve `worker-port` aynı config'te zorunlu; Windows'ta çıkış 2 |
+| `saglik-port` | tam sayı 1..65535 | `--web-saglik-port`; yalnız `isci-sayisi` ile |
+
+İşçi grubu alanları yönetici sürecinde etkilidir. Yönetici işçileri kendi
+argv'siyle başlatır; işçi aynı kökü açtığında config'i yeniden okur ama
+işçi alanlarını yok sayar (yönetici olmaz). Bu alanları tanımayan eski
+okuyucu (`zee-ayar-1` ama K-340 öncesi) bilinmeyen güvenlik alanı olarak
+çıkış 2 verir; sessizce tek süreçle açılmaz.
 
 Varsayılan oran/k kapasite mevcut kaynak sınırlarından gelir; config yeni
 web yetkinliği açmaz. Proje bildiriminin yetkinlik/hedef listesi aynı kalır.

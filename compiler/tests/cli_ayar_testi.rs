@@ -176,6 +176,15 @@ fn guvenlik_tur_aralik_ve_ic_bagimlilikler_cli_override_ile_asillamaz() {
         json!({"web-modu":"deneysel","oran-deposu":"bellek"}),
         json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","oran-siniri":20}),
         json!({"web-modu":"deneysel","cocuk-modu":true}),
+        // K-340: işçi grubu alanları proxy + worker-port ister; CLI'daki
+        // worker portu config'i geçerli kılamaz.
+        json!({"isci-sayisi":2}),
+        json!({"isci-sayisi":0}),
+        json!({"isci-sayisi":65}),
+        json!({"saglik-port":18099}),
+        json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","isci-sayisi":2}),
+        json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18123,
+            "saglik-port":18124}),
     ] {
         p.ayar(zarf(g));
         ret(p.kos(&["--deneysel-web"], &[]), "zee.ayar:");

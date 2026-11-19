@@ -2503,6 +2503,17 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-340 — Çok işçi grubunun `zee.ayar` alanları (zee-cekirdek)
+
+**Durum: KAPALI.** ADR-161 eki: işçi sayısı ve sağlık portu yalnız CLI'daydı;
+K-234 ile üretim ayarlarını sürümlü `zee.ayar`'a taşıyan ürün gruba geçince
+bunları yine `ExecStart`'a yazmak zorundaydı. `guvenlik.isci-sayisi` (1..64)
+ve `guvenlik.saglik-port` mevcut bayraklara eşlenir; `proxy` + `worker-port`
+aynı config'te zorunlu, açık CLI bayrağı ezer, işçi config'i yeniden okusa
+da yönetici olmaz. Kanıt: `ayar.rs::tests::isci_grubu_alanlari_*`,
+`cli_ayar_testi`, `web_cok_surec_testi::isci_grubu_zee_ayar_ile_baslar_ve_cli_ezer`,
+dogfood `zee-cekirdek/zee-ayar-isci`.
+
 ## K-338 — Çok işçi yeniden başlatma sınırı ve sağlık kanıtı
 
 **Durum: KAPALI.** ADR-161 eki: K-336'nın iki `kismi` spec maddesi (art arda
@@ -2523,7 +2534,7 @@ yöneticinin ikincilleri birincil `sunucu başlat`a ulaşınca başlatması;
 yeniden başlatılan işçi ikincildir. Kilit ve yeni koşul biçimi reddedildi.
 Kanıt: `web_cok_surec_testi::isci_grubu_acilisi_*`, `io_izi_testi::birincil_surec_*`,
 dogfood `zee-cekirdek/cok-isci`. Açık: elle kurulan ayrı portlu süreçlerde
-birincillik, `--ayar` alanı.
+birincillik (`--ayar` alanı K-340'ta kapandı).
 
 ## K-335 — Herkese açık rota için önbellek başlığı
 

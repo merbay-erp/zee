@@ -1,0 +1,14 @@
+{
+  "sema": "zee-ayar-1",
+  "surum": 1,
+  "ayarlar": {},
+  "guvenlik": {
+    "web-modu": "proxy",
+    "proxy-origin": "https://urun.test",
+    "worker-port": 8096,
+    "oran-deposu": "bellek",
+    "oran-doluluk": "en-eski",
+    "isci-sayisi": 4,
+    "saglik-port": 8099
+  }
+}
