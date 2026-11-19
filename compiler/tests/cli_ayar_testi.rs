@@ -185,11 +185,37 @@ fn guvenlik_tur_aralik_ve_ic_bagimlilikler_cli_override_ile_asillamaz() {
         json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","isci-sayisi":2}),
         json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18123,
             "saglik-port":18124}),
+        // K-343: systemd-soketi yalnız boolean ve yalnız işçi grubuyla.
+        json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18125,
+            "systemd-soketi":true}),
+        json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18125,
+            "isci-sayisi":2,"systemd-soketi":"evet"}),
     ] {
         p.ayar(zarf(g));
         ret(p.kos(&["--deneysel-web"], &[]), "zee.ayar:");
     }
 }
+/// K-343: config'teki `systemd-soketi: true` yöneticiye gerçekten ulaşır;
+/// systemd devri olmadan çıkış 2 ve düzeltme önerisi, kaynak koşmaz.
+#[cfg(unix)]
+#[test]
+fn systemd_soketi_ayardan_yoneticiye_ulasir_ve_devirsiz_oneriyle_reddeder() {
+    let p = Proje::yeni();
+    p.ayar(zarf(
+        json!({"web-modu":"proxy","proxy-origin":"https://example.invalid",
+        "worker-port":18126,"isci-sayisi":2,"systemd-soketi":true}),
+    ));
+    let o = p.kos(&[], &[]);
+    assert_eq!(o.status.code(), Some(2));
+    assert!(o.stdout.is_empty());
+    let hata = String::from_utf8(o.stderr).unwrap();
+    assert!(hata.contains("systemd soket devri yok"), "{hata}");
+    assert!(
+        hata.contains("ListenStream=127.0.0.1:18126") && hata.contains("Öneri:"),
+        "{hata}"
+    );
+}
+
 #[test]
 fn mevcut_web_ayar_eslemesi_ve_cli_alana_gore_onceligi() {
     let p = Proje::yeni();

@@ -1452,7 +1452,9 @@ Gerçek systemd unit kabulü, rotasyon ve Windows karşılığı açıktır.
 
 K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
 cleanup pilotudur; public launcher cleanup bug'ı temiz c67a69e üzerinde 25-vaka kabulüyle kapandı.
-Tam request drain/reload/metrics ve P14 socket devir açıktır.
+Tam request drain/reload/metrics açıktır; P14 socket devri çok işçi grubu
+için K-343 (systemd soket etkinleştirmesi) ile kapandı, tek süreçli worker ve
+re-exec devri açıktır.
 K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
 PG crash/COMMIT observer ve16 validator temiz c67a69e kabulündedir. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
 

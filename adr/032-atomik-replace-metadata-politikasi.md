@@ -167,7 +167,7 @@ yerleştirmeye sapmaz; kısmi replace sonrası 2 eski bütünü yedekten geri
 kurar), `yarim_degistirme_eski_butunu_geri_koyar_ve_izleri_siler`
 artık yedek dalı, regression `yedek-artigi-diriltmez`
 (`native-yedek-artigi`, Windows). `NotFound` kaynağı yeniden üretilemedi;
-sonraki tekrarda ileti adımı gösterecek. GB-140.
+sonraki tekrarda ileti adımı gösterecek. GB-141.
 
 ## Platform kaynakları
 

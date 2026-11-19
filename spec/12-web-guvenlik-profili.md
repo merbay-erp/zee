@@ -320,6 +320,10 @@ TANIMLI: Proje kökündeki `zee.ayar` (K-234) `guvenlik` dalı `isci-sayisi` (ta
 
 YASAK: `--web-isci-sayisi` `--deneysel-web` ile, worker portu verilmemiş proxy ile, `--web-saglik-port` da `--web-isci-sayisi` olmadan kullanılamaz; 1..64 dışı değer ve `dil çalıştır` dışındaki komut çıkış 2 ile reddedilir. Native listener devri (`--web-listener-fd` …) ve `--web-metrik-fd` çok işçi profiliyle birleşmez.
 
+TANIMLI: `--web-systemd-soketi` (ya da `zee.ayar` `guvenlik.systemd-soketi: true`) verilen işçi grubu yöneticisi ortak dinleyiciyi bağlamaz; systemd soket etkinleştirmesiyle devralır: `LISTEN_PID` yöneticinin PID'i, `LISTEN_FDS` `1` ve soket fd 3 olmalıdır. Soket devralınan dinleyici doğrulayıcısıyla `127.0.0.1:<worker-port>` üzerinde dinleyen TCP olarak sınanır; `LISTEN_PID`, `LISTEN_FDS` ve `LISTEN_FDNAMES` her durumda hemen silinir. Devir yoksa ya da geçersizse çıkış 2'dir ve ileti `.socket` düzeltme önerisi taşır; bind'e geri dönülmez. `LISTEN_FDS` kendiliğinden algılanmaz. Bayrak yalnız `--web-isci-sayisi` ile geçerlidir (K-343).
+
+ZORUNLU: systemd soketiyle çalışan grubun yöneticisi SIGTERM ile boşaltılıp yeniden başlatılırken soket systemd'de kaldığından aralıkta gelen bağlantılar reddedilmez; soket kuyruğunda bekleyip yeni grubun işçileri tarafından yanıtlanır (K-343).
+
 AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` Windows'ta çıkış 2 ile reddedilir ve eşzamanlılık ayrı `--web-worker-port` süreçleri ile önlerindeki proxy dengelemesiyle kurulur. Bağlantıların işçilere dağılımı çekirdeğe bağlıdır (macOS'ta eşit değildir); ayrı portlu süreçlerde birincillik yalnız `birincil süreç`i değerlendiren süreçler arasında ve yerel dosya kilidinin (Unix `flock`, Windows `LockFileEx`) geçerli olduğu tek makinede sağlanır, ağ dosya sistemi ve çok hostlu kurulum kapsam dışıdır.
 
 ## K-335 — Önbelleklenebilir herkese açık rota

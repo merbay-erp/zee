@@ -12,6 +12,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Çok işçi grubu systemd soketiyle kesintisiz yeniden başlar (K-343,
+  ADR-161 eki):** `--web-isci-sayisi` grubu `--web-systemd-soketi` ile (ya da
+  `zee.ayar` içinde `"systemd-soketi": true`) dinleyiciyi kendisi açmak
+  yerine systemd'nin tuttuğu soketi kullanır; `systemctl restart` sırasında
+  gelen istekler reddedilmez, yeni grup hazır olunca yanıtlanır. Kopyalanabilir
+  `.socket`/`.service` şablonları `docs/cok-isci-systemd-soketi.md` içindedir.
+
+  **Göç:** İsteğe bağlıdır. Kullanmak için `.socket` birimini ekleyin ve
+  hizmeti onunla başlatın; bayrak verilip soket yoksa grup açılmaz (çıkış 2,
+  ileti ne yapılacağını söyler). Bu alanı içeren `zee.ayar` daha eski `dil`
+  ile açılmaz (bilinmeyen güvenlik alanı).
+
 - **Çok işçi grubu `zee.ayar`'dan (K-340, ADR-161 eki):** Proje kökündeki
   `zee.ayar` dosyasının `guvenlik` dalı artık `isci-sayisi` (1–64) ve
   `saglik-port` alanlarını taşıyabilir; `dil çalıştır .` grubu bayraksız
@@ -54,6 +66,15 @@ Bu kayıt yeni sürüm etiketi değildir.
 `Environment=`/`EnvironmentFile=` satırındaki aynı adı kaldırın.
 
 ### Düzeltilenler
+
+- **Windows'ta yazarken çöken süreç dosyayı kaybettirmez (K-348, ADR-032
+  eki):** Windows'ta zee bir dosyayı iki adımda değiştirir. Süreç tam bu iki
+  adımın arasında çökerse ya da öldürülürse (servis durdurma, görev
+  yöneticisi, elektrik kesintisi), dosya klasörde görünmez olabiliyordu.
+  Sonraki okuma "dosya bulunamadı" veriyor, sonraki `ekle` ise dosyayı boş
+  sanıp önceki bütün satırları siliyordu. Eski içerik aslında gizli bir yedek
+  dosyada duruyordu; zee artık bu durumu tanıyıp yedeği geri koyar, okuma da
+  o arada eski içeriği görür. Linux ve macOS bu durumu üretmez; göç gerekmez.
 
 - **Geri alınan eylem başka sürecin eklediği satırı silmez (K-346, ADR-075
   eki):** Bir `eylem` dosyaya yazıp başarısız olunca dosyayı eylem başındaki
