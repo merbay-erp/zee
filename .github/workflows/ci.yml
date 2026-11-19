@@ -107,6 +107,8 @@ jobs:
             compiler/target/postgresql-goc-ci.json
             compiler/target/postgresql-goc-ci.log
             compiler/target/parola-goc-ci.json
+            compiler/target/credential-metrik-native-*/proof.json
+            compiler/target/credential-metrik-native-*/olaylar-basarisiz.jsonl
           if-no-files-found: warn
       - name: Uyarı yok
         working-directory: compiler
