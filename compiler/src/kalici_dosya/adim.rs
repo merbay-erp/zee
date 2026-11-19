@@ -136,12 +136,15 @@ pub(super) mod test_kancasi {
     use std::time::Duration;
 
     /// Bir adım noktasında yapılacak enjeksiyon.
-    #[derive(Debug, Clone, Copy)]
     pub enum Enjeksiyon {
         /// Ham işletim sistemi hata kodu döndür.
         OsHatasi(i32),
         /// Adım öncesi bekle (disk durması), sonra devam et.
         Gecikme(Duration),
+        /// Sistem çağrısının yerine geçen eylem: kısmi ilerlemeyi (ör.
+        /// `ReplaceFileW`'nin eski hedefi yedeğe taşıması) gerçek dosya
+        /// sisteminde kurar ve çağrının sonucunu döndürür.
+        Eylem(Box<dyn FnOnce() -> io::Result<()>>),
     }
 
     thread_local! {
@@ -174,6 +177,7 @@ pub(super) mod test_kancasi {
                 std::thread::sleep(sure);
                 Ok(())
             }
+            Some(Enjeksiyon::Eylem(eylem)) => eylem(),
             None => Ok(()),
         }
     }
@@ -363,14 +367,28 @@ mod tests {
         let hedef = klasor.0.join("durum.txt");
         let gecici = klasor.0.join(".durum.txt.zee-gecici-1-1");
         let yedek = klasor.0.join(".durum.txt.zee-gecici-1-1.zee-yedek");
+        std::fs::write(&hedef, "eski").unwrap();
         std::fs::write(&gecici, "yeni").unwrap();
-        // ReplaceFileW'nin ilk adımı: eski hedef → yedek.
-        std::fs::write(&yedek, "eski").unwrap();
-        kur(Adim::ReplaceFileW, Enjeksiyon::OsHatasi(2));
+        // Yedek çağrıdan önce var olamaz (benzersiz yedek koruması); gerçek
+        // ReplaceFileW gibi eski hedef çağrı anında yedeğe taşınır, sonra 2.
+        let (eylem_hedef, eylem_yedek) = (hedef.clone(), yedek.clone());
+        kur(
+            Adim::ReplaceFileW,
+            Enjeksiyon::Eylem(Box::new(move || {
+                std::fs::rename(&eylem_hedef, &eylem_yedek)?;
+                Err(io::Error::from_raw_os_error(2))
+            })),
+        );
         let hata = crate::kalici_dosya::atomik_degistir(&gecici, &hedef)
             .expect_err("kısmi replace hata döner");
+        assert_eq!(hata.kind(), io::ErrorKind::NotFound, "{hata}");
         assert_eq!(hata_adimi(&hata), Some(Adim::ReplaceFileW), "{hata}");
         assert_eq!(std::fs::read(&hedef).unwrap(), b"eski");
         assert!(!yedek.exists(), "yedek hedefe geri taşınmalı");
+        assert_eq!(
+            std::fs::read(&gecici).unwrap(),
+            b"yeni",
+            "geçici çağıranındır"
+        );
     }
 }
