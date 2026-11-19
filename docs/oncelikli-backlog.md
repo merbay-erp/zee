@@ -2503,6 +2503,16 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-338 — Çok işçi yeniden başlatma sınırı ve sağlık kanıtı
+
+**Durum: KAPALI.** ADR-161 eki: K-336'nın iki `kismi` spec maddesi (art arda
+hızlı çıkışta durma, 40 sn zorla sonlandırma; `/saglik` 503 ara durumları,
+HEAD, 404) gerçek yöneticiyle sınandı. Sınama yuvanın 10 değil 11. hızlı
+çıkışta durduğunu gösterdi; sayaç spec/12 sözüne çekildi. Kanıt:
+`web_cok_surec_testi::isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir`,
+`…::isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir`, regression
+`cli/isci-grubu-ardisik-cokus`.
+
 ## K-337 — Çok süreçte açılış uzlaştırmasının tekliği (zee-cekirdek W4)
 
 **Durum: KAPALI.** ADR-161: ürün açılışı (yarım yükleme uzlaştırması,

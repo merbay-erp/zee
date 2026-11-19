@@ -37,8 +37,50 @@ struct Sunucu(Child);
 
 impl Drop for Sunucu {
     fn drop(&mut self) {
+        // K-338: işçi grubu kendi süreç grubunda başlar; grup lideri henüz
+        // biçilmediğinden bu kimlik başka gruba ait olamaz. Lider olmayan
+        // süreçte ESRCH döner, etkisizdir. Donmuş (SIGSTOP) ya da sahipsiz
+        // işçi test sonrasında yaşamaz.
+        #[cfg(unix)]
+        // SAFETY: signal to our own unreaped child's process group.
+        unsafe {
+            libc::kill(-(self.0.id() as libc::pid_t), libc::SIGKILL);
+        }
         let _ = self.0.kill();
         let _ = self.0.wait();
+    }
+}
+
+/// K-338: süre dolarsa işçi grubunu (süreç grubu) öldürür; böylece hiçbir
+/// bekleme sonsuza dek asılı kalmaz ve test görünür biçimde başarısız olur.
+#[cfg(unix)]
+struct Bekci(std::sync::Arc<std::sync::atomic::AtomicBool>);
+
+#[cfg(unix)]
+impl Bekci {
+    fn kur(grup: u32, sure: Duration) -> Self {
+        let bitti = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let izle = std::sync::Arc::clone(&bitti);
+        std::thread::spawn(move || {
+            let son = Instant::now() + sure;
+            while Instant::now() < son {
+                if izle.load(Ordering::Relaxed) {
+                    return;
+                }
+                std::thread::sleep(Duration::from_millis(100));
+            }
+            eprintln!("bekçi: {sure:?} doldu; işçi grubu {grup} öldürülüyor");
+            // SAFETY: SIGKILL to the test-owned manager's process group.
+            unsafe { libc::kill(-(grup as libc::pid_t), libc::SIGKILL) };
+        });
+        Self(bitti)
+    }
+}
+
+#[cfg(unix)]
+impl Drop for Bekci {
+    fn drop(&mut self) {
+        self.0.store(true, Ordering::Relaxed);
     }
 }
 
@@ -658,11 +700,13 @@ fn grubu_baslat(kaynak: &Path, kapi: u16, isci: u16, saglik: Option<u16>) -> Sun
         .current_dir(kaynak.parent().expect("kaynak klasörü"))
         .stderr(Stdio::null());
     Sunucu(kopma::dinleyene_dek_baslat(|| {
+        use std::os::unix::process::CommandExt;
         let mut kopya = Command::new(komut.get_program());
         kopya
             .args(komut.get_args())
             .current_dir(kaynak.parent().expect("kaynak klasörü"))
-            .stderr(Stdio::null());
+            .stderr(Stdio::null())
+            .process_group(0);
         kopya
     }))
 }
@@ -918,6 +962,196 @@ fn isci_grubu_yonetici_olurse_isciler_dinleyiciyi_birakir() {
         assert!(Instant::now() < son, "sahipsiz işçiler kapanmadı");
         std::thread::sleep(Duration::from_millis(50));
     }
+}
+
+#[cfg(unix)]
+fn saglik_ham(kapi: u16, istek_satiri: &str) -> Option<String> {
+    let mut akis = TcpStream::connect(("127.0.0.1", kapi)).ok()?;
+    akis.set_read_timeout(Some(Duration::from_secs(5))).ok();
+    akis.write_all(format!("{istek_satiri}\r\nHost: 127.0.0.1\r\n\r\n").as_bytes())
+        .ok()?;
+    let mut yanit = String::new();
+    akis.read_to_string(&mut yanit).ok()?;
+    Some(yanit)
+}
+
+#[cfg(unix)]
+fn grup_cikisini_bekle(grup: &mut Sunucu, sure: Duration) -> (std::process::ExitStatus, Duration) {
+    let baslangic = Instant::now();
+    loop {
+        if let Some(durum) = grup.0.try_wait().expect("grup durumu") {
+            return (durum, baslangic.elapsed());
+        }
+        assert!(baslangic.elapsed() < sure, "grup {sure:?} içinde çıkmadı");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+/// K-338: yuva 10 sn dolmadan art arda 10. kez çıkınca grup çıkış 1 ile durur
+/// (önceden 11. çıkışta duruyordu). Aynı koşu sağlık uç noktasının 503
+/// `basliyor`/`eksik` ara durumlarını, HEAD gövdesizliğini ve 404 yolunu sınar.
+#[cfg(unix)]
+#[test]
+fn isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir() {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let saglik = bos_kapi();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        format!(
+            "sahip birincil süreç olsun\n\
+             sahip ise\n    toplam 0 olsun\n    1 den 1000000 e kadar her sayı için\n        \
+             toplamı sayıyla artır\n\
+             değilse\n    programı 3 ile bitir\n\
+             {kapi} kapısında sunucu başlat\n\n\
+             GET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"
+        ),
+    )
+    .expect("kaynak");
+    let gunluk = gecici.0.join("yonetici.log");
+    use std::os::unix::process::CommandExt;
+    let mut grup = Sunucu(
+        Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args([
+                "çalıştır",
+                "--web-proxy",
+                "https://panel.example",
+                "--web-worker-port",
+                &kapi.to_string(),
+                "--web-isci-sayisi",
+                "2",
+                "--web-saglik-port",
+                &saglik.to_string(),
+                yol.to_str().expect("UTF-8 kaynak yolu"),
+            ])
+            .current_dir(&gecici.0)
+            .stdout(Stdio::null())
+            .stderr(std::fs::File::create(&gunluk).expect("yönetici günlüğü"))
+            .process_group(0)
+            .spawn()
+            .expect("yönetici"),
+    );
+    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(150));
+
+    // Birincil açılışı sürerken: 503 basliyor; HEAD aynı başlığı gövdesiz verir.
+    let son = Instant::now() + Duration::from_secs(20);
+    let basliyor = loop {
+        if let Some(yanit) = saglik_ham(saglik, "GET /saglik HTTP/1.1") {
+            break yanit;
+        }
+        assert!(Instant::now() < son, "sağlık portu açılmadı");
+        std::thread::sleep(Duration::from_millis(5));
+    };
+    assert_eq!(durum(&basliyor), 503, "{basliyor}");
+    assert!(
+        basliyor.ends_with(
+            "{\"durum\":\"basliyor\",\"isci\":2,\"canli\":0,\"yeniden_baslatma\":0,\"surecler\":[]}\n"
+        ),
+        "{basliyor}"
+    );
+    let head = saglik_ham(saglik, "HEAD /saglik HTTP/1.1").expect("HEAD yanıtı");
+    assert!(head.starts_with("HTTP/1.1 "), "{head}");
+    assert!(head.ends_with("\r\n\r\n"), "HEAD gövde taşımamalı: {head}");
+    assert!(head.contains("Content-Length: "), "{head}");
+    for istek_satiri in [
+        "GET /baska HTTP/1.1",
+        "POST /saglik HTTP/1.1",
+        "GET /saglik/ HTTP/1.1",
+    ] {
+        let yanit = saglik_ham(saglik, istek_satiri).expect("404 yanıtı");
+        assert_eq!(durum(&yanit), 404, "{istek_satiri}: {yanit}");
+        assert!(
+            yanit.ends_with("{\"durum\":\"bulunamadi\"}\n"),
+            "{istek_satiri}: {yanit}"
+        );
+    }
+
+    // İkincil sürekli çöker: grup hazır olsa da işçi eksik → 503 eksik.
+    let son = Instant::now() + Duration::from_secs(30);
+    let eksik = loop {
+        let yanit = saglik_ham(saglik, "GET /saglik HTTP/1.1").unwrap_or_default();
+        if yanit.contains("\"durum\":\"eksik\"") {
+            break yanit;
+        }
+        assert!(Instant::now() < son, "eksik durumu görülmedi: {yanit}");
+        std::thread::sleep(Duration::from_millis(20));
+    };
+    assert_eq!(durum(&eksik), 503, "{eksik}");
+    assert!(eksik.contains("\"canli\":1"), "{eksik}");
+    let birincil = surecler(eksik.split("\r\n\r\n").nth(1).unwrap_or_default());
+    assert_eq!(birincil.len(), 1, "{eksik}");
+
+    // 250 ms → 5 sn katlanan gecikmelerle dokuz yeniden başlatma ≈ 28 sn.
+    let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(90));
+    assert_eq!(cikis.code(), Some(1), "{cikis}");
+    let metin = std::fs::read_to_string(&gunluk).expect("yönetici günlüğü");
+    assert_eq!(
+        metin.matches("zee-web işçi 2 başladı").count(),
+        10,
+        "ikinci yuva tam 10 kez başlamalı (ilk + 9 yeniden):\n{metin}"
+    );
+    assert_eq!(metin.matches("zee-web işçi 2 (pid ").count(), 9, "{metin}");
+    assert!(
+        metin.contains("zee-web işçi 2 art arda 10 kez hızlı çıktı; grup durduruluyor"),
+        "{metin}"
+    );
+    assert!(
+        !sinyal(birincil[0], "-0"),
+        "birincil işçi grup durduktan sonra yaşamamalı"
+    );
+}
+
+/// K-338: SIGTERM sonrası 40 sn içinde bitmeyen işçi (burada SIGSTOP ile
+/// donmuş) sonlandırılır; yönetici çıkış 1 verir. Kapanış boyunca sağlık
+/// 503 `kapaniyor` döner.
+#[cfg(unix)]
+#[test]
+fn isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir() {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let saglik = bos_kapi();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        format!("{kapi} kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"),
+    )
+    .expect("kaynak");
+    let mut grup = grubu_baslat(&yol, kapi, 2, Some(saglik));
+    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(120));
+    let pidler = surecler(&saglik_bekle(saglik, |g| g.contains("\"canli\":2")));
+    assert_eq!(pidler.len(), 2);
+    assert!(sinyal(pidler[1], "-STOP"));
+    assert!(sinyal(grup.0.id(), "-TERM"));
+    let son = Instant::now() + Duration::from_secs(10);
+    let kapaniyor = loop {
+        let yanit = saglik_ham(saglik, "GET /saglik HTTP/1.1").unwrap_or_default();
+        if yanit.contains("\"durum\":\"kapaniyor\"") {
+            break yanit;
+        }
+        assert!(Instant::now() < son, "kapaniyor durumu görülmedi: {yanit}");
+        std::thread::sleep(Duration::from_millis(20));
+    };
+    assert_eq!(durum(&kapaniyor), 503, "{kapaniyor}");
+    let son = Instant::now() + Duration::from_secs(10);
+    while sinyal(pidler[0], "-0") {
+        assert!(Instant::now() < son, "donmamış işçi SIGTERM ile çıkmalı");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    assert!(
+        sinyal(pidler[1], "-0"),
+        "donmuş işçi süre dolmadan yaşamalı"
+    );
+    let (cikis, sure) = grup_cikisini_bekle(&mut grup, Duration::from_secs(60));
+    assert_eq!(cikis.code(), Some(1), "{cikis}");
+    assert!(
+        sure >= Duration::from_secs(38),
+        "zorla sonlandırma 40 sn dolmadan yapılmamalı: {sure:?}"
+    );
+    assert!(
+        !sinyal(pidler[1], "-0"),
+        "40 sn sonra donmuş işçi sonlandırılmış olmalı"
+    );
 }
 
 #[test]

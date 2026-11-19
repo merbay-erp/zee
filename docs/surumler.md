@@ -49,6 +49,14 @@ Bu kayıt yeni sürüm etiketi değildir.
   Gerçekten olmayan dosya eskisi gibi hemen hata verir. Linux ve macOS
   değişmedi; göç gerekmez.
 
+- **Çok işçi grubu çöken işçide söz verilen sınırda durur (K-338, ADR-161
+  eki):** `--web-isci-sayisi` ile açılan grupta bir işçi 10 saniye dolmadan
+  art arda 10 kez çıkarsa grup artık 10. çıkışta durur (çıkış 1); önceden bir
+  yeniden başlatma daha (≈5 sn) deneyip 11. çıkışta duruyordu. Sağlıklı
+  gruplarda davranış değişmedi; göç gerekmez. Sağlık uç noktasının 503
+  `basliyor`/`eksik`/`kapaniyor` durumları, HEAD ve 404 yanıtları ile 40 sn
+  kapanış sınırı artık otomatik testle korunur.
+
 ## 18 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

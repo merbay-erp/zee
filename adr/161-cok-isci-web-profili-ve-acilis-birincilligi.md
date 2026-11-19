@@ -88,5 +88,27 @@ birincili olduğunu bilemez; elle üç süreç açmak açılış sırası vermez
 
 Windows dinleyici devri; dengeli dağılım (macOS); `--ayar` alanı; çok hostlu
 grup; elle kurulan ayrı portlu süreçlerde birincillik (her biri kendini birincil
-görür). Art arda çökme sınırı ve 40 sn zorla sonlandırma ayrı vaka ile
-sınanmadı (spec madde kanıtı `kismi`).
+görür).
+
+## Ek — K-338: yeniden başlatma sınırı ve sağlık uç noktası kanıtı (19 Kasım 2026)
+
+Açık kalan iki spec maddesi (art arda çökme durdurması, 40 sn zorla
+sonlandırma; `/saglik` 503 ara durumları, HEAD ve 404) gerçek yönetici
+sürecinde sınandı. Sınama bir sapma buldu: yuva sayacı `ardisik >
+AZAMI_ARDISIK_COKUS` ile karşılaştırıldığından grup 10 değil 11. hızlı
+çıkışta duruyor, günlük yine "art arda 10 kez" yazıyordu. Sözleşme spec/12'deki
+"art arda 10 kez çıkan yuva grubu durdurur" metnidir; kod ona çekildi
+(`>=`, günlük gerçek sayıyı yazar). Davranış yalnız sürekli çöken bir yuvanın
+grubu bir yeniden başlatma (≈5 sn) erken durdurmasıdır; sağlıklı grupta fark
+yoktur.
+
+- Kanıt: `web_cok_surec_testi::isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir`
+  (ikincil `programı 3 ile bitir`: yuva tam 10 kez başlar, 9 yeniden başlatma,
+  çıkış 1; birincil açılışı sürerken 503 `basliyor`, ikincil düşükken 503
+  `eksik`, HEAD gövdesiz, `/baska`, `POST /saglik`, `/saglik/` 404) ve
+  `…::isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir`
+  (SIGSTOP ile dondurulan işçi SIGTERM'i işleyemez; diğer işçi hemen çıkar,
+  sağlık 503 `kapaniyor`, yönetici ≥38 sn sonra donmuş işçiyi sonlandırıp
+  çıkış 1 verir). Regression `cli/isci-grubu-ardisik-cokus`.
+- Dil yüzeyi, grammar, tanı ve `dil::api::v1` değişmedi; güvenlik sınırı
+  değil (GB satırı yok): yönetici yalnız erken durur.

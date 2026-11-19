@@ -5207,3 +5207,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   okunur klasörde kilit dosyası açılamaz, okuyucular yazarları bekletir),
   `ReplaceFileW` yerine POSIX rename (DACL/named stream taşıma sözü elle
   yeniden yazılmalı; core freeze altında büyük değişiklik).
+
+## K-338 — Çok işçi yeniden başlatma sınırı (19 Kasım 2026)
+
+- K-336 sonrası açık kalan kanıt (art arda çökme durdurması, 40 sn zorla
+  sonlandırma, `/saglik` 503/HEAD/404) gerçek yöneticiyle sınandı. Sürekli
+  çöken ikincil yuva 11 kez başladı; spec/12 "art arda 10 kez çıkan yuva grubu
+  durdurur" der, günlük de "10 kez" yazıyordu. Karar: sözleşme spec'tir, sayaç
+  `>=` ile 10. hızlı çıkışta durur ve günlük gerçek sayıyı yazar (ADR-161
+  eki). 40 sn sınırı test için kısaltılmadı: donmuş işçi SIGSTOP ile
+  üretildi, test gerçek süreyi bekler. Core freeze altında correctness;
+  dil yüzeyi değişmedi.

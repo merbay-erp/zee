@@ -585,11 +585,13 @@ mod unix {
         yuva.cocuk = None;
         let hizli = simdi.duration_since(yuva.baslangic) < HIZLI_COKUS;
         yuva.ardisik = if hizli { yuva.ardisik + 1 } else { 1 };
-        if yuva.ardisik > AZAMI_ARDISIK_COKUS {
+        // K-338: 10 sn dolmadan art arda AZAMI_ARDISIK_COKUS'uncu çıkış grubu
+        // durdurur (spec/12); sayaç bu çıkışı da içerir.
+        if hizli && yuva.ardisik >= AZAMI_ARDISIK_COKUS {
             eprintln!(
                 "zee-web işçi {} art arda {} kez hızlı çıktı; grup durduruluyor",
                 sira + 1,
-                yuva.ardisik - 1
+                yuva.ardisik
             );
             return false;
         }

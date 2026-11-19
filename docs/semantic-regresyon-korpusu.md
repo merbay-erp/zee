@@ -278,3 +278,19 @@ K-294 takip kaydı artık `native-metric-stdio-alias` fixture ve exact
 `fixed_by=382beed1d01440f6f9df28b5ac7a111fbe1f75ee` taşır.
 Nonempty dedicated Unix libtest gerçek kaynağı ve observed exit2/boş kanal
 sonucunu yürütür; kaynak commitinden sonraki provenance diliminde eklenmiştir.
+
+## Native işçi grubu kipi (K-338)
+
+`cli` fazındaki `native-isci-grubu` kipi gerçek native `dil` yöneticisini
+`--web-proxy … --web-worker-port <boş kapı> --web-isci-sayisi 2` ile başlatır
+(kaynağın kapısı yok sayılır) ve yönetici çıkana dek en çok 90 sn bekler.
+Exit yöneticinin çıkış kodudur; çıktı stderr'den sayılan iki satırdır:
+`yuva 2 başlatma <n>` ve günlükteki `durma <n>`. Fixture'da ikincil yuva her
+açılışta `programı 3 ile bitir` ile çıkar; düzeltme öncesi kaynakta çıktı
+`yuva 2 başlatma 11` / `durma 10`, düzeltmeyle `10` / `10`'dur. Koşu
+gecikme dizisi nedeniyle ≈28 sn sürer. Yönetici kendi süreç grubunda başlar;
+çıkışından sonra grup öldürülür ve stderr borusu en çok 15 sn beklenir
+(macOS'ta boru CLOEXEC'i atomik değildir, eşzamanlı spawn yazma ucunu
+miras alabilir), böylece kip asılı kalamaz. ToplayanIo süreç yönetimini taklit
+edemediği için toplu replay bu kipi atlar; ayrı native libtest vakası boş
+listeyi reddeder ve Unix dışında görünür ignored durumundadır.
