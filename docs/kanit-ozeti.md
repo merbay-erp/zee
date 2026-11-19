@@ -63,7 +63,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 15 | 0 | 0 | 15 | 100 |
-| spec/12-web-guvenlik-profili.md | 29 | 2 | 2 | 33 | 87 |
+| spec/12-web-guvenlik-profili.md | 31 | 0 | 2 | 33 | 93 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 0 | 8 | 100 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |
@@ -82,7 +82,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 245 | 7 | 5 | 257 | 95 |
+| **Toplam** | 247 | 5 | 5 | 257 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
