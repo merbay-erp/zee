@@ -3790,7 +3790,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn birincil_surec(&mut self) -> bool {
-        web_isci_grubu::birincil_mi()
+        let kok = self
+            .web_worker_kapisi()
+            .map(|_| self.dosya_siniri_koku.as_path());
+        web_isci_grubu::birincil_mi(kok)
     }
     fn istemci_adresi(&mut self) -> String {
         if self.web_istek_yedegi.is_some() {

@@ -200,7 +200,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **1116** |
+| Rust + doctest vakası | **1121** |
 | Tanı kimliği | **164 etkin + 3 ayrılmış** |
 | RFC | **38** (5 kabul, 30 geçici kabul, 3 taslak) |
 | ADR | **156** (156 kabul) |
@@ -271,7 +271,8 @@ Unix'te `--web-worker-port P --web-isci-sayisi N` tek komutla N işçi açar:
 yönetici loopback dinleyiciyi işçilere devreder, çöken işçiyi yeniden
 başlatır ve isteğe bağlı `--web-saglik-port` ile `/saglik` yanıtlar; oturum,
 CSRF ve oran sınırı tek süreçle aynıdır. Açılış işi `birincil süreç` ile tek
-işçiye bağlanır. Windows'ta bu profil yoktur.
+işçiye bağlanır; elle açılan ayrı portlu süreçlerde de aynı kökte tek süreç
+birincildir. Windows'ta bu profil yoktur.
 [Karar ve sınırlar](adr/161-cok-isci-web-profili-ve-acilis-birincilligi.md).
 
 Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızlıkları

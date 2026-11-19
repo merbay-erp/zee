@@ -1,7 +1,10 @@
 //! K-338: `--web-isci-sayisi` yöneticisinin art arda hızlı çıkış sınırını
 //! gerçek native `dil` yönetici ve işçi süreçleriyle sınar. Korpus kipi
 //! `native-isci-grubu`; ToplayanIo süreç yönetimini taklit edemediği için
-//! toplu replay bu kipi atlar. Unix dışında sahte başarı yoktur.
+//! toplu replay bu kipi atlar. Unix dışında sahte başarı yoktur. K-341:
+//! proje Cargo hedef klasöründe koşu başına geçici kopyadır; birincil işçinin
+//! `.zee` süreç kilitleri depo ağacına yazılmaz ve eşzamanlı iki koşu aynı
+//! kökte birbirini canlı katılımcı görmez.
 #![allow(dead_code)]
 
 use std::path::Path;
@@ -21,6 +24,24 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         use std::process::{Command, Stdio};
         use std::time::{Duration, Instant};
 
+        let proje = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!(
+            "zee-k338-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("saat")
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(&proje).expect("proje klasörü");
+        struct Temizle(std::path::PathBuf);
+        impl Drop for Temizle {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let _temizle = Temizle(proje.clone());
+        let ana = proje.join("ana.dil");
+        std::fs::copy(kaynak_yolu, &ana).expect("kaynak kopyası");
         let kapi = super::native_web_kopma_fixture::bos_kapi();
         let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
             .args([
@@ -31,7 +52,7 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
                 &kapi.to_string(),
                 "--web-isci-sayisi",
                 "2",
-                kaynak_yolu.to_str().expect("UTF-8 kaynak yolu"),
+                ana.to_str().expect("UTF-8 kaynak yolu"),
             ])
             .stdout(Stdio::null())
             .stderr(Stdio::piped())

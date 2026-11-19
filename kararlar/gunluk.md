@@ -5231,3 +5231,15 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   dalı (güvenlik etkili alan sessizce atlanırdı), `proje.dil` alanı (dil
   yüzeyi). ADR-161 eki; ürün adı ADR-087 gereği anonimdir.
 
+
+## K-341 — Ayrı portlu süreçlerde birincillik (19 Kasım 2026)
+
+- K-337 birincilliği yalnız resmî grubun rol kaydına bağlamıştı; Windows'ta ve
+  elle kurulan ayrı `--web-worker-port` süreçlerinde her süreç kendini
+  birincil görüyor, yeniden açılan süreç açılış uzlaştırmasını çalışan
+  süreçlerin ortasında tekrar koşuyordu (GB-136). Correctness düzeltmesi:
+  dosya sınırı kökünde açılış (sıra) ve canlılık (paylaşımlı) çekirdek
+  kilitleri; grammar/API değişmedi, mevcut ifadenin değeri doğru hesaplanır.
+  K-337'nin reddettiği yalnız-açılış kilidi değildir: belirleyici olan canlılık
+  kilididir, yeniden başlayan süreç yaşayan katılımcıyı görüp ikincil kalır.
+  ADR-161 eki.

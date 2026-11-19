@@ -284,6 +284,9 @@ sonucunu yürütür; kaynak commitinden sonraki provenance diliminde eklenmişti
 `cli` fazındaki `native-isci-grubu` kipi gerçek native `dil` yöneticisini
 `--web-proxy … --web-worker-port <boş kapı> --web-isci-sayisi 2` ile başlatır
 (kaynağın kapısı yok sayılır) ve yönetici çıkana dek en çok 90 sn bekler.
+Kaynak koşu başına Cargo hedef klasöründe geçici bir projeye kopyalanır
+(K-341: birincil işçinin `.zee` süreç kilitleri depo ağacına yazılmaz,
+eşzamanlı iki koşu birbirini canlı katılımcı görmez).
 Exit yöneticinin çıkış kodudur; çıktı stderr'den sayılan iki satırdır:
 `yuva 2 başlatma <n>` ve günlükteki `durma <n>`. Fixture'da ikincil yuva her
 açılışta `programı 3 ile bitir` ile çıkar; düzeltme öncesi kaynakta çıktı
@@ -294,3 +297,16 @@ gecikme dizisi nedeniyle ≈28 sn sürer. Yönetici kendi süreç grubunda başl
 miras alabilir), böylece kip asılı kalamaz. ToplayanIo süreç yönetimini taklit
 edemediği için toplu replay bu kipi atlar; ayrı native libtest vakası boş
 listeyi reddeder ve Unix dışında görünür ignored durumundadır.
+
+## Native ayrı port birincillik kipi (K-341)
+
+`cli` fazındaki `native-ayri-port-birincil` kipi kaynağı Cargo hedef
+klasöründe geçici bir projeye kopyalar (`.zee` süreç kilitleri depo ağacına
+yazılmaz) ve gerçek native `dil` worker'larını `--web-proxy … --web-worker-port
+<boş kapı>` ile ayrı ayrı açar: süreç 1 ve 2 açılır, süreç 1 öldürülüp aynı
+kapıda süreç 3 açılır. Her süreç dinlemeye geçtikten sonra `GET /rol` ile
+sorulur. Exit 0, çıktı `1 <rol>`, `2 <rol>`, `3 <rol>` satırlarıdır.
+Düzeltme öncesi kaynakta üçü de `birincil`, düzeltmeyle `birincil`,
+`ikincil`, `ikincil`'dir. Kip Unix'e özgü çağrı kullanmaz ve her platformda
+koşar; ToplayanIo süreç yönetimini taklit edemediği için toplu replay bu kipi
+atlar, ayrı native libtest vakası boş listeyi reddeder.

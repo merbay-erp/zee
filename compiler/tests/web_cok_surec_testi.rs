@@ -1223,9 +1223,33 @@ fn isci_grubu_zee_ayar_ile_baslar_ve_cli_ezer() {
     let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(45));
     assert!(cikis.success(), "{cikis}");
     drop(grup);
+    // K-341: `/` isteğinde `birincil süreç`i değerlendiren işçiler canlı
+    // kilide katıldı; grup çıkınca çekirdek kilidi hemen bırakmış olmalı.
+    let canli = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(gecici.0.join(".zee/birincil-canli.kilit"))
+        .expect("canlı kilit dosyası");
+    canli
+        .try_lock()
+        .expect("çıkan grubun işçileri canlı kilidi bırakmalı");
+    drop(canli);
 
-    let mut grup = baslat(&["--web-isci-sayisi", "2"]);
-    let govde = saglik_bekle(saglik, |g| g.contains("\"canli\":2"));
+    // İkinci grup taze kapılarla açılır: ilk grubun bıraktığı kapıları aynı
+    // anda koşan başka test ikilisi alabilir (faz matrisinde görülen
+    // "Address already in use" çıkış 1). CLI bayrakları config'i ezer.
+    let (kapi2, saglik2) = (bos_kapi(), bos_kapi());
+    let (kapi2, saglik2) = (kapi2.to_string(), saglik2.to_string());
+    let mut grup = baslat(&[
+        "--web-isci-sayisi",
+        "2",
+        "--web-worker-port",
+        &kapi2,
+        "--web-saglik-port",
+        &saglik2,
+    ]);
+    let saglik2: u16 = saglik2.parse().expect("kapı");
+    let govde = saglik_bekle(saglik2, |g| g.contains("\"canli\":2"));
     assert!(govde.contains("\"isci\":2"), "CLI config'i ezmeli: {govde}");
     assert!(sinyal(grup.0.id(), "-TERM"));
     let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(45));
@@ -1381,4 +1405,123 @@ fn onbelleklenebilir_rota_set_cookie_uretince_asla_public_olmaz() {
     let yok = istek(kapi, "203.0.113.9", "GET", "/vitrin-yok", None, "");
     assert_eq!(durum(&yok), 404);
     assert_eq!(onbellek_basligi(&yok), "no-store");
+}
+
+/// K-341: dinlemeyi beklemeden ayrı portlu worker süreci açar (açılış
+/// kilidinde bekleyebilir).
+fn ayri_sureci_ac(kaynak: &Path, kapi: u16) -> Sunucu {
+    Sunucu(
+        Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args([
+                "çalıştır",
+                "--web-proxy",
+                "https://panel.example",
+                "--web-worker-port",
+                &kapi.to_string(),
+                kaynak.to_str().expect("UTF-8 kaynak yolu"),
+            ])
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("ayrı portlu worker"),
+    )
+}
+
+fn dinleyene_dek_bekle(kapi: u16, sure: Duration) {
+    let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+    let son = Instant::now() + sure;
+    while TcpStream::connect_timeout(&adres, Duration::from_millis(100)).is_err() {
+        assert!(
+            Instant::now() < son,
+            "worker {kapi} {sure:?} içinde dinlemedi"
+        );
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+fn rol_oku(kapi: u16) -> String {
+    let yanit = istek(kapi, "203.0.113.7", "GET", "/rol", None, "");
+    assert_eq!(durum(&yanit), 200, "{yanit}");
+    yanit
+        .rsplit("\r\n\r\n")
+        .next()
+        .unwrap_or_default()
+        .to_string()
+}
+
+#[test]
+fn ayri_portlu_surecler_tek_birincil_secer_ve_acilisi_bekler() {
+    let gecici = GeciciKlasor::yeni();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        "sahip birincil süreç olsun\n\
+         sahip ise\n    \"acilis.log\" dosyasına \"açılış başladı\" ekle\n    \
+         toplam 0 olsun\n    1 den 1000000 e kadar her sayı için\n        toplamı sayıyla artır\n    \
+         \"acilis.log\" dosyasına \"açılış bitti\" ekle\n\
+         değilse\n    \"acilis.log\" dosyasına \"ikincil\" ekle\n\
+         8080 kapısında sunucu başlat\n\n\
+         GET \"/rol\" adresine istek geldiğinde\n    rol birincil süreç olsun\n    rol ise\n        \
+         \"birincil\" yanıtını gönder\n    değilse\n        \"ikincil\" yanıtını gönder\n",
+    )
+    .expect("kaynak");
+    let gunluk = || std::fs::read_to_string(gecici.0.join("acilis.log")).unwrap_or_default();
+    let (kapi1, kapi2, kapi3) = (bos_kapi(), bos_kapi(), bos_kapi());
+
+    // Birincil açılış işini yaparken ikinci süreç açılır: açılış kilidinde
+    // bekler, birincil `sunucu başlat`a ulaşmadan kendi açılışını koşmaz.
+    let mut bir = ayri_sureci_ac(&yol, kapi1);
+    let son = Instant::now() + Duration::from_secs(60);
+    while !gunluk().contains("açılış başladı") {
+        assert!(Instant::now() < son, "birincil açılışa başlamadı");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    let iki = ayri_sureci_ac(&yol, kapi2);
+    dinleyene_dek_bekle(kapi1, Duration::from_secs(90));
+    dinleyene_dek_bekle(kapi2, Duration::from_secs(90));
+    assert_eq!(
+        gunluk().lines().collect::<Vec<_>>(),
+        vec!["açılış başladı", "açılış bitti", "ikincil"],
+        "ikinci süreç birincilin açılışı bitmeden karar vermemeli"
+    );
+    assert_eq!(rol_oku(kapi1), "birincil");
+    assert_eq!(rol_oku(kapi2), "ikincil");
+
+    // Birincil ölür; diğer süreç yaşarken aynı kapıda açılan süreç açılış
+    // işini yeniden koşturmaz (K-337'nin grup içi kuralı, ayrı portlarda).
+    let _ = bir.0.kill();
+    let _ = bir.0.wait();
+    drop(bir);
+    let yeniden = ayri_sureci_ac(&yol, kapi1);
+    dinleyene_dek_bekle(kapi1, Duration::from_secs(90));
+    assert_eq!(
+        rol_oku(kapi1),
+        "ikincil",
+        "yeniden açılan süreç birincil olamaz"
+    );
+    assert_eq!(gunluk().matches("açılış başladı").count(), 1);
+
+    // Kökte canlı süreç kalmayınca yeni süreç yeniden birincildir.
+    drop((iki, yeniden));
+    // Çekirdek ölen sürecin kilidini bırakır; Windows bunu gecikmeli
+    // yapabildiğinden yeni süreç, kilit gerçekten boşalınca açılır.
+    let canli = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(gecici.0.join(".zee/birincil-canli.kilit"))
+        .expect("canlı kilit dosyası");
+    let son = Instant::now() + Duration::from_secs(30);
+    while canli.try_lock().is_err() {
+        assert!(
+            Instant::now() < son,
+            "ölen süreçlerin canlı kilidi bırakılmadı"
+        );
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    drop(canli);
+    let uc = ayri_sureci_ac(&yol, kapi3);
+    dinleyene_dek_bekle(kapi3, Duration::from_secs(90));
+    assert_eq!(rol_oku(kapi3), "birincil");
+    assert_eq!(gunluk().matches("açılış başladı").count(), 2);
+    drop(uc);
 }

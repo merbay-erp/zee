@@ -55,6 +55,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Ayrı portlu web süreçlerinde tek birincil (K-341, ADR-161 eki):** Aynı
+  proje kökünden elle açılan ayrı `--web-worker-port` süreçlerinin (Windows'ta
+  tek ölçek yolu) her biri `birincil süreç`i `doğru` görüyordu; ölen sürecin
+  yerine açılan süreç açılış işini (yarım yükleme uzlaştırması, sahipsiz dosya
+  taraması) çalışan süreçlerin ortasında yeniden koşabiliyordu. Artık kökte
+  canlı başka süreç varken açılan süreç `yanlış` görür; birlikte açılan
+  süreçler birincilin `sunucu başlat`ına kadar karar vermeden bekler. Kök
+  altında `.zee/birincil-acilis.kilit` ve `.zee/birincil-canli.kilit` dosyaları
+  oluşur; silinmeleri gerekmez. Göç gerekmez; tek süreç ve
+  `--web-isci-sayisi` grubu değişmedi. Ağ dosya sistemindeki kök ve çok hostlu
+  kurulum kapsam dışıdır.
+
 - **Windows'ta yazılırken okunan dosya hata vermez (K-342):** Bir zee
   programı dosyayı atomik olarak yeniden yazarken başka bir program (ya da
   aynı programın başka işi) onu `dosyasını okumayı dene` ile okursa, yoğun
