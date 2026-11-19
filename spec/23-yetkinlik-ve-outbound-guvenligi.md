@@ -174,3 +174,23 @@ korur (ADR-099/100/110).
 ## SMTP mutlak süre bütçesi — K-252
 
 ZORUNLU: Native düz metin SMTP gönderimi tek mutlak süre bütçesini bağlantı, SMTP ve TLS okuma/yazmaları boyunca korur; yavaş kısmi yanıt veya yazma süreyi yenileyemez. Sıfır ve taşan süre ağdan önce reddedilir; son tarih dolunca yeni ağ işlemi başlamaz. Sistem DNS çözümlemesi iptal edilemez; sert toplam çağrı wall-time garantisi verilmez. C029 maskelemesi ve otomatik tekrar yasağı korunur.
+
+## systemd credential gizli değer kaynağı — K-339
+
+TANIMLI: Native CLI ana projenin gizli değer bağlarını (`gizli_anahtar_değişkeni`, `e_posta_bağlantı_değişkeni`, PostgreSQL bağlantı değişkeni ve onun `_TLS_CA_PEM` eki, `http_gizli_değişkenleri`) `CREDENTIALS_DIRECTORY` ayarlıysa aynı adlı systemd credential dosyasından da okur; ad credential kimliğidir. Değişken ayarlı değilse davranış ortamdan okumayla birebir aynıdır. Yetki, izin listesi ve ağ hedefi denetimi kaynaktan bağımsız olarak önce uygulanır.
+
+ZORUNLU: `CREDENTIALS_DIRECTORY` mutlak yol olur; `.`/`..` bileşeni taşıyamaz ve her bileşeni sembolik bağ izlenmeden dizin olarak açılır. Son dizinin sahibi etkin kullanıcı ya da root olur, grup ve diğer kullanıcılar yazamaz. Ayarlı değişkenin dizini yoksa ya da bu koşullardan biri bozuksa gizli değer okuması açık hatayla reddedilir; ortama sessiz dönüş YASAKTIR.
+
+YASAK: Ad `[A-Za-z0-9_]` ile başlayıp `[A-Za-z0-9_.-]` ile süren en fazla 255 baytlık tek bileşen değilse dizinde aranmaz; yol ayıracı, `..`, gizli dosya adı ve ASCII dışı ad dosya yolu kuramaz.
+
+ZORUNLU: Credential dosyası nofollow ve nonblocking açılır; açılan descriptor gerçek düzenli dosya, tek hard-link, sahibi etkin kullanıcı ya da root olmalı, grupça yazılabilir veya herkesçe okunabilir olmamalıdır. Sembolik bağ, FIFO, dizin ve hard-link reddedilir.
+
+ZORUNLU: Dosya 1 bayt ile çağrı sınırı arasında olur (gizli anahtar 4 KiB, SMTP/PostgreSQL/HTTP 64 KiB, PostgreSQL CA PEM 256 KiB); sınır ayırmadan önce ve okumada sınır+1 ile uygulanır. İçerik BOM'suz geçerli UTF-8'dir, NUL taşımaz; PEM dışındaki tek satır değerlerde CR/LF YASAKTIR. Kırpma yapılmaz.
+
+YASAK: Aynı ad hem ortamda (boş değer dahil) hem credential dizininde varsa öncelik seçilmez; okuma reddedilir.
+
+ZORUNLU: Ret iletisi yalnız değişken adı ve sabit neden taşır; değer, dosya yolu ve dizin adı tanıya, stderr'e veya HTTP/SMTP sonucuna girmez. HTTP ve SMTP sonuç maskeleri aynen korunur; IO iz kaydı gizli değer okumasını kaynaktan bağımsız olarak reddetmeyi sürdürür.
+
+TANIMLI: Unix dışı platformda `CREDENTIALS_DIRECTORY` ayarlıysa gizli değer okuması "bu platformda desteklenmez" ile reddedilir; ayarlı değilse ortam davranışı sürer.
+
+AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte rotasyon, ACL incelemesi, aynı UID/root saldırganına karşı yalıtım ve okunan değerin süreç belleğinden garantili silinmesi bu kaynağın sözü değildir.

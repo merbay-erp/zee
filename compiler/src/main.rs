@@ -35,7 +35,19 @@ mod web_kapanis;
 mod web_listener;
 mod web_metrikleri;
 mod web_yukleme;
+use dil::guvenlik::sir_dizini::{
+    gizli_deger_oku as gizli_degeri_oku, SatirProfili::TekSatir, SirHatasi,
+};
 use web_metrikleri::WebTasima;
+
+/// K-339: proje gizli değeri ortamda ya da systemd credential dizininde yoksa
+/// eski ileti; kaynak geçersizse yalnız sabit neden (değer/yol yok).
+fn sir_hatasi(hata: SirHatasi, degisken: &str, eksik: &str) -> String {
+    match hata {
+        SirHatasi::Yok => format!("{degisken} ortam değişkeni {eksik}"),
+        SirHatasi::Gecersiz(neden) => format!("{degisken} gizli değeri okunamadı: {neden}"),
+    }
+}
 
 const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(
     dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
@@ -2202,8 +2214,8 @@ impl GercekIo {
             .gizli_anahtar_degiskeni
             .clone()
             .ok_or_else(|| "proje bildiriminde `gizli_anahtar_değişkeni` yok".to_string())?;
-        let hex = std::env::var(&degisken)
-            .map_err(|_| format!("{degisken} ortam değişkeni gizli anahtarı taşımıyor"))?;
+        let hex = gizli_degeri_oku(&degisken, 4096, TekSatir)
+            .map_err(|h| sir_hatasi(h, &degisken, "gizli anahtarı taşımıyor"))?;
         dil::guvenlik::gizli::anahtar_coz(&hex)
     }
 
@@ -3229,7 +3241,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if !self.http_gizli_degiskenleri.iter().any(|izin| izin == ad) {
             return Err("HTTP ortam adı izinli değil".into());
         }
-        let deger = std::env::var(ad).map_err(|_| "HTTP ortam değeri okunamadı")?;
+        let deger = gizli_degeri_oku(ad, 65536, TekSatir).map_err(|h| match h {
+            SirHatasi::Yok => "HTTP ortam değeri okunamadı".to_string(),
+            SirHatasi::Gecersiz(neden) => format!("HTTP gizli değeri okunamadı: {neden}"),
+        })?;
         if deger.len() > 65536 {
             return Err("HTTP ortam değeri sınırı aşıldı".into());
         }
@@ -3870,12 +3885,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 let degisken = self.eposta_baglanti_degiskeni.clone().ok_or_else(|| {
                     "proje bildiriminde `e_posta_bağlantı_değişkeni` yok".to_string()
                 })?;
-                std::env::var(&degisken).map_err(|_| {
-                    format!(
-                        "{} ortam değişkeni SMTP bağlantı URL'sini taşımıyor",
-                        degisken
-                    )
-                })?
+                gizli_degeri_oku(&degisken, 65536, TekSatir)
+                    .map_err(|h| sir_hatasi(h, &degisken, "SMTP bağlantı URL'sini taşımıyor"))?
             }
         };
         let ayar = dil::eposta::EpostaAyari::ayristir(&url)?;
@@ -3923,7 +3934,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         .eposta_baglanti_degiskeni
                         .as_ref()
                         .ok_or("SMTP ortam ayarı yok")?;
-                    std::env::var(ad).map_err(|_| "SMTP ortam değeri yok")?
+                    gizli_degeri_oku(ad, 65536, TekSatir).map_err(|h| match h {
+                        SirHatasi::Yok => "SMTP ortam değeri yok".to_string(),
+                        SirHatasi::Gecersiz(neden) => {
+                            format!("SMTP gizli değeri okunamadı: {neden}")
+                        }
+                    })?
                 }
             };
             let ayar = dil::eposta::EpostaAyari::ayristir(&url)?;

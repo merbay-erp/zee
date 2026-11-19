@@ -7,6 +7,8 @@
 
 #[cfg(not(target_arch = "wasm32"))]
 mod legacy_bcrypt;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod sir_dizini;
 
 /// 256 bit işletim sistemi rastgeleliğini küçük harfli hex metne çevirir.
 #[cfg(not(target_arch = "wasm32"))]

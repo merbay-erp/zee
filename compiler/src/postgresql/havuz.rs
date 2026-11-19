@@ -3,6 +3,7 @@
 mod metrik;
 
 use super::{hata, VeritabaniBildirimi, VeritabaniHatasi, VeritabaniHedefi};
+use crate::guvenlik::sir_dizini::{gizli_deger_oku, SatirProfili, SirHatasi};
 use native_tls::{Certificate, Protocol, TlsConnector};
 use postgres::config::{Host, SslMode};
 use postgres::Config;
@@ -66,12 +67,17 @@ pub(super) fn kur_gozlemli(
     bildirim: &VeritabaniBildirimi,
     gozlem: Option<Arc<dyn Fn([u64; 8]) + Send + Sync>>,
 ) -> Result<PostgresqlHavuzu, VeritabaniHatasi> {
-    let baglanti = std::env::var(&bildirim.baglanti_degiskeni).map_err(|_| {
-        hata(format!(
-            "{} ortam değişkeninde PostgreSQL bağlantısı bulunamadı",
-            bildirim.baglanti_degiskeni
-        ))
-    })?;
+    let baglanti = gizli_deger_oku(&bildirim.baglanti_degiskeni, 65536, SatirProfili::TekSatir)
+        .map_err(|h| match h {
+            SirHatasi::Yok => hata(format!(
+                "{} ortam değişkeninde PostgreSQL bağlantısı bulunamadı",
+                bildirim.baglanti_degiskeni
+            )),
+            SirHatasi::Gecersiz(neden) => hata(format!(
+                "{} gizli değeri okunamadı: {neden}",
+                bildirim.baglanti_degiskeni
+            )),
+        })?;
     let mut ayar = Config::from_str(&baglanti)
         .map_err(|h| hata(format!("PostgreSQL bağlantı ayarı geçersiz: {}", h)))?;
     hedefi_denetle(&ayar, &bildirim.hedef)?;
@@ -154,12 +160,16 @@ fn tls_baglayicisi(
         }
         SslMode::Require => {
             let degisken = format!("{}_TLS_CA_PEM", bildirim.baglanti_degiskeni);
-            let pem = std::env::var(&degisken).map_err(|_| {
-                hata(format!(
-                    "TLS PostgreSQL bağlantısı sabit kök sertifikayı {} ortam değişkeninde ister",
-                    degisken
-                ))
-            })?;
+            let pem = gizli_deger_oku(&degisken, AZAMI_CA_PEM_BAYTI, SatirProfili::CokSatir)
+                .map_err(|h| match h {
+                    SirHatasi::Yok => hata(format!(
+                        "TLS PostgreSQL bağlantısı sabit kök sertifikayı {} ortam değişkeninde ister",
+                        degisken
+                    )),
+                    SirHatasi::Gecersiz(neden) => {
+                        hata(format!("{degisken} gizli değeri okunamadı: {neden}"))
+                    }
+                })?;
             if pem.is_empty() || pem.len() > AZAMI_CA_PEM_BAYTI {
                 return Err(hata(
                     "PostgreSQL TLS kök sertifikası boş olamaz ve 256 KiB sınırını aşamaz",
