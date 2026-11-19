@@ -67,6 +67,15 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Windows'ta yazarken çöken süreç dosyayı kaybettirmez (K-348, ADR-032
+  eki):** Windows'ta zee bir dosyayı iki adımda değiştirir. Süreç tam bu iki
+  adımın arasında çökerse ya da öldürülürse (servis durdurma, görev
+  yöneticisi, elektrik kesintisi), dosya klasörde görünmez olabiliyordu.
+  Sonraki okuma "dosya bulunamadı" veriyor, sonraki `ekle` ise dosyayı boş
+  sanıp önceki bütün satırları siliyordu. Eski içerik aslında gizli bir yedek
+  dosyada duruyordu; zee artık bu durumu tanıyıp yedeği geri koyar, okuma da
+  o arada eski içeriği görür. Linux ve macOS bu durumu üretmez; göç gerekmez.
+
 - **Geri alınan eylem başka sürecin eklediği satırı silmez (K-346, ADR-075
   eki):** Bir `eylem` dosyaya yazıp başarısız olunca dosyayı eylem başındaki
   hâline geri alır. Aynı anda başka bir süreç (ör. çok işçi grubundaki başka
