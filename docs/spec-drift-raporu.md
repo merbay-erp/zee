@@ -30,13 +30,13 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 26 | 26 | 0 | 0 |
 | `spec/24-kaynak-guvenlik-profili.md` | 9 | 9 | 0 | 0 |
-| `spec/25-postgresql-veri-erisimi.md` | 9 | 7 | 1 | 1 |
+| `spec/25-postgresql-veri-erisimi.md` | 9 | 8 | 0 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 6 | 6 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **257** | **245** | **7** | **5** |
+| **Toplam** | **257** | **246** | **6** | **5** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -45,7 +45,6 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/12-web-guvenlik-profili.md#9b8585ed285b952c` — TANIMLI: `--web-saglik-port S` yalnız `127.0.0.1:S` üzerinde `GET /sagli… — 200/hazir, canli, yeniden_baslatma ve surecler alanları gerçek grupta kanıtlı; 503 ara durumları, HEAD ve 404 yolu ayrı vaka ile sınanmadı.
 - `spec/18-paket-yayini.md#2af407978947e1d4` — Üretici dört dosyayı yazmadan önce bütün kümeyi tüketici doğrulayıcıyla … — Yazmadan önce tam doğrulama ve yarım küme reddi kanıtlı; süreç çökmesi ortasında yarım küme senaryosu enjekte edilmiyor (söz de verilmiyor).
 - `spec/22-deterministik-io-profili.md#d68db0760744fd45` — Profilin bu gözlemlerinden birini kıran değişiklik yeni profil kimliği, … — Snapshot gözlem değişikliğini yakalar; yeni profil kimliği/RFC zorunluluğu süreç kuralıdır, makinece yalnız snapshot farkıyla görünür.
-- `spec/25-postgresql-veri-erisimi.md#61d77038cc9e2321` — `sslmode=require`, `<BAĞLANTI_DEĞİŞKENİ>_TLS_CA_PEM` ortam değişkeninde … — K-222 izole gerçek PostgreSQL kapısı CA/hostname reddi ve TLS 1.2 olumlusunu dört sıfır-atlamalı vakada zorlar; bağımsız TLS 1.1 sunucusu downgrade reddi henüz sınanmadığı için protokol tabanı maddesi kısmi kalır.
 - `spec/27-uyumluluk-ve-surumleme.md#15d606bdb76e4dc1` — - Kaldırılan biçim sessizce kabul edilmez: derleyici tanı üretir ve öner… — Henüz kaldırılmış bir kullanıcı yüzeyi yok; tanı+öneri kanıtı ilk DEP kaldırmasında regresyon korpusuna eklenecek.
 
 ## Açık maddeler

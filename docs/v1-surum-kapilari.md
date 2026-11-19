@@ -1264,3 +1264,17 @@ K-313 aynı fiziksel PostgreSQL backend'inde tenant bağlamının COMMIT ve
 ROLLBACK sonrası temizliğini iki yeni native testle korur. Koşucu on exact
 TLS vakası ve 15 kontrol modeli ister; yeni grammar/production davranışı
 veya gerçek RLS/ürün kabulü eklenmez.
+
+## 19 Kasım 2026 — P36 güncel master ignored kampanyası
+
+[P36 kaydı](p36-ignored-kampanyasi-20261119.md) exact master
+`0367cd52741eb80ff83301596005306359fa8d8e` temiz klonunda mevcut 27 `#[ignore]`
+Cargo vakasından 23'ünü koşturdu: on izole TLS (bağımsız TLS1.1 olumlu kontrolü
+ve native ret dahil), bir göç, LSP 20k ölçümü, service-fault, mixed-revision ve
+kaynaktan derlenen owned PG16.15 ile sekiz native vaka geçti. Starter vakası
+K-332 sonrası bayat kalan yükleme artığı kahininde düştü; yalnız koşucu
+düzeltilerek `ddd79f0e7ecab29314bebe91218be92e54d382f2` temiz klonunda geçti.
+İki Linux systemd servis vakası ve iki pinli PDF arka uç vakası koşmadı; P36 **kısmi** kalır. Aynı dilimde spec25 TLS kök maddesi TLS1.1 reddi
+ve boş/256 KiB üstü/geçersiz PEM kökünün bağlantıdan önce reddiyle
+`kanitli`ye çekildi; normatif metin ve production kod değişmedi.
+
