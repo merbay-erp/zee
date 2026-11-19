@@ -36,7 +36,14 @@ def main():
         require(r.finish()==0,'TERM owner cleanup');serialized=json.dumps(r.events,ensure_ascii=False,separators=(',',':')).encode();require(W['CANARY'].encode() not in serialized and b'a5a5a5a5' not in serialized,'credential ciphertext/plaintext absent from metadata');(out/'host-metadata.jsonl').write_bytes(b''.join(json.dumps(x,separators=(',',':')).encode()+b'\n' for x in r.events));f.close();f=None;r=None
         require(sha(binary)==binary_sha and hashes==[{'path':str(p.relative_to(root)),'sha256':sha(p)} for p in sources],'source/binary unchanged');require(json.loads(subprocess.check_output([str(binary),'sürüm','--json'],timeout=5))==identity,'build identity unchanged');proof['status']='passed'
     except BaseException as e:
-        proof['status']='failed';proof['failure_type']=type(e).__name__;raise
+        proof['status']='failed';proof['failure_type']=type(e).__name__;proof['failure_message']=str(e)[:300]
+        # Tanı: süpervizör olayları proof dizinine (CI artefaktı). Gizli
+        # kanarya ve düz metin işareti yazılmadan önce maskelenir.
+        if r is not None:
+            dokum=''.join(json.dumps(x,ensure_ascii=False,separators=(',',':'))+'\n' for x in r.events)
+            for gizli in (W['CANARY'],'a5a5a5a5'):dokum=dokum.replace(gizli,'<gizli-maskelendi>')
+            (out/'olaylar-basarisiz.jsonl').write_text(dokum)
+        raise
     finally:
         if r and r.child.poll() is None:r.finish()
         if f:f.close()

@@ -1,0 +1,13 @@
+# K-348: Windows'ta ReplaceFileW ortasında ölen yazar hedefi yok bırakıyordu; okuyucu dosyayı bulamıyor, sonraki ekleme önceki bütün satırları siliyordu.
+
+ilk "ortak.txt" dosyasını okumayı dene olsun
+ilk başarılıysa
+    "okundu" yaz
+    ilkin değeri yaz
+değilse
+    "okunamadı" yaz
+"ortak.txt" dosyasına "b-1" ekle
+son "ortak.txt" dosyasını okumayı dene olsun
+son başarılıysa
+    "sonra" yaz
+    sonun değeri yaz

@@ -18,6 +18,8 @@ mod lsp_utf16_fixture;
 
 #[path = "semantic_regresyon/native_ayri_port_birincil.rs"]
 mod native_ayri_port_birincil_fixture;
+#[path = "semantic_regresyon/native_coken_degistirme.rs"]
+mod native_coken_degistirme_fixture;
 #[path = "semantic_regresyon/native_dosya_exdev.rs"]
 mod native_dosya_exdev_fixture;
 #[path = "semantic_regresyon/native_dosya_okuma_penceresi.rs"]
@@ -74,6 +76,7 @@ const KIPLER: &[&str] = &[
     "native-ayri-port-birincil",
     "native-eszamanli-ekleme",
     "native-isci-saglik-mirasi",
+    "native-coken-degistirme",
 ];
 
 #[derive(Debug, Clone)]
@@ -239,6 +242,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-dosya-okuma-penceresi"
                 | "native-dosya-okuma-izsiz-penceresi"
                 | "native-eszamanli-ekleme"
+                | "native-coken-degistirme"
         ),
         "concurrency" => kip == "run",
         "security" => matches!(
@@ -381,6 +385,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-dosya-exdev" {
         let (cikis, cikti) = native_dosya_exdev_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-coken-degistirme" {
+        let (cikis, cikti) = native_coken_degistirme_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -761,6 +773,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-ayri-port-birincil"
                 | "native-eszamanli-ekleme"
                 | "native-isci-saglik-mirasi"
+                | "native-coken-degistirme"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1151,6 +1164,41 @@ fn native_dosya_okuma_penceresi_regresyonu_gercek_okuyucu_ile_korunur() {
             assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
             assert_eq!(gozlem.cikti, vaka.cikti, "{}: okuma sonucu", vaka.ad);
         }
+    }
+}
+
+#[test]
+fn native_coken_degistirme_kipi_yalniz_runtime_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-coken-degistirme"));
+    assert!(faz_kipi_kabul_eder("runtime", "native-coken-degistirme"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-coken-degistirme"));
+    }
+}
+
+/// K-348: ReplaceFileW ortasında ölen yazarın bıraktığı durumda gerçek native
+/// `dil` eski bütünü okur ve eklemesi önceki satırları silmez. POSIX rename'i
+/// bu durumu üretmez; sahte başarı yerine görünür ignored durumundadır.
+#[test]
+#[cfg_attr(
+    not(windows),
+    ignore = "actual Windows ReplaceFileW backup recovery unavailable"
+)]
+fn native_coken_degistirme_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-coken-degistirme")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native çöken değiştirme regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: kurtarma sonucu", vaka.ad);
     }
 }
 

@@ -5,7 +5,6 @@
 //! süreçler arasında da kayıp güncellemeyi önler; süreç çökerse işletim sistemi
 //! kilidi otomatik bırakır.
 
-use std::ffi::OsString;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -13,6 +12,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
+use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
 
 mod metadata;
 mod ozel;
@@ -159,10 +159,16 @@ impl DosyaKilidi {
             .write(true)
             .open(kilit_yolu)?;
         // Hızlı yol: boş kilit iş parçacığı açmadan alınır.
-        if platform::kilitlemeyi_dene(&dosya)? {
-            return Ok(Self::tutulan(dosya));
-        }
-        Self::bekleyerek_al(dosya)
+        let kilit = if platform::kilitlemeyi_dene(&dosya)? {
+            Self::tutulan(dosya)
+        } else {
+            Self::bekleyerek_al(dosya)?
+        };
+        // K-348: önceki yazar ReplaceFileW ortasında öldüyse hedef yoktur;
+        // kilit altında eski bütün içerik yedekten geri konur.
+        #[cfg(windows)]
+        yasam_dongusu::yarim_degistirmeyi_kurtar(hedef)?;
+        Ok(kilit)
     }
 
     fn tutulan(dosya: File) -> Self {
@@ -232,14 +238,9 @@ fn gecici_dosyayi_acarak(
     hedef: &Path,
     ac: impl Fn(&Path) -> io::Result<File>,
 ) -> io::Result<(File, GeciciDosya)> {
-    let dosya_adi = hedef.file_name().ok_or_else(|| {
-        io::Error::new(io::ErrorKind::InvalidInput, "hedef bir dosya adı taşımalı")
-    })?;
     for _ in 0..128 {
         let sira = GECICI_SAYACI.fetch_add(1, Ordering::Relaxed);
-        let mut ad = OsString::from(".");
-        ad.push(dosya_adi);
-        ad.push(format!(".zee-gecici-{}-{}", std::process::id(), sira));
+        let ad = yarim::gecici_ad(hedef, &format!("{}-{}", std::process::id(), sira))?;
         let yol = ebeveyn(hedef).join(ad);
         match ac(&yol) {
             Ok(dosya) => return Ok((dosya, GeciciDosya { yol: Some(yol) })),

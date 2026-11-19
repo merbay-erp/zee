@@ -55,6 +55,17 @@ gerçektir (olmayan ya da zee dışı bir süreçte kilitli dosya). Klasörde ki
 dosyası yoksa orada hiç zee değiştirmesi olmamıştır ve hata 50 ms sonra döner.
 Kilidi tutan iş parçacığının kendi okuması (ekleme) kilidi beklemez.
 
+ZORUNLU (K-348): Yazar iki yeniden adlandırmanın arasında ölürse (çökme,
+TerminateProcess, güç kaybı) hedef yolda dosya kalmaz; eski bütün içerik
+`.<ad>.zee-gecici-*.zee-yedek` yedeğinde, yayımlanmamış yeni içerik eş geçici
+dosyada durur. Yazar başarı bildirmediği için geçerli bütün eski içeriktir.
+Klasörün yazma kilidini alan her zee işlemi, hedef yoksa ona ait en yeni
+yedeği hedefe geri koyar, eş geçici ve bayat yedekleri siler; kilitsiz resmî
+okuma yolu dosya bulunamadığında aynı yedeği paylaşımlı kilit altında okur.
+Hedefi silen işlem ona ait bayat yedekleri de siler; silinmiş içerik sonraki
+yazımda dirilemez. Yarım değiştirmeyi kurtarmadan hedefi yok sayıp yeni içerik
+yazmak YASAKTIR.
+
 İçerik değişikliğinde Unix mtime/ctime korunmaz. Görünmeyen Linux `trusted.*`,
 Windows SACL/owner SID ve dosya sistemine özel immutable bayraklar verilmiş söz
 değildir. Bunlar için yönetilen deployment aracı gerekir.
