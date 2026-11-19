@@ -314,6 +314,8 @@ TANIMLI: Beklenmedik biçimde çıkan işçi aynı yuvada ikincil olarak 250 ms'
 
 TANIMLI: `--web-saglik-port S` yalnız `127.0.0.1:S` üzerinde `GET /saglik` ve `HEAD /saglik` yanıtlar: birincil hazır ve N işçi süreci yaşıyorsa 200, aksi hâlde 503; gövde `durum` (`basliyor`/`hazir`/`eksik`/`kapaniyor`), `isci`, `canli`, `yeniden_baslatma` ve `surecler` (işçi PID'leri) alanlı JSON'dur. Başka yol 404'tür. Sağlık yanıtı uygulama hazırlığı (DB/göç) kanıtı değildir.
 
+ZORUNLU: Yönetici sağlık bağlantısını işçilere miras bırakmaz: bağlantının kabulü ve FD_CLOEXEC işaretlenmesi işçi başlatmayla aynı anda yapılmaz. Yanıt yazıldıktan sonra bağlantı iki yönde kapatılır; istemci yanıtı her zaman EOF ile alır, başka bir süreçte kopya kalsa da bekletilmez (K-345).
+
 TANIMLI: Proje kökündeki `zee.ayar` (K-234) `guvenlik` dalı `isci-sayisi` (tam sayı 1..64) ve `saglik-port` (tam sayı 1..65535) alanlarıyla aynı grubu kaynak öncesi `--web-isci-sayisi`/`--web-saglik-port` bayraklarına eşler. `isci-sayisi` aynı config'te `web-modu` `proxy` ve `worker-port` ister, `saglik-port` `isci-sayisi` ister; eksik bağımlılık, tür ya da sınır hatası çıkış 2'dir ve CLI'daki worker portu config'i geçerli kılamaz. Kaynak öncesi açık bayrak aynı alanın config değerini ezer. İşçi süreci config'i yeniden okusa da yönetici olmaz; işçi alanları işçide yok sayılır (K-340).
 
 YASAK: `--web-isci-sayisi` `--deneysel-web` ile, worker portu verilmemiş proxy ile, `--web-saglik-port` da `--web-isci-sayisi` olmadan kullanılamaz; 1..64 dışı değer ve `dil çalıştır` dışındaki komut çıkış 2 ile reddedilir. Native listener devri (`--web-listener-fd` …) ve `--web-metrik-fd` çok işçi profiliyle birleşmez.

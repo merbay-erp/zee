@@ -198,3 +198,44 @@ ikinciller ve yeniden başlatılanlar rol gereği `yanlış` görür.
 - Dil yüzeyi, grammar, tanı kodu ve `dil::api::v1` değişmedi. Yeni çalışma
   zamanı durum dosyaları `.zee/birincil-*.kilit` içerik taşımaz. Derleyici/LSP
   önbelleği yok; soak gerekmez.
+
+## Ek — K-345: sağlık bağlantısının işçiye mirası (19 Kasım 2026)
+
+K-344 yük sınamasında macOS'ta sağlık isteği yanıtı tam alıp EOF'u
+beklerken asılı kalıyordu. `lsof` gösterdi ki bağlantının sunucu ucunu
+yönetici değil bir işçi PID'i tutuyordu. Neden: sağlık uç noktası ayrı iş
+parçacığında `accept` yapar; accept4 olmayan platformlarda std
+`TcpListener::accept` FD_CLOEXEC'i ayrı bir adımda koyar. Aradaki anda ana
+iş parçacığının `posix_spawn` ile başlattığı işçi soketi miras alır;
+yönetici kapatınca FIN gitmez, istemci işçi ölene dek bekler ve işçi
+yöneticiye ait bir soketi taşır (GB-138). Linux'ta `accept4(SOCK_CLOEXEC)`
+atomiktir; hata orada oluşmaz.
+
+Yöneticinin fd üretim noktaları tarandı: ortak dinleyici, `dup` kopyası
+(bilerek miras), sağlık dinleyicisi ve hazır borusu ana iş parçacığında,
+işçi başlatmadan önce ya da başlatmayla aynı iş parçacığında açılır;
+std `Command` Linux'ta `pipe2(O_CLOEXEC)` kullanır, macOS'ta ek fd açmaz.
+Başka iş parçacığında fd üreten tek yer sağlık kabulüdür.
+
+Karar: (1) sağlık dinleyicisi tıkanmasızdır; bağlantı `poll` ile hazır
+olunca kabul ve CLOEXEC bir okuma kilidi altında yapılır, işçi başlatma
+aynı kilidin yazma tarafını tutar (platformdan bağımsız sıralama).
+(2) Yanıt yazıldıktan sonra bağlantı `shutdown(Both)` ile kapatılır; kopya
+herhangi bir yoldan kalsa da FIN hemen gider.
+
+- Reddedilen: `POSIX_SPAWN_CLOEXEC_DEFAULT` ile macOS'a özel spawn. Yalnız
+  açıkça devredilen fd'leri geçirmesi en geniş korumadır, ama std
+  `process::Child` bir `posix_spawn` PID'inden kurulamaz. Yuva defteri
+  (`try_wait`/`kill`/`wait`) platforma özgü güvensiz kodla yeniden yazılmak
+  zorunda kalırdı. Tarama, tek eşzamanlı üreticinin sağlık kabulü olduğunu
+  gösterdi. Yöneticiye yeni bir iş parçacığı ya da fd üreticisi eklenirse bu
+  karar yeniden değerlendirilir. Yalnız `shutdown`: belirti kalkar ama işçi
+  yine yöneticinin soketini taşır.
+- Kanıt: `web_isci_grubu::unix::testler::saglik_yaniti_kopya_acikken_de_baglantiyi_bitirir`
+  (sunucu ucu `dup` ile açık tutulurken istemci 3 sn içinde EOF alır;
+  düzeltmesiz kodda zaman aşımı). Regression `cli/isci-grubu-saglik-mirasi`
+  (32 işçili üç grup, yoklama, işçi PID'lerinin tuttuğu sağlık soketi
+  macOS'ta `lsof`, Linux'ta `/proc` ile sayılır). Yerel ölçüm (macOS, 40 grup ×
+  32 işçi, ≈2 M istek): düzeltmesiz 8 miras soket, düzeltmeyle 0;
+  düzeltmeyle ≈1,3 M istekte asılı yanıt 0.
+- Dil yüzeyi, grammar, tanı ve `dil::api::v1` değişmedi.

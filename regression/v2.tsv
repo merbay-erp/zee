@@ -47,4 +47,5 @@ degistirme-penceresi-izsiz-okuma	K-342	454dade47fe88288f0f97242a566a92e65d0fbef	
 isci-grubu-ardisik-cokus	K-338	a0bf04398fe300b560f0627cc59dd27f4fde35f1	9e51868caedbf1f1c42ab0b7f050b592f835fb1d	0.8.0-dev	cli	native-isci-grubu	-	-	1	yuva 2 başlatma 10\ndurma 10	regression/cli/isci-grubu-ardisik-cokus.dil
 ayri-port-birincillik	K-341	dd8820c1a9ba3001bd982ae60807bf60ff741496	9e51868caedbf1f1c42ab0b7f050b592f835fb1d	0.8.0-dev	cli	native-ayri-port-birincil	-	-	0	1 birincil\n2 ikincil\n3 ikincil	regression/cli/ayri-port-birincillik.dil
 eszamanli-ekleme-geri-alma	K-346	88b15cddfb46df6ccb4ef74017146c11a732d6cf	-	0.8.0-dev	runtime	native-eszamanli-ekleme	-	-	0	b 1000\nc 1000\nbozuk 0	regression/runtime/eszamanli-ekleme-geri-alma.dil
+isci-grubu-saglik-mirasi	K-345	4c0d7473b05bd5784c1f7fedc3cc8f841161a39f	9e51868caedbf1f1c42ab0b7f050b592f835fb1d	0.8.0-dev	cli	native-isci-saglik-mirasi	-	-	0	miras 0\nasili 0	regression/cli/isci-grubu-saglik-mirasi.dil
 coken-degistirme-kurtarma	K-348	754845cb259cbfc103bd54ffc87c07ebc8325409	-	0.8.0-dev	runtime	native-coken-degistirme	-	-	0	okundu\na-1\na-2\nsonra\na-1\na-2\nb-1\niz 0	regression/runtime/coken-degistirme-kurtarma.dil
