@@ -1,0 +1,6 @@
+# K-345: --web-isci-sayisi 32 grubu başlarken sağlık uç noktası yoklanır; macOS'ta kabul edilen sağlık bağlantısı eşzamanlı başlatılan işçiye miras kalıp istemci EOF'u işçi ölene dek bekliyordu. Hiçbir işçi sağlık soketi tutmaz, her yanıt EOF ile biter.
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder

@@ -373,6 +373,12 @@ mod unix {
     use std::time::{Duration, Instant};
 
     static SINYAL: AtomicBool = AtomicBool::new(false);
+    /// K-345: yöneticide işçi başlatan iş parçacığından başka fd üreten tek
+    /// yer sağlık bağlantısı kabulüdür. accept4 olmayan platformlarda (macOS)
+    /// std `accept` FD_CLOEXEC'i ayrı adımda koyar; arada spawn edilen işçi
+    /// bağlantıyı miras alır. Kabul+CLOEXEC okuma, spawn yazma kilidiyle
+    /// sıraya konur.
+    static MIRAS_KILIDI: std::sync::RwLock<()> = std::sync::RwLock::new(());
     extern "C" fn sinyal(_: libc::c_int) {
         SINYAL.store(true, Ordering::Relaxed);
     }
@@ -475,7 +481,12 @@ mod unix {
         if let Some(fd) = hazir {
             komut.env(ORTAM_HAZIR, fd.to_string());
         }
-        let cocuk = komut.spawn()?;
+        let cocuk = {
+            let _sira = MIRAS_KILIDI
+                .write()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            komut.spawn()?
+        };
         eprintln!(
             "zee-web işçi {} başladı: pid={} rol={}",
             sira + 1,
@@ -492,11 +503,34 @@ mod unix {
     fn saglik_sunucusu(kapi: u16, isci: u16, saglik: Arc<Mutex<Saglik>>) -> Result<(), String> {
         let dinleyici = std::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, kapi))
             .map_err(|e| format!("sağlık portu açılamadı: {e}"))?;
+        // Bloklayan accept kilit tutamaz: bağlantı hazır olunca kilit altında
+        // tıkanmasız kabul edilir (K-345).
+        dinleyici
+            .set_nonblocking(true)
+            .map_err(|e| format!("sağlık portu ayarlanamadı: {e}"))?;
         std::thread::Builder::new()
             .name("zee-web-saglik".into())
-            .spawn(move || {
-                for akis in dinleyici.incoming().flatten() {
-                    saglik_yaniti(akis, isci, &saglik);
+            .spawn(move || loop {
+                let mut olay = libc::pollfd {
+                    fd: dinleyici.as_raw_fd(),
+                    events: libc::POLLIN,
+                    revents: 0,
+                };
+                // SAFETY: one live pollfd for the synchronous call.
+                if unsafe { libc::poll(&mut olay, 1, 1000) } <= 0 {
+                    continue;
+                }
+                let kabul = {
+                    let _sira = MIRAS_KILIDI
+                        .read()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner);
+                    dinleyici.accept()
+                };
+                if let Ok((akis, _)) = kabul {
+                    // BSD'de kabul edilen soket O_NONBLOCK'u devralır.
+                    if akis.set_nonblocking(false).is_ok() {
+                        saglik_yaniti(akis, isci, &saglik);
+                    }
                 }
             })
             .map_err(|e| format!("sağlık iş parçacığı açılamadı: {e}"))?;
@@ -569,6 +603,8 @@ mod unix {
             yanit.push_str(&govde);
         }
         let _ = akis.write_all(yanit.as_bytes());
+        // K-345 savunması: başka süreçte kopya kalsa da FIN hemen gider.
+        let _ = akis.shutdown(std::net::Shutdown::Both);
     }
 
     fn saglik_guncelle(saglik: &Mutex<Saglik>, yuvalar: &[Yuva]) {
@@ -786,6 +822,39 @@ mod unix {
                 yeniden_baslat(&mut yuvalar[sira], sira, simdi, &args, miras, &saglik);
             }
             std::thread::sleep(ADIM);
+        }
+    }
+
+    #[cfg(test)]
+    mod testler {
+        use super::*;
+
+        /// K-345: sağlık bağlantısının sunucu ucu başka süreçte (miras) açık
+        /// kalsa da istemci yanıtı EOF ile alır. Kopya `dup` ile taklit
+        /// edilir; düzeltme öncesi istemci kopya kapanana dek bekliyordu.
+        #[test]
+        fn saglik_yaniti_kopya_acikken_de_baglantiyi_bitirir() {
+            let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+            let adres = dinleyici.local_addr().unwrap();
+            let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+            istemci
+                .write_all(b"GET /saglik HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n")
+                .unwrap();
+            let (sunucu, _) = dinleyici.accept().unwrap();
+            // SAFETY: duplicate of a live socket, closed below.
+            let kopya = unsafe { libc::dup(sunucu.as_raw_fd()) };
+            assert!(kopya >= 0);
+            saglik_yaniti(sunucu, 2, &Mutex::new(Saglik::default()));
+            istemci
+                .set_read_timeout(Some(Duration::from_secs(3)))
+                .unwrap();
+            let mut yanit = String::new();
+            let sonuc = istemci.read_to_string(&mut yanit);
+            // SAFETY: closing our own duplicate exactly once.
+            unsafe { libc::close(kopya) };
+            sonuc.expect("kopya açıkken de EOF gelmeli");
+            assert!(yanit.starts_with("HTTP/1.1 503 "), "{yanit}");
+            assert!(yanit.ends_with("\"surecler\":[]}\n"), "{yanit}");
         }
     }
 }
