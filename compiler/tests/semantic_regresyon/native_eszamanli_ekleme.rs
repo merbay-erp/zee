@@ -93,7 +93,14 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
         kol.join().expect("geri alan iş parçacığı");
     }
 
-    let icerik = std::fs::read_to_string(proje.join("ortak.txt")).expect("ortak dosya");
+    // K-348: geri alan süreç Windows'ta ReplaceFileW ortasında öldürülürse
+    // hedef geçici olarak yoktur ve eski bütün `.zee-yedek`tedir; ürün sözü
+    // resmî zee okuyucusunundur (düz std okuması yarım durumu görür).
+    let icerik = String::from_utf8(
+        dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&proje.join("ortak.txt"))
+            .expect("ortak dosya"),
+    )
+    .expect("UTF-8 ortak dosya");
     let bicimli = |satir: &str| {
         satir.split_once('-').is_some_and(|(onek, sayi)| {
             matches!(onek, "a" | "b" | "c") && sayi.parse::<usize>().is_ok()
