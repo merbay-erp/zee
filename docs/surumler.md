@@ -63,6 +63,9 @@ Bu kayıt yeni sürüm etiketi değildir.
   yazım başarılı sayılır; kalan yedek sonraki yazımda temizlenir. Ayrıca
   dosyaya yazma hatası iletisi hangi adımda düştüğünü (ör. `yazma kilidi`,
   `ReplaceFileW`, `geçici dosya yazımı`) belirtir; hata kodu (C013) aynıdır.
+  Nadir bir Windows hatasında eski içeriğin yedeği silinip dosya izin/akış
+  bilgisi taşınmadan değiştirilebiliyordu; artık eski içerik geri konur ve
+  yazım hata verir.
   Göç gerekmez.
 
 - **Windows'ta yazarken çöken süreç dosyayı kaybettirmez (K-348, ADR-032

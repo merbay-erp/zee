@@ -70,7 +70,11 @@ ZORUNLU (K-351): `ReplaceFileW` başarıyla döndüyse hedef yeni bütündür ve
 yazım başarılıdır; ardından yedeğin silinememesi (ör. zee dışı bir süreç
 yedeği silme paylaşımı olmadan açık tutuyor) yazımı hata olarak bildirmek
 YASAKTIR. Hedef varken duran yedek yarım değiştirme değildir; klasörün yazma
-kilidini alan sonraki zee işlemi onu siler, geri koymaz. Kalıcı yazım IO
+kilidini alan sonraki zee işlemi onu siler, geri koymaz. `ReplaceFileW` dosya
+ya da yol bulunamadı (2/3) ile düşerse ve yedek varsa eski bütün yedekten
+geri kurulur ve yazım hata döner; yedeği silip geçiciyi metadata merge'siz
+yayımlamak YASAKTIR. İlk yerleştirme `MoveFileExW` yalnız hedef ve yedek
+yokken yapılır ve var olan hedefi ezmez. Kalıcı yazım IO
 hatası hangi adımda düştüğünü (yazma kilidi, kurtarma, mevcut içerik okuma,
 metadata, geçici dosya yazımı, `rename`, `ReplaceFileW`, ilk yerleştirme
 `MoveFileExW`, yedek geri alma, klasör eşzamanlama) iletisinde taşımak

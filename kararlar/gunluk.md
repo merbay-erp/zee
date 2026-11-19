@@ -5299,7 +5299,11 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   K-348 dışlandı. NotFound'un hangi çağrıdan geldiği hata adım taşımadığı için
   bilinemedi. Düzeltme: her kalıcı yazım adımı hatayı adla sarar (`ErrorKind`
   korunur); başarılı `ReplaceFileW` sonrası yedek silinemezse yazım başarılıdır,
-  artık yedek sonraki kilit alımında silinir (geri konmaz). Test derlemesinde
+  artık yedek sonraki kilit alımında silinir (geri konmaz). ReplaceFileW 2/3'te
+  yedek koşulsuz silinip MoveFileExW(REPLACE_EXISTING) ilk yerleştirmesine
+  geçiliyordu (eski bütün kaybı / metadata merge'siz ezme; CI NotFound'unun
+  olası kaynağı): yedek varsa geri kurulur, ilk yerleştirme yalnız hedef ve
+  yedek yokken, ezmeden. Test derlemesinde
   adım noktalarına iş parçacığı başı hata/gecikme enjeksiyonu; disk durması
   deterministik yeniden üretildi. Süreç içi artık bayrağı ve üretimde enjeksiyon
   reddedildi. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-032 eki.

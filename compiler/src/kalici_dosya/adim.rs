@@ -332,4 +332,45 @@ mod tests {
         assert!(yedekler().is_empty(), "sonraki yazım artığı temizlemeli");
         assert_eq!(std::fs::read(&yol).unwrap(), b"sonraki");
     }
+
+    /// K-351: hedef varken `ReplaceFileW` 2/3 dönerse ilk yerleştirme
+    /// `MoveFileExW`'ye sapılmaz (metadata merge'siz ezme); eski bütün kalır.
+    #[test]
+    #[cfg_attr(not(windows), ignore = "ReplaceFileW path exists only on Windows")]
+    fn replace_bulunamadi_hedef_varken_ilk_yerlestirmeye_sapmaz() {
+        let klasor = GeciciKlasor::yeni("bulunamadi");
+        let yol = klasor.0.join("durum.txt");
+        atomik_yaz(&yol, b"eski").expect("ilk yazım");
+        kur(Adim::ReplaceFileW, Enjeksiyon::OsHatasi(2));
+        let hata = atomik_yaz(&yol, b"yeni").expect_err("hedef varken ezilmemeli");
+        assert_eq!(hata.kind(), io::ErrorKind::NotFound, "{hata}");
+        assert_eq!(hata_adimi(&hata), Some(Adim::ReplaceFileW), "{hata}");
+        assert_eq!(std::fs::read(&yol).unwrap(), b"eski");
+        let iz = std::fs::read_dir(&klasor.0)
+            .unwrap()
+            .filter_map(Result::ok)
+            .any(|girdi| girdi.file_name().to_string_lossy().contains("zee-gecici"));
+        assert!(!iz, "geçici ya da yedek izi kalmamalı");
+    }
+
+    /// K-351: `ReplaceFileW` eski hedefi yedeğe taşıyıp 2 ile düşerse eski
+    /// bütün yedekten geri kurulur; yedek silinip geçici metadata merge'siz
+    /// yayımlanmaz.
+    #[test]
+    #[cfg_attr(not(windows), ignore = "ReplaceFileW path exists only on Windows")]
+    fn kismi_replace_bulunamadi_eski_butunu_yedekten_geri_kurar() {
+        let klasor = GeciciKlasor::yeni("kismi");
+        let hedef = klasor.0.join("durum.txt");
+        let gecici = klasor.0.join(".durum.txt.zee-gecici-1-1");
+        let yedek = klasor.0.join(".durum.txt.zee-gecici-1-1.zee-yedek");
+        std::fs::write(&gecici, "yeni").unwrap();
+        // ReplaceFileW'nin ilk adımı: eski hedef → yedek.
+        std::fs::write(&yedek, "eski").unwrap();
+        kur(Adim::ReplaceFileW, Enjeksiyon::OsHatasi(2));
+        let hata = crate::kalici_dosya::atomik_degistir(&gecici, &hedef)
+            .expect_err("kısmi replace hata döner");
+        assert_eq!(hata_adimi(&hata), Some(Adim::ReplaceFileW), "{hata}");
+        assert_eq!(std::fs::read(&hedef).unwrap(), b"eski");
+        assert!(!yedek.exists(), "yedek hedefe geri taşınmalı");
+    }
 }

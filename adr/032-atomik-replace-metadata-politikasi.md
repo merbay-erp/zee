@@ -141,7 +141,15 @@ diriltme penceresini besliyordu.
    alımında hedef klasörüne bir dizin listesi ekler; maliyet `fsync`'li
    değiştirmenin yanında küçüktür ve yalnız Windows'tadır. K-348'in açık
    sınırı daralır: artık yedek ancak sonraki zee işlemine kadar yaşar.
-4. Test derlemesinde aynı adım noktaları iş parçacığına özel hata/gecikme
+4. `ReplaceFileW` 2/3 (bulunamadı) ile düştüğünde eski kod yedeği koşulsuz
+   siliyor ve `MoveFileExW(REPLACE_EXISTING)` ile ilk yerleştirmeye
+   geçiyordu. `ReplaceFileW` eski hedefi yedeğe taşıdıktan sonra düştüyse
+   eski bütün siliniyor ve geçici metadata merge'siz yayımlanıyordu; hedef
+   varken gelen 2/3'te de hedef merge'siz eziliyordu. Artık yedek varsa
+   (1177 gibi) eski bütün yedekten geri kurulur ve hata döner; ilk
+   yerleştirme yalnız hedef ve yedek yokken, `REPLACE_EXISTING` olmadan
+   yapılır. CI'daki `NotFound`un bu yoldan gelmiş olabileceği dışlanamadı.
+5. Test derlemesinde aynı adım noktaları iş parçacığına özel hata/gecikme
    enjeksiyonu kabul eder; üretim ikilisinde enjeksiyon yüzeyi yoktur.
 
 **Reddedilen.** Süreç içi "artık yedek var" bayrağı ya da listesi: başka
@@ -154,7 +162,9 @@ güvenlik yüzeyi açar.
 adımın enjekte hatası eski bütünü bozmaz; disk durması yeniden üretimi:
 değiştirmede duran yazar bekleyeni `TimedOut` + `yazma kilidi` adımıyla düşürür,
 kendi satırını kaybetmez; Windows'ta yedek silinemezse yazım başarılı ve
-artık sonraki yazımda temizlenir), `yarim_degistirme_eski_butunu_geri_koyar_ve_izleri_siler`
+artık sonraki yazımda temizlenir; hedef varken `ReplaceFileW` 2 ilk
+yerleştirmeye sapmaz; kısmi replace sonrası 2 eski bütünü yedekten geri
+kurar), `yarim_degistirme_eski_butunu_geri_koyar_ve_izleri_siler`
 artık yedek dalı, regression `yedek-artigi-diriltmez`
 (`native-yedek-artigi`, Windows). `NotFound` kaynağı yeniden üretilemedi;
 sonraki tekrarda ileti adımı gösterecek. GB-140.

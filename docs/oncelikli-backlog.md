@@ -2528,7 +2528,9 @@ bilinemedi. Her kalıcı yazım adımı (kilit, kurtarma, mevcut okuma, metadata
 geçici yazım, `rename`/`ReplaceFileW`/`MoveFileExW`, yedek geri alma, klasör
 eşzamanlama) hatasını adla sarar, `ErrorKind` korunur. Başarılı
 `ReplaceFileW` sonrası yedek silinemezse yazım artık hata değildir; hedef
-varken duran yedek sonraki kilit alımında silinir. Kanıt:
+varken duran yedek sonraki kilit alımında silinir. `ReplaceFileW` 2/3 artık yedeği koşulsuz silip
+`MoveFileExW(REPLACE_EXISTING)`'e geçmez: yedek varsa eski bütün geri kurulur,
+ilk yerleştirme yalnız hedef ve yedek yokken ve ezmeden. Kanıt:
 `kalici_dosya::adim::tests` (disk durması enjeksiyonuyla `TimedOut` +
 `yazma kilidi` adımı, Windows yedek silme hatası), `yasam_dongusu` artık yedek
 dalı, regression `yedek-artigi-diriltmez` (`native-yedek-artigi`, Windows).
