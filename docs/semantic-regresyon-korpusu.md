@@ -260,6 +260,18 @@ düzeltme öncesi `okunamadı` ve dosya yalnız `b-1` olur. Kurtarma yalnız
 Windows yazarında olduğundan kip Windows dışında görünür ignored durumundadır;
 toplu replay bu kipi atlar.
 
+## Native yedek artığı kipi (K-351)
+
+`runtime` fazındaki `native-yedek-artigi` kipi, Windows'ta başarılı
+`ReplaceFileW` sonrası silinemeyen yedeğin bıraktığı durumu kurar: hedef
+`ortak.txt` güncel (`a-1`), eski içerik `.ortak.txt.zee-gecici-4242-1.zee-yedek`
+artığında. Gerçek native `dil` okur ve ekler; harness kalan `zee-gecici` iz
+sayısını (`iz <n>`) yazar, hedefi zee dışından siler ve programı yeniden
+koşar; son satır dosyanın son içeriğidir (`son <satırlar|>`). Düzeltme öncesi
+`iz 1`, ikinci koşu silinmiş içeriği (`eski`) okur ve dosya `eski|b-1` olur.
+Yedek yalnız Windows yazarında oluştuğundan kip Windows dışında görünür
+ignored durumundadır; toplu replay bu kipi atlar.
+
 ## Native eşzamanlı ekleme kipi (K-346)
 
 `runtime` fazındaki `native-eszamanli-ekleme` kipi gerçek native `dil`
