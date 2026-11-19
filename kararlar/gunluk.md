@@ -5177,6 +5177,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `max-age`, yalnız uyarı (ADR-160, RFC-0037, GB-134). Ürün adı ADR-087
   gereği anonimdir.
 
+## K-339 — systemd credential gizli değer kaynağı (19 Kasım 2026)
+
+- K-339 (19.11.2026): zee-cekirdek talebi D3 (exact `abaca3a`): ürün
+  siteleri systemd altında koşuyor, Zee yalnız ortamdan okuduğu için sırlar
+  unit dosyasında/`EnvironmentFile=`'da ve süreç ortamında duruyordu. Core
+  freeze altında dogfood-change: mevcut gizli değer bağları
+  `CREDENTIALS_DIRECTORY` ayarlıysa aynı adlı credential dosyasından okunur
+  (ad = credential kimliği). Reddedilen: yeni `zee.ayar`/`proje.dil` eşleme
+  alanı (yeni yüzey), ortam önceliği (sessiz kaynak seçimi), K-245
+  launcher'ını genişletmek (değer yine env'e dönerdi), Windows'ta aynı yolu
+  açmak (DACL sözleşmesi yok; fail-closed). ADR-105 eki, spec/23 §K-339,
+  GB-135. Ürün adı ADR-087 gereği anonimdir.
+
 ## K-342 — Windows'ta atomik değiştirme sırasında okuyucu hatası (19 Kasım 2026)
 
 - **Olay:** 19.11 Windows CI'da `okuyucu_yalniz_eski_ya_da_yeni_butunu_gorur`

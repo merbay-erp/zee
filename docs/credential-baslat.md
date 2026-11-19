@@ -173,3 +173,15 @@ Gerçek kısa d53 aday koşusu Build dirty=true ile kaydedilmiştir; temiz final
 source/normal faz/ortak kampanya kabulü değildir. Internal P25 bridge dar dilimi
 kanıtlı adaydır; Windows/systemd/file-native sır gizliliği ve live adoption
 açık kalır. [ADR-125](../adr/125-credential-native-listener-kompozisyonu.md)/GB-083 aynı atomik kaynakta bağlanır; normal Cargo/faz ve final temiz kaynak kabulü ayrıca yürütülür.
+
+## K-339 — systemd altında launcher yerine doğrudan credential
+
+systemd unit'inde launcher'a gerek yoktur: native CLI proje gizli değer
+bağlarını `LoadCredential=`/`SetCredential=` ile verilen
+`$CREDENTIALS_DIRECTORY/<AD>` dosyasından doğrudan okur ve değeri ortama
+dönüştürmez ([ADR-105 eki](../adr/105-credential-host-koprusu.md),
+[spec/23 §K-339](../spec/23-yetkinlik-ve-outbound-guvenligi.md)). Native
+okuyucunun profili bu launcher'dan bilinçli olarak farklıdır: systemd'nin
+0400/0440 dosyaları ve 0500 dizini kabul edilir, PostgreSQL CA PEM çok
+satırlı olabilir. Aynı ad launcher eşlemesiyle ortamda ve credential
+dizininde birlikte varsa native okuma çakışma olarak reddedilir.

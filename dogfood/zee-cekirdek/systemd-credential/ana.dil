@@ -1,0 +1,9 @@
+# Ürün gizli anahtarı `LoadCredential=UYGULAMA_GIZLI_ANAHTAR:...` ile gelir;
+# kaynak ortam/dosya ayrımını bilmez, aynı bildirim iki dağıtımda da çalışır.
+parola "panel-oturum-sirri" olsun
+sifreli parolanın gizli şifrelenmişi olsun
+sonuç sifreli gizli çözmeyi dene olsun
+sonuç başarılıysa
+    "gidiş-dönüş tamam" yaz
+değilse
+    sonucun hatası yaz

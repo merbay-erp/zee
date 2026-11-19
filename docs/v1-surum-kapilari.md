@@ -581,6 +581,9 @@ K-245/P25 credential host pilotu (ADR-105/GB-068) mevcut env izinlerini
 koruyan POSIX dosya köprüsüdür;14 actual vaka native allowlist/SMTP dahil
 yürütülür. Temiz c67a69e host14 kabulü tamamlandı; Windows/systemd/canlı
 ürün ve file-native sır inheritance sınırı tam P25 olarak kapanmaz.
+K-339 (ADR-105 eki/GB-135) native `$CREDENTIALS_DIRECTORY` okumasıyla
+file-native dilimi Linux/macOS gerçek dizin ve gerçek ikili kanıtıyla kapatır;
+gerçek systemd unit kabulü, rotasyon ve Windows açık kalır.
 
 K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
 cleanup pilotudur; public launcher cleanup bug'ı temiz c67a69e üzerinde 25-vaka kabulüyle kapandı.
@@ -703,7 +706,7 @@ paylaşımını korur; süreç belleği kota overlap profilinde reddedilir.
 
 P09 gerçek catalog/SMTP effect adoptionı; P13 continuous/TTL/config reload ve
 uzun işletim; P14 farklı kod/resource revision dağıtımı/live/platform; P25
-file-native secret ve listener credential kompozisyonu açıktır.39 plan satırı,
+gerçek systemd unit kabulü (file-native okuma K-339'da) ve listener credential kompozisyonu açıktır.39 plan satırı,
 insan/harici CI/fiziksel/RC kapıları ve frozen syntax takvimi kapanmış gösterilmez.
 [Dispatcher](job-dispatcher.md) ve [listener](native-listener.md) rehberleri bu
 kapsamın kullanım ve ret sınırlarını verir. K262 ayrı correctness dalgasıdır.
