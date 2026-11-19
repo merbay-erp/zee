@@ -5290,3 +5290,16 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kilitsiz okuyucu yedeği okur, silme bayat yedekleri temizler. ReplaceFileW
   korunur (ADR-032 metadata sözü); MoveFileExW reddedildi. Grammar, tanı,
   CLI, dil::api::v1 değişmedi. ADR-032 eki.
+
+
+## K-351 — Kalıcı yazımda adım bağlamı ve silinemeyen yedek (19 Kasım 2026)
+
+- Windows CI'da `iki_yazar_satir_kaybetmez` paylaşımlı disk durmasında bir kez
+  düştü (a `TimedOut`, b `NotFound (os 2)`); A/B 600 tur yeniden üretmedi,
+  K-348 dışlandı. NotFound'un hangi çağrıdan geldiği hata adım taşımadığı için
+  bilinemedi. Düzeltme: her kalıcı yazım adımı hatayı adla sarar (`ErrorKind`
+  korunur); başarılı `ReplaceFileW` sonrası yedek silinemezse yazım başarılıdır,
+  artık yedek sonraki kilit alımında silinir (geri konmaz). Test derlemesinde
+  adım noktalarına iş parçacığı başı hata/gecikme enjeksiyonu; disk durması
+  deterministik yeniden üretildi. Süreç içi artık bayrağı ve üretimde enjeksiyon
+  reddedildi. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-032 eki.

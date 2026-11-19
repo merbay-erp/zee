@@ -66,6 +66,16 @@ Hedefi silen işlem ona ait bayat yedekleri de siler; silinmiş içerik sonraki
 yazımda dirilemez. Yarım değiştirmeyi kurtarmadan hedefi yok sayıp yeni içerik
 yazmak YASAKTIR.
 
+ZORUNLU (K-351): `ReplaceFileW` başarıyla döndüyse hedef yeni bütündür ve
+yazım başarılıdır; ardından yedeğin silinememesi (ör. zee dışı bir süreç
+yedeği silme paylaşımı olmadan açık tutuyor) yazımı hata olarak bildirmek
+YASAKTIR. Hedef varken duran yedek yarım değiştirme değildir; klasörün yazma
+kilidini alan sonraki zee işlemi onu siler, geri koymaz. Kalıcı yazım IO
+hatası hangi adımda düştüğünü (yazma kilidi, kurtarma, mevcut içerik okuma,
+metadata, geçici dosya yazımı, `rename`, `ReplaceFileW`, ilk yerleştirme
+`MoveFileExW`, yedek geri alma, klasör eşzamanlama) iletisinde taşımak
+ZORUNDADIR; `io::ErrorKind` değişmez.
+
 İçerik değişikliğinde Unix mtime/ctime korunmaz. Görünmeyen Linux `trusted.*`,
 Windows SACL/owner SID ve dosya sistemine özel immutable bayraklar verilmiş söz
 değildir. Bunlar için yönetilen deployment aracı gerekir.

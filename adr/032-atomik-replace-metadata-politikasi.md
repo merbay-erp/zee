@@ -111,6 +111,54 @@ turlarda okuma ve ekleme eski bütünü korudu, kurtarılamayan 0. Regression
 `hedefe_ait_yedekler_en_yeni_once_ve_gecici_esiyle_bulunur`; K-346 çok süreç
 regresyonu Windows'ta 25 tekrar. GB-139.
 
+## Ek — K-351: adım bağlamı ve silinemeyen yedek (19 Kasım 2026)
+
+**Bağlam.** Windows CI'da `iki_yazar_satir_kaybetmez` bir kez düştü: IO test
+grubu olağan ~2 sn yerine 16,4 sn sürdü (paylaşımlı CI disk durması, ADR-075 /
+K-217 sınıfı); yazar a 5 sn kilit bütçesinde `TimedOut`, yazar b
+`atomik_satir_yaz`'da `NotFound (os 2)` aldı. 600 turluk yük altı A/B
+yeniden üretmedi. Hata yalnız sistem kodunu taşıdığı için `ReplaceFileW`,
+ilk yerleştirme `MoveFileExW`, yedek silme ya da kurtarmadan hangisinden
+geldiği bilinemedi. İnceleme ayrıca başarılı `ReplaceFileW` sonrası
+`return remove_file(yedek)` satırını buldu: hedef yeni bütün olduğu hâlde
+yedek silinemezse yazım hata olarak bildiriliyordu. Çağıran (ör. `eylem`)
+yazılmış veriyi yazılmamış sanıp yeniden deneyebilir ya da yanlış geri
+alma kararı verebilirdi; yedek de bu durumda kalıp K-348'in açık sınırındaki
+diriltme penceresini besliyordu.
+
+**Karar.**
+
+1. Kalıcı yazım zincirinin her adımı hatasını adla sarar (`kalici_dosya::adim`);
+   `io::ErrorKind` korunur, özgün hata `source()` ve iletide kalır. İlk
+   yerleştirme `MoveFileExW` hatası önceki `ReplaceFileW` kodunu da yazar.
+   Ham `raw_os_error` artık dış hatada değil iç kaynaktadır; zee içinde
+   yazım hatasının ham koduna bakan çağıran yoktur.
+2. Başarılı `ReplaceFileW` sonrası yedek silme en iyi çabadır; hatası yazımı
+   düşürmez.
+3. Windows'ta yazma kilidini alan işlem hedef varken duran yedekleri siler
+   (hedef varken yedek kesin olarak başarılı yazımın artığıdır; `ReplaceFileW`
+   hedefi yalnız iki adımının arasında yok bırakır). Bu, her Windows kilit
+   alımında hedef klasörüne bir dizin listesi ekler; maliyet `fsync`'li
+   değiştirmenin yanında küçüktür ve yalnız Windows'tadır. K-348'in açık
+   sınırı daralır: artık yedek ancak sonraki zee işlemine kadar yaşar.
+4. Test derlemesinde aynı adım noktaları iş parçacığına özel hata/gecikme
+   enjeksiyonu kabul eder; üretim ikilisinde enjeksiyon yüzeyi yoktur.
+
+**Reddedilen.** Süreç içi "artık yedek var" bayrağı ya da listesi: başka
+süreçte kalan artığı görmez ve uzun ömürlü durum ekler. Yedek silmede
+yeniden deneme döngüsü: dış süreç tutamacı ne zaman bırakacağını bilmez,
+yazımı gereksiz bekletir. Üretimde ortam değişkeniyle hata enjeksiyonu:
+güvenlik yüzeyi açar.
+
+**Kanıt.** `kalici_dosya::adim::tests` (adım bağlamı ve tür korunur; her
+adımın enjekte hatası eski bütünü bozmaz; disk durması yeniden üretimi:
+değiştirmede duran yazar bekleyeni `TimedOut` + `yazma kilidi` adımıyla düşürür,
+kendi satırını kaybetmez; Windows'ta yedek silinemezse yazım başarılı ve
+artık sonraki yazımda temizlenir), `yarim_degistirme_eski_butunu_geri_koyar_ve_izleri_siler`
+artık yedek dalı, regression `yedek-artigi-diriltmez`
+(`native-yedek-artigi`, Windows). `NotFound` kaynağı yeniden üretilemedi;
+sonraki tekrarda ileti adımı gösterecek. GB-140.
+
 ## Platform kaynakları
 
 - [Linux xattr(7)](https://man7.org/linux/man-pages/man7/xattr.7.html)

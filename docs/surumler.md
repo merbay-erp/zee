@@ -55,6 +55,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Windows'ta başarılı yazım hata gibi görünmez; yazım hataları adımını
+  söyler (K-351, ADR-032 eki):** Windows'ta zee dosyayı değiştirdikten sonra
+  eski hâlin geçici yedeğini siler. Başka bir program (ör. virüs tarayıcı ya da
+  yedekleme aracı) o yedeği o anda açık tutuyorsa silme başarısız oluyor ve
+  zee, dosya aslında yazılmış olduğu hâlde "dosyaya yazılamadı" diyordu. Artık
+  yazım başarılı sayılır; kalan yedek sonraki yazımda temizlenir. Ayrıca
+  dosyaya yazma hatası iletisi hangi adımda düştüğünü (ör. `yazma kilidi`,
+  `ReplaceFileW`, `geçici dosya yazımı`) belirtir; hata kodu (C013) aynıdır.
+  Göç gerekmez.
+
 - **Windows'ta yazarken çöken süreç dosyayı kaybettirmez (K-348, ADR-032
   eki):** Windows'ta zee bir dosyayı iki adımda değiştirir. Süreç tam bu iki
   adımın arasında çökerse ya da öldürülürse (servis durdurma, görev
