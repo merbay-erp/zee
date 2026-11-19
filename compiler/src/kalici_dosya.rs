@@ -19,7 +19,7 @@ mod ozel;
 pub use ozel::atomik_ozel_yaz;
 mod yasam_dongusu;
 
-pub use yasam_dongusu::{atomik_sil, atomik_tasi};
+pub use yasam_dongusu::{atomik_sil, atomik_sil_izli, atomik_tasi};
 
 const KILIT_BEKLEME: Duration = Duration::from_millis(
     crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
@@ -60,19 +60,56 @@ pub fn atomik_karsilastir_ve_yaz(
 /// zee'nin dosyaya yaz/ekle semantiği: satır sonu ekler; ekleme de kilit
 /// altında oku-değiştir-atomik replace olduğundan iki süreç veri kaybetmez.
 pub fn atomik_satir_yaz(yol: &Path, satir: &str, ekleme: bool) -> io::Result<()> {
+    satir_yaz_kilitli(yol, satir, ekleme, false).map(|_| ())
+}
+
+/// K-346: eylem savepoint'inin gördüğü değişim. `onceki` ve `sonraki` aynı
+/// süreçler-arası kilit altında yakalanır; kilit dışında okunan yedek, araya
+/// giren yazarın başarılı eklemesini geri almada siliyordu.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct KilitliDegisim {
+    pub onceki: Option<Vec<u8>>,
+    pub sonraki: Option<Vec<u8>>,
+}
+
+/// [`atomik_satir_yaz`] ile aynı yazım; hedefin değişimden hemen önceki ve
+/// yayımlanan bütün içeriğini aynı kilit penceresinden döndürür (K-346).
+pub fn atomik_satir_yaz_izli(yol: &Path, satir: &str, ekleme: bool) -> io::Result<KilitliDegisim> {
+    satir_yaz_kilitli(yol, satir, ekleme, true)
+}
+
+fn satir_yaz_kilitli(
+    yol: &Path,
+    satir: &str,
+    ekleme: bool,
+    izli: bool,
+) -> io::Result<KilitliDegisim> {
     let _kilit = DosyaKilidi::al(yol)?;
+    let onceki = if ekleme || izli {
+        mevcut_icerik(yol)?
+    } else {
+        None
+    };
     let mut icerik = if ekleme {
-        match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
-            Ok(icerik) => icerik,
-            Err(hata) if hata.kind() == io::ErrorKind::NotFound => Vec::new(),
-            Err(hata) => return Err(hata),
-        }
+        onceki.clone().unwrap_or_default()
     } else {
         Vec::new()
     };
     icerik.extend_from_slice(satir.as_bytes());
     icerik.push(b'\n');
-    atomik_icerik_yaz(yol, &icerik, atomik_degistir)
+    atomik_icerik_yaz(yol, &icerik, atomik_degistir)?;
+    Ok(KilitliDegisim {
+        onceki: if izli { onceki } else { None },
+        sonraki: izli.then_some(icerik),
+    })
+}
+
+fn mevcut_icerik(yol: &Path) -> io::Result<Option<Vec<u8>>> {
+    match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
+        Ok(icerik) => Ok(Some(icerik)),
+        Err(hata) if hata.kind() == io::ErrorKind::NotFound => Ok(None),
+        Err(hata) => Err(hata),
+    }
 }
 
 /// Bir eylemin iyimser geri alması: hedef hâlâ bu eylemin bıraktığı
@@ -462,6 +499,24 @@ mod tests {
                 assert!(satirlar.contains(&format!("{}-{}", onek, sayi)));
             }
         }
+    }
+
+    #[test]
+    fn izli_yazim_ve_silme_kilit_altindaki_onceki_ve_sonrakini_dondurur() {
+        // K-346: eylem defteri yedeği yazımla aynı kilit penceresinden alır.
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("defter.txt");
+        let ilk = atomik_satir_yaz_izli(&yol, "a", true).expect("ilk ekleme");
+        assert_eq!(ilk.onceki, None);
+        assert_eq!(ilk.sonraki.as_deref(), Some(&b"a\n"[..]));
+        let ikinci = atomik_satir_yaz_izli(&yol, "b", false).expect("baştan yazma");
+        assert_eq!(ikinci.onceki.as_deref(), Some(&b"a\n"[..]));
+        assert_eq!(ikinci.sonraki.as_deref(), Some(&b"b\n"[..]));
+        let silme = atomik_sil_izli(&yol).expect("silme");
+        assert_eq!(silme.onceki.as_deref(), Some(&b"b\n"[..]));
+        assert_eq!(silme.sonraki, None);
+        assert!(!yol.exists());
+        assert_eq!(atomik_sil_izli(&yol).expect("yok").onceki, None);
     }
 
     #[test]

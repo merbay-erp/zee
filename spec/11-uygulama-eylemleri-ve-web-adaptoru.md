@@ -193,6 +193,13 @@ K-084 kilitli atomik replace çekirdeğini kullanır. Hedef, eylemin en son
 bıraktığı içerikten sonra başka bir yazarca değişmişse bu yazarın verisi
 ezilmez; geri alma C021 ile görünür biçimde başarısız olur.
 
+ZORUNLU (K-346): Gerçek adaptör eylem yedeğini ve eylemin hedefte bıraktığı
+içeriği, yazım ya da silmeyle aynı süreçler-arası kilit penceresinde yakalar.
+Kilit dışında okunan yedek, başka sürecin araya giren başarılı eklemesini geri
+almada silebilir. Aynı savepoint'in iki dokunuşu arasında hedef başka yazarca
+değişmişse geri alma eylem başı içeriğini geri koyamaz; C021 ile başarısız
+olur ve araya giren yazarın verisi kalır.
+
 Bir web isteğinde eylem transaction'ının başlaması, tamamlanması veya geri
 alınması C021 üretirse istek yanıtı/çerez/oturum taslağı geri alınmalı, istemciye
 503 verilmelidir. Worker/process bu istek yüzünden SONLANMAMALI ve sonraki

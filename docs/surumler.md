@@ -55,6 +55,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Geri alınan eylem başka sürecin eklediği satırı silmez (K-346, ADR-075
+  eki):** Bir `eylem` dosyaya yazıp başarısız olunca dosyayı eylem başındaki
+  hâline geri alır. Aynı anda başka bir süreç (ör. çok işçi grubundaki başka
+  bir işçi) aynı dosyaya `ekle` ile satır yazdıysa, geri alma bu başarılı
+  satırı da silebiliyordu: eylemin yedeği yazma kilidi dışında okunuyordu.
+  Yedek artık yazımla aynı kilit altında alınır; araya başka yazar girdiyse
+  geri alma onun satırını ezmek yerine C021 ile görünür biçimde başarısız
+  olur. Eylem dışındaki düz `ekle` zaten kayıpsızdı ve değişmedi (dört süreç ×
+  1000 ekleme 4000/4000). Göç gerekmez; C021 alan program, eylemin kendi
+  yazdıklarının dosyada kaldığını bilmelidir.
+
 - **Ayrı portlu web süreçlerinde tek birincil (K-341, ADR-161 eki):** Aynı
   proje kökünden elle açılan ayrı `--web-worker-port` süreçlerinin (Windows'ta
   tek ölçek yolu) her biri `birincil süreç`i `doğru` görüyordu; ölen sürecin
