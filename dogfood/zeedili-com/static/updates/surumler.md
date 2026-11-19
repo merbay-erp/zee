@@ -12,6 +12,21 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Çok işçi grubu `zee.ayar`'dan (K-340, ADR-161 eki):** Proje kökündeki
+  `zee.ayar` dosyasının `guvenlik` dalı artık `isci-sayisi` (1–64) ve
+  `saglik-port` alanlarını taşıyabilir; `dil çalıştır .` grubu bayraksız
+  başlatır. Alanlar `web-modu: proxy` ve `worker-port` ile birlikte
+  yazılmalıdır; komut satırındaki `--web-isci-sayisi`/`--web-saglik-port`
+  config değerini ezer.
+
+  ```json
+  "guvenlik": {"web-modu": "proxy", "proxy-origin": "https://site.example",
+               "worker-port": 8096, "isci-sayisi": 4, "saglik-port": 8099}
+  ```
+
+  **Göç:** Bu alanları içeren `zee.ayar` daha eski `dil` ile açılmaz (bilinmeyen
+  güvenlik alanı, çıkış 2); geri dönüşte alanları silin ya da bayrakla verin.
+
 - **systemd credentials (K-339, ADR-105 eki):** `proje.dil` içindeki gizli
   değer bağları (`gizli_anahtar_değişkeni`, `e_posta_bağlantı_değişkeni`,
   PostgreSQL bağlantı değişkeni ve `_TLS_CA_PEM` eki,
@@ -40,6 +55,35 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Geri alınan eylem başka sürecin eklediği satırı silmez (K-346, ADR-075
+  eki):** Bir `eylem` dosyaya yazıp başarısız olunca dosyayı eylem başındaki
+  hâline geri alır. Aynı anda başka bir süreç (ör. çok işçi grubundaki başka
+  bir işçi) aynı dosyaya `ekle` ile satır yazdıysa, geri alma bu başarılı
+  satırı da silebiliyordu: eylemin yedeği yazma kilidi dışında okunuyordu.
+  Yedek artık yazımla aynı kilit altında alınır; araya başka yazar girdiyse
+  geri alma onun satırını ezmek yerine C021 ile görünür biçimde başarısız
+  olur. Eylem dışındaki düz `ekle` zaten kayıpsızdı ve değişmedi (dört süreç ×
+  1000 ekleme 4000/4000). Göç gerekmez; C021 alan program, eylemin kendi
+  yazdıklarının dosyada kaldığını bilmelidir.
+- **Çok işçi sağlık uç noktası asılı kalmaz (K-345, ADR-161 eki):** macOS'ta
+  `--web-saglik-port` isteği, grup işçi başlatırken gelirse yanıtı tam
+  alıp bağlantının kapanmasını o işçi çıkana dek bekleyebiliyordu (sağlık
+  denetimi zaman aşımı); işçi de yöneticiye ait bir soketi taşıyordu. Artık
+  bağlantı işçiye geçmez ve yanıttan hemen sonra kapanır. Linux etkilenmiyordu;
+  göç gerekmez.
+
+- **Ayrı portlu web süreçlerinde tek birincil (K-341, ADR-161 eki):** Aynı
+  proje kökünden elle açılan ayrı `--web-worker-port` süreçlerinin (Windows'ta
+  tek ölçek yolu) her biri `birincil süreç`i `doğru` görüyordu; ölen sürecin
+  yerine açılan süreç açılış işini (yarım yükleme uzlaştırması, sahipsiz dosya
+  taraması) çalışan süreçlerin ortasında yeniden koşabiliyordu. Artık kökte
+  canlı başka süreç varken açılan süreç `yanlış` görür; birlikte açılan
+  süreçler birincilin `sunucu başlat`ına kadar karar vermeden bekler. Kök
+  altında `.zee/birincil-acilis.kilit` ve `.zee/birincil-canli.kilit` dosyaları
+  oluşur; silinmeleri gerekmez. Göç gerekmez; tek süreç ve
+  `--web-isci-sayisi` grubu değişmedi. Ağ dosya sistemindeki kök ve çok hostlu
+  kurulum kapsam dışıdır.
+
 - **Windows'ta yazılırken okunan dosya hata vermez (K-342):** Bir zee
   programı dosyayı atomik olarak yeniden yazarken başka bir program (ya da
   aynı programın başka işi) onu `dosyasını okumayı dene` ile okursa, yoğun
@@ -47,7 +91,21 @@ Bu kayıt yeni sürüm etiketi değildir.
   da "bulunamadı" hatası alabiliyordu. Okuyucu artık süren değiştirmeyi
   tanıyıp bitmesini bekler ve eski ya da yeni içeriğin bütününü görür.
   Gerçekten olmayan dosya eskisi gibi hemen hata verir. Linux ve macOS
-  değişmedi; göç gerekmez.
+  değişmedi; göç gerekmez. Aynı gün akşam bekleme kesinleşti: okuyucu
+  değiştirmeyi tahminle değil, klasörün `.zee-yazma-kilidi` dosyasını
+  paylaşımlı kilitleyerek bekler; yoğun makinede kalan ara sıra paylaşım
+  ihlali hatası da giderildi.
+
+- **Çok işçi grubu çöken işçide söz verilen sınırda durur (K-338, ADR-161
+  eki):** `--web-isci-sayisi` ile açılan grupta bir işçi 10 saniye dolmadan
+  art arda 10 kez çıkarsa grup artık 10. çıkışta durur (çıkış 1); önceden bir
+  yeniden başlatma daha (≈5 sn) deneyip 11. çıkışta duruyordu. Sağlıklı
+  gruplarda davranış değişmedi; göç gerekmez. Sağlık uç noktasının 503
+  `basliyor`/`eksik`/`kapaniyor` durumları, HEAD ve 404 yanıtları ile 40 sn
+  kapanış sınırı artık otomatik testle korunur.
+- **zeedili.com 19 Kasım gelişmeleri:** Ana sayfanın gelişmeler bölümü
+  systemd credentials, `zee.ayar` işçi alanları ve çok işçi profilinin
+  sağlamlaştırılmasını anar; site worker'ı güncel derleyiciyle koşar.
 
 ## 18 Kasım 2026 — Geliştirme güncellemeleri
 

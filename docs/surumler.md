@@ -103,6 +103,9 @@ Bu kayıt yeni sürüm etiketi değildir.
   gruplarda davranış değişmedi; göç gerekmez. Sağlık uç noktasının 503
   `basliyor`/`eksik`/`kapaniyor` durumları, HEAD ve 404 yanıtları ile 40 sn
   kapanış sınırı artık otomatik testle korunur.
+- **zeedili.com 19 Kasım gelişmeleri:** Ana sayfanın gelişmeler bölümü
+  systemd credentials, `zee.ayar` işçi alanları ve çok işçi profilinin
+  sağlamlaştırılmasını anar; site worker'ı güncel derleyiciyle koşar.
 
 ## 18 Kasım 2026 — Geliştirme güncellemeleri
 
