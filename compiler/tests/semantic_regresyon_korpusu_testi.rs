@@ -67,6 +67,7 @@ const KIPLER: &[&str] = &[
     "native-dosya-exdev",
     "native-web-yukleme",
     "native-dosya-okuma-penceresi",
+    "native-dosya-okuma-izsiz-penceresi",
     "native-isci-grubu",
     "native-ayri-port-birincil",
     "native-isci-saglik-mirasi",
@@ -229,7 +230,11 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "hir" => matches!(kip, "hir" | "definition" | "run"),
         "runtime" => matches!(
             kip,
-            "run" | "trace" | "native-dosya-exdev" | "native-dosya-okuma-penceresi"
+            "run"
+                | "trace"
+                | "native-dosya-exdev"
+                | "native-dosya-okuma-penceresi"
+                | "native-dosya-okuma-izsiz-penceresi"
         ),
         "concurrency" => kip == "run",
         "security" => matches!(
@@ -378,9 +383,16 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
             cikti,
         };
     }
-    if vaka.kip == "native-dosya-okuma-penceresi" {
-        let (cikis, cikti) =
-            native_dosya_okuma_penceresi_fixture::calistir(&depo().join(&vaka.dosya));
+    if vaka.kip == "native-dosya-okuma-penceresi"
+        || vaka.kip == "native-dosya-okuma-izsiz-penceresi"
+    {
+        let kaynak = depo().join(&vaka.dosya);
+        let (cikis, cikti) = match vaka.kip.as_str() {
+            "native-dosya-okuma-penceresi" => {
+                native_dosya_okuma_penceresi_fixture::calistir(&kaynak)
+            }
+            _ => native_dosya_okuma_penceresi_fixture::calistir_izsiz(&kaynak),
+        };
         return Gozlem {
             tani: None,
             cikis,
@@ -732,6 +744,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-dosya-exdev"
                 | "native-web-yukleme"
                 | "native-dosya-okuma-penceresi"
+                | "native-dosya-okuma-izsiz-penceresi"
                 | "native-isci-grubu"
                 | "native-ayri-port-birincil"
                 | "native-isci-saglik-mirasi"
@@ -1083,18 +1096,21 @@ fn native_dosya_exdev_regresyonu_gercek_aygit_siniri_ile_korunur() {
 
 #[test]
 fn native_dosya_okuma_penceresi_kipi_yalniz_runtime_fazina_aittir() {
-    assert!(KIPLER.contains(&"native-dosya-okuma-penceresi"));
-    assert!(faz_kipi_kabul_eder(
-        "runtime",
-        "native-dosya-okuma-penceresi"
-    ));
-    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
-        assert!(!faz_kipi_kabul_eder(faz, "native-dosya-okuma-penceresi"));
+    for kip in [
+        "native-dosya-okuma-penceresi",
+        "native-dosya-okuma-izsiz-penceresi",
+    ] {
+        assert!(KIPLER.contains(&kip));
+        assert!(faz_kipi_kabul_eder("runtime", kip));
+        for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+            assert!(!faz_kipi_kabul_eder(faz, kip));
+        }
     }
 }
 
-/// K-342: Windows `ReplaceFileW` penceresi kısa bütçeyi aşsa da gerçek native
-/// `dil` okuyucusu yeni bütünü görür. Unix rename'inde pencere yoktur; sahte
+/// K-342: Windows `ReplaceFileW` penceresi kısa bütçeyi aşsa da, yazarın
+/// geçici dosya izi görünmese de gerçek native `dil` okuyucusu zee yazma
+/// kilidini bekleyip yeni bütünü görür. Unix rename'inde pencere yoktur; sahte
 /// başarı yerine görünür ignored durumundadır.
 #[test]
 #[cfg_attr(
@@ -1102,20 +1118,26 @@ fn native_dosya_okuma_penceresi_kipi_yalniz_runtime_fazina_aittir() {
     ignore = "actual Windows ReplaceFileW window unavailable"
 )]
 fn native_dosya_okuma_penceresi_regresyonu_gercek_okuyucu_ile_korunur() {
-    let vakalar: Vec<_> = vakalari_oku()
-        .into_iter()
-        .filter(|vaka| vaka.kip == "native-dosya-okuma-penceresi")
-        .collect();
-    assert!(
-        !vakalar.is_empty(),
-        "native dosya okuma penceresi regresyonu gerçek manifest vakası olmadan geçemez"
-    );
-    for vaka in vakalar {
-        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
-        let gozlem = vakayi_calistir(&vaka, &kaynak);
-        assert!(gozlem.tani.is_none());
-        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
-        assert_eq!(gozlem.cikti, vaka.cikti, "{}: okuma sonucu", vaka.ad);
+    for kip in [
+        "native-dosya-okuma-penceresi",
+        "native-dosya-okuma-izsiz-penceresi",
+    ] {
+        let vakalar: Vec<_> = vakalari_oku()
+            .into_iter()
+            .filter(|vaka| vaka.kip == kip)
+            .collect();
+        assert!(
+            !vakalar.is_empty(),
+            "{kip} regresyonu gerçek manifest vakası olmadan geçemez"
+        );
+        for vaka in vakalar {
+            let kaynak =
+                std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+            let gozlem = vakayi_calistir(&vaka, &kaynak);
+            assert!(gozlem.tani.is_none());
+            assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+            assert_eq!(gozlem.cikti, vaka.cikti, "{}: okuma sonucu", vaka.ad);
+        }
     }
 }
 

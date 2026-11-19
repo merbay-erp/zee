@@ -15,7 +15,7 @@ Kaynak: `regression/v2.tsv`
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 9 |
+| runtime | 10 |
 | security | 12 |
 
 | Tanı | Vaka |

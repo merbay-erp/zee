@@ -5207,6 +5207,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   okunur klasörde kilit dosyası açılamaz, okuyucular yazarları bekletir),
   `ReplaceFileW` yerine POSIX rename (DACL/named stream taşıma sözü elle
   yeniden yazılmalı; core freeze altında büyük değişiklik).
+- **Ek (aynı gün akşam):** #28 birleşikken #32'nin Windows CI'ı aynı testte
+  32 aldı. Yük altındaki Windows teşhisi (geçici dal) düşüşü düzeltmeli
+  master'da 300 koşuda 1 kez üretti; Defender gerçek zamanlı taraması kapalı,
+  `C:\`/`D:\` dışlanmış, indeksleyici durmuş, dolayısıyla tutucu zee
+  yazarıdır (pencere 119 ms'ye uzadı). Zaman+iz tahmini kırılgandı: iz iki
+  değiştirmenin arasında görünmeyebilir. Karar: okuyucu yalnız geçici hata
+  aldığında var olan kilit dosyasını salt okuma açıp paylaşımlı kilitler,
+  süren değiştirmenin bitmesini ≤5 sn bekler, sonra 50 ms dener; iz tahmini
+  kaldırıldı. Sabahki ret gerekçeleri bu biçimi kapsamaz: kilit dosyası
+  yaratılmaz (yoksa klasörde zee yazarı hiç olmamıştır), okuyucu yazarları
+  yalnız hata yolunda ve tek açma süresince bekletir. Kilidi tutan iş
+  parçacığının kendi okuması (ekleme) kilidi beklemez.
 
 ## K-338 — Çok işçi yeniden başlatma sınırı (19 Kasım 2026)
 
