@@ -21,7 +21,7 @@ FILES = {'backend.py', 'assets/base.pdf', 'assets/font.ttf', 'assets/product.png
          'assets/LICENSE-DejaVu.txt', 'assets/COPYRIGHT-DejaVu.txt'}
 LIBRARIES = {'reportlab': '4.4.9', 'pypdf': '6.10.0', 'Pillow': '12.3.0'}
 HELPERS = {'derleyici-secici.py': 'b2103253fc59be2eeb27e6861e593d56202697f69519a2b158f9232326c07692',
-           'worker-supervisor.py': '51f0d680d14c4c8a08dc60ab0946e82f2eceb7ead1760a6cc4cd7d14a0cd199e'}
+           'worker-supervisor.py': '2d32c5b8541ee21296ec728050f962f615134823381fe857e1b8c49d708985e5'}
 BOOTSTRAP = 'import os,sys; f=int(sys.argv[1]); os.dup2(f,0); os.close(f); os.execv(sys.argv[2],sys.argv[2:])'
 
 CANCELLED = False

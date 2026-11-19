@@ -2535,6 +2535,18 @@ tekil ve 16 tam paket (400 vaka) koşusunda yeniden üretilemedi; 19 Kasım'da
 fırlatan satır(lar) ve son 16 süpervizör olay adını yazar; ileti, fixture
 değeri ve ortam yazılmaz. Fixture çıkışı assertion dışı istisnalara da olay
 zaman çizelgesini ekler. Zaman aşımları değişmedi.
+Ek (19 Kasım, ubuntu): `Native.test_real_child_crash_cleans_peer` bir koşuda
+`rejected` ile düştü (olaylar: build, worker_started×2, state/unready,
+metrics×2, stopping, stopped). Olası mekanizma: fixture `--startup-timeout 3`,
+`--poll-seconds` alt sınırı/varsayılanı 2 → tek yeniden deneme probe'u
+(t≈2 sn); o probe ≥0,5 sn takılır ya da kapı geç yazılırsa supervisor
+"startup" ile reddeder. Hazır olması beklenen fixture'lar artık 7 sn bütçe
+(≥3 probe: t≈0/2/4/6) kullanır; ret fixture'ları 3 sn'de kalır. Supervisor
+`metrics` olayı `probe_failures`'ı değer içermeyen sınıflara ayırır
+(`probe_failure_timeout|connection|response|http`, toplamı eşit, hiçbir karar
+bunlara bakmaz; `docs/worker-supervisor.md`); tanı satırı her olayda
+`healthy_workers`, `application_ready`, probe sayaçlarını ve ret kodunu yazar.
+`pdf-plugin-host.py` yardımcı SHA-256 sabiti yenilendi. Ürün kararları değişmedi.
 
 ## K-346 — Eşzamanlı ekleme ve eylem geri alması
 

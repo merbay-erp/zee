@@ -249,7 +249,10 @@ class Supervisor:
         self.build = None
         self.gate_epoch_ns = time.time_ns()
         self.readiness_seen = None
+        # probe_failure_* only classify probe_failures (sum equals it); no decision uses them.
         self.metrics = {"probe_total": 0, "probe_failures": 0, "probe_ms_total": 0,
+                        "probe_failure_timeout": 0, "probe_failure_connection": 0,
+                        "probe_failure_response": 0, "probe_failure_http": 0,
                         "restart_total": 0, "forced_kills": 0}
         self.native_metrics = None
         if getattr(a, "runtime_metrics", False):
@@ -413,6 +416,7 @@ class Supervisor:
     def probe(self, port, until=None):
         started = time.monotonic()
         self.increment("probe_total")
+        stage, deadline = "connection", started
         try:
             deadline = min(started + self.a.probe_timeout, until) if until is not None else started + self.a.probe_timeout
             require(deadline > started, "probe")
@@ -420,6 +424,7 @@ class Supervisor:
                        "\r\nForwarded: for=127.0.0.1;proto=https;host=" + self.a.host +
                        "\r\nConnection: close\r\n\r\n").encode("ascii")
             with socket.create_connection(("127.0.0.1", port), timeout=deadline - started) as s:
+                stage = "response"
                 def read(n):
                     remaining = deadline - time.monotonic()
                     require(remaining > 0 and not self.stop, "probe")
@@ -435,6 +440,7 @@ class Supervisor:
                 header, body = bytes(data).split(b"\r\n\r\n", 1)
                 require(len(header) <= 16384 and b"\0" not in header, "probe")
                 lines = header.decode("ascii").split("\r\n")
+                stage = "http"
                 require(re.fullmatch(r"HTTP/1\.[01] 200 [ -~]*", lines[0]), "probe")
                 fields = {}
                 for line in lines[1:]:
@@ -456,8 +462,12 @@ class Supervisor:
                 require(body == expected and not read(1), "probe")
             require(time.monotonic() < deadline, "probe")
             return True
-        except (OSError, Reject, UnicodeError, ValueError):
+        except (OSError, Reject, UnicodeError, ValueError) as error:
             self.increment("probe_failures")
+            # Value-free class: deadline/timeout, connect, response framing, HTTP status/headers/body.
+            if isinstance(error, TimeoutError) or time.monotonic() >= deadline:
+                stage = "timeout"
+            self.increment("probe_failure_" + stage)
             return False
         finally:
             self.increment("probe_ms_total", int((time.monotonic() - started) * 1000))

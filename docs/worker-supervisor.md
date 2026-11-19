@@ -87,7 +87,11 @@ Log pipe'ı nonblocking'dir; satırlar pipe'ın atomik yazım sınırını aşma
 Backpressure/disk hatasında satır atılabilir ve `log_drops` artar; bu audit
 log teslim garantisi değildir. Metrikler probe girişimi/başarısızlığı,
 monoton toplam probe süresi, restart, managed worker ve SIGKILL escalation
-sayısıdır. `forced_kills` başarılı SIGKILL çağrısını sayar; öldürülen istek
+sayısıdır. K-350 ile `probe_failures` değer içermeyen sınıflara ayrılır:
+`probe_failure_timeout` (probe/startup deadline'ı), `probe_failure_connection`
+(bağlantı kurulamadı), `probe_failure_response` (başlık çerçevesi/erken EOF) ve
+`probe_failure_http` (durum satırı, başlık, build kimliği ya da gövde); toplamları
+`probe_failures`'a eşittir ve hiçbir karar bunlara bakmaz. `forced_kills` başarılı SIGKILL çağrısını sayar; öldürülen istek
 veya tamamlanmış drain sayısı değildir. Request-ID/süre/durum logları,
 request/rate-reject/DB-pool Prometheus metrikleri ve management HTTP
 endpoint'i bu pilotta yoktur.
