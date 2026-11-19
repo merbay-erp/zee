@@ -102,7 +102,7 @@ class Running:
         self.buffer = bytearray()
         self.events = []
 
-    def until(self, predicate, timeout=8, after=0):
+    def until(self, predicate, timeout=12, after=0):
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             if any(predicate(event) for event in self.events[after:]):
@@ -126,7 +126,7 @@ class Running:
     def finish(self, stop=True):
         if stop and self.child.poll() is None:
             self.child.terminate()
-        output, error = self.child.communicate(timeout=8)
+        output, error = self.child.communicate(timeout=15)
         self.selector.close()
         pending = bytes(self.buffer) + output
         for line in pending.splitlines():
@@ -138,7 +138,12 @@ class Running:
 
 
 class Fixture:
-    def __init__(self, native=False, mode="normal", ready=True, query="normal", extra=(), app_signal=False, credential=False, inflight=False):
+    def __init__(self, native=False, mode="normal", ready=True, query="normal", extra=(), app_signal=False, credential=False, inflight=False, startup=None):
+        # K-350: poll-seconds is min/default 2, so a 3 s startup budget leaves a
+        # single retry probe (t~2 s); one slow probe (>=.5 s) or a late gate then
+        # rejects "startup" on a loaded runner. Fixtures that must become ready
+        # use >=7 s (>=3 probes: t~0, 2, 4, 6). Rejection fixtures keep 3 s: they
+        # assert never-ready, and a longer budget would only slow them down.
         self.temporary = tempfile.TemporaryDirectory(prefix="zee-supervisor-k246-")
         self.root = Path(self.temporary.name).resolve()
         self.project = self.root / "project"
@@ -189,7 +194,7 @@ class Fixture:
                      "--expected-source", self.build["source_sha"], "--application-revision", REVISION,
                      "--readiness-file", str(self.gate), "--health-path", "/hazir", "--health-body", "ok",
                      "--worker-port", str(self.ports[0]), "--worker-port", str(self.ports[1]),
-                     "--startup-timeout", "3", "--probe-timeout", ".5", "--stop-grace", ".2", "--pilot"] + list(extra)
+                     "--startup-timeout", startup or ("7" if native else "3"), "--probe-timeout", ".5", "--stop-grace", ".2", "--pilot"] + list(extra)
         if credential:
             credentials = self.root / 'credentials'
             credentials.mkdir(mode=0o700)
@@ -282,7 +287,14 @@ class Synthetic(unittest.TestCase):
         self.rejection(mode="forged")
 
     def test_health_503_rejected(self):
-        self.rejection(mode="503")
+        events=self.rejection(mode="503")
+        # K-350: value-free probe failure classes partition probe_failures.
+        metrics=[x for x in events if x.get("event")=="metrics"]
+        self.assertTrue(metrics)
+        classes=("timeout","connection","response","http")
+        for x in metrics:
+            self.assertEqual(sum(x["probe_failure_"+k] for k in classes),x["probe_failures"])
+        self.assertGreater(metrics[-1]["probe_failure_http"],0)
         # Real TCP peer delivers valid200 after2s; a5s per-probe allowance must
         # not extend the remaining .3s global startup budget.
         spec=importlib.util.spec_from_file_location('supervisor_deadline',TOOL)
@@ -308,7 +320,7 @@ class Synthetic(unittest.TestCase):
         self.rejection(mode="crash")
 
     def test_secret_dump_is_not_forwarded_or_blocking(self):
-        with Fixture(mode="secret") as f:
+        with Fixture(mode="secret", startup="7") as f:
             env=dict(os.environ,SHARED_SECRET=CANARY,HTTP_PROXY='https://'+CANARY+'.example',PYTHONPATH=str(f.root))
             run = f.start(env)
             run.until(lambda x: x.get("ready") is True)
@@ -321,7 +333,7 @@ class Synthetic(unittest.TestCase):
             self.assertNotIn(CANARY, json.dumps(run.events))
 
     def test_stuck_worker_is_killed_and_reaped(self):
-        with Fixture(mode="stuck") as f:
+        with Fixture(mode="stuck", startup="7") as f:
             run = f.start()
             run.until(lambda x: x.get("ready") is True)
             before = time.monotonic()
@@ -523,6 +535,17 @@ class Launcher(unittest.TestCase):
         self.campaign(use_native_node=bool(NODE))
 
 
+DIAGNOSTIC_FIELDS=('healthy_workers','application_ready','probe_total','probe_failures','probe_failure_timeout',
+                   'probe_failure_connection','probe_failure_response','probe_failure_http','reason')
+
+
+def event_summary(event):
+    # Event name, state and fixed numeric/boolean/reason-code fields only.
+    text=str(event.get('event'))+('/'+str(event['state']) if 'state' in event else '')
+    fields=[key+'='+str(event[key]) for key in DIAGNOSTIC_FIELDS if isinstance(event.get(key),(bool,int)) or (key=='reason' and isinstance(event.get(key),str) and event[key].isidentifier())]
+    return text+('('+' '.join(fields)+')' if fields else '')
+
+
 def where(trace):
     # Only frames of this harness: function name and line, no locals or values.
     own=str(Path(__file__).resolve())
@@ -549,7 +572,7 @@ class Result(unittest.TextTestResult):
         # Value-free diagnosis only: exception class, stage, this file's raising
         # frames and supervisor event names. Never messages, fixture values or env.
         for item in getattr(self,'diagnostics',[]):
-            events=[str(x.get('event'))+('/'+str(x['state']) if 'state' in x else '') for x in item['timeline'][-16:] if isinstance(x,dict)]
+            events=[event_summary(x) for x in item['timeline'][-16:] if isinstance(x,dict)]
             self.stream.writeln("FAILED "+item['test']+" kind="+item['kind']+" stage="+str(item['stage'])+" where="+",".join(item['where'])+" events="+",".join(events))
 
 
