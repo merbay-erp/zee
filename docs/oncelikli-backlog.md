@@ -2548,6 +2548,12 @@ günlüğünü okuyordu (üç kaydın varlığı beklenir); stdout okuyucu geçe
 UTF-8 satırında sayımı bırakmaz. Kanıt: son kodda 4×3 paralel koşu 12/12,
 6×3 iki tur 36/36.
 Bulunan ürün hatası ayrı: K-345.
+Ek (test tanısı): `credential_metrik_native_worker_hup_ve_grup_temizligi`
+bir tam paket koşusunda SIGHUP sonrası 15 sn içinde `ready` görmedi; master'da
+3 tam koşu ve 20 bağımsız koşuda yeniden üretilemedi. Kök neden iddia
+edilmez; başarısızlıkta süpervizör olayları gizli değerler maskelenerek
+`olaylar-basarisiz.jsonl` olarak proof dizinine ve CI faz matrisi
+artefaktına yazılır (zaman aşımları değişmedi).
 
 ## K-341 — Ayrı portlu süreçlerde birincillik
 
