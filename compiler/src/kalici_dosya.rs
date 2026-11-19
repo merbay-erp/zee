@@ -12,7 +12,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
-use crate::kaynak_sinirlari::yarim_degistirme as yarim;
+use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
 
 mod metadata;
 mod ozel;

@@ -11,7 +11,6 @@ mod posta;
 mod profiller;
 mod veritabani;
 mod web;
-pub(crate) mod yarim_degistirme;
 
 pub use baglanti::{baglanti_izni_al, BaglantiIzni};
 pub(crate) use okuma::{kaynak_boyutunu_denetle, token_sayisini_denetle};

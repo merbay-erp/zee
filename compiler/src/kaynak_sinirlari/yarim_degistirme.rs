@@ -86,10 +86,10 @@ pub(crate) fn yedekten_ac(hedef: &Path, uzun: std::time::Duration) -> Option<std
     }
     // Kilit tutuluyorsa ya da beklenemediyse yine okunur; yedeği kurtaran
     // yazar onu taşırsa açma düşer ve özgün hata döner.
-    let _bariyer = if super::degistirme_penceresi::yazma_kilidi_tutuluyor() {
+    let _bariyer = if super::yazma_kilidi_tutuluyor() {
         None
     } else {
-        super::degistirme_penceresi::degistirmenin_bitmesini_bekle(hedef, uzun)
+        super::degistirmenin_bitmesini_bekle(hedef, uzun)
     };
     if let Ok(dosya) = std::fs::File::open(hedef) {
         return Some(dosya);

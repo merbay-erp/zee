@@ -79,7 +79,7 @@ fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
         }) {
             // K-348: ölen yazarın yarım değiştirmesi; eski bütün yedektedir.
             Err(hata) if hata.kind() == io::ErrorKind::NotFound => {
-                super::yarim_degistirme::yedekten_ac(yol, uzun).ok_or(hata)
+                super::degistirme_penceresi::yarim_degistirme::yedekten_ac(yol, uzun).ok_or(hata)
             }
             sonuc => sonuc,
         }

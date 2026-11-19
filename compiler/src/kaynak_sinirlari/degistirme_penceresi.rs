@@ -23,6 +23,9 @@ use std::io;
 use std::path::Path;
 use std::time::{Duration, Instant};
 
+#[path = "yarim_degistirme.rs"]
+pub(crate) mod yarim_degistirme;
+
 /// Klasör başına kalıcı zee yazma kilidi dosyası (`kalici_dosya` ile ortak).
 pub(crate) const YAZMA_KILIDI_ADI: &str = ".zee-yazma-kilidi";
 

@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io;
 use std::path::Path;
 
-use crate::kaynak_sinirlari::yarim_degistirme as yarim;
+use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
 
 /// Var olan hedefi ezmeden hazırlanmış dosyayı tek adlandırma adımıyla
 /// görünür kılar. K-329: kaynak ile hedef ayrı bağlama noktalarındaysa
