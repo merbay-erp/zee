@@ -344,7 +344,7 @@ def main():
                 assert http('/sil','POST',{'id':'news','_csrf':csrf},session)[0]==303 and observer('SELECT count(*) FROM zee_starter_content')==['0'];record('actual-media-delete-separate-SQL-finalization-then-content-delete')
                 assert http('/cikis','POST',{'_csrf':csrf},session)[0]==303 and http('/admin',cookie=session)[0]==401;record('actual-logout-revoke')
                 stop_host()
-                assert any((project/'.zee/yuklemeler').iterdir());proof['orphan_boundary']='owned upload temporary artifacts retained until operator GC; not falsely allfiles-clean'
+                uploads=project/'.zee/yuklemeler';assert not uploads.exists() or not any(p.name.endswith('.parca') for p in uploads.iterdir());proof['orphan_boundary']='K-332: consumed or rejected upload .parca removed by native adapter; process-death orphans left to startup sweep'
             assert pins=={n:M.sha(M.bounded(R/n,262144)) for n in roles}
             assert pg_pin()==pgpins and M.sha(M.bounded(a.dil,134217728))==a.binary_sha256 and json.loads(command([a.dil,'sürüm','--json']))==build
             assert command(['git','-C',R,'rev-parse','HEAD']).decode().strip()==a.sha
