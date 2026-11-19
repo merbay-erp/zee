@@ -275,6 +275,9 @@ Exit yöneticinin çıkış kodudur; çıktı stderr'den sayılan iki satırdır
 `yuva 2 başlatma <n>` ve günlükteki `durma <n>`. Fixture'da ikincil yuva her
 açılışta `programı 3 ile bitir` ile çıkar; düzeltme öncesi kaynakta çıktı
 `yuva 2 başlatma 11` / `durma 10`, düzeltmeyle `10` / `10`'dur. Koşu
-gecikme dizisi nedeniyle ≈28 sn sürer. ToplayanIo süreç yönetimini taklit
+gecikme dizisi nedeniyle ≈28 sn sürer. Yönetici kendi süreç grubunda başlar;
+çıkışından sonra grup öldürülür ve stderr borusu en çok 15 sn beklenir
+(macOS'ta boru CLOEXEC'i atomik değildir, eşzamanlı spawn yazma ucunu
+miras alabilir), böylece kip asılı kalamaz. ToplayanIo süreç yönetimini taklit
 edemediği için toplu replay bu kipi atlar; ayrı native libtest vakası boş
 listeyi reddeder ve Unix dışında görünür ignored durumundadır.

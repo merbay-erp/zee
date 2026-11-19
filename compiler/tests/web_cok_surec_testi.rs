@@ -37,8 +37,50 @@ struct Sunucu(Child);
 
 impl Drop for Sunucu {
     fn drop(&mut self) {
+        // K-338: işçi grubu kendi süreç grubunda başlar; grup lideri henüz
+        // biçilmediğinden bu kimlik başka gruba ait olamaz. Lider olmayan
+        // süreçte ESRCH döner, etkisizdir. Donmuş (SIGSTOP) ya da sahipsiz
+        // işçi test sonrasında yaşamaz.
+        #[cfg(unix)]
+        // SAFETY: signal to our own unreaped child's process group.
+        unsafe {
+            libc::kill(-(self.0.id() as libc::pid_t), libc::SIGKILL);
+        }
         let _ = self.0.kill();
         let _ = self.0.wait();
+    }
+}
+
+/// K-338: süre dolarsa işçi grubunu (süreç grubu) öldürür; böylece hiçbir
+/// bekleme sonsuza dek asılı kalmaz ve test görünür biçimde başarısız olur.
+#[cfg(unix)]
+struct Bekci(std::sync::Arc<std::sync::atomic::AtomicBool>);
+
+#[cfg(unix)]
+impl Bekci {
+    fn kur(grup: u32, sure: Duration) -> Self {
+        let bitti = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let izle = std::sync::Arc::clone(&bitti);
+        std::thread::spawn(move || {
+            let son = Instant::now() + sure;
+            while Instant::now() < son {
+                if izle.load(Ordering::Relaxed) {
+                    return;
+                }
+                std::thread::sleep(Duration::from_millis(100));
+            }
+            eprintln!("bekçi: {sure:?} doldu; işçi grubu {grup} öldürülüyor");
+            // SAFETY: SIGKILL to the test-owned manager's process group.
+            unsafe { libc::kill(-(grup as libc::pid_t), libc::SIGKILL) };
+        });
+        Self(bitti)
+    }
+}
+
+#[cfg(unix)]
+impl Drop for Bekci {
+    fn drop(&mut self) {
+        self.0.store(true, Ordering::Relaxed);
     }
 }
 
@@ -658,11 +700,13 @@ fn grubu_baslat(kaynak: &Path, kapi: u16, isci: u16, saglik: Option<u16>) -> Sun
         .current_dir(kaynak.parent().expect("kaynak klasörü"))
         .stderr(Stdio::null());
     Sunucu(kopma::dinleyene_dek_baslat(|| {
+        use std::os::unix::process::CommandExt;
         let mut kopya = Command::new(komut.get_program());
         kopya
             .args(komut.get_args())
             .current_dir(kaynak.parent().expect("kaynak klasörü"))
-            .stderr(Stdio::null());
+            .stderr(Stdio::null())
+            .process_group(0);
         kopya
     }))
 }
@@ -966,6 +1010,7 @@ fn isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir() 
     )
     .expect("kaynak");
     let gunluk = gecici.0.join("yonetici.log");
+    use std::os::unix::process::CommandExt;
     let mut grup = Sunucu(
         Command::new(env!("CARGO_BIN_EXE_dil"))
             .args([
@@ -983,9 +1028,11 @@ fn isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir() 
             .current_dir(&gecici.0)
             .stdout(Stdio::null())
             .stderr(std::fs::File::create(&gunluk).expect("yönetici günlüğü"))
+            .process_group(0)
             .spawn()
             .expect("yönetici"),
     );
+    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(150));
 
     // Birincil açılışı sürerken: 503 basliyor; HEAD aynı başlığı gövdesiz verir.
     let son = Instant::now() + Duration::from_secs(20);
@@ -1071,6 +1118,7 @@ fn isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir() {
     )
     .expect("kaynak");
     let mut grup = grubu_baslat(&yol, kapi, 2, Some(saglik));
+    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(120));
     let pidler = surecler(&saglik_bekle(saglik, |g| g.contains("\"canli\":2")));
     assert_eq!(pidler.len(), 2);
     assert!(sinyal(pidler[1], "-STOP"));

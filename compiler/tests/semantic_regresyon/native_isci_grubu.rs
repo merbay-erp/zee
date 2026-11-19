@@ -17,6 +17,7 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
     }
     #[cfg(unix)]
     {
+        use std::os::unix::process::CommandExt;
         use std::process::{Command, Stdio};
         use std::time::{Duration, Instant};
 
@@ -34,15 +35,18 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
             ])
             .stdout(Stdio::null())
             .stderr(Stdio::piped())
+            .process_group(0)
             .spawn()
             .expect("yönetici süreci");
         let mut boru = cocuk.stderr.take().expect("yönetici stderr borusu");
-        let okuyucu = std::thread::spawn(move || {
+        let (gonder, al) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
             use std::io::Read;
             let mut metin = String::new();
             let _ = boru.read_to_string(&mut metin);
-            metin
+            let _ = gonder.send(metin);
         });
+        let grup = cocuk.id() as libc::pid_t;
         let son = Instant::now() + Duration::from_secs(90);
         let durum = loop {
             if let Some(durum) = cocuk.try_wait().expect("yönetici durumu") {
@@ -54,7 +58,13 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
             }
             std::thread::sleep(Duration::from_millis(50));
         };
-        let metin = okuyucu.join().expect("stderr okuyucu");
+        // Yönetici çıktı; geride kalan işçi borunun yazma ucunu tutamasın.
+        // SAFETY: SIGKILL to the reaped manager's own process group; PID'i
+        // biçildiğinden yalnız aynı gruptaki sahipsiz işçilere ulaşır.
+        unsafe { libc::kill(-grup, libc::SIGKILL) };
+        let metin = al
+            .recv_timeout(Duration::from_secs(15))
+            .expect("yönetici stderr borusu 15 sn içinde kapanmadı");
         let baslatma = metin.matches("zee-web işçi 2 başladı").count();
         let durma = metin
             .split("zee-web işçi 2 art arda ")
