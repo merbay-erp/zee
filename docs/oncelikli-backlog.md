@@ -2503,6 +2503,24 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-350 — Worker supervisor kampanyasında değer içermeyen hata tanısı
+
+**Durum: KAPALI** (test tanısı; ürün davranışı değişmedi). macOS CI'da
+`worker_supervisor_testi` bir koşuda (25 vakada 1 error)
+`Native.test_real_credential_composition_secret_stays_off_log` ile düştü;
+harness yalnız vaka adını yazdığı için istisna sınıfı görünmüyordu.
+K-339 (`CREDENTIALS_DIRECTORY`) bağı incelendi ve dışlandı: CI ortamında
+değişken yok, bu durumda okuma birebir eski ortam yoludur; değişken olsa
+bile sonuç zamandan bağımsız (deterministik) olur ve ret işçiyi hazır
+olmadan bitirir — bu `until` AssertionError'ı (F) üretir, gözlenen ise
+assertion dışı istisnadır (E). Master'da yerelde 60 + yük altında 120
+tekil ve 16 tam paket (400 vaka) koşusunda yeniden üretilemedi; 19 Kasım'da
+#26 sonrası ~77 `dil` koşusunda tek örnek. Kök neden iddia edilmez.
+`printErrors` artık her başarısızlıkta istisna sınıfı, aşama, bu dosyadaki
+fırlatan satır(lar) ve son 16 süpervizör olay adını yazar; ileti, fixture
+değeri ve ortam yazılmaz. Fixture çıkışı assertion dışı istisnalara da olay
+zaman çizelgesini ekler. Zaman aşımları değişmedi.
+
 ## K-346 — Eşzamanlı ekleme ve eylem geri alması
 
 **Durum: KAPALI.** ADR-075 eki, GB-137. Düz `ekle` süreçler arası

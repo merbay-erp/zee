@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import traceback
 import unittest
 sys.dont_write_bytecode = True
 
@@ -240,7 +241,10 @@ class Fixture:
     def __enter__(self):
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, kind, error, trace):
+        # Non-assertion errors (timeouts, JSON, OS) also carry the value-free event timeline.
+        if error is not None and self.running is not None and not hasattr(error, 'timeline'):
+            error.timeline = self.running.events[-128:]
         self.close()
 
 
@@ -519,6 +523,12 @@ class Launcher(unittest.TestCase):
         self.campaign(use_native_node=bool(NODE))
 
 
+def where(trace):
+    # Only frames of this harness: function name and line, no locals or values.
+    own=str(Path(__file__).resolve())
+    return [frame.name+':'+str(frame.lineno) for frame in traceback.extract_tb(trace) if str(Path(frame.filename).resolve())==own][-4:]
+
+
 class Result(unittest.TextTestResult):
     def addSuccess(self,test):
         if not hasattr(self,'success_names'):self.success_names=[]
@@ -527,18 +537,20 @@ class Result(unittest.TextTestResult):
 
     def addFailure(self,test,error):
         if not hasattr(self,'diagnostics'):self.diagnostics=[]
-        self.diagnostics.append({'test':test.id(),'kind':type(error[1]).__name__,'stage':getattr(error[1],'assertion_stage','assertion'),'timeline':getattr(error[1],'timeline',[])})
+        self.diagnostics.append({'test':test.id(),'kind':type(error[1]).__name__,'stage':getattr(error[1],'assertion_stage','assertion'),'where':where(error[2]),'timeline':getattr(error[1],'timeline',[])})
         super().addFailure(test,error)
 
     def addError(self,test,error):
         if not hasattr(self,'diagnostics'):self.diagnostics=[]
-        self.diagnostics.append({'test':test.id(),'kind':type(error[1]).__name__,'stage':getattr(error[1],'assertion_stage','exception'),'timeline':getattr(error[1],'timeline',[])})
+        self.diagnostics.append({'test':test.id(),'kind':type(error[1]).__name__,'stage':getattr(error[1],'assertion_stage','exception'),'where':where(error[2]),'timeline':getattr(error[1],'timeline',[])})
         super().addError(test,error)
 
     def printErrors(self):
-        # Failure names are enough for the gate; no fixture values or environment dump.
-        for test, _ in self.errors + self.failures:
-            self.stream.writeln("FAILED " + test.id())
+        # Value-free diagnosis only: exception class, stage, this file's raising
+        # frames and supervisor event names. Never messages, fixture values or env.
+        for item in getattr(self,'diagnostics',[]):
+            events=[str(x.get('event'))+('/'+str(x['state']) if 'state' in x else '') for x in item['timeline'][-16:] if isinstance(x,dict)]
+            self.stream.writeln("FAILED "+item['test']+" kind="+item['kind']+" stage="+str(item['stage'])+" where="+",".join(item['where'])+" events="+",".join(events))
 
 
 def main():
