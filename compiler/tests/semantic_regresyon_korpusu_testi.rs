@@ -24,6 +24,8 @@ mod native_dosya_exdev_fixture;
 mod native_dosya_okuma_penceresi_fixture;
 #[path = "semantic_regresyon/native_isci_grubu.rs"]
 mod native_isci_grubu_fixture;
+#[path = "semantic_regresyon/native_isci_saglik_mirasi.rs"]
+mod native_isci_saglik_mirasi_fixture;
 #[path = "semantic_regresyon/native_listener_deadline.rs"]
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
@@ -67,6 +69,7 @@ const KIPLER: &[&str] = &[
     "native-dosya-okuma-penceresi",
     "native-isci-grubu",
     "native-ayri-port-birincil",
+    "native-isci-saglik-mirasi",
 ];
 
 #[derive(Debug, Clone)]
@@ -240,7 +243,11 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         ),
         "cli" => matches!(
             kip,
-            "cli" | "native-metric-stdio" | "native-isci-grubu" | "native-ayri-port-birincil"
+            "cli"
+                | "native-metric-stdio"
+                | "native-isci-grubu"
+                | "native-ayri-port-birincil"
+                | "native-isci-saglik-mirasi"
         ),
         "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
         _ => false,
@@ -333,6 +340,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-yukleme" {
         let (cikis, cikti) = native_web_yukleme_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-isci-saglik-mirasi" {
+        let (cikis, cikti) = native_isci_saglik_mirasi_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -719,6 +734,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-dosya-okuma-penceresi"
                 | "native-isci-grubu"
                 | "native-ayri-port-birincil"
+                | "native-isci-saglik-mirasi"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -995,6 +1011,38 @@ fn native_ayri_port_birincillik_regresyonu_gercek_sureclerle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: roller", vaka.ad);
+    }
+}
+
+#[test]
+fn native_isci_saglik_mirasi_kipi_yalniz_cli_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-isci-saglik-mirasi"));
+    assert!(faz_kipi_kabul_eder("cli", "native-isci-saglik-mirasi"));
+    for faz in ["web", "runtime", "security", "lsp"] {
+        assert!(!faz_kipi_kabul_eder(faz, "native-isci-saglik-mirasi"));
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(unix),
+    ignore = "actual Unix inherited listener capability unavailable"
+)]
+fn native_isci_saglik_mirasi_regresyonu_gercek_yonetici_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-isci-saglik-mirasi")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "işçi sağlık mirası regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: 32 işçi canlı", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: miras/asılı", vaka.ad);
     }
 }
 
