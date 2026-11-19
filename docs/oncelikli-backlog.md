@@ -2518,6 +2518,24 @@ temizler. Kanıt: regression `coken-degistirme-kurtarma`
 (kurtarılamayan 0) ve K-346 regresyonu 25 tekrar. Açık sınır: zee dışı silme
 ile ikinci adım sonrası ölen yazarın bayat yedeği aynı anda.
 
+## K-350 — Worker supervisor kampanyasında değer içermeyen hata tanısı
+
+**Durum: KAPALI** (test tanısı; ürün davranışı değişmedi). macOS CI'da
+`worker_supervisor_testi` bir koşuda (25 vakada 1 error)
+`Native.test_real_credential_composition_secret_stays_off_log` ile düştü;
+harness yalnız vaka adını yazdığı için istisna sınıfı görünmüyordu.
+K-339 (`CREDENTIALS_DIRECTORY`) bağı incelendi ve dışlandı: CI ortamında
+değişken yok, bu durumda okuma birebir eski ortam yoludur; değişken olsa
+bile sonuç zamandan bağımsız (deterministik) olur ve ret işçiyi hazır
+olmadan bitirir — bu `until` AssertionError'ı (F) üretir, gözlenen ise
+assertion dışı istisnadır (E). Master'da yerelde 60 + yük altında 120
+tekil ve 16 tam paket (400 vaka) koşusunda yeniden üretilemedi; 19 Kasım'da
+#26 sonrası ~77 `dil` koşusunda tek örnek. Kök neden iddia edilmez.
+`printErrors` artık her başarısızlıkta istisna sınıfı, aşama, bu dosyadaki
+fırlatan satır(lar) ve son 16 süpervizör olay adını yazar; ileti, fixture
+değeri ve ortam yazılmaz. Fixture çıkışı assertion dışı istisnalara da olay
+zaman çizelgesini ekler. Zaman aşımları değişmedi.
+
 ## K-346 — Eşzamanlı ekleme ve eylem geri alması
 
 **Durum: KAPALI.** ADR-075 eki, GB-137. Düz `ekle` süreçler arası
@@ -2572,6 +2590,12 @@ günlüğünü okuyordu (üç kaydın varlığı beklenir); stdout okuyucu geçe
 UTF-8 satırında sayımı bırakmaz. Kanıt: son kodda 4×3 paralel koşu 12/12,
 6×3 iki tur 36/36.
 Bulunan ürün hatası ayrı: K-345.
+Ek (test tanısı): `credential_metrik_native_worker_hup_ve_grup_temizligi`
+bir tam paket koşusunda SIGHUP sonrası 15 sn içinde `ready` görmedi; master'da
+3 tam koşu ve 20 bağımsız koşuda yeniden üretilemedi. Kök neden iddia
+edilmez; başarısızlıkta süpervizör olayları gizli değerler maskelenerek
+`olaylar-basarisiz.jsonl` olarak proof dizinine ve CI faz matrisi
+artefaktına yazılır (zaman aşımları değişmedi).
 
 ## K-341 — Ayrı portlu süreçlerde birincillik
 

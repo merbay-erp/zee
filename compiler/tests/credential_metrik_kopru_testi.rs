@@ -46,7 +46,8 @@ fn credential_metrik_native_worker_hup_ve_grup_temizligi() {
         .unwrap();
     assert!(
         sonuc.status.success(),
-        "native campaign failed: {} {}",
+        "native campaign failed (olay dökümü: {}/olaylar-basarisiz.jsonl): {} {}",
+        cikti.display(),
         String::from_utf8_lossy(&sonuc.stdout),
         String::from_utf8_lossy(&sonuc.stderr)
     );
