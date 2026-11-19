@@ -13,6 +13,7 @@ import os
 import re
 import socket
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -62,6 +63,34 @@ def istek(kapi, kimlik):
     return basla, time.monotonic() - basla, tamam, neden
 
 
+def calisiyor_mu():
+    durum = subprocess.run(["systemctl", "is-active", f"{BIRIM}.service"],
+                           capture_output=True, text=True).stdout.strip()
+    return durum in ("active", "activating", "reloading", "deactivating")
+
+
+def hazir_bekle(kapi, kimlik, neden):
+    # Hizmet çöktüyse 60 sn beklemeden çık; tanıyı çağıran yazdırır.
+    son = time.monotonic() + 60
+    while not istek(kapi, kimlik)[2]:
+        if not calisiyor_mu():
+            time.sleep(0.5)
+            if not calisiyor_mu():
+                raise SystemExit(f"{neden}: hizmet etkin değil (çöktü ya da başlamadı)")
+        if time.monotonic() > son:
+            raise SystemExit(f"{neden}: 60 sn içinde hazır olmadı")
+        time.sleep(0.02)
+
+
+def tani_topla():
+    cikti = []
+    for komut in (["systemctl", "status", "--no-pager", "-l", f"{BIRIM}.socket", f"{BIRIM}.service"],
+                  ["journalctl", "--no-pager", "-n", "200", "-u", f"{BIRIM}.socket", "-u", f"{BIRIM}.service"]):
+        r = subprocess.run(["sudo", *komut], capture_output=True, text=True)
+        cikti.append(f"$ {' '.join(komut)}\n{r.stdout}{r.stderr}")
+    return "\n".join(cikti)
+
+
 def main():
     a = argparse.ArgumentParser()
     a.add_argument("--dil", type=Path, required=True)
@@ -73,6 +102,13 @@ def main():
     args.cikti.mkdir(parents=True, exist_ok=True)
     kapi = bos_kapi()
     proje = Path(tempfile.mkdtemp(prefix="zee-k343-"))
+    # Şablondaki ExecStart proje kökünü alır; gerçek ürün gibi proje.dil şart
+    # (yoksa `dil` P006 ile çıkar ve hizmet hiç ayağa kalkmaz).
+    (proje / "proje.dil").write_text(
+        'proje "k343-olcum" olsun\nsürüm "0.1.0" olsun\nmorfoloji "zee-tr-1" olsun\n'
+        'giriş "ana.dil" olsun\nyetkinlikler "ağ-sunucusu" listesi olsun\n',
+        encoding="utf-8",
+    )
     (proje / "ana.dil").write_text(
         '8080 kapısında sunucu başlat\n\nGET "/" adresine istek geldiğinde\n    "tamam" yanıtını gönder\n',
         encoding="utf-8",
@@ -95,11 +131,7 @@ def main():
         sudo("systemctl", "daemon-reload")
         sudo("systemctl", "start", f"{BIRIM}.socket")
         sudo("systemctl", "start", f"{BIRIM}.service")
-        son = time.monotonic() + 60
-        while not istek(kapi, "203.0.113.30")[2]:
-            if time.monotonic() > son:
-                raise SystemExit("hizmet 60 sn içinde hazır olmadı")
-            time.sleep(0.05)
+        hazir_bekle(kapi, "203.0.113.30", "ilk başlatma")
 
         # Her istemci 2000 kimlik arasında döner: tek kimliğin uç nokta oran
         # sınırına (100/60 sn) takılması kayıp sanılmaz; anahtar sayısı da
@@ -121,12 +153,11 @@ def main():
         for _ in range(args.yeniden):
             basla = time.monotonic()
             sudo("systemctl", "restart", f"{BIRIM}.service")
-            son = time.monotonic() + 60
-            while not istek(kapi, "203.0.113.31")[2]:
-                if time.monotonic() > son:
-                    raise SystemExit("yeniden başlatma sonrası hizmet hazır olmadı")
-                time.sleep(0.02)
-            time.sleep(1)
+            hazir_bekle(kapi, "203.0.113.31", "yeniden başlatma sonrası")
+            # systemd varsayılanı StartLimitBurst=5 / StartLimitIntervalSec=10:
+            # 10 sn'de altıncı başlatma birimi (ve soketi) start-limit-hit ile
+            # düşürür. Başlatmalar en az 2.5 sn arayla yapılır.
+            time.sleep(max(1.0, 2.5 - (time.monotonic() - basla)))
             pencereler.append((basla, time.monotonic()))
         dur.set()
         for t in isler:
@@ -142,6 +173,12 @@ def main():
                       "basarisizlik_nedenleri": nedenler,
                       "yeniden_baslatma_basina_en_uzun_istek_ms": azami,
                       "durum": "gecti" if basarisiz == 0 and len(kayit) > 0 else "kaldi"})
+    except BaseException as hata:
+        # Birimler silinmeden önce tanı: status + journal hem JSON'a hem stderr'e.
+        rapor["hata"] = str(hata)
+        rapor["tani"] = tani_topla()
+        print(rapor["tani"], file=sys.stderr)
+        raise
     finally:
         dur.set()
         subprocess.run(["sudo", "systemctl", "stop", f"{BIRIM}.service", f"{BIRIM}.socket"], check=False)

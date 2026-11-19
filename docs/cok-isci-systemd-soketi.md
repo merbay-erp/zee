@@ -96,6 +96,20 @@ başarısızlıkları nedene göre (HTTP durumu ya da bağlantı hatası) ayır�
 Gerçek trafikte oran sınırı ayrı bir sözleşmedir; ölçüm yalnız yeniden
 başlatma kaybını sayar.
 
+Ölçüm projesi gerçek ürün gibi `proje.dil` taşır: şablondaki `ExecStart`
+proje kökünü alır; bildirim yoksa `dil` P006 ile çıkar ve hizmet hiç
+başlamaz (ilk gerçek CI koşusu bunu gösterdi). Başarısızlıkta betik
+`systemctl status` ve `journalctl` çıktısını hem adım günlüğüne hem JSON
+raporuna (`tani`) yazar; hizmet çökerse 60 sn beklemeden çıkar.
+
+systemd varsayılanı `StartLimitBurst=5`, `StartLimitIntervalSec=10`'dur:
+10 saniyede altıncı başlatma hizmeti `start-limit-hit` ile düşürür ve
+`.socket` birimi de `service-start-limit-hit` ile kapanır; bu andan sonra
+gelen bağlantılar reddedilir. Dağıtım betikleri art arda yeniden
+başlatmaları aralıklı yapmalıdır; ölçüm başlatmalar arasında en az 2.5 sn
+bırakır. Şablon bu korumayı bilinçli olarak kapatmaz (çökme döngüsünde
+soket etkinleştirmesi sınırsız yeniden başlatma üretmesin).
+
 ## Açık
 
 Tek süreçli worker için soket etkinleştirmesi, yöneticiden yöneticiye canlı
