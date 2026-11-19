@@ -198,8 +198,114 @@ fn cocuk_ortamini_al() -> Result<bool, String> {
 
 /// W4 (K-337): tek süreçte ve grubun ilk birincil işçisinde doğru; ikincil
 /// ve yeniden başlatılan işçilerde yanlış.
-pub(crate) fn birincil_mi() -> bool {
-    cocuk().rol != Some(Rol::Ikincil)
+///
+/// K-341: `--web-worker-port` süreci (grup işçisi ya da elle kurulan ayrı
+/// portlu süreç) ayrıca `kok/.zee` altındaki süreç kilitleriyle karar verir;
+/// aynı kökte canlı başka katılımcı varken kimse birincil olamaz. `kok` yoksa
+/// (tek süreç, `--deneysel-web`) davranış K-337 ile aynıdır.
+pub(crate) fn birincil_mi(kok: Option<&std::path::Path>) -> bool {
+    let rol_birincil = cocuk().rol != Some(Rol::Ikincil);
+    let Some(kok) = kok else {
+        return rol_birincil;
+    };
+    let mut kilit = kilit_durumu();
+    if let Some(karar) = kilit.karar {
+        return karar;
+    }
+    let karar = match birincilligi_kilitle(kok, rol_birincil) {
+        Ok((karar, acilis, canli)) => {
+            // `sunucu başlat` sonrası ilk kez sorulduysa açılış zaten bitti.
+            kilit.acilis = acilis.filter(|_| !kilit.hazir);
+            kilit.canli = Some(canli);
+            karar
+        }
+        Err(hata) => {
+            // Belirlenemeyen birincillik açılış işini iki kez koşturabilir;
+            // güvenli yön ikincil kalmaktır.
+            eprintln!(
+                "zee-web birincillik belirlenemedi (.zee süreç kilidi: {hata}); süreç ikincil sayılır"
+            );
+            false
+        }
+    };
+    kilit.karar = Some(karar);
+    karar
+}
+
+/// K-341 süreç kilitleri. `canli`: her katılımcı ömrü boyunca paylaşımlı
+/// tutar. `acilis`: kararı sıraya koyar; birincil `sunucu başlat`a dek tutar.
+#[derive(Debug, Default)]
+struct KilitDurumu {
+    karar: Option<bool>,
+    hazir: bool,
+    acilis: Option<std::fs::File>,
+    canli: Option<std::fs::File>,
+}
+
+static KILIT: std::sync::Mutex<KilitDurumu> = std::sync::Mutex::new(KilitDurumu {
+    karar: None,
+    hazir: false,
+    acilis: None,
+    canli: None,
+});
+
+fn kilit_durumu() -> std::sync::MutexGuard<'static, KilitDurumu> {
+    KILIT
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
+const ACILIS_KILIDI: &str = "birincil-acilis.kilit";
+const CANLI_KILIDI: &str = "birincil-canli.kilit";
+
+type KilitKarari = (bool, Option<std::fs::File>, std::fs::File);
+
+/// Açılış kilidi altında: canlı kilit dışlayıcı alınabiliyorsa kökte başka
+/// katılımcı yoktur. Her katılımcı canlı kilidi yalnız açılış kilidini
+/// tutarken sınadığından "yalnızım" kararı ile paylaşımlı kayıt arasına
+/// başka süreç giremez. İkincil açılış kilidini hemen bırakır; birincil
+/// `hazir_bildir`e dek tutar, böylece sonra gelen süreç birincilin açılış
+/// işi bitmeden istek kabul etmez.
+fn birincilligi_kilitle(kok: &std::path::Path, rol_birincil: bool) -> std::io::Result<KilitKarari> {
+    let dizin = kok.join(".zee");
+    std::fs::create_dir_all(&dizin)?;
+    let acilis = kilit_dosyasi(&dizin.join(ACILIS_KILIDI))?;
+    let canli = kilit_dosyasi(&dizin.join(CANLI_KILIDI))?;
+    match acilis.try_lock() {
+        Ok(()) => {}
+        Err(std::fs::TryLockError::WouldBlock) => {
+            eprintln!(
+                "zee-web aynı kökte birincil sürecin açılışı bekleniyor (.zee/{ACILIS_KILIDI})"
+            );
+            acilis.lock()?;
+        }
+        Err(std::fs::TryLockError::Error(hata)) => return Err(hata),
+    }
+    let yalniz = match canli.try_lock() {
+        Ok(()) => {
+            canli.unlock()?;
+            true
+        }
+        Err(std::fs::TryLockError::WouldBlock) => false,
+        Err(std::fs::TryLockError::Error(hata)) => return Err(hata),
+    };
+    canli.lock_shared()?;
+    let karar = yalniz && rol_birincil;
+    Ok((karar, karar.then_some(acilis), canli))
+}
+
+fn kilit_dosyasi(yol: &std::path::Path) -> std::io::Result<std::fs::File> {
+    if std::fs::symlink_metadata(yol).is_ok_and(|m| !m.is_file()) {
+        return Err(std::io::Error::other("kilit normal dosya olmalı"));
+    }
+    let mut secenek = std::fs::OpenOptions::new();
+    secenek.read(true).write(true).create(true).truncate(false);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        secenek.mode(0o600).custom_flags(libc::O_NOFOLLOW);
+    }
+    secenek.open(yol)
 }
 
 /// Devralınan dinleyici descriptor'ı bir kez verilir.
@@ -210,6 +316,11 @@ pub(crate) fn devralinan_dinleyici() -> Option<i32> {
 
 /// Birincil işçi `sunucu başlat`a ulaştı: yönetici ikincilleri başlatabilir.
 pub(crate) fn hazir_bildir() {
+    // K-341: birincil açılış işi bitti; bekleyen ayrı portlu süreçler sürer.
+    let mut kilit = kilit_durumu();
+    kilit.hazir = true;
+    drop(kilit.acilis.take());
+    drop(kilit);
     #[cfg(unix)]
     if let Some(fd) = cocuk().hazir.take() {
         use std::io::Write;
@@ -758,8 +869,65 @@ mod tests {
 
     #[test]
     fn tek_surecte_birincil_dogrudur() {
-        assert!(birincil_mi());
+        assert!(birincil_mi(None));
         assert!(!ebeveyn_kayboldu());
         assert_eq!(devralinan_dinleyici(), None);
+    }
+
+    fn gecici_kok(ad: &str) -> std::path::PathBuf {
+        let kok = std::env::temp_dir().join(format!("zee-k341-{ad}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&kok);
+        std::fs::create_dir_all(&kok).unwrap();
+        kok
+    }
+
+    #[test]
+    fn birincillik_kilidi_canli_katilimci_varken_ikincil_verir() {
+        let kok = gecici_kok("canli");
+        let (karar, acilis, canli) = birincilligi_kilitle(&kok, true).unwrap();
+        assert!(karar);
+        let acilis = acilis.expect("birincil açılış kilidini hazır olana dek tutar");
+        // Açılış kilidi tutulurken yeni katılımcı karar veremez.
+        let bekleyen = kilit_dosyasi(&kok.join(".zee").join(ACILIS_KILIDI)).unwrap();
+        assert!(matches!(
+            bekleyen.try_lock(),
+            Err(std::fs::TryLockError::WouldBlock)
+        ));
+        drop(bekleyen);
+        drop(acilis);
+        // Birincil yaşarken gelen süreç ikincildir ve açılış kilidini bırakır.
+        let (karar2, acilis2, canli2) = birincilligi_kilitle(&kok, true).unwrap();
+        assert!(!karar2);
+        assert!(acilis2.is_none());
+        // Birincil ölür, ikincil yaşar: yeni gelen yine ikincil.
+        drop(canli);
+        let (karar3, _, canli3) = birincilligi_kilitle(&kok, true).unwrap();
+        assert!(!karar3);
+        // Kökte kimse kalmayınca yeniden birincil seçilir.
+        drop((canli2, canli3));
+        let (karar4, _, _canli4) = birincilligi_kilitle(&kok, true).unwrap();
+        assert!(karar4);
+        let _ = std::fs::remove_dir_all(&kok);
+    }
+
+    #[test]
+    fn birincillik_kilidi_grup_ikincil_rolunu_asamaz_ve_bag_reddeder() {
+        let kok = gecici_kok("rol");
+        let (karar, acilis, _canli) = birincilligi_kilitle(&kok, false).unwrap();
+        assert!(!karar, "grup ikincili kökte yalnız olsa da birincil olamaz");
+        assert!(acilis.is_none());
+        #[cfg(unix)]
+        {
+            let bag = gecici_kok("bag");
+            std::fs::create_dir_all(bag.join(".zee")).unwrap();
+            std::os::unix::fs::symlink(
+                kok.join(".zee").join(ACILIS_KILIDI),
+                bag.join(".zee").join(ACILIS_KILIDI),
+            )
+            .unwrap();
+            assert!(birincilligi_kilitle(&bag, true).is_err());
+            let _ = std::fs::remove_dir_all(&bag);
+        }
+        let _ = std::fs::remove_dir_all(&kok);
     }
 }

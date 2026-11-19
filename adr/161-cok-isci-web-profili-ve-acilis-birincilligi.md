@@ -87,8 +87,8 @@ birincili olduğunu bilemez; elle üç süreç açmak açılış sırası vermez
 ## Açık
 
 Windows dinleyici devri; dengeli dağılım (macOS); çok hostlu
-grup; elle kurulan ayrı portlu süreçlerde birincillik (her biri kendini birincil
-görür).
+grup; ağ dosya sisteminde süreç kilidi. Elle kurulan ayrı portlu süreçlerde
+tek makinede birincillik K-341 ekiyle kapandı.
 
 ## Ek — K-338: yeniden başlatma sınırı ve sağlık uç noktası kanıtı (19 Kasım 2026)
 
@@ -142,3 +142,59 @@ ister (CLI portu bozuk config'i geçerli kılamaz, ADR-097 ilkesi).
 - Dil yüzeyi: `profil zee-ayar.isci-sayisi`, `zee-ayar.saglik-port`
   (ADR-064). Grammar, tanı kodu ve `dil::api::v1` değişmedi; yeni güvenlik
   sınırı yok (mevcut GB-133 descriptor/ortam kuralları aynı).
+
+## Ek — K-341: ayrı portlu süreçlerde birincillik (19 Kasım 2026)
+
+K-337 birincilliği yalnız resmî grupta yöneticinin verdiği role bağladı.
+Windows'ta grup yoktur ve ürün ölçeği Unix'te de elle açılan ayrı
+`--web-worker-port` süreçleriyle alınabilir; bu kurulumda rol kaydı
+olmadığından her süreç `birincil süreç`i `doğru` görüyordu. Sonuç W4'teki
+asıl risktir: ölen süreç yerine açılan süreç açılış uzlaştırmasını ve sahipsiz
+geçici dosya taramasını yaşayan süreçlerin yüklemeleri ortasında yeniden koşar;
+eşzamanlı açılan iki süreç de açılışı paralel koşar. Gerçek süreç testi bunu
+gösterdi (iki açılış başladı/bitti, ikincil kaydı yok). GB-136.
+
+Karar: `--web-worker-port` süreci `birincil süreç`i ilk değerlendirdiğinde
+dosya sınırı kökünde iki çalışma zamanı kilidi kullanır.
+`.zee/birincil-acilis.kilit` dışlayıcı alınır (tutuluyorsa beklenir) ve kararı
+sıraya koyar. Kilit altında `.zee/birincil-canli.kilit` dışlayıcı olarak
+denenir: başarılıysa kökte canlı katılımcı yoktur. Her süreç sonra canlı
+kilidi ömrü boyunca paylaşımlı tutar. Grup rolü ikincilse sonuç yine
+`yanlış`tır. Birincil açılış kilidini `sunucu başlat`a (hazır kanalıyla aynı
+an) dek tutar, ikincil hemen bırakır. Değer `sunucu başlat` sonrasında ilk kez
+soruluyorsa açılış kilidi tutulmaz. Kilit Rust `File::lock` ailesidir (Unix
+`flock`, Windows `LockFileEx`): süreç ölünce çekirdek bırakır, bayat kilit
+dosyası anlamsızdır. Kilit dosyaları 0600, Unix'te `O_NOFOLLOW` ile açılır;
+normal dosya olmayan yol reddedilir. Kurulamayan kilit stderr'e yazılır ve
+süreç `yanlış` görür; güvenli yön açılışı atlamaktır.
+
+K-337 ile uyum: K-337 "açılış kilidi"ni, eşzamanlı açılışı sıraya koyduğu
+ama yeniden başlayan tek işçinin uzlaştırmayı çalışan işçilerin ortasında
+koşmasını engellemediği için reddetti. K-341'in belirleyici kilidi açılış
+kilidi değil, canlılık kilidi olan `birincil-canli.kilit`tir. Yaşayan her
+katılımcı onu paylaşımlı tuttuğundan yeniden başlayan süreç `yanlış` görür;
+grubun "yeniden başlatılan işçi ikincildir" kuralının ayrı portlardaki
+karşılığıdır. Açılış kilidi yalnız sıralama içindir: "yalnızım" sınaması ile
+paylaşımlı kayıt arasına başka süreç girmez ve ikinci süreç birincilin açılışı
+bitmeden karar vermez. Gramer reddi aynen geçerlidir: yeni sözdizimi, koşul
+biçimi ya da API yoktur. Mevcut `birincil süreç` ifadesinin değeri doğru
+hesaplanır. Grupta sonuç değişmez: ilk birincil işçi kökte yalnızdır,
+ikinciller ve yeniden başlatılanlar rol gereği `yanlış` görür.
+
+- Reddedilen: süreç kimliği (PID) dosyası. Bayat PID yeniden kullanılabilir,
+  yaşam denetimi platforma özgüdür. PG danışma kilidi: veritabanı
+  kullanmayan projede yoktur, bağlantı kopunca sessizce düşer. Yalnız
+  açılış kilidi: K-337 gerekçesiyle yetersizdir.
+- Sınır: yalnız `birincil süreç`i değerlendiren süreçler katılımcıdır. Kilit
+  tek makinede geçerlidir; NFS/SMB ve çok hostlu kurulum kapsam dışıdır.
+  Birincilin açılışı sürdükçe ikinciller bekler (sağlık/zaman aşımı ürünün
+  süreç yöneticisindedir).
+- Kanıt: `web_cok_surec_testi::ayri_portlu_surecler_tek_birincil_secer_ve_acilisi_bekler`
+  (Unix ve Windows CI; birincilin açılışı sırasında açılan süreç bekler ve
+  ikincil görür, birincil öldürülüp diğeri yaşarken aynı kapıda açılan süreç
+  ikincildir, kök boşalınca yeni süreç birincildir; düzeltmesiz kaynakta iki
+  açılış koşar), `web_isci_grubu::tests::birincillik_kilidi_*`, regression
+  `cli/ayri-port-birincillik`.
+- Dil yüzeyi, grammar, tanı kodu ve `dil::api::v1` değişmedi. Yeni çalışma
+  zamanı durum dosyaları `.zee/birincil-*.kilit` içerik taşımaz. Derleyici/LSP
+  önbelleği yok; soak gerekmez.

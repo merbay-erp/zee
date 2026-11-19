@@ -983,7 +983,9 @@ bayt, küçük harf onaltılık, `dosya-okuma`) açtı; tür tablosu üründe ka
 antivirüs/polyglot ve içerik türü doğrulaması açık sınırdır. K-336/K-337/ADR-161
 web ölçeğini tek komutluk çok işçi profiline (Unix, ortak dinleyici devri,
 yeniden başlatma, sağlık uç noktası) ve açılışı `birincil süreç` ile tek
-işçiye bağladı; süreç içi paralel yürütme ve Windows devri açık sınırdır.
+işçiye bağladı; K-341 aynı tekliği elle açılan ayrı portlu süreçlere (Windows
+dahil, `.zee` süreç kilitleri) taşıdı. Süreç içi paralel yürütme ve Windows
+devri açık sınırdır.
 K-324/ADR-157 bu tek kodluk sözü genel istek-yerel hata sınırına çevirdi:
 rotada C000 dışı her tanı 500/503/504 ile yalnız o isteği bitirir, worker
 yaşar ve operatör stderr'de tek satırlık kayıt görür. K-327 aynı sözü yanıtın

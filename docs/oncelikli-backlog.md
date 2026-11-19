@@ -2503,6 +2503,19 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-341 — Ayrı portlu süreçlerde birincillik
+
+**Durum: KAPALI.** ADR-161 eki, GB-136: grup dışında elle açılan ayrı
+`--web-worker-port` süreçlerinin hepsi `birincil süreç`i doğru görüyordu;
+yeniden açılan süreç açılış uzlaştırmasını yaşayan süreçlerin yüklemeleri
+ortasında yeniden koşabiliyordu. Dosya sınırı kökünde `.zee/birincil-acilis.kilit`
+(karar sırası; birincil `sunucu başlat`a dek tutar) ve `.zee/birincil-canli.kilit`
+(canlı katılımcılar paylaşımlı) çekirdek kilitleri: canlı katılımcı varken
+kimse birincil olamaz, ikinci süreç birincilin açılışını bekler. Kanıt:
+`web_cok_surec_testi::ayri_portlu_surecler_tek_birincil_secer_ve_acilisi_bekler`,
+`web_isci_grubu::tests::birincillik_kilidi_*`, regression
+`cli/ayri-port-birincillik`. Açık: ağ dosya sistemi, çok hostlu kurulum.
+
 ## K-340 — Çok işçi grubunun `zee.ayar` alanları (zee-cekirdek)
 
 **Durum: KAPALI.** ADR-161 eki: işçi sayısı ve sağlık portu yalnız CLI'daydı;
@@ -2533,8 +2546,8 @@ sahipsiz geçici dosya taraması) her işçide koşuyor, yeniden başlayan işç
 yöneticinin ikincilleri birincil `sunucu başlat`a ulaşınca başlatması;
 yeniden başlatılan işçi ikincildir. Kilit ve yeni koşul biçimi reddedildi.
 Kanıt: `web_cok_surec_testi::isci_grubu_acilisi_*`, `io_izi_testi::birincil_surec_*`,
-dogfood `zee-cekirdek/cok-isci`. Açık: elle kurulan ayrı portlu süreçlerde
-birincillik (`--ayar` alanı K-340'ta kapandı).
+dogfood `zee-cekirdek/cok-isci`. Elle kurulan ayrı portlu süreçlerde
+birincillik K-341'de, `--ayar` alanı K-340'ta kapandı.
 
 ## K-335 — Herkese açık rota için önbellek başlığı
 
