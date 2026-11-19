@@ -1,0 +1,7 @@
+# K-339: proje gizli değer bağları systemd credential dosyasından; anonim kesit.
+proje "systemd-credential" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "kriptografi" listesi olsun
+gizli_anahtar_değişkeni "UYGULAMA_GIZLI_ANAHTAR" olsun

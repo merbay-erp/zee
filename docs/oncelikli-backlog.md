@@ -1563,7 +1563,8 @@ regresyonu bağlar. P08, insan/platform/RC kabulü bu işten kapanmaz.
 **KISMİ.** [ADR-105](../adr/105-credential-host-koprusu.md) mevcut env
 yüzeyine POSIX dosya köprüsü ekler;14 native dahil actual vaka hazırdır,
 temiz c67a69e host14 kabulü tamamlandı. Windows/systemd/canlı ürün ve file-native
-sır inheritance sınırı P25 için açıktır.
+sır inheritance sınırı P25 için açıktır. File-native native okuma K-339'da
+kapandı; gerçek systemd unit kabulü ve Windows açıktır.
 
 ## K-246 — P13 worker host pilotu
 
@@ -2529,3 +2530,18 @@ dokunmamış 200 GET/HEAD yanıtında `public, max-age=0, s-maxage=N` yazar
 (kayar yenileme Set-Cookie'si `no-store`), dogfood
 `zee-cekirdek/onbellek-basligi`. Açık: `Vary`/ETag/purge; ürün rotalarının
 geçişi ürün tarafında.
+
+## K-339 — Proje gizli değerleri için systemd credential kaynağı
+
+**Durum: KAPALI.** ADR-105 eki: zee-cekirdek talebi D3 (P1, exact
+`abaca3a`). Ürün siteleri systemd altında koşuyor, sırlar unit/ortam
+dosyasında duruyordu; K-245 köprüsü dosyayı yine çocuk ortamına çeviriyordu
+(GB-068). Native CLI artık mevcut gizli değer bağlarını (gizli anahtar,
+SMTP, PostgreSQL + CA PEM, HTTP gizli ortam) `CREDENTIALS_DIRECTORY`
+ayarlıysa aynı adlı credential dosyasından okur; ayarlı değilse davranış
+aynıdır. Mutlak/nofollow dizin, güvenli ad, nofollow/nonblocking düzenli tek
+linkli dosya, sahip/mod, boyut, katı UTF-8, ortam+dosya çakışması ret, dizin
+yoksa açık hata; ret iletisi değer/yol taşımaz (GB-135). Windows fail-closed.
+Kanıt: `guvenlik::sir_dizini::testler` (11), `systemd_credential_testi` (3,
+gerçek ikili), dogfood `zee-cekirdek/systemd-credential`. Açık: gerçek
+systemd unit kabulü, rotasyon, ürün unit geçişi.
