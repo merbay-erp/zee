@@ -16,6 +16,8 @@ mod lsp_uri_fixture;
 #[path = "semantic_regresyon/lsp_utf16.rs"]
 mod lsp_utf16_fixture;
 
+#[path = "semantic_regresyon/native_ayri_port_birincil.rs"]
+mod native_ayri_port_birincil_fixture;
 #[path = "semantic_regresyon/native_dosya_exdev.rs"]
 mod native_dosya_exdev_fixture;
 #[path = "semantic_regresyon/native_dosya_okuma_penceresi.rs"]
@@ -64,6 +66,7 @@ const KIPLER: &[&str] = &[
     "native-web-yukleme",
     "native-dosya-okuma-penceresi",
     "native-isci-grubu",
+    "native-ayri-port-birincil",
 ];
 
 #[derive(Debug, Clone)]
@@ -235,7 +238,10 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-web-kopma"
                 | "native-web-yukleme"
         ),
-        "cli" => matches!(kip, "cli" | "native-metric-stdio" | "native-isci-grubu"),
+        "cli" => matches!(
+            kip,
+            "cli" | "native-metric-stdio" | "native-isci-grubu" | "native-ayri-port-birincil"
+        ),
         "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
         _ => false,
     }
@@ -327,6 +333,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-yukleme" {
         let (cikis, cikti) = native_web_yukleme_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-ayri-port-birincil" {
+        let (cikis, cikti) = native_ayri_port_birincil_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -704,6 +718,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-web-yukleme"
                 | "native-dosya-okuma-penceresi"
                 | "native-isci-grubu"
+                | "native-ayri-port-birincil"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -952,6 +967,34 @@ fn native_isci_grubu_regresyonu_gercek_yonetici_ile_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: yönetici çıkışı", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: yuva sayımı", vaka.ad);
+    }
+}
+
+#[test]
+fn native_ayri_port_birincil_kipi_yalniz_cli_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-ayri-port-birincil"));
+    assert!(faz_kipi_kabul_eder("cli", "native-ayri-port-birincil"));
+    for faz in ["web", "runtime", "security", "lsp"] {
+        assert!(!faz_kipi_kabul_eder(faz, "native-ayri-port-birincil"));
+    }
+}
+
+#[test]
+fn native_ayri_port_birincillik_regresyonu_gercek_sureclerle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-ayri-port-birincil")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "ayrı port birincillik regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: roller", vaka.ad);
     }
 }
 

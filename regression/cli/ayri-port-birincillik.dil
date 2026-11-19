@@ -1,0 +1,10 @@
+# K-341: aynı kökten elle açılan ayrı portlu worker süreçlerinde yalnız ilk süreç birincildir; ölen birincilin yerine diğerleri yaşarken açılan süreç açılış işini yeniden koşturmaz (ikincil).
+
+8080 kapısında sunucu başlat
+
+GET "/rol" adresine istek geldiğinde
+    rol birincil süreç olsun
+    rol ise
+        "birincil" yanıtını gönder
+    değilse
+        "ikincil" yanıtını gönder
