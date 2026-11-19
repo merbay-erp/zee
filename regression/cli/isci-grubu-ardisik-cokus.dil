@@ -1,0 +1,9 @@
+# K-338: --web-isci-sayisi 2 grubunda ikincil yuva her açılışta hemen çıkar; grup 10 sn dolmadan art arda 10. çıkışta durur (çıkış 1), 11. kez başlatmaz.
+
+sahip birincil süreç olsun
+sahip değilse
+    programı 3 ile bitir
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder
