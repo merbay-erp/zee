@@ -12,6 +12,21 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Çok işçi grubu `zee.ayar`'dan (K-340, ADR-161 eki):** Proje kökündeki
+  `zee.ayar` dosyasının `guvenlik` dalı artık `isci-sayisi` (1–64) ve
+  `saglik-port` alanlarını taşıyabilir; `dil çalıştır .` grubu bayraksız
+  başlatır. Alanlar `web-modu: proxy` ve `worker-port` ile birlikte
+  yazılmalıdır; komut satırındaki `--web-isci-sayisi`/`--web-saglik-port`
+  config değerini ezer.
+
+  ```json
+  "guvenlik": {"web-modu": "proxy", "proxy-origin": "https://site.example",
+               "worker-port": 8096, "isci-sayisi": 4, "saglik-port": 8099}
+  ```
+
+  **Göç:** Bu alanları içeren `zee.ayar` daha eski `dil` ile açılmaz (bilinmeyen
+  güvenlik alanı, çıkış 2); geri dönüşte alanları silin ya da bayrakla verin.
+
 - **systemd credentials (K-339, ADR-105 eki):** `proje.dil` içindeki gizli
   değer bağları (`gizli_anahtar_değişkeni`, `e_posta_bağlantı_değişkeni`,
   PostgreSQL bağlantı değişkeni ve `_TLS_CA_PEM` eki,

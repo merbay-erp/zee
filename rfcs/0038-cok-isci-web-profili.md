@@ -60,5 +60,5 @@ başlatılan işçi ikincildir.
 ## Açık
 
 Windows'ta dinleyici devri yok (çıkış 2). Bağlantı dağılımı çekirdeğe bağlıdır.
-`--ayar` dosyası işçi sayısı taşımaz. Çok hostlu dağıtım ve süreçler arası
+`zee.ayar` işçi alanları K-340 ile eklendi (ADR-161 eki). Çok hostlu dağıtım ve süreçler arası
 bellek oran deposu kapsam dışıdır.

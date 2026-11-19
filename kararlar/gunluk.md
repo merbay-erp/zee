@@ -5218,3 +5218,16 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   eki). 40 sn sınırı test için kısaltılmadı: donmuş işçi SIGSTOP ile
   üretildi, test gerçek süreyi bekler. Core freeze altında correctness;
   dil yüzeyi değişmedi.
+
+## K-340 — Çok işçi grubunun `zee.ayar` alanları (19 Kasım 2026)
+
+- zee-cekirdek (exact `abaca3a`) K-234 talebiyle üretim web ayarlarını
+  sürümlü `zee.ayar`'a taşıyor; K-336 işçi sayısını ve sağlık portunu yalnız
+  CLI'da bıraktığı için gruba geçen ürün ayarı yine `ExecStart`'a bölüyordu.
+  Core freeze altında dogfood-change: ADR-097 `guvenlik` dalına
+  `isci-sayisi`/`saglik-port` (mevcut bayraklara eşleme, CLI ezer, `proxy` +
+  `worker-port` aynı config'te zorunlu). İşçi config'i yeniden okuyup yönetici
+  olmasın diye işçi alanları işçide yok sayılır. Reddedilen: olağan `ayarlar`
+  dalı (güvenlik etkili alan sessizce atlanırdı), `proje.dil` alanı (dil
+  yüzeyi). ADR-161 eki; ürün adı ADR-087 gereği anonimdir.
+

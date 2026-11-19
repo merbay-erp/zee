@@ -88,10 +88,13 @@ pub(crate) fn ayikla(args: &mut Vec<String>) -> Result<Option<Ayar>, String> {
 }
 
 /// `govde` başında: önce yönetici devri ortamını (varsa) alır ve siler, sonra
-/// seçenekleri ayıklar.
+/// seçenekleri ayıklar. İşçi süreci yönetici değildir: yönetici çocuk
+/// argv'sinden kendi bayraklarını çıkardığından işçide görülen işçi
+/// seçeneği yalnız yeniden okunan `zee.ayar`dan (K-340) gelir ve atlanır.
 pub(crate) fn hazirla(args: &mut Vec<String>) -> Result<Option<Ayar>, String> {
-    cocuk_ortamini_al()?;
-    ayikla(args)
+    let cocuk = cocuk_ortamini_al()?;
+    let ayar = ayikla(args)?;
+    Ok(if cocuk { None } else { ayar })
 }
 
 /// Yönetici çocuğa yalnız bu ortam kayıtlarıyla rol ve descriptor verir.
@@ -125,8 +128,8 @@ fn cocuk() -> std::sync::MutexGuard<'static, CocukDurumu> {
 }
 
 /// `govde` başında bir kez çağrılır. Yönetici dışında (ortam yoksa) hiçbir şey
-/// yapmaz; tek süreç davranışı bugünküyle aynıdır.
-fn cocuk_ortamini_al() -> Result<(), String> {
+/// yapmaz; tek süreç davranışı bugünküyle aynıdır. Grup işçisiyse `true`.
+fn cocuk_ortamini_al() -> Result<bool, String> {
     let rol = std::env::var_os(ORTAM_ROL);
     let dinleyici = std::env::var_os(ORTAM_DINLEYICI);
     let hazir = std::env::var_os(ORTAM_HAZIR);
@@ -135,7 +138,7 @@ fn cocuk_ortamini_al() -> Result<(), String> {
         std::env::remove_var(ad);
     }
     if rol.is_none() && dinleyici.is_none() && hazir.is_none() && ebeveyn.is_none() {
-        return Ok(());
+        return Ok(false);
     }
     let ret = || "web işçi grubu ortamı geçersiz".to_string();
     let rol = match rol.as_ref().and_then(|r| r.to_str()) {
@@ -189,7 +192,7 @@ fn cocuk_ortamini_al() -> Result<(), String> {
             dinleyici: Some(dinleyici),
             hazir,
         };
-        Ok(())
+        Ok(true)
     }
 }
 
