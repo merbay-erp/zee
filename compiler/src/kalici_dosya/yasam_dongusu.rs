@@ -5,6 +5,8 @@ use std::fs::File;
 use std::io;
 use std::path::Path;
 
+use crate::kaynak_sinirlari::yarim_degistirme as yarim;
+
 /// Var olan hedefi ezmeden hazırlanmış dosyayı tek adlandırma adımıyla
 /// görünür kılar. K-329: kaynak ile hedef ayrı bağlama noktalarındaysa
 /// (`EXDEV`; systemd `ReadWritePaths=` her yolu ayrı bind mount eder) hedef
@@ -108,7 +110,43 @@ pub fn atomik_sil_izli(yol: &Path) -> io::Result<super::KilitliDegisim> {
     })
 }
 
+/// K-348: kilit altında, hedef yoksa ona ait yarım Windows değiştirmesini
+/// kurtarır. Yazar başarı bildirmediğinden geçerli bütün eski içeriktir: en
+/// yeni yedek hedefe döner, eş geçici (yayımlanmamış yeni içerik) ve bayat
+/// yedekler silinir. Kilit tutulurken başka zee değiştirmesi süremez.
+#[cfg_attr(not(windows), allow(dead_code))]
+pub(super) fn yarim_degistirmeyi_kurtar(hedef: &Path) -> io::Result<bool> {
+    match std::fs::symlink_metadata(hedef) {
+        Ok(_) => return Ok(false),
+        Err(hata) if hata.kind() == io::ErrorKind::NotFound => {}
+        Err(hata) => return Err(hata),
+    }
+    let mut yedekler = yarim::yedekler(hedef)?.into_iter();
+    let Some(en_yeni) = yedekler.next() else {
+        return Ok(false);
+    };
+    std::fs::rename(&en_yeni, hedef)?;
+    yedek_eslerini_sil(std::iter::once(en_yeni).chain(yedekler));
+    klasoru_eszamanla(ebeveyn(hedef))?;
+    Ok(true)
+}
+
+/// Yedeklerin yayımlanmamış geçici eşlerini ve hâlâ duran yedekleri siler.
+fn yedek_eslerini_sil(yedekler: impl Iterator<Item = std::path::PathBuf>) {
+    for yedek in yedekler {
+        if let Some(gecici) = yarim::yedegin_gecicisi(&yedek) {
+            let _ = std::fs::remove_file(gecici);
+        }
+        let _ = std::fs::remove_file(yedek);
+    }
+}
+
 fn sil_kilit_altinda(yol: &Path) -> io::Result<bool> {
+    // K-348: hedef silinince bayat yarım değiştirme yedeği sonraki yazımda
+    // silinmiş içeriği diriltmemeli.
+    if cfg!(windows) {
+        yedek_eslerini_sil(yarim::yedekler(yol)?.into_iter());
+    }
     match std::fs::remove_file(yol) {
         Ok(()) => {
             klasoru_eszamanla(ebeveyn(yol))?;
@@ -145,6 +183,35 @@ mod tests {
         fn drop(&mut self) {
             let _ = std::fs::remove_dir_all(&self.0);
         }
+    }
+
+    #[test]
+    fn yarim_degistirme_eski_butunu_geri_koyar_ve_izleri_siler() {
+        // K-348: Windows'ta ReplaceFileW ortasında ölen yazarın bıraktığı
+        // durum (CI teşhisi): hedef yok, eski bütün yedekte, yeni geçicide.
+        let gecici = GeciciKlasor::yeni();
+        let hedef = gecici.0.join("ortak.txt");
+        let bayat = gecici.0.join(".ortak.txt.zee-gecici-1-1.zee-yedek");
+        std::fs::write(&bayat, "bayat\n").unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(20));
+        std::fs::write(gecici.0.join(".ortak.txt.zee-gecici-9-2"), "a\nb\nyarım\n").unwrap();
+        std::fs::write(
+            gecici.0.join(".ortak.txt.zee-gecici-9-2.zee-yedek"),
+            "a\nb\n",
+        )
+        .unwrap();
+        assert!(yarim_degistirmeyi_kurtar(&hedef).unwrap());
+        assert_eq!(std::fs::read_to_string(&hedef).unwrap(), "a\nb\n");
+        let artik: Vec<_> = std::fs::read_dir(&gecici.0)
+            .unwrap()
+            .map(|g| g.unwrap().file_name())
+            .filter(|ad| ad.to_string_lossy().contains("zee-gecici"))
+            .collect();
+        assert!(artik.is_empty(), "izler silinmeli: {artik:?}");
+        // Hedef varken kurtarma bir şey yapmaz; iz yokken de.
+        assert!(!yarim_degistirmeyi_kurtar(&hedef).unwrap());
+        std::fs::remove_file(&hedef).unwrap();
+        assert!(!yarim_degistirmeyi_kurtar(&hedef).unwrap());
     }
 
     #[test]

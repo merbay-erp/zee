@@ -185,7 +185,7 @@ mod uygulama {
         let eski = genis_yol(gecici)?;
         let yeni = genis_yol(hedef)?;
         let mut yedek_adi = gecici.as_os_str().to_os_string();
-        yedek_adi.push(".zee-yedek");
+        yedek_adi.push(crate::kaynak_sinirlari::yarim_degistirme::YEDEK_EKI);
         let yedek = PathBuf::from(yedek_adi);
         if yedek.exists() {
             return Err(io::Error::new(

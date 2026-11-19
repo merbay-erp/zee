@@ -2503,6 +2503,21 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-348 — Windows'ta yarım kalmış atomik değiştirme
+
+**Durum: KAPALI.** ADR-032 eki, GB-139. `ReplaceFileW` iki adımlıdır; yazar arada
+ölürse hedef yok, eski bütün `.<ad>.zee-gecici-*.zee-yedek`te kalıyordu
+(Windows CI'da öldürülen yazarların 16/400'ü). Okuyucu dosyayı bulamıyor,
+sonraki ekleme önceki satırları siliyordu (K-346 çok süreç regresyonu
+Windows'ta aralıklı `ortak.txt` yok ile düştü). Yazma kilidini alan her işlem
+hedef yoksa en yeni yedeği geri koyar, eş geçici ve bayat yedekleri siler;
+kilitsiz okuyucu yedeği paylaşımlı kilitle okur; silme bayat yedekleri
+temizler. Kanıt: regression `coken-degistirme-kurtarma`
+(`native-coken-degistirme`, Windows), `kalici_dosya::yasam_dongusu::tests`,
+`kaynak_sinirlari::yarim_degistirme::tests`, Windows CI 600 öldürme turu
+(kurtarılamayan 0) ve K-346 regresyonu 25 tekrar. Açık sınır: zee dışı silme
+ile ikinci adım sonrası ölen yazarın bayat yedeği aynı anda.
+
 ## K-346 — Eşzamanlı ekleme ve eylem geri alması
 
 **Durum: KAPALI.** ADR-075 eki, GB-137. Düz `ekle` süreçler arası

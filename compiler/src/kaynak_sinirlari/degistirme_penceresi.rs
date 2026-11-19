@@ -38,6 +38,11 @@ thread_local! {
 /// klasörde başka zee değiştirmesi zaten süremez.
 pub(crate) struct YazarIsareti(());
 
+/// Bu iş parçacığı bir zee yazma kilidini tutuyor mu (K-348 okuyucu yedeği).
+pub(crate) fn yazma_kilidi_tutuluyor() -> bool {
+    TUTULAN_YAZMA_KILIDI.with(Cell::get) > 0
+}
+
 impl YazarIsareti {
     pub(crate) fn koy() -> Self {
         TUTULAN_YAZMA_KILIDI.with(|sayi| sayi.set(sayi.get() + 1));

@@ -74,7 +74,15 @@ fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
                 .kalici_dosya()
                 .kilit_bekleme_ms(),
         );
-        super::degistirme_penceresi::pencereyi_bekleyerek(yol, uzun, || std::fs::File::open(yol))
+        match super::degistirme_penceresi::pencereyi_bekleyerek(yol, uzun, || {
+            std::fs::File::open(yol)
+        }) {
+            // K-348: ölen yazarın yarım değiştirmesi; eski bütün yedektedir.
+            Err(hata) if hata.kind() == io::ErrorKind::NotFound => {
+                super::yarim_degistirme::yedekten_ac(yol, uzun).ok_or(hata)
+            }
+            sonuc => sonuc,
+        }
     }
     #[cfg(not(windows))]
     std::fs::File::open(yol)
