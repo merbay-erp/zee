@@ -242,6 +242,12 @@ olur. ToplayanIo dosya sistemi penceresini taklit edemediği için toplu replay
 bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder ve Windows
 dışında (rename penceresiz) görünür ignored durumundadır.
 
+Harness gerçek zee yazarı gibi pencere boyunca klasörün `.zee-yazma-kilidi`
+dosyasını tekil kilitler (K-342 eki). Aynı fazdaki
+`native-dosya-okuma-izsiz-penceresi` kipi aynı pencereyi geçici/yedek izi
+bırakmadan kurar (iki değiştirmenin arası); ilk K-342 sürümünün iz tahmini
+burada `okunamadı: …` verir, kilit bariyeri yeni bütünü okur.
+
 ## Native web yükleme kipi (K-332)
 
 `security` fazındaki `native-web-yukleme` kipi fixture'ı Cargo hedef
