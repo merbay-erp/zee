@@ -18,7 +18,7 @@ toplanmaz; önceki kampanyaların geçen vakaları bu kayda aktarılmaz.
 | PostgreSQL | depo sabitli imaj `postgres@sha256:0ea6700a…7319c4` (16.15, linux/arm64), rastgele host portu |
 | Envanter | güncel kaynakta 27 `#[ignore]` vaka (K-306'daki 25 + K-313'ün iki tenant vakası) |
 
-## Sonuç: 14 geçti, 0 başarısız, 13 açık
+## Sonuç: 14 geçti, 0 başarısız, 9 bekliyor, 4 açık
 
 | Vaka grubu | Komut | Sonuç |
 |---|---|---|
@@ -27,7 +27,7 @@ toplanmaz; önceki kampanyaların geçen vakaları bu kayda aktarılmaz.
 | `lsp_artimli_testi::yirmi_bin_satir_proje_duzenleme_olcumu` | `cargo test --locked --release --test lsp_artimli_testi yirmi_bin -- --ignored --nocapture` | **Geçti.** 20.081 satır/40 modül; tek açık belge p95 19,5 ms, 41 açık belge p95 122,9 ms (gözlemsel, bütçe 200 ms) |
 | `service_fault_testi::service_fault_native` | `ZEE_NATIVE_WAVE_SHA=<kaynak>` + debug `dil` SHA-256 ile `--ignored --exact` | **Geçti**; iki gerçek native worker: SIGKILL sonrası kardeş temizliği/yabancı süreç sağ kalır, bayat kapı reddi. Kanıt SHA-256 `ebe50fcc…bf19` |
 | `mixed_revision_testi::mixed_revision_native` | aynı ortam | **Geçti**; dört karışık kod dalgası, ortak iptal/kota, yanlış revizyon/aktivasyon reddi, geçersiz kaynak aktif revizyonu değiştirmez, tek nesil deadline. Kanıt SHA-256 `993cf398…be32` |
-| Owned PG16.15 sahipli 9 vaka: `havuz.rs::izole_pg_pool_metrikleri…`, `web_test_koprusu`, `owned_web_kit`, `native_metrik_host`, `native_effect_consumer`, `modul_sql`, `job_dispatcher`, `starter_content`, `sureli_hazirlik` | — | **Açık, koşmadı.** Koşucular kaynaktan derlenmiş, `postgres --version` çıktısı tam `postgres (PostgreSQL) 16.15` olan ikili ister. Bu makinedeki Homebrew 16.11, sabitli Debian imajı `16.15 (Debian 16.15-1.pgdg12+2)` son eki taşır; fixture bu ikisini haklı olarak reddeder. Resmî 16.15 kaynak arşivi (SHA-256 `c1575341…b7ed`) bu oturumda indirilip derlenmedi. |
+| Owned PG16.15 sahipli 9 vaka: `havuz.rs::izole_pg_pool_metrikleri…`, `web_test_koprusu`, `owned_web_kit`, `native_metrik_host`, `native_effect_consumer`, `modul_sql`, `job_dispatcher`, `starter_content`, `sureli_hazirlik` | — | **Bekliyor, henüz koşmadı.** Koşucular kaynaktan derlenmiş, `postgres --version` çıktısı tam `postgres (PostgreSQL) 16.15` olan ikili ister. Bu makinedeki Homebrew 16.11, sabitli Debian imajı `16.15 (Debian 16.15-1.pgdg12+2)` son eki taşır; fixture bu ikisini haklı olarak reddeder. Resmî 16.15 kaynak arşivini (SHA-256 `c1575341…b7ed`) indirip özel dizine derlemek operatör onayı bekliyor; onay gelirse aynı exact kaynakta koşulup bu satır sonuçla güncellenir. |
 | `dispatcher_service_native_linux`, `http_service_native_linux` | — | **Açık, koşmadı.** Gerçek Linux ve temiz systemd kullanıcı yöneticisi ister; macOS ve systemd'siz konteyner bu kapıyı sağlamaz. Son geçiş K-306'nın ayrı kaynağındadır ve buraya aktarılmaz. |
 | `pdf_host_testi`, `pdf_plugin_testi` | — | **Açık, koşmadı.** Operatörün kurduğu exact ReportLab 4.4.9 / pypdf 6.10.0 / Pillow 12.3.0 arka ucu gerekir; makinedeki Python'da 4.4.10 / 6.16.1 var, pin uymaz. |
 

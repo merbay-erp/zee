@@ -1271,9 +1271,9 @@ veya gerçek RLS/ürün kabulü eklenmez.
 `0367cd52741eb80ff83301596005306359fa8d8e` temiz klonunda mevcut 27 `#[ignore]`
 Cargo vakasından 14'ünü koşturdu: on izole TLS (bağımsız TLS1.1 olumlu kontrolü
 ve native ret dahil), bir göç, LSP 20k ölçümü, service-fault ve mixed-revision
-native dalgaları geçti; başarısız yok. Owned PG16.15 sahipli dokuz vaka, iki
-Linux systemd servis vakası ve iki pinli PDF arka uç vakası bu kaynakta
-koşmadı; P36 **kısmi** kalır. Aynı dilimde spec25 TLS kök maddesi TLS1.1 reddi
+native dalgaları geçti; başarısız yok. Owned PG16.15 sahipli dokuz vaka
+kaynaktan derleme onayı bekliyor; iki Linux systemd servis vakası ve iki pinli
+PDF arka uç vakası bu kaynakta koşmadı; P36 **kısmi** kalır. Aynı dilimde spec25 TLS kök maddesi TLS1.1 reddi
 ve boş/256 KiB üstü/geçersiz PEM kökünün bağlantıdan önce reddiyle
 `kanitli`ye çekildi; normatif metin ve production kod değişmedi.
 
