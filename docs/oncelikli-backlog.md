@@ -2572,6 +2572,19 @@ Kabul+CLOEXEC ile işçi başlatma aynı kilitle sıraya kondu; yanıt sonrası
 regression `cli/isci-grubu-saglik-mirasi` (lsof//proc); 40 grupta miras
 8 → 0.
 
+## K-343 — systemd soketiyle kesintisiz yeniden başlatma (zee-cekirdek B6)
+
+**Durum: KAPALI.** ADR-161 eki, GB-140: grup yöneticisi dinleyiciyi kendisi
+bağladığından `systemctl restart` aralığında bağlantılar reddediliyordu.
+Açık opt-in `--web-systemd-soketi` / `zee.ayar guvenlik.systemd-soketi`:
+yönetici soketi systemd'den (LISTEN_PID/LISTEN_FDS, fd 3) devralır, GB-133
+doğrulayıcısıyla sınar, LISTEN_* siler; geçersiz devir çıkış 2 ve düzeltme
+önerisi. Şablonlar `docs/cok-isci-systemd-soketi.md`. Kanıt:
+`web_cok_surec_testi::isci_grubu_systemd_soketi*`, `cli_ayar_testi`, CI
+gerçek systemd ölçümü (beş restart, 0 başarısız, en uzun istek raporu),
+dogfood `zee-cekirdek/systemd-soketi`. Açık: tek süreçli worker, re-exec
+devri, Windows.
+
 ## K-344 — Çok işçi testleri yükten bağımsız
 
 **Durum: KAPALI.** Test sağlamlaştırması (ürün davranışı değişmedi): 4×

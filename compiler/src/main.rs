@@ -609,7 +609,7 @@ fn kullanim() {
     eprintln!("  dil çalıştır --güvenli ... çocuk modu: ağ kapalı, dosyalar klasörle sınırlı");
     eprintln!("  dil çalıştır --deneysel-web ... localhost web prototipine açıkça izin verir");
     eprintln!("  dil çalıştır --web-proxy https://host [--web-worker-port N] [--web-oran-deposu bellek] ... güvenli yerel TLS-proxy profili");
-    eprintln!("  dil çalıştır --web-proxy https://host --web-worker-port P --web-isci-sayisi N [--web-saglik-port S] ... N işçili ortak dinleyici (Unix)");
+    eprintln!("  dil çalıştır --web-proxy https://host --web-worker-port P --web-isci-sayisi N [--web-saglik-port S] [--web-systemd-soketi] ... N işçili ortak dinleyici (Unix; systemd soketiyle kesintisiz yeniden başlatma)");
     eprintln!("    bellek ayarları: --web-oran-siniri 1..1000000 (60 sn), --web-oran-kapasitesi 1..32768, --web-oran-doluluk reddet|en-eski");
     eprintln!("  dil parola-özeti           parolayı gizli okuyup Argon2id PHC özeti üretir");
     eprintln!(
@@ -3036,6 +3036,7 @@ fn program_argumanlari() -> Vec<String> {
             } else if arguman == "--güvenli"
                 || arguman == "--guvenli"
                 || arguman == "--deneysel-web"
+                || (!kaynak_goruldu && arguman == "--web-systemd-soketi")
             {
                 None
             } else if kaynak_goruldu {

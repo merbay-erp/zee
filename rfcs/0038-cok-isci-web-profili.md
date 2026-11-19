@@ -62,5 +62,7 @@ başlatılan işçi ikincildir.
 Windows'ta dinleyici devri yok (çıkış 2). Bağlantı dağılımı çekirdeğe bağlıdır.
 `zee.ayar` işçi alanları K-340 ile eklendi (ADR-161 eki). Elle kurulan ayrı
 portlu süreçlerde tek makinede birincillik K-341 ile `.zee` süreç kilitlerine
-bağlandı (ADR-161 eki). Çok hostlu dağıtım, ağ dosya sistemi ve süreçler arası
-bellek oran deposu kapsam dışıdır.
+bağlandı (ADR-161 eki). systemd soketiyle kesintisiz yeniden başlatma K-343
+ile eklendi (ADR-161 eki); yöneticiden yöneticiye re-exec devri açıktır. Çok
+hostlu dağıtım, ağ dosya sistemi ve süreçler arası bellek oran deposu kapsam
+dışıdır.

@@ -24,6 +24,7 @@ const GUVENLIK_ALANLARI: &[&str] = &[
     "oran-doluluk",
     "isci-sayisi",
     "saglik-port",
+    "systemd-soketi",
 ];
 
 // Serde Value'ın last-key-wins davranışı yerine her derinlikte yinelenen
@@ -216,6 +217,15 @@ fn isci_bayraklari(g: &Value, modu: &str) -> Result<Bayraklar, String> {
     if saglik.is_some() && isci.is_none() {
         return Err(ret("saglik-port yalnız isci-sayisi ile kullanılabilir"));
     }
+    // K-343: yalnız açık `true` bayrağa eşlenir; `false` etkisizdir.
+    let systemd = match g.get("systemd-soketi").map(Value::as_bool) {
+        None | Some(Some(false)) => false,
+        Some(Some(true)) => true,
+        Some(None) => return Err(ret("güvenlik alanının türü geçersiz")),
+    };
+    if systemd && isci.is_none() {
+        return Err(ret("systemd-soketi yalnız isci-sayisi ile kullanılabilir"));
+    }
     if isci.is_some() && (modu != "proxy" || g.get("worker-port").is_none()) {
         return Err(ret("isci-sayisi proxy modu ve worker-port ister"));
     }
@@ -227,6 +237,9 @@ fn isci_bayraklari(g: &Value, modu: &str) -> Result<Bayraklar, String> {
         if let Some(n) = deger {
             bayraklar.push((bayrak.into(), Some(n.to_string())));
         }
+    }
+    if systemd {
+        bayraklar.push((super::web_isci_grubu::SYSTEMD_BAYRAGI.into(), None));
     }
     Ok(bayraklar)
 }
@@ -261,7 +274,7 @@ fn kaynak_yeri(a: &[String]) -> Option<usize> {
             | "--test-python"
             | "--test-postgres-bin"
             | "--test-output" => 2,
-            "--güvenli" | "--guvenli" | "--deneysel-web" => 1,
+            "--güvenli" | "--guvenli" | "--deneysel-web" | "--web-systemd-soketi" => 1,
             _ => return None,
         };
     }
@@ -457,7 +470,8 @@ mod tests {
                 "oran-kapasitesi",
                 "oran-doluluk",
                 "isci-sayisi",
-                "saglik-port"
+                "saglik-port",
+                "systemd-soketi"
             ]
         );
         assert_eq!(cozumle(&zarf(json!({}))).unwrap(), (vec![], false));
@@ -467,6 +481,32 @@ mod tests {
                 .contains("bilinmeyen güvenlik"));
         }
     }
+    #[test]
+    fn systemd_soketi_yalniz_acik_true_ile_ve_isci_grubuyla_eslenir() {
+        let temel = json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18091});
+        let ile = |ek: Value| {
+            let mut g = temel.clone();
+            g.as_object_mut()
+                .unwrap()
+                .extend(ek.as_object().unwrap().clone());
+            cozumle(&zarf(g))
+        };
+        let (a, _) = ile(json!({"isci-sayisi":2,"systemd-soketi":true})).unwrap();
+        assert_eq!(a.last(), Some(&("--web-systemd-soketi".into(), None)));
+        let (a, _) = ile(json!({"isci-sayisi":2,"systemd-soketi":false})).unwrap();
+        assert!(!a.iter().any(|(b, _)| b == "--web-systemd-soketi"));
+        for kotu in [
+            json!({"systemd-soketi":true}),
+            json!({"isci-sayisi":2,"systemd-soketi":"evet"}),
+            json!({"isci-sayisi":2,"systemd-soketi":1}),
+        ] {
+            assert!(
+                ile(kotu.clone()).unwrap_err().starts_with("zee.ayar:"),
+                "{kotu}"
+            );
+        }
+    }
+
     #[test]
     fn isci_grubu_alanlari_eslenir_ve_bagimliliklari_zorunludur() {
         let temel = json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18091});

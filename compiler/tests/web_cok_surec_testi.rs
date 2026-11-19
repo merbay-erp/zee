@@ -1641,3 +1641,248 @@ fn ayri_portlu_surecler_tek_birincil_secer_ve_acilisi_bekler() {
     assert_eq!(gunluk().matches("açılış başladı").count(), 2);
     drop(uc);
 }
+
+/// K-343: systemd soket etkinleştirmesini taklit eder: soketi test tutar
+/// (systemd gibi), yöneticiyi `sh -c 'LISTEN_PID=$$ … exec dil …'` ile fd 3
+/// devriyle başlatır; `$$` exec sonrası yöneticinin kendi PID'idir.
+#[cfg(unix)]
+fn systemd_yoneticisi(
+    kaynak: &Path,
+    kapi: u16,
+    soket: Option<i32>,
+    ortam: &str,
+    ek: &[&str],
+) -> Child {
+    use std::os::unix::process::CommandExt;
+    let mut komut = Command::new("/bin/sh");
+    komut
+        .arg("-c")
+        .arg(format!("{ortam} exec \"$0\" \"$@\""))
+        .arg(env!("CARGO_BIN_EXE_dil"))
+        .args([
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            &kapi.to_string(),
+        ])
+        .args(ek)
+        .arg(kaynak)
+        .current_dir(kaynak.parent().expect("kaynak klasörü"))
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .process_group(0);
+    if let Some(fd) = soket {
+        // SAFETY: async-signal-safe dup2 in the forked child before exec.
+        unsafe {
+            komut.pre_exec(move || {
+                if libc::dup2(fd, 3) < 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+    }
+    komut.spawn().expect("systemd yöneticisi")
+}
+
+#[cfg(unix)]
+fn cikis_ve_stderr(mut cocuk: Child, sure: Duration) -> (Option<i32>, String) {
+    let son = Instant::now() + sure;
+    let durum = loop {
+        if let Some(d) = cocuk.try_wait().expect("durum") {
+            break d;
+        }
+        if Instant::now() >= son {
+            // SAFETY: SIGKILL to the test-owned process group.
+            unsafe { libc::kill(-(cocuk.id() as libc::pid_t), libc::SIGKILL) };
+            break cocuk.wait().expect("sonuç");
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    };
+    let mut hata = String::new();
+    if let Some(mut boru) = cocuk.stderr.take() {
+        let _ = boru.read_to_string(&mut hata);
+    }
+    (durum.code(), hata)
+}
+
+/// K-343: `--web-systemd-soketi` verildiğinde yönetici bind etmez; eksik ya
+/// da geçersiz devir çıkış 2'dir ve ileti düzeltme önerisi taşır.
+#[cfg(unix)]
+#[test]
+fn isci_grubu_systemd_soketi_eksik_ya_da_gecersizse_oneriyle_reddeder() {
+    use std::os::fd::AsRawFd;
+    let gecici = GeciciKlasor::yeni();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n",
+    )
+    .expect("kaynak");
+    let kapi = bos_kapi();
+    let soket = std::net::TcpListener::bind(("127.0.0.1", kapi)).expect("soket");
+    let baska = std::net::TcpListener::bind(("127.0.0.1", bos_kapi())).expect("başka soket");
+    let grup = ["--web-isci-sayisi", "2", "--web-systemd-soketi"];
+    for (ad, fd, ortam, ek, ifade) in [
+        (
+            "devir yok",
+            None,
+            "",
+            &grup[..],
+            "LISTEN_PID/LISTEN_FDS tanımsız",
+        ),
+        (
+            "başka süreç",
+            Some(soket.as_raw_fd()),
+            "LISTEN_PID=1 LISTEN_FDS=1",
+            &grup[..],
+            "bu sürece ait değil",
+        ),
+        (
+            "iki soket",
+            Some(soket.as_raw_fd()),
+            "LISTEN_PID=$$ LISTEN_FDS=2",
+            &grup[..],
+            "LISTEN_FDS=2",
+        ),
+        (
+            "yanlış kapı",
+            Some(baska.as_raw_fd()),
+            "LISTEN_PID=$$ LISTEN_FDS=1",
+            &grup[..],
+            "dinleyen TCP soketi değil",
+        ),
+        (
+            "grup yok",
+            Some(soket.as_raw_fd()),
+            "LISTEN_PID=$$ LISTEN_FDS=1",
+            &["--web-systemd-soketi"][..],
+            "yalnız --web-isci-sayisi ile",
+        ),
+    ] {
+        let cocuk = systemd_yoneticisi(&yol, kapi, fd, ortam, ek);
+        let (kod, hata) = cikis_ve_stderr(cocuk, Duration::from_secs(30));
+        assert_eq!(kod, Some(2), "{ad}: {hata}");
+        assert!(hata.contains(ifade), "{ad}: {hata}");
+        if ad != "grup yok" {
+            assert!(
+                hata.contains("Öneri:") && hata.contains(&format!("ListenStream=127.0.0.1:{kapi}")),
+                "{ad}: düzeltme önerisi yok: {hata}"
+            );
+        }
+    }
+    // Hiçbir reddedilen yönetici soketi kapatmamış ya da kabul etmemiş olmalı.
+    assert_eq!(soket.local_addr().expect("adres").port(), kapi);
+}
+
+/// K-343: soket systemd'deyken (burada testte) yönetici üç kez SIGTERM ile
+/// boşaltılıp yeniden başlatılır; dört istemcinin sürekli istekleri hiç
+/// başarısız olmaz, yeniden başlatma aralığındaki bağlantılar soket
+/// kuyruğunda bekleyip yeni işçilerce yanıtlanır.
+#[cfg(unix)]
+#[test]
+fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
+    use std::os::fd::AsRawFd;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::{Arc, Mutex};
+    let gecici = GeciciKlasor::yeni();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n",
+    )
+    .expect("kaynak");
+    let kapi = bos_kapi();
+    let soket = std::net::TcpListener::bind(("127.0.0.1", kapi)).expect("soket");
+    let fd = soket.as_raw_fd();
+    let grup = ["--web-isci-sayisi", "2", "--web-systemd-soketi"];
+    let baslat = || systemd_yoneticisi(&yol, kapi, Some(fd), "LISTEN_PID=$$ LISTEN_FDS=1", &grup);
+    let mut yonetici = baslat();
+    let _bekci = Bekci::kur(yonetici.id(), Duration::from_secs(240));
+    let son = Instant::now() + Duration::from_secs(60);
+    while !kopma::tam_istek(kapi, "GET /", "203.0.113.30")
+        .is_some_and(|y| y.starts_with("HTTP/1.1 200"))
+    {
+        assert!(Instant::now() < son, "ilk yönetici hizmete geçmedi");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    let dur = Arc::new(AtomicBool::new(false));
+    // (başlangıç anı, süre, başarısızlık nedeni; başarıda None)
+    let kayit = Arc::new(Mutex::new(Vec::<(Instant, Duration, Option<String>)>::new()));
+    let istemciler: Vec<_> = (0..4u32)
+        .map(|n| {
+            let (dur, kayit) = (Arc::clone(&dur), Arc::clone(&kayit));
+            std::thread::spawn(move || {
+                // Her istemci 2000 kimlik arasında döner: hızlı makinede tek
+                // kimlik uç nokta oran sınırına (100/60 sn, 429) takılıp kayıp
+                // sanılmaz; anahtar sayısı varsayılan kapasitenin altında kalır.
+                let mut sira = 0u32;
+                while !dur.load(Ordering::Relaxed) {
+                    let no = n * 2000 + sira % 2000;
+                    sira += 1;
+                    let kimlik = format!("198.18.{}.{}", no / 250, no % 250 + 1);
+                    let basla = Instant::now();
+                    let neden = match kopma::tam_istek(kapi, "GET /", &kimlik) {
+                        Some(y) if y.starts_with("HTTP/1.1 200") => None,
+                        Some(y) => Some(y.get(9..12).unwrap_or("bos-yanit").to_string()),
+                        None => Some("baglanti".to_string()),
+                    };
+                    kayit.lock().unwrap().push((basla, basla.elapsed(), neden));
+                }
+            })
+        })
+        .collect();
+    std::thread::sleep(Duration::from_secs(1));
+    let mut pencereler = Vec::new();
+    for _ in 0..3 {
+        let basla = Instant::now();
+        // SAFETY: SIGTERM to the test-owned manager (KillMode=mixed eşi).
+        unsafe { libc::kill(yonetici.id() as libc::pid_t, libc::SIGTERM) };
+        let (kod, hata) = cikis_ve_stderr(yonetici, Duration::from_secs(60));
+        assert_eq!(kod, Some(0), "eski yönetici boşaltılarak çıkmalı: {hata}");
+        yonetici = baslat();
+        let son = Instant::now() + Duration::from_secs(60);
+        while !kopma::tam_istek(kapi, "GET /", "203.0.113.31")
+            .is_some_and(|y| y.starts_with("HTTP/1.1 200"))
+        {
+            assert!(Instant::now() < son, "yeni yönetici hizmete geçmedi");
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        std::thread::sleep(Duration::from_millis(500));
+        pencereler.push((basla, Instant::now()));
+    }
+    dur.store(true, Ordering::Relaxed);
+    for i in istemciler {
+        i.join().expect("istemci");
+    }
+    // SAFETY: SIGTERM to the last test-owned manager.
+    unsafe { libc::kill(yonetici.id() as libc::pid_t, libc::SIGTERM) };
+    let _ = cikis_ve_stderr(yonetici, Duration::from_secs(60));
+    let kayit = kayit.lock().unwrap();
+    let mut nedenler = std::collections::BTreeMap::<&str, usize>::new();
+    for neden in kayit.iter().filter_map(|(_, _, n)| n.as_deref()) {
+        *nedenler.entry(neden).or_default() += 1;
+    }
+    let basarisiz: usize = nedenler.values().sum();
+    let azami: Vec<Duration> = pencereler
+        .iter()
+        .map(|(a, b)| {
+            kayit
+                .iter()
+                .filter(|(t, _, _)| t >= a && t <= b)
+                .map(|(_, s, _)| *s)
+                .max()
+                .unwrap_or_default()
+        })
+        .collect();
+    eprintln!(
+        "K-343 ölçüm: {} istek, {basarisiz} başarısız {nedenler:?}; yeniden başlatma başına en uzun istek {azami:?}",
+        kayit.len()
+    );
+    assert_eq!(
+        basarisiz, 0,
+        "yeniden başlatma sırasında istek kaybı: {nedenler:?}"
+    );
+    assert!(kayit.len() > 50, "yetersiz yük: {}", kayit.len());
+}

@@ -1,0 +1,9 @@
+# K-343: kaynak değişmez; kesintisiz yeniden başlatma zee.ayar'daki
+# systemd-soketi ile yöneticide çözülür. Açılış işi birincile bağlıdır.
+sahip birincil süreç olsun
+sahip ise
+    "açılış birincilde" yaz
+8096 kapısında sunucu başlat
+
+GET "/hazir" adresine istek geldiğinde
+    "ok" yanıtını gönder

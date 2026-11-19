@@ -239,3 +239,45 @@ herhangi bir yoldan kalsa da FIN hemen gider.
   32 işçi, ≈2 M istek): düzeltmesiz 8 miras soket, düzeltmeyle 0;
   düzeltmeyle ≈1,3 M istekte asılı yanıt 0.
 - Dil yüzeyi, grammar, tanı ve `dil::api::v1` değişmedi.
+## Ek — K-343: systemd soketiyle kesintisiz yeniden başlatma (19 Kasım 2026)
+
+zee-cekirdek B6 talebi (exact `abaca3aba0e90f57d26435c4befffa903346c425`,
+`dogfood/zee-cekirdek/systemd-soketi`): her dağıtım worker'ı yeniden
+başlatıyor, birkaç saniyelik bağlantı reddi oluşuyordu; kabul ölçütü "yük
+altındaki yeniden başlatmada 5xx/bağlantı reddi yok". K-336 grubunun
+yöneticisi dinleyiciyi kendisi bağladığından `systemctl restart` aralığı yine
+reddedilen bağlantıydı; ADR-118 sahipli host devri bu profili kapsamaz.
+
+Karar: açık opt-in `--web-systemd-soketi` / `zee.ayar`
+`guvenlik.systemd-soketi: true`. Yönetici bağlamaz; sd_listen_fds
+sözleşmesiyle (LISTEN_PID = kendi PID'i, LISTEN_FDS = 1, fd 3) systemd'nin
+tuttuğu soketi devralır, GB-133 doğrulayıcısıyla (`adopt_group`:
+TCP/AF_INET/127.0.0.1:worker-port/LISTEN, stdio değil) sınar, `LISTEN_*`
+kayıtlarını her durumda siler; ardından bugünkü `dup` → işçi devri aynen
+işler. Devir yok/geçersiz → çıkış 2 ve `.socket` düzeltme önerisi; sessiz
+bind yok. Yeniden başlatmada soket systemd'de kalır, eski yönetici K-336
+boşaltmasıyla çıkar, yeni yönetici aynı soketi alır; aradaki bağlantılar
+kuyrukta bekler. Belge `docs/cok-isci-systemd-soketi.md` kopyalanabilir
+`.socket`/`.service` şablonlarını (Accept=no, KillMode=mixed,
+TimeoutStopSec=50 > 40 sn boşaltma) taşır; CI ölçümü birimleri bu
+bloklardan üretir.
+
+- Reddedilen: LISTEN_FDS'i kendiliğinden algılamak (ortamdan gelen fd'yi
+  sessizce sahiplenmek; opt-in K-064 yüzeyi açıkça kaydedilir).
+  SO_REUSEPORT örtüşmesi: ana kararda reddedildi (macOS dağıtmaz, yabancı
+  süreç bağlanabilir). Yöneticiden yöneticiye re-exec devri: ek protokol,
+  systemd zaten soketi tutuyor; açık kalır. Bind'e geri dönüş: yanlış
+  yapılandırılmış birim fark edilmeden kesintili çalışırdı.
+- Kanıt: `web_cok_surec_testi::isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez`
+  (soketi test tutar; dört istemci, üç SIGTERM/yeniden başlatma, 0 başarısız
+  istek, yeniden başlatma başına en uzun istek ≈0,2 sn, yerel macOS),
+  `…::isci_grubu_systemd_soketi_eksik_ya_da_gecersizse_oneriyle_reddeder`
+  (devir yok, başka PID, LISTEN_FDS=2, yanlış kapı, grup yok → çıkış 2),
+  `cli_ayar_testi::systemd_soketi_ayardan_yoneticiye_ulasir_ve_devirsiz_oneriyle_reddeder`,
+  `ayar.rs`/`web_isci_grubu.rs` birim testleri, CI ubuntu-24.04 gerçek
+  systemd ölçümü (`scripts/systemd-soket-olcumu.py`: beş `systemctl restart`,
+  dört istemci, başarısız 0 kapısı, yeniden başlatma başına en uzun istek
+  raporu).
+- Dil yüzeyi: `profil cli-web-systemd-soketi`, `profil zee-ayar.systemd-soketi`
+  (ADR-064). Grammar, tanı kodu ve `dil::api::v1` değişmedi. Güvenlik sınırı
+  GB-140.
