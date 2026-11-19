@@ -5243,3 +5243,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   K-337'nin reddettiği yalnız-açılış kilidi değildir: belirleyici olan canlılık
   kilididir, yeniden başlayan süreç yaşayan katılımcıyı görüp ikincil kalır.
   ADR-161 eki.
+
+
+## K-346 — Eşzamanlı ekleme ve eylem geri alması (19 Kasım 2026)
+
+- Çok işçi profili (K-336) sonrası "iki süreç aynı dosyaya eklerse satır
+  kaybolur" iddiası ölçüldü: düz `ekle` kayıpsız (K-084 kilidi altında
+  oku-değiştir-yaz, 4 × 1000 → 4000). Gerçek kayıp eylem geri almasındaydı:
+  yedek ve "beklenen" içerik kilit dışında okunuyordu, araya giren sürecin
+  satırı geri almada siliniyordu (1000'de 48). Correctness düzeltmesi:
+  önceki/yayımlanan içerik yazımla aynı kilit penceresinden; iki dokunuş
+  arası yabancı değişim C021. Grammar, tanı kimliği, CLI ve dil::api::v1
+  değişmedi. `O_APPEND` reddedildi: spec/08 bütün-içerik okuma sözünü ve
+  Windows metadata/K-342 penceresini bozar, eylem kaybını çözmez. Kalan
+  benzer yollar K-347 (taşıma yedeği, `proje.dil` CAS'sız yazımı). ADR-075 eki.

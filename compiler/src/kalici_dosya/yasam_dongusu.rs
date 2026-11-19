@@ -93,6 +93,22 @@ fn aygitlar_arasi_tasi(
 /// Bulunmayan hedefi başarı sayan, dizin metadata'sını da eşzamanlayan silme.
 pub fn atomik_sil(yol: &Path) -> io::Result<bool> {
     let _kilit = DosyaKilidi::al(yol)?;
+    sil_kilit_altinda(yol)
+}
+
+/// K-346: silinen içeriği silmeyle aynı kilit penceresinde yakalar; eylem
+/// geri alması araya giren yazarın içeriğini eski yedekle ezmez.
+pub fn atomik_sil_izli(yol: &Path) -> io::Result<super::KilitliDegisim> {
+    let _kilit = DosyaKilidi::al(yol)?;
+    let onceki = super::mevcut_icerik(yol)?;
+    sil_kilit_altinda(yol)?;
+    Ok(super::KilitliDegisim {
+        onceki,
+        sonraki: None,
+    })
+}
+
+fn sil_kilit_altinda(yol: &Path) -> io::Result<bool> {
     match std::fs::remove_file(yol) {
         Ok(()) => {
             klasoru_eszamanla(ebeveyn(yol))?;

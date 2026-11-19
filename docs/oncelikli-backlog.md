@@ -2503,6 +2503,33 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-346 — Eşzamanlı ekleme ve eylem geri alması
+
+**Durum: KAPALI.** ADR-075 eki, GB-137. Düz `ekle` süreçler arası
+kayıpsızdı (4 × 1000 → 4000); kayıp eylem geri almasındaydı: gerçek adaptör
+eylem başı yedeğini ve bıraktığı içeriği yazma kilidi dışında okuyordu,
+araya giren sürecin başarılı satırı geri almada siliniyordu (1000'de 48).
+`kalici_dosya` artık önceki/yayımlanan içeriği yazım ve silmeyle aynı kilit
+penceresinden döndürür (`atomik_satir_yaz_izli`, `atomik_sil_izli`); eylem
+defteri iki dokunuş arasındaki yabancı değişimi çatışma sayar, geri alma C021
+verir (spec/11 ZORUNLU maddesi). `O_APPEND` reddedildi (yarım satır görünür,
+çökme kuyruğu, Windows metadata/K-342 sözü). Kanıt: regression
+`eszamanli-ekleme-geri-alma` (`native-eszamanli-ekleme`, 2 yazar × 1000 + 2
+geri alan süreç, üç platform), `kalici_dosya::tests` ve dil ikilisinde
+deterministik çatışma testi. Açık sınır: büyük dosyada ekleme bütün içeriği
+yeniden yazar (performans).
+
+## K-347 — Taşıma yedeği ve `proje.dil` güncellemesinde kilit dışı okuma
+
+**Durum: AÇIK** (K-346 taramasında bulundu, düşük öncelik). (1) Eylem içindeki
+atomik taşıma kaynak içeriğini kilit dışında okur ve yalnız hedef klasörünü
+kilitler; araya giren yazarda geri alma kaynağa bayat içerik koyabilir.
+Çözüm yönü: iki klasör kilidini yol sırasıyla almak ve içeriği kilit altında
+yakalamak. (2) `dil paket ekle/çıkar` `proje.dil`/`proje.kilit`i
+karşılaştırmasız yazar; eşzamanlı iki komutta biri diğerinin bağımlılığını
+ezer. Çözüm yönü: `atomik_karsilastir_ve_yaz` ve karşılaştırmalı geri alma
+(okuma yolunun bayt eşitliği önce doğrulanmalı).
+
 ## K-344 — Çok işçi testleri yükten bağımsız
 
 **Durum: KAPALI.** Test sağlamlaştırması (ürün davranışı değişmedi): 4×
