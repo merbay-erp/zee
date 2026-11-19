@@ -129,7 +129,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/web_guvenligi/depo/kalici.rs", 180),
         ("src/kaynak_sinirlari/baglanti.rs", 60),
         ("src/kaynak_sinirlari/okuma.rs", 120),
-        ("src/kaynak_sinirlari/degistirme_penceresi.rs", 100),
+        ("src/kaynak_sinirlari/degistirme_penceresi.rs", 230),
         ("src/kaynak_sinirlari/profiller.rs", 300),
         ("src/kaynak_sinirlari/web.rs", 80),
         ("src/lsp/cikti.rs", 120),

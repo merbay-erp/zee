@@ -12,6 +12,8 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
+use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
+
 mod metadata;
 mod ozel;
 pub use ozel::atomik_ozel_yaz;
@@ -142,12 +144,14 @@ pub fn atomik_karsilastir_ve_geri_al(
 
 struct DosyaKilidi {
     dosya: File,
+    // K-342: bu iş parçacığının kilit altındaki okuması kendi kilidini beklemez.
+    _isaret: pencere::YazarIsareti,
 }
 
 impl DosyaKilidi {
     fn al(hedef: &Path) -> io::Result<Self> {
         let klasor = ebeveyn(hedef);
-        let kilit_yolu = klasor.join(".zee-yazma-kilidi");
+        let kilit_yolu = klasor.join(pencere::YAZMA_KILIDI_ADI);
         let dosya = OpenOptions::new()
             .create(true)
             .truncate(false)
@@ -156,9 +160,14 @@ impl DosyaKilidi {
             .open(kilit_yolu)?;
         // Hızlı yol: boş kilit iş parçacığı açmadan alınır.
         if platform::kilitlemeyi_dene(&dosya)? {
-            return Ok(Self { dosya });
+            return Ok(Self::tutulan(dosya));
         }
         Self::bekleyerek_al(dosya)
+    }
+
+    fn tutulan(dosya: File) -> Self {
+        let _isaret = pencere::YazarIsareti::koy();
+        Self { dosya, _isaret }
     }
 
     /// K-183/ADR-075: bekleyen yazar 5 ms yoklamaz; çekirdeğin kilit
@@ -179,7 +188,7 @@ impl DosyaKilidi {
                 }
             })?;
         match al.recv_timeout(KILIT_BEKLEME) {
-            Ok(Ok(dosya)) => Ok(Self { dosya }),
+            Ok(Ok(dosya)) => Ok(Self::tutulan(dosya)),
             Ok(Err(hata)) => Err(hata),
             Err(_) => Err(io::Error::new(
                 io::ErrorKind::TimedOut,
@@ -230,9 +239,7 @@ fn gecici_dosyayi_acarak(
         let sira = GECICI_SAYACI.fetch_add(1, Ordering::Relaxed);
         let mut ad = OsString::from(".");
         ad.push(dosya_adi);
-        // K-342: okuyucu bu eki değiştirme izi olarak tanır.
-        ad.push(crate::kaynak_sinirlari::degistirme_penceresi::ZEE_GECICI_EKI);
-        ad.push(format!("{}-{}", std::process::id(), sira));
+        ad.push(format!(".zee-gecici-{}-{}", std::process::id(), sira));
         let yol = ebeveyn(hedef).join(ad);
         match ac(&yol) {
             Ok(dosya) => return Ok((dosya, GeciciDosya { yol: Some(yol) })),
@@ -583,64 +590,84 @@ mod tests {
         yazar.join().expect("yazar düşmemeli");
     }
 
-    /// K-342: yüklü Windows'ta `ReplaceFileW` penceresi 50 ms'yi aşabilir;
-    /// hedefin zee değiştirme izi sürdükçe okuyucu kısa bütçeyle düşmez.
+    /// K-342: yüklü Windows'ta `ReplaceFileW` penceresi kısa bütçeyi aşabilir
+    /// ve iki değiştirmenin arasında geçici dosya izi görünmeyebilir. Okuyucu
+    /// zee yazma kilidini paylaşımlı bekler; kilit sürdükçe hata görmez.
     #[test]
-    fn okuyucu_suren_degistirme_izinde_kisa_butceyi_asar() {
-        use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
+    fn okuyucu_suren_degistirmeyi_yazma_kilidiyle_bekler() {
         let gecici = GeciciKlasor::yeni();
-        let hedef = gecici.0.join("Durum.json");
-        std::fs::write(
-            gecici.0.join(".durum.json.zee-gecici-1-1.zee-yedek"),
-            b"eski",
-        )
-        .unwrap();
-        assert!(
-            pencere::degistirme_izi_var(&hedef),
-            "Windows adları harf duyarsız"
-        );
+        let hedef = Arc::new(gecici.0.join("durum.json"));
+        let pencere_acik = Arc::new(AtomicBool::new(true));
+        let basla = Arc::new(Barrier::new(2));
+        let tutma = pencere::KISA_BUTCE * 5;
+        let yazar = {
+            let (hedef, acik, basla) = (
+                Arc::clone(&hedef),
+                Arc::clone(&pencere_acik),
+                Arc::clone(&basla),
+            );
+            std::thread::spawn(move || {
+                let kilit = DosyaKilidi::al(&hedef).expect("yazar kilidi");
+                basla.wait();
+                std::thread::sleep(tutma);
+                // Gerçek yazar gibi: değiştirme biter, sonra kilit bırakılır.
+                acik.store(false, AtomikSira::Release);
+                drop(kilit);
+            })
+        };
+        basla.wait();
         let baslangic = Instant::now();
-        let gecikme = pencere::KISA_BUTCE * 5;
         let sonuc = pencere::pencereyi_bekleyerek(&hedef, KILIT_BEKLEME, || {
-            match baslangic.elapsed() < gecikme / 2 {
-                true => Err(io::Error::from_raw_os_error(2)),
-                false if baslangic.elapsed() < gecikme => Err(io::Error::from_raw_os_error(32)),
+            match pencere_acik.load(AtomikSira::Acquire) {
+                true => Err(io::Error::from_raw_os_error(32)),
                 false => Ok("yeni bütün"),
             }
         });
-        assert_eq!(sonuc.expect("pencere kapanınca okunur"), "yeni bütün");
-        assert!(baslangic.elapsed() >= gecikme);
+        yazar.join().expect("yazar düşmemeli");
+        assert_eq!(sonuc.expect("değiştirme bitince okunur"), "yeni bütün");
+        assert!(baslangic.elapsed() >= tutma - Duration::from_millis(20));
     }
 
     #[test]
-    fn izsiz_ya_da_takili_pencere_sinirli_hata_verir() {
-        use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
+    fn kilitsiz_takili_ya_da_kendi_kilidinde_pencere_sinirli_hata_verir() {
         let gecici = GeciciKlasor::yeni();
         let hedef = gecici.0.join("yok.txt");
-        // Başka hedefin izi ve klasör yazma kilidi bu hedefin izi sayılmaz.
-        std::fs::write(gecici.0.join(".baska.txt.zee-gecici-1-1"), b"").unwrap();
-        std::fs::write(gecici.0.join(".zee-yazma-kilidi"), b"").unwrap();
-        assert!(!pencere::degistirme_izi_var(&hedef));
+        let hep = |kod| move || Err::<(), _>(io::Error::from_raw_os_error(kod));
+        // Kilit dosyası yok: klasörde zee değiştirmesi olmamıştır.
         let baslangic = Instant::now();
-        let hata = pencere::pencereyi_bekleyerek(&hedef, KILIT_BEKLEME, || {
-            Err::<(), _>(io::Error::from_raw_os_error(2))
-        })
-        .expect_err("gerçekten olmayan dosya");
+        let hata = pencere::pencereyi_bekleyerek(&hedef, KILIT_BEKLEME, hep(2))
+            .expect_err("gerçekten olmayan dosya");
         assert_eq!(hata.raw_os_error(), Some(2));
+        assert!(baslangic.elapsed() < KILIT_BEKLEME / 2);
+
+        // Aynı iş parçacığı kilidi tutuyor (ekleme okuması): kendini beklemez.
+        let kilit = DosyaKilidi::al(&hedef).expect("kilit");
+        let baslangic = Instant::now();
+        let hata =
+            pencere::pencereyi_bekleyerek(&hedef, KILIT_BEKLEME, hep(32)).expect_err("dış tutucu");
+        assert_eq!(hata.raw_os_error(), Some(32));
         assert!(
             baslangic.elapsed() < KILIT_BEKLEME / 2,
-            "izsiz hata kısa bütçede döner"
+            "kendi kilidini bekledi"
         );
 
-        std::fs::write(gecici.0.join(".yok.txt.zee-gecici-9-9"), b"").unwrap();
+        // Başka iş parçacığı kilidi bırakmıyor: okuyucu bütçeyi aşamaz.
         let uzun = pencere::KISA_BUTCE * 4;
-        let baslangic = Instant::now();
-        let hata = pencere::pencereyi_bekleyerek(&hedef, uzun, || {
-            Err::<(), _>(io::Error::from_raw_os_error(32))
-        })
-        .expect_err("takılı iz bütçeyi aşamaz");
+        let hata = std::thread::scope(|kapsam| {
+            kapsam
+                .spawn(|| {
+                    let baslangic = Instant::now();
+                    let hata = pencere::pencereyi_bekleyerek(&hedef, uzun, hep(32))
+                        .expect_err("takılı yazar bütçeyi aşamaz");
+                    assert!(baslangic.elapsed() >= uzun);
+                    assert!(baslangic.elapsed() < KILIT_BEKLEME);
+                    hata
+                })
+                .join()
+                .expect("okuyucu")
+        });
         assert_eq!(hata.raw_os_error(), Some(32));
-        assert!(baslangic.elapsed() >= uzun && baslangic.elapsed() < KILIT_BEKLEME);
+        drop(kilit);
 
         let mut cagri = 0;
         let hata = pencere::pencereyi_bekleyerek(&hedef, uzun, || {
@@ -649,18 +676,6 @@ mod tests {
         })
         .expect_err("pencere dışı hata");
         assert_eq!((hata.raw_os_error(), cagri), (Some(87), 1));
-    }
-
-    #[test]
-    fn atomik_yazicinin_gecici_dosyasi_okuyucuya_iz_birakir() {
-        let gecici = GeciciKlasor::yeni();
-        let yol = gecici.0.join("iz.txt");
-        atomik_icerik_yaz(&yol, b"yeni", |gecici_yol, hedef| {
-            assert!(crate::kaynak_sinirlari::degistirme_penceresi::degistirme_izi_var(hedef));
-            std::fs::rename(gecici_yol, hedef)
-        })
-        .expect("yazma");
-        assert!(!crate::kaynak_sinirlari::degistirme_penceresi::degistirme_izi_var(&yol));
     }
 
     #[test]

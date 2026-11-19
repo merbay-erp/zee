@@ -44,14 +44,16 @@ türü `InvalidInput` ile, eski nesne değiştirilmeden reddedilir.
 
 Windows'ta `ReplaceFileW` hedefi iki yeniden adlandırmayla değiştirir ve
 değiştirme bitene kadar yeni hedefi paylaşımsız açık tutar; aradaki anda yolu
-açan okuyucu dosyayı bulamayabilir ya da paylaşım ihlali alabilir. Resmî okuma
-yolu bu pencerede yeniden dener (K-182): ilk 50 ms koşulsuz; sonrasında yalnız
-hedefle aynı klasörde ona ait `.<ad>.zee-gecici-*` geçici ya da yedek dosyası
-durdukça, yazma kilidinin 5 sn bütçesine kadar (K-342). Yüklü makinede yazar
-değiştirmenin ortasında kesilse de okuyucu böylece yine eski ya da yeni bütün
-içeriği görür; iz yoksa gerçekten olmayan ya da başka süreçte kilitli dosya
-50 ms sonra hata verir. Çökmüş bir yazarın bıraktığı iz yalnız o hedefin
-olmayan-dosya hatasını en çok 5 sn geciktirir.
+açan okuyucu dosyayı bulamayabilir ya da paylaşım ihlali alabilir. Her zee
+değiştirmesi klasörün `.zee-yazma-kilidi` dosyasını tekil kilit altında yapar;
+resmî okuma yolu bu pencerenin hatalarından birini alırsa aynı kilidi
+paylaşımlı alarak süren değiştirmenin bitmesini yazma kilidinin 5 sn bütçesine
+kadar bekler, sonra 50 ms yeniden dener (K-182, K-342). Kilit tutulurken yeni
+değiştirme başlayamadığından yüklü makinede yazar değiştirmenin ortasında
+kesilse de okuyucu yine eski ya da yeni bütün içeriği görür; kalan hata
+gerçektir (olmayan ya da zee dışı bir süreçte kilitli dosya). Klasörde kilit
+dosyası yoksa orada hiç zee değiştirmesi olmamıştır ve hata 50 ms sonra döner.
+Kilidi tutan iş parçacığının kendi okuması (ekleme) kilidi beklemez.
 
 İçerik değişikliğinde Unix mtime/ctime korunmaz. Görünmeyen Linux `trusted.*`,
 Windows SACL/owner SID ve dosya sistemine özel immutable bayraklar verilmiş söz

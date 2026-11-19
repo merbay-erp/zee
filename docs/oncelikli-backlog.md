@@ -2639,3 +2639,16 @@ durdukça 5 sn kilit bütçesine kadar bekler. Kanıt: `kalici_dosya::tests`
 (pencere/iz/bütçe vakaları), regression `degistirme-penceresi-okuma`
 (`native-dosya-okuma-penceresi`, Windows), Windows CI 200 koşu döngüsü.
 Açık: zee dışı okuyucular pencereyi yine görebilir (ReplaceFileW sınırı).
+
+**K-342 eki (19 Kasım akşam, KAPALI):** İz tahmini yetmedi: #28 birleşikken
+#32'nin Windows CI'ı aynı testte yine 32 aldı; yük altındaki Windows döngüsü
+düzeltmeli master'da 300 koşuda 1 düşüşle yeniden üretti (Defender gerçek
+zamanlı taraması kapalı, `C:\`/`D:\` dışlanmış, indeksleyici durmuş: tutucu
+zee yazarının kendisi; pencere 119 ms'ye uzadı). İz, iki değiştirmenin arasında
+görünmeyebiliyordu. Okuyucu artık geçici hata alınca klasörün
+`.zee-yazma-kilidi` dosyasını paylaşımlı kilitleyip süren değiştirmeyi bekler
+(≤5 sn), sonra 50 ms yeniden dener; iz tahmini kaldırıldı. Kanıt:
+`kalici_dosya::tests::okuyucu_suren_degistirmeyi_yazma_kilidiyle_bekler`,
+`…kilitsiz_takili_ya_da_kendi_kilidinde_pencere_sinirli_hata_verir`,
+regression `degistirme-penceresi-izsiz-okuma`
+(`native-dosya-okuma-izsiz-penceresi`, Windows), Windows yük A/B döngüsü.
