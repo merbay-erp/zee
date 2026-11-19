@@ -15,7 +15,7 @@ Kaynak: `regression/v2.tsv`
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 11 |
+| runtime | 12 |
 | security | 12 |
 
 | Tanı | Vaka |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 37 |
+| - | 38 |
 
-Toplam 48 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 48/48.
+Toplam 49 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 49/49.
 
 ## Güvenlik bulguları
 
@@ -40,11 +40,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 17 | 0 | 0 | 17 |
-| orta | 36 | 16 | 2 | 54 |
+| orta | 37 | 16 | 2 | 55 |
 | dusuk | 35 | 30 | 1 | 66 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 138.
+Toplam bulgu: 139.
 
 ## Spec maddeleri
 
@@ -59,7 +59,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
 | spec/07-birimler.md | 8 | 0 | 0 | 8 | 100 |
-| spec/08-kalici-dosya.md | 4 | 1 | 0 | 5 | 80 |
+| spec/08-kalici-dosya.md | 5 | 1 | 0 | 6 | 83 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 16 | 0 | 0 | 16 | 100 |
@@ -82,7 +82,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 260 | 4 | 6 | 270 | 96 |
+| **Toplam** | 261 | 4 | 6 | 271 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -143,16 +143,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 58 |
-| semantic-bugfix | 19 |
+| maintenance | 60 |
+| semantic-bugfix | 20 |
 | semantic-change | 52 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
-| correctness | 24 |
+| correctness | 25 |
 | dogfood-change | 31 |
-| maintenance | 55 |
+| maintenance | 57 |
 | security | 13 |
 
-Toplam: 129 compiler değişiklik beyanı, 125 core freeze beyanı.
+Toplam: 132 compiler değişiklik beyanı, 128 core freeze beyanı.

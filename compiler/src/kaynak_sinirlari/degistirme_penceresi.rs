@@ -23,6 +23,9 @@ use std::io;
 use std::path::Path;
 use std::time::{Duration, Instant};
 
+#[path = "yarim_degistirme.rs"]
+pub(crate) mod yarim_degistirme;
+
 /// Klasör başına kalıcı zee yazma kilidi dosyası (`kalici_dosya` ile ortak).
 pub(crate) const YAZMA_KILIDI_ADI: &str = ".zee-yazma-kilidi";
 
@@ -37,6 +40,11 @@ thread_local! {
 /// altındaki okuması (ör. ekleme) kendi tekil kilidini beklemez; bu sırada
 /// klasörde başka zee değiştirmesi zaten süremez.
 pub(crate) struct YazarIsareti(());
+
+/// Bu iş parçacığı bir zee yazma kilidini tutuyor mu (K-348 okuyucu yedeği).
+pub(crate) fn yazma_kilidi_tutuluyor() -> bool {
+    TUTULAN_YAZMA_KILIDI.with(Cell::get) > 0
+}
 
 impl YazarIsareti {
     pub(crate) fn koy() -> Self {

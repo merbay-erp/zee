@@ -5277,3 +5277,16 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   güvensiz kodla değiştirmeyi gerektirdiği için reddedildi; fd tarama tek
   eşzamanlı üreticiyi gösterdi, kabul ile spawn kilitle sıraya kondu ve
   yanıt sonrası shutdown eklendi. ADR-161 eki.
+
+
+
+## K-348 — Windows'ta yarım kalmış atomik değiştirme (19 Kasım 2026)
+
+- K-346 regresyonu Windows'ta aralıklı `ortak.txt` yok ile düştü. Teşhis dalı
+  (silindi) yazarı değiştirme döngüsünde öldürdü: Windows 16/400 hedef yok,
+  Linux 0/400; her vakada eski bütün `.zee-yedek`te, yeni içerik geçicide.
+  Correctness/veri kaybı düzeltmesi: kilit alımında yedekten geri yükleme
+  (eski içerik; yazar başarı bildirmedi, metadata özgün nesneyle döner),
+  kilitsiz okuyucu yedeği okur, silme bayat yedekleri temizler. ReplaceFileW
+  korunur (ADR-032 metadata sözü); MoveFileExW reddedildi. Grammar, tanı,
+  CLI, dil::api::v1 değişmedi. ADR-032 eki.
