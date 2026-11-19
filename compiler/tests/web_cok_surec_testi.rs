@@ -1154,6 +1154,84 @@ fn isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir() {
     );
 }
 
+/// K-340: `zee.ayar` güvenlik dalındaki `isci-sayisi`/`saglik-port` grubu
+/// CLI bayrağı olmadan başlatır; işçiler yeniden okudukları config'ten
+/// yönetici olmaz. Kaynak öncesi açık `--web-isci-sayisi` config'i ezer.
+#[cfg(unix)]
+#[test]
+fn isci_grubu_zee_ayar_ile_baslar_ve_cli_ezer() {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let saglik = bos_kapi();
+    std::fs::write(
+        gecici.0.join("proje.dil"),
+        "proje \"ayar-isci\" olsun\nsürüm \"0.1.0\" olsun\nmorfoloji \"zee-tr-1\" olsun\n\
+         giriş \"ana.dil\" olsun\nyetkinlikler \"ağ-sunucusu\" listesi olsun\n",
+    )
+    .expect("proje");
+    std::fs::write(
+        gecici.0.join("ana.dil"),
+        "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    rol birincil süreç olsun\n    \
+         rol ise\n        \"birincil\" yanıtını gönder\n    değilse\n        \"ikincil\" yanıtını gönder\n",
+    )
+    .expect("kaynak");
+    std::fs::write(
+        gecici.0.join("zee.ayar"),
+        format!(
+            "{{\"sema\":\"zee-ayar-1\",\"surum\":1,\"ayarlar\":{{}},\"guvenlik\":{{\"web-modu\":\"proxy\",\
+             \"proxy-origin\":\"https://panel.example\",\"worker-port\":{kapi},\"isci-sayisi\":3,\
+             \"saglik-port\":{saglik}}}}}"
+        ),
+    )
+    .expect("zee.ayar");
+    let baslat = |ek: &[&str]| {
+        use std::os::unix::process::CommandExt;
+        let ek: Vec<String> = ek.iter().map(|s| s.to_string()).collect();
+        // zee.ayar kök yolunda sembolik bağ kabul etmez (macOS /var → /private/var).
+        let kok = std::fs::canonicalize(&gecici.0).expect("kanonik kök");
+        Sunucu(kopma::dinleyene_dek_baslat(move || {
+            let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+            komut
+                .arg("çalıştır")
+                .args(&ek)
+                .arg(&kok)
+                .current_dir(&kok)
+                .stderr(Stdio::null())
+                .process_group(0);
+            komut
+        }))
+    };
+    let mut grup = baslat(&[]);
+    let govde = saglik_bekle(saglik, |g| g.contains("\"canli\":3"));
+    assert!(govde.contains("\"isci\":3"), "{govde}");
+    let ilk = surecler(&govde);
+    let mut birincil = 0;
+    for _ in 0..12 {
+        let yanit = istek(kapi, "203.0.113.7", "GET", "/", None, "");
+        assert_eq!(durum(&yanit), 200, "{yanit}");
+        birincil += usize::from(yanit.ends_with("birincil"));
+    }
+    assert!(birincil <= 12);
+    // İşçi config'i yeniden okuyup kendi grubunu açsaydı ya da yönetici
+    // olsaydı aynı portu bağlayamaz, çıkar ve yeniden başlatılırdı.
+    std::thread::sleep(Duration::from_millis(500));
+    let (kod, govde) = saglik_oku(saglik);
+    assert_eq!(kod, 200, "{govde}");
+    assert!(govde.contains("\"yeniden_baslatma\":0"), "{govde}");
+    assert_eq!(surecler(&govde), ilk);
+    assert!(sinyal(grup.0.id(), "-TERM"));
+    let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(45));
+    assert!(cikis.success(), "{cikis}");
+    drop(grup);
+
+    let mut grup = baslat(&["--web-isci-sayisi", "2"]);
+    let govde = saglik_bekle(saglik, |g| g.contains("\"canli\":2"));
+    assert!(govde.contains("\"isci\":2"), "CLI config'i ezmeli: {govde}");
+    assert!(sinyal(grup.0.id(), "-TERM"));
+    let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(45));
+    assert!(cikis.success(), "{cikis}");
+}
+
 #[test]
 fn isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir() {
     let gecici = GeciciKlasor::yeni();

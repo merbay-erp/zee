@@ -22,6 +22,8 @@ const GUVENLIK_ALANLARI: &[&str] = &[
     "oran-siniri",
     "oran-kapasitesi",
     "oran-doluluk",
+    "isci-sayisi",
+    "saglik-port",
 ];
 
 // Serde Value'ın last-key-wins davranışı yerine her derinlikte yinelenen
@@ -189,6 +191,7 @@ fn cozumle(baytlar: &[u8]) -> Result<(Bayraklar, bool), String> {
         }
         bayraklar.push(("--web-oran-doluluk".into(), Some(doluluk.into())));
     }
+    let isci = isci_bayraklari(g, modu)?;
     // Açık CLI seçeneği bozuk config'i geçerli hale getiremez.
     let mut deneme = vec!["çalıştır".into()];
     for (bayrak, deger) in &bayraklar {
@@ -202,7 +205,30 @@ fn cozumle(baytlar: &[u8]) -> Result<(Bayraklar, bool), String> {
     if cocuk && web != super::WebModu::Kapali {
         return Err(ret("çocuk modu web modu ile birleştirilemez"));
     }
+    bayraklar.extend(isci);
     Ok((bayraklar, !olagan.is_empty()))
+}
+/// K-340: çok işçi grubu (ADR-161) config'te kendi web alanlarıyla tam
+/// olmalı; CLI'daki worker portu config'teki işçi alanını geçerli kılamaz.
+fn isci_bayraklari(g: &Value, modu: &str) -> Result<Bayraklar, String> {
+    let isci = sayi(g, "isci-sayisi", 64)?;
+    let saglik = sayi(g, "saglik-port", 65535)?;
+    if saglik.is_some() && isci.is_none() {
+        return Err(ret("saglik-port yalnız isci-sayisi ile kullanılabilir"));
+    }
+    if isci.is_some() && (modu != "proxy" || g.get("worker-port").is_none()) {
+        return Err(ret("isci-sayisi proxy modu ve worker-port ister"));
+    }
+    let mut bayraklar = Bayraklar::new();
+    for (bayrak, deger) in [
+        (super::web_isci_grubu::ISCI_BAYRAGI, isci),
+        (super::web_isci_grubu::SAGLIK_BAYRAGI, saglik),
+    ] {
+        if let Some(n) = deger {
+            bayraklar.push((bayrak.into(), Some(n.to_string())));
+        }
+    }
+    Ok(bayraklar)
 }
 fn kaynak_yeri(a: &[String]) -> Option<usize> {
     if !matches!(a.first().map(String::as_str), Some("çalıştır" | "calistir")) {
@@ -429,7 +455,9 @@ mod tests {
                 "oran-deposu",
                 "oran-siniri",
                 "oran-kapasitesi",
-                "oran-doluluk"
+                "oran-doluluk",
+                "isci-sayisi",
+                "saglik-port"
             ]
         );
         assert_eq!(cozumle(&zarf(json!({}))).unwrap(), (vec![], false));
@@ -437,6 +465,51 @@ mod tests {
             assert!(cozumle(&zarf(json!({ad:false})))
                 .unwrap_err()
                 .contains("bilinmeyen güvenlik"));
+        }
+    }
+    #[test]
+    fn isci_grubu_alanlari_eslenir_ve_bagimliliklari_zorunludur() {
+        let temel = json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","worker-port":18091});
+        let ile = |ek: Value| {
+            let mut g = temel.clone();
+            g.as_object_mut()
+                .unwrap()
+                .extend(ek.as_object().unwrap().clone());
+            cozumle(&zarf(g))
+        };
+        let (a, _) = ile(json!({"isci-sayisi":64,"saglik-port":65535})).unwrap();
+        assert_eq!(
+            a[2..],
+            [
+                ("--web-isci-sayisi".into(), Some("64".into())),
+                ("--web-saglik-port".into(), Some("65535".into())),
+            ]
+        );
+        let (a, _) = ile(json!({"isci-sayisi":1})).unwrap();
+        assert_eq!(
+            a.last(),
+            Some(&("--web-isci-sayisi".into(), Some("1".into())))
+        );
+        for kotu in [
+            json!({"isci-sayisi":0}),
+            json!({"isci-sayisi":65}),
+            json!({"isci-sayisi":"4"}),
+            json!({"isci-sayisi":2.5}),
+            json!({"isci-sayisi":2,"saglik-port":0}),
+            json!({"isci-sayisi":2,"saglik-port":65536}),
+            json!({"saglik-port":18099}),
+        ] {
+            assert!(
+                ile(kotu.clone()).unwrap_err().starts_with("zee.ayar:"),
+                "{kotu}"
+            );
+        }
+        for kotu in [
+            json!({"isci-sayisi":2}),
+            json!({"web-modu":"deneysel","isci-sayisi":2}),
+            json!({"web-modu":"proxy","proxy-origin":"https://example.invalid","isci-sayisi":2}),
+        ] {
+            assert!(cozumle(&zarf(kotu.clone())).is_err(), "{kotu}");
         }
     }
     #[test]

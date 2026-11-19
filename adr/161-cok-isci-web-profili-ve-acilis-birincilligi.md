@@ -86,7 +86,7 @@ birincili olduğunu bilemez; elle üç süreç açmak açılış sırası vermez
 
 ## Açık
 
-Windows dinleyici devri; dengeli dağılım (macOS); `--ayar` alanı; çok hostlu
+Windows dinleyici devri; dengeli dağılım (macOS); çok hostlu
 grup; elle kurulan ayrı portlu süreçlerde birincillik (her biri kendini birincil
 görür).
 
@@ -112,3 +112,33 @@ yoktur.
   çıkış 1 verir). Regression `cli/isci-grubu-ardisik-cokus`.
 - Dil yüzeyi, grammar, tanı ve `dil::api::v1` değişmedi; güvenlik sınırı
   değil (GB satırı yok): yönetici yalnız erken durur.
+
+## Ek — K-340: `zee.ayar` işçi grubu alanları (19 Kasım 2026)
+
+zee-cekirdek (exact `abaca3aba0e90f57d26435c4befffa903346c425`) üretim web
+ayarlarını K-234 talebiyle sürümlü `zee.ayar`'a taşıma yolundadır; işçi
+sayısı ve sağlık portu yalnız CLI'da kaldığı için tek komutluk gruba geçen
+ürün systemd `ExecStart` satırına yeniden bayrak yazmak zorundaydı
+(`dogfood/zee-cekirdek/zee-ayar-isci`). Karar: ADR-097 `guvenlik` dalına
+`isci-sayisi` (1..64) ve `saglik-port` (1..65535) eklenir; eşleme mevcut
+`--web-isci-sayisi`/`--web-saglik-port` bayraklarıdır, kaynak öncesi açık
+bayrak config'i ezer. `isci-sayisi` aynı config'te `proxy` + `worker-port`
+ister (CLI portu bozuk config'i geçerli kılamaz, ADR-097 ilkesi).
+
+- Güvenlik dalı seçildi: alan dinleme yüzeyini ve süreç sayısını değiştirir;
+  olağan `ayarlar` dalı yalnız atlanabilir alanlar içindir. Eski okuyucu
+  bilinmeyen güvenlik alanında çıkış 2 verir; sessizce tek süreçle açılmaz.
+- İşçi argv'si config'ten bayrak almaz ama işçi aynı kökü açtığında
+  `zee.ayar`'ı yeniden okur. `hazirla` işçi ortamı gördüğünde işçi
+  bayraklarını ayıklayıp yok sayar; aksi hâlde işçi kendi grubunu açmaya
+  çalışıp port çakışmasıyla çıkıyordu (test bunu kanıtlar).
+- Reddedilen: `ayarlar` (olağan) dalı — güvenlik etkili alan sessizce
+  atlanabilirdi; ayrı `--ayar` dosyası — K-234'te zaten tek dosya var;
+  `proje.dil` alanı — dil yüzeyi/grammar sözleşmesi, CLI adaptörü yeterli.
+- Kanıt: `ayar.rs::tests::isci_grubu_alanlari_eslenir_ve_bagimliliklari_zorunludur`,
+  `cli_ayar_testi::guvenlik_tur_aralik_ve_ic_bagimlilikler_cli_override_ile_asillamaz`,
+  `web_cok_surec_testi::isci_grubu_zee_ayar_ile_baslar_ve_cli_ezer` (config
+  ile 3 işçi, yeniden başlatma 0; CLI `--web-isci-sayisi 2` ezer).
+- Dil yüzeyi: `profil zee-ayar.isci-sayisi`, `zee-ayar.saglik-port`
+  (ADR-064). Grammar, tanı kodu ve `dil::api::v1` değişmedi; yeni güvenlik
+  sınırı yok (mevcut GB-133 descriptor/ortam kuralları aynı).

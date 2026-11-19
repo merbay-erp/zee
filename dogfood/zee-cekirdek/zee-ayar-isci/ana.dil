@@ -1,0 +1,17 @@
+# K-340 — zee-cekirdek anonim kesiti.
+# Ürün üretim web ayarlarını systemd ExecStart bayrakları yerine sürümlü
+# zee.ayar'a taşır (K-234 talebi). Çok işçi grubu da aynı dosyadan gelir:
+# dil çalıştır .
+# zee.ayar: web-modu proxy, worker-port 8096, isci-sayisi 4, saglik-port 8099.
+# Açılış işi yalnız birincil işçide koşar (K-337).
+
+açılış_sahibi birincil süreç olsun
+açılış_sahibi ise
+    "Birincil işçi: açılış işleri burada." yaz
+değilse
+    "İkincil işçi." yaz
+
+8096 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder

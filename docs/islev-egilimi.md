@@ -27,7 +27,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/ayristirici/kimlik_iletisim.rs::yapili_kalip#1` | 92→92 (+0/+10) | 0→0 (+0/+2) | SABİT |
 | `compiler/src/bicimleyici.rs::bicimle#1` | 112→112 (+0/+12) | 22→22 (+0/+5) | SABİT |
 | `compiler/src/bicimleyici.rs::satiri_parcala#1` | 73→73 (+0/+8) | 15→15 (+0/+3) | SABİT |
-| `compiler/src/cli/ayar.rs::cozumle#1` | 94→94 (+0/+10) | 8→8 (+0/+2) | SABİT |
+| `compiler/src/cli/ayar.rs::cozumle#1` | 94→96 (+2/+10) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cli/web_test_kit.rs::calistir#1` | 97→97 (+0/+10) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici.rs::denetle_coklu_hatali_tanimlarla#1` | 54→54 (+0/+8) | 15→15 (+0/+3) | SABİT |
 | `compiler/src/cozumleyici/cagri.rs::cagri_denetle#1` | 301→301 (+0/+24) | 7→7 (+0/+2) | SABİT |
