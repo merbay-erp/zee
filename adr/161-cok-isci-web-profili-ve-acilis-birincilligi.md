@@ -208,7 +208,7 @@ parçacığında `accept` yapar; accept4 olmayan platformlarda std
 `TcpListener::accept` FD_CLOEXEC'i ayrı bir adımda koyar. Aradaki anda ana
 iş parçacığının `posix_spawn` ile başlattığı işçi soketi miras alır;
 yönetici kapatınca FIN gitmez, istemci işçi ölene dek bekler ve işçi
-yöneticiye ait bir soketi taşır (GB-137). Linux'ta `accept4(SOCK_CLOEXEC)`
+yöneticiye ait bir soketi taşır (GB-138). Linux'ta `accept4(SOCK_CLOEXEC)`
 atomiktir; hata orada oluşmaz.
 
 Yöneticinin fd üretim noktaları tarandı: ortak dinleyici, `dup` kopyası

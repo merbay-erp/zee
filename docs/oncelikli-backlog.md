@@ -2505,7 +2505,7 @@ eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
 ## K-345 — Sağlık bağlantısının işçiye mirası (macOS)
 
-**Durum: KAPALI.** ADR-161 eki, GB-137: macOS'ta yöneticinin sağlık
+**Durum: KAPALI.** ADR-161 eki, GB-138: macOS'ta yöneticinin sağlık
 bağlantısı kabul ile FD_CLOEXEC arasında başlatılan işçiye miras kalıyor,
 istemci yanıtı alıp EOF'u işçi ölene dek bekliyordu (`lsof` ile işçi PID'i).
 Kabul+CLOEXEC ile işçi başlatma aynı kilitle sıraya kondu; yanıt sonrası
