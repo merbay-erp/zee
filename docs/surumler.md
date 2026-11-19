@@ -55,6 +55,13 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Çok işçi sağlık uç noktası asılı kalmaz (K-345, ADR-161 eki):** macOS'ta
+  `--web-saglik-port` isteği, grup işçi başlatırken gelirse yanıtı tam
+  alıp bağlantının kapanmasını o işçi çıkana dek bekleyebiliyordu (sağlık
+  denetimi zaman aşımı); işçi de yöneticiye ait bir soketi taşıyordu. Artık
+  bağlantı işçiye geçmez ve yanıttan hemen sonra kapanır. Linux etkilenmiyordu;
+  göç gerekmez.
+
 - **Ayrı portlu web süreçlerinde tek birincil (K-341, ADR-161 eki):** Aynı
   proje kökünden elle açılan ayrı `--web-worker-port` süreçlerinin (Windows'ta
   tek ölçek yolu) her biri `birincil süreç`i `doğru` görüyordu; ölen sürecin

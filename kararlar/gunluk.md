@@ -5243,3 +5243,12 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   K-337'nin reddettiği yalnız-açılış kilidi değildir: belirleyici olan canlılık
   kilididir, yeniden başlayan süreç yaşayan katılımcıyı görüp ikincil kalır.
   ADR-161 eki.
+
+## K-345 — Sağlık bağlantısının işçiye mirası (19 Kasım 2026)
+
+- macOS'ta std accept CLOEXEC'i ayrı adımda koyduğu için yöneticinin sağlık
+  bağlantısı eşzamanlı başlatılan işçiye geçiyordu (GB-137). Önerilen
+  `POSIX_SPAWN_CLOEXEC_DEFAULT` spawn'ı std `Child` defterini platforma özgü
+  güvensiz kodla değiştirmeyi gerektirdiği için reddedildi; fd tarama tek
+  eşzamanlı üreticiyi gösterdi, kabul ile spawn kilitle sıraya kondu ve
+  yanıt sonrası shutdown eklendi. ADR-161 eki.
