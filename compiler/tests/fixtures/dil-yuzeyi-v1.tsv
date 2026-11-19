@@ -259,6 +259,7 @@ profil	cli-web-isci-sayisi	aktif	1.0.0-dev	compiler/src/cli/web_isci_grubu.rs	pu
 profil	cli-web-saglik-port	aktif	1.0.0-dev	compiler/src/cli/web_isci_grubu.rs	pub(crate) const SAGLIK_BAYRAGI: &str = "--web-saglik-port";
 profil	cli-web-suite	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--web-suite"
 profil	cli-web-suite-sha256	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"--web-suite-sha256"
+profil	cli-web-systemd-soketi	aktif	1.0.0-dev	compiler/src/cli/web_isci_grubu.rs	pub(crate) const SYSTEMD_BAYRAGI: &str = "--web-systemd-soketi";
 profil	credential-native-listener-fd	aktif	0.8.0-dev	scripts/native-capabilities.py	--native-listener-fd
 profil	credential-native-metrics-fd	aktif	0.8.0-dev	scripts/credential-baslat.py	--native-metrics-fd
 profil	db-readiness-continuous	aktif	0.8.0-dev	scripts/db-hazirlik.py	--continuous
@@ -301,6 +302,7 @@ profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
 profil	zee-ayar.isci-sayisi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"isci-sayisi"
 profil	zee-ayar.saglik-port	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"saglik-port"
+profil	zee-ayar.systemd-soketi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"systemd-soketi"
 profil	zee-content-starter-https-posix-1	aktif	0.8.0-dev	scripts/starter-content-host.py	zee-content-starter-https-posix-1
 profil	zee-local-compiler-tools-posix-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-local-compiler-tools-posix-1
 profil	zee-native-effect-owned-loopback-1	aktif	0.8.0-dev	scripts/effect-dispatcher.py	Finite fixed native SMTP effect pilot

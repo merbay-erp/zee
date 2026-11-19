@@ -12,6 +12,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Çok işçi grubu systemd soketiyle kesintisiz yeniden başlar (K-343,
+  ADR-161 eki):** `--web-isci-sayisi` grubu `--web-systemd-soketi` ile (ya da
+  `zee.ayar` içinde `"systemd-soketi": true`) dinleyiciyi kendisi açmak
+  yerine systemd'nin tuttuğu soketi kullanır; `systemctl restart` sırasında
+  gelen istekler reddedilmez, yeni grup hazır olunca yanıtlanır. Kopyalanabilir
+  `.socket`/`.service` şablonları `docs/cok-isci-systemd-soketi.md` içindedir.
+
+  **Göç:** İsteğe bağlıdır. Kullanmak için `.socket` birimini ekleyin ve
+  hizmeti onunla başlatın; bayrak verilip soket yoksa grup açılmaz (çıkış 2,
+  ileti ne yapılacağını söyler). Bu alanı içeren `zee.ayar` daha eski `dil`
+  ile açılmaz (bilinmeyen güvenlik alanı).
+
 - **Çok işçi grubu `zee.ayar`'dan (K-340, ADR-161 eki):** Proje kökündeki
   `zee.ayar` dosyasının `guvenlik` dalı artık `isci-sayisi` (1–64) ve
   `saglik-port` alanlarını taşıyabilir; `dil çalıştır .` grubu bayraksız

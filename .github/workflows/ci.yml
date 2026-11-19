@@ -76,6 +76,18 @@ jobs:
         working-directory: compiler
         shell: bash
         run: cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md
+      - name: Çok işçi systemd soketiyle kesintisiz yeniden başlatma ölçümü (K-343)
+        if: matrix.os == 'ubuntu-24.04'
+        shell: bash
+        run: |
+          cargo build --locked --bin dil --manifest-path compiler/Cargo.toml
+          python3 scripts/systemd-soket-olcumu.py --dil compiler/target/debug/dil --cikti compiler/target/k343-systemd
+          {
+            echo "### K-343 systemd soket ölçümü"
+            echo '```json'
+            cat compiler/target/k343-systemd/systemd-soket-olcumu.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Hermetik gerçek PostgreSQL TLS CA hostname ve NULL kapısı
         if: matrix.os == 'ubuntu-24.04'
         shell: bash
@@ -107,6 +119,7 @@ jobs:
             compiler/target/postgresql-goc-ci.json
             compiler/target/postgresql-goc-ci.log
             compiler/target/parola-goc-ci.json
+            compiler/target/k343-systemd/systemd-soket-olcumu.json
           if-no-files-found: warn
       - name: Uyarı yok
         working-directory: compiler

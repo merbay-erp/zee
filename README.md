@@ -200,7 +200,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **1124** |
+| Rust + doctest vakası | **1129** |
 | Tanı kimliği | **164 etkin + 3 ayrılmış** |
 | RFC | **38** (5 kabul, 30 geçici kabul, 3 taslak) |
 | ADR | **156** (156 kabul) |
@@ -272,7 +272,9 @@ yönetici loopback dinleyiciyi işçilere devreder, çöken işçiyi yeniden
 başlatır ve isteğe bağlı `--web-saglik-port` ile `/saglik` yanıtlar; oturum,
 CSRF ve oran sınırı tek süreçle aynıdır. Açılış işi `birincil süreç` ile tek
 işçiye bağlanır; elle açılan ayrı portlu süreçlerde de aynı kökte tek süreç
-birincildir. Windows'ta bu profil yoktur.
+birincildir. `--web-systemd-soketi` ile grup dinleyiciyi systemd'den
+devralır ve `systemctl restart` sırasında istek kaybetmez
+([şablonlar](docs/cok-isci-systemd-soketi.md)). Windows'ta bu profil yoktur.
 [Karar ve sınırlar](adr/161-cok-isci-web-profili-ve-acilis-birincilligi.md).
 
 Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızlıkları

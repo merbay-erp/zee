@@ -52,6 +52,7 @@ CLI override'dan önce doğrulanır.
 | `oran-doluluk` | `reddet`, `en-eski` | `--web-oran-doluluk`, bellek deposunda |
 | `isci-sayisi` | tam sayı 1..64 | `--web-isci-sayisi` (K-340, ADR-161); `web-modu` `proxy` ve `worker-port` aynı config'te zorunlu; Windows'ta çıkış 2 |
 | `saglik-port` | tam sayı 1..65535 | `--web-saglik-port`; yalnız `isci-sayisi` ile |
+| `systemd-soketi` | boolean | `true` → `--web-systemd-soketi` (K-343); yalnız `isci-sayisi` ile; [systemd şablonları](cok-isci-systemd-soketi.md) |
 
 İşçi grubu alanları yönetici sürecinde etkilidir. Yönetici işçileri kendi
 argv'siyle başlatır; işçi aynı kökü açtığında config'i yeniden okur ama

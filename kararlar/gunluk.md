@@ -5269,3 +5269,12 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   değişmedi. `O_APPEND` reddedildi: spec/08 bütün-içerik okuma sözünü ve
   Windows metadata/K-342 penceresini bozar, eylem kaybını çözmez. Kalan
   benzer yollar K-347 (taşıma yedeği, `proje.dil` CAS'sız yazımı). ADR-075 eki.
+
+## K-343 — systemd soketiyle kesintisiz yeniden başlatma (19 Kasım 2026)
+
+- zee-cekirdek B6 (exact `abaca3a`) yük altındaki yeniden başlatmada bağlantı
+  reddi olmamasını istiyor. Core freeze altında dogfood-change: grup
+  yöneticisine açık opt-in systemd soket etkinleştirmesi (bayrak + zee.ayar).
+  Otomatik LISTEN_FDS algılama, bind'e geri dönüş ve SO_REUSEPORT reddedildi;
+  re-exec devri açık. Merkez onayıyla belgeye kopyalanabilir birim
+  şablonları ve CI'da gerçek systemd ölçümü eklendi. ADR-161 eki.

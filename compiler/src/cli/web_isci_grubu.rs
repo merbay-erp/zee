@@ -12,6 +12,9 @@ use std::process::ExitCode;
 
 pub(crate) const ISCI_BAYRAGI: &str = "--web-isci-sayisi";
 pub(crate) const SAGLIK_BAYRAGI: &str = "--web-saglik-port";
+/// K-343: grup yöneticisi ortak dinleyiciyi bağlamaz, systemd soket
+/// etkinleştirmesiyle (LISTEN_PID/LISTEN_FDS, fd 3) devralır.
+pub(crate) const SYSTEMD_BAYRAGI: &str = "--web-systemd-soketi";
 pub(crate) const AZAMI_ISCI: u16 = 64;
 
 const ORTAM_DINLEYICI: &str = "ZEE_WEB_ISCI_DINLEYICI_FD";
@@ -23,16 +26,26 @@ const ORTAM_EBEVEYN: &str = "ZEE_WEB_ISCI_EBEVEYN";
 pub(crate) struct Ayar {
     pub isci: u16,
     pub saglik_kapisi: Option<u16>,
+    pub systemd_soketi: bool,
 }
 
-/// Kaynaktan önceki seçenek bölgesinden iki bayrağı çıkarır. Kaynak sonrası
-/// aynı sözcükler uygulama argv verisidir ve dokunulmaz.
+/// Kaynaktan önceki seçenek bölgesinden grup bayraklarını çıkarır. Kaynak
+/// sonrası aynı sözcükler uygulama argv verisidir ve dokunulmaz.
 pub(crate) fn ayikla(args: &mut Vec<String>) -> Result<Option<Ayar>, String> {
     let mut isci: Option<String> = None;
     let mut saglik: Option<String> = None;
+    let mut systemd_soketi = false;
     let mut i = 1;
     while i < args.len() {
         let arg = args[i].as_str();
+        if arg == SYSTEMD_BAYRAGI {
+            if systemd_soketi {
+                return Err(format!("{arg} birden çok kez verilemez"));
+            }
+            systemd_soketi = true;
+            args.remove(i);
+            continue;
+        }
         if arg == ISCI_BAYRAGI || arg == SAGLIK_BAYRAGI {
             let hedef = if arg == ISCI_BAYRAGI {
                 &mut isci
@@ -65,6 +78,11 @@ pub(crate) fn ayikla(args: &mut Vec<String>) -> Result<Option<Ayar>, String> {
                 "{SAGLIK_BAYRAGI} yalnız {ISCI_BAYRAGI} ile kullanılabilir"
             ));
         }
+        if systemd_soketi {
+            return Err(format!(
+                "{SYSTEMD_BAYRAGI} yalnız {ISCI_BAYRAGI} ile kullanılabilir"
+            ));
+        }
         return Ok(None);
     };
     let isci = isci
@@ -84,6 +102,7 @@ pub(crate) fn ayikla(args: &mut Vec<String>) -> Result<Option<Ayar>, String> {
     Ok(Some(Ayar {
         isci,
         saglik_kapisi,
+        systemd_soketi,
     }))
 }
 
@@ -628,10 +647,19 @@ mod unix {
     }
 
     /// Ortak dinleyiciyi bağlar ve miras kopyasını döndürür.
-    fn kur(ayar: Ayar, kapi: u16, saglik: &Arc<Mutex<Saglik>>) -> Result<i32, String> {
+    fn kur(
+        ayar: Ayar,
+        kapi: u16,
+        saglik: &Arc<Mutex<Saglik>>,
+        systemd: Option<std::net::TcpListener>,
+    ) -> Result<i32, String> {
         sinyalleri_kur()?;
-        let dinleyici = std::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, kapi))
-            .map_err(|hata| format!("web işçi grubu 127.0.0.1:{kapi} dinleyemedi: {hata}"))?;
+        let dinleyici = if let Some(dinleyici) = systemd {
+            dinleyici
+        } else {
+            std::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, kapi))
+                .map_err(|hata| format!("web işçi grubu 127.0.0.1:{kapi} dinleyemedi: {hata}"))?
+        };
         // dup(2) FD_CLOEXEC taşımaz: yalnız bu kopya işçilere miras kalır.
         // SAFETY: duplicate of a live owned listener; it stays open until exit.
         let miras = unsafe { libc::dup(dinleyici.as_raw_fd()) };
@@ -651,6 +679,42 @@ mod unix {
                 .unwrap_or_default()
         );
         Ok(miras)
+    }
+
+    /// K-343: systemd soket etkinleştirmesi (sd_listen_fds sözleşmesi). Yalnız
+    /// tam bir soket kabul edilir: LISTEN_PID bu süreç, LISTEN_FDS 1, soket fd
+    /// 3. Ortam kayıtları her durumda silinir (işçilere ve Zee alt süreçlerine
+    /// sızmaz). Soket GB-133 doğrulayıcısıyla 127.0.0.1:worker-port üzerinde
+    /// dinleyen TCP olarak sınanır. Bind'e sessiz geri dönüş yoktur.
+    fn systemd_soketini_al(kapi: u16) -> Result<std::net::TcpListener, String> {
+        let pid = std::env::var("LISTEN_PID").ok();
+        let adet = std::env::var("LISTEN_FDS").ok();
+        for ad in ["LISTEN_PID", "LISTEN_FDS", "LISTEN_FDNAMES"] {
+            std::env::remove_var(ad);
+        }
+        let oneri = format!(
+            "Öneri: eşlenen .socket biriminde ListenStream=127.0.0.1:{kapi} ve Accept=no tanımlayıp hizmeti o birimle başlatın (docs/cok-isci-systemd-soketi.md); soket etkinleştirmesi istemiyorsanız {SYSTEMD_BAYRAGI} bayrağını ya da zee.ayar guvenlik.systemd-soketi alanını kaldırın."
+        );
+        let (Some(pid), Some(adet)) = (pid, adet) else {
+            return Err(format!(
+                "{SYSTEMD_BAYRAGI} verildi ama systemd soket devri yok (LISTEN_PID/LISTEN_FDS tanımsız). {oneri}"
+            ));
+        };
+        if pid.parse::<u32>().ok() != Some(std::process::id()) {
+            return Err(format!(
+                "{SYSTEMD_BAYRAGI}: LISTEN_PID={pid} bu sürece ait değil (soket başka sürece devredilmiş). {oneri}"
+            ));
+        }
+        if adet != "1" {
+            return Err(format!(
+                "{SYSTEMD_BAYRAGI}: tam bir dinleyici soket bekleniyor, LISTEN_FDS={adet}. {oneri}"
+            ));
+        }
+        super::super::web_listener::adopt_group(3, kapi).map_err(|_| {
+            format!(
+                "{SYSTEMD_BAYRAGI}: devralınan soket (fd 3) 127.0.0.1:{kapi} üzerinde dinleyen TCP soketi değil. {oneri}"
+            )
+        })
     }
 
     /// Birincili hazır kanalıyla başlatır ve `sunucu başlat`a ulaşmasını bekler.
@@ -751,7 +815,19 @@ mod unix {
 
     pub(crate) fn yonet(ayar: Ayar, kapi: u16, args: Vec<String>) -> ExitCode {
         let saglik = Arc::new(Mutex::new(Saglik::default()));
-        let miras = match kur(ayar, kapi, &saglik) {
+        // K-343: devir sözleşmesi hatası yapılandırma hatasıdır (çıkış 2).
+        let systemd = if ayar.systemd_soketi {
+            match systemd_soketini_al(kapi) {
+                Ok(dinleyici) => Some(dinleyici),
+                Err(hata) => {
+                    eprintln!("{hata}");
+                    return ExitCode::from(2);
+                }
+            }
+        } else {
+            None
+        };
+        let miras = match kur(ayar, kapi, &saglik, systemd) {
             Ok(miras) => miras,
             Err(hata) => {
                 eprintln!("{hata}");
@@ -819,7 +895,8 @@ mod tests {
             ayar,
             Ayar {
                 isci: 4,
-                saglik_kapisi: Some(18099)
+                saglik_kapisi: Some(18099),
+                systemd_soketi: false,
             }
         );
         assert_eq!(
@@ -853,6 +930,15 @@ mod tests {
                 "a.dil",
             ],
             vec!["çalıştır", "--web-saglik-port", "9000", "a.dil"],
+            vec!["çalıştır", "--web-systemd-soketi", "a.dil"],
+            vec![
+                "çalıştır",
+                "--web-isci-sayisi",
+                "2",
+                "--web-systemd-soketi",
+                "--web-systemd-soketi",
+                "a.dil",
+            ],
             vec![
                 "çalıştır",
                 "--web-isci-sayisi",
@@ -865,6 +951,21 @@ mod tests {
             assert!(ayikla(&mut a(&kotu)).is_err(), "{kotu:?}");
         }
         assert_eq!(ayikla(&mut a(&["çalıştır", "a.dil"])).unwrap(), None);
+    }
+
+    #[test]
+    fn systemd_bayragi_ayiklanir_ve_kaynak_sonrasi_uygulamaya_kalir() {
+        let mut args = a(&[
+            "çalıştır",
+            "--web-systemd-soketi",
+            "--web-isci-sayisi",
+            "2",
+            "app.dil",
+            "--web-systemd-soketi",
+        ]);
+        let ayar = ayikla(&mut args).unwrap().unwrap();
+        assert!(ayar.systemd_soketi);
+        assert_eq!(args, a(&["çalıştır", "app.dil", "--web-systemd-soketi"]));
     }
 
     #[test]
