@@ -86,7 +86,11 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         let metin = al
             .recv_timeout(Duration::from_secs(15))
             .expect("yönetici stderr borusu 15 sn içinde kapanmadı");
-        let baslatma = metin.matches("zee-web işçi 2 başladı").count();
+        // İşçiler yöneticinin stderr'ini miras alır; `eprintln!` satırı birden
+        // çok write ile gider ve yeni işçinin açılış satırları yöneticinin
+        // "başladı" satırını bölebilir. Yeniden başlatma satırı çıkan işçi
+        // bittikten, yenisi başlamadan yazılır: başlatma = yeniden + ilk.
+        let baslatma = metin.matches("zee-web işçi 2 (pid ").count() + 1;
         let durma = metin
             .split("zee-web işçi 2 art arda ")
             .nth(1)

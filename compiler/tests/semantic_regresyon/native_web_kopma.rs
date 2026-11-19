@@ -16,20 +16,56 @@ pub const PROXY: &str = "https://panel.example";
 /// bağladığından, aynı test ikilisinde paralel koşan iki test aynı kapıyı
 /// alamamalıdır; aksi hâlde biri bağlayamaz ve istekleri ötekinin worker'ına
 /// gider (Windows CI'da 401/"dinlemeye geçmedi").
+///
+/// Kapı işletim sisteminin geçici (ephemeral) aralığından alınmaz: Linux
+/// 32768–60999, macOS/Windows 49152–65535. O aralık her giden bağlantının
+/// yerel kapısıdır; sağlık yoklaması gibi binlerce kısa bağlantı açan paralel
+/// test ikilileri bırakılan kapıyı bu arada yerel kapı olarak alır ve sunucu
+/// "Address already in use" ile açılamaz ya da istek başka sürece gider.
+/// 20000–32767 arasında süreç başına rastgele başlangıçla taranır.
+///
+/// Paralel koşan test ikilileri aynı kapıyı "boş" görüp seçebilir (her biri
+/// sınayıp bırakır, sunucu sonra bağlar). Bu yüzden seçilen kapı, geçici
+/// klasördeki `zee-test-kapilari/<kapı>.kilit` dosyasının dışlayıcı kilidiyle
+/// süreç ömrü boyunca ayrılır; başka ikili kilitli kapıyı atlar, kilidi
+/// çekirdek süreç bitince bırakır.
 pub fn bos_kapi() -> u16 {
+    const ILK: u32 = 20_000;
+    const ARALIK: u32 = 12_768;
     static VERILEN: std::sync::Mutex<Vec<u16>> = std::sync::Mutex::new(Vec::new());
+    static AYRILAN: std::sync::Mutex<Vec<std::fs::File>> = std::sync::Mutex::new(Vec::new());
     let mut verilen = VERILEN.lock().unwrap_or_else(|e| e.into_inner());
-    loop {
-        let kapi = TcpListener::bind(("127.0.0.1", 0))
-            .expect("boş kapı")
-            .local_addr()
-            .expect("yerel adres")
-            .port();
-        if !verilen.contains(&kapi) {
-            verilen.push(kapi);
-            return kapi;
+    let kilitler = std::env::temp_dir().join("zee-test-kapilari");
+    std::fs::create_dir_all(&kilitler).expect("kapı kilit klasörü");
+    let tohum = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|s| s.subsec_nanos())
+        .unwrap_or(0)
+        ^ std::process::id().wrapping_mul(2_654_435_761);
+    for adim in 0..ARALIK {
+        let kapi = (ILK + (tohum.wrapping_add(adim.wrapping_mul(7_919))) % ARALIK) as u16;
+        if verilen.contains(&kapi) {
+            continue;
         }
+        let Ok(kilit) = std::fs::OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(kilitler.join(format!("{kapi}.kilit")))
+        else {
+            continue;
+        };
+        if kilit.try_lock().is_err() || TcpListener::bind(("127.0.0.1", kapi)).is_err() {
+            continue;
+        }
+        AYRILAN
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .push(kilit);
+        verilen.push(kapi);
+        return kapi;
     }
+    panic!("20000–32767 aralığında boş kapı yok");
 }
 
 /// `komut`u stdout borusuyla başlatır ve sürecin kendi "Sunucu dinliyor"
