@@ -40,6 +40,15 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Windows'ta yazılırken okunan dosya hata vermez (K-342):** Bir zee
+  programı dosyayı atomik olarak yeniden yazarken başka bir program (ya da
+  aynı programın başka işi) onu `dosyasını okumayı dene` ile okursa, yoğun
+  makinede okuma ara sıra "dosya başka bir işlem tarafından kullanılıyor" ya
+  da "bulunamadı" hatası alabiliyordu. Okuyucu artık süren değiştirmeyi
+  tanıyıp bitmesini bekler ve eski ya da yeni içeriğin bütününü görür.
+  Gerçekten olmayan dosya eskisi gibi hemen hata verir. Linux ve macOS
+  değişmedi; göç gerekmez.
+
 - **Çok işçi grubu çöken işçide söz verilen sınırda durur (K-338, ADR-161
   eki):** `--web-isci-sayisi` ile açılan grupta bir işçi 10 saniye dolmadan
   art arda 10 kez çıkarsa grup artık 10. çıkışta durur (çıkış 1); önceden bir

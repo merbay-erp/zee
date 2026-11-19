@@ -1,0 +1,8 @@
+# K-342: Windows'ta ReplaceFileW penceresi (hedef yok, sonra paylaşımsız açık) yüklü makinede 50 ms'yi aşsa da okuyucu hata yerine yeni bütünü görür.
+
+"başladı" yaz
+sonuç "anlik.txt" dosyasını okumayı dene olsun
+sonuç başarılıysa
+    "okundu " ile sonucun değeri yaz
+değilse
+    "okunamadı: " ile sonucun hatası yaz

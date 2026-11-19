@@ -229,6 +229,19 @@ dosya kalmadığı ayrıca denetlenir. Düzeltme öncesi kaynakta çıktı
 replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder ve Linux
 dışında görünür ignored durumundadır.
 
+## Native dosya okuma penceresi kipi (K-342)
+
+`runtime` fazındaki `native-dosya-okuma-penceresi` kipi gerçek native `dil`
+okuyucusunu Cargo hedef klasöründe kurulan geçici bir projede çalıştırır ve
+Windows `ReplaceFileW` penceresini deterministik kurar: program `başladı`
+yazınca önce hedef yokken yazarın `.anlik.txt.zee-gecici-*` dosyası durur
+(150 ms), sonra hedef paylaşımsız tutanakla açıkken `….zee-yedek` yedeği
+durur (150 ms). Toplam pencere K-182'nin kısa bütçesini aşar. Çıktı programın
+stdout satırlarıdır; düzeltme öncesi kaynakta ikinci satır `okunamadı: …`
+olur. ToplayanIo dosya sistemi penceresini taklit edemediği için toplu replay
+bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder ve Windows
+dışında (rename penceresiz) görünür ignored durumundadır.
+
 ## Native web yükleme kipi (K-332)
 
 `security` fazındaki `native-web-yukleme` kipi fixture'ı Cargo hedef
