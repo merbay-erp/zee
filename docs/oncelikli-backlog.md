@@ -2529,6 +2529,15 @@ yakalamak. (2) `dil paket ekle/çıkar` `proje.dil`/`proje.kilit`i
 karşılaştırmasız yazar; eşzamanlı iki komutta biri diğerinin bağımlılığını
 ezer. Çözüm yönü: `atomik_karsilastir_ve_yaz` ve karşılaştırmalı geri alma
 (okuma yolunun bayt eşitliği önce doğrulanmalı).
+## K-345 — Sağlık bağlantısının işçiye mirası (macOS)
+
+**Durum: KAPALI.** ADR-161 eki, GB-138: macOS'ta yöneticinin sağlık
+bağlantısı kabul ile FD_CLOEXEC arasında başlatılan işçiye miras kalıyor,
+istemci yanıtı alıp EOF'u işçi ölene dek bekliyordu (`lsof` ile işçi PID'i).
+Kabul+CLOEXEC ile işçi başlatma aynı kilitle sıraya kondu; yanıt sonrası
+`shutdown(Both)`. Kanıt: `web_isci_grubu::unix::testler::saglik_yaniti_kopya_acikken_de_baglantiyi_bitirir`,
+regression `cli/isci-grubu-saglik-mirasi` (lsof//proc); 40 grupta miras
+8 → 0.
 
 ## K-343 — systemd soketiyle kesintisiz yeniden başlatma (zee-cekirdek B6)
 

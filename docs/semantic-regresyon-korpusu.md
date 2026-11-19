@@ -322,6 +322,21 @@ miras alabilir), böylece kip asılı kalamaz. ToplayanIo süreç yönetimini ta
 edemediği için toplu replay bu kipi atlar; ayrı native libtest vakası boş
 listeyi reddeder ve Unix dışında görünür ignored durumundadır.
 
+## Native işçi sağlık mirası kipi (K-345)
+
+`cli` fazındaki `native-isci-saglik-mirasi` kipi kaynağı geçici bir projeye
+kopyalar ve gerçek native `dil` yöneticisini `--web-isci-sayisi 32` ve
+sağlık portuyla üç kez ard arda açar. Her grup başlarken sağlık uç noktası
+altı iş parçacığıyla 4 sn yoklanır; ardından sağlıktaki işçi PID'lerinin
+sağlık kapısında tuttuğu TCP uçları sayılır (macOS `lsof`, Linux
+`/proc/<pid>/fd` + `/proc/net/tcp`). Çıktı `miras <n>` ve 2 sn içinde EOF
+ile bitmeyen istek sayısı `asili <n>`; çıkış bir grup 32 canlı işçiye
+ulaşmadıysa 1. Düzeltmeyle `miras 0`/`asili 0`. Düzeltme öncesi arıza
+olasılıksaldır (macOS'ta grup başına ≈%20; üç grupta yakalama ≈%50);
+deterministik kanıt `saglik_yaniti_kopya_acikken_de_baglantiyi_bitirir`
+birim testidir. Linux'ta accept4 atomik olduğundan kip değişmez sonucu
+doğrular. Toplu replay bu kipi atlar; Unix dışında görünür ignored.
+
 ## Native ayrı port birincillik kipi (K-341)
 
 `cli` fazındaki `native-ayri-port-birincil` kipi kaynağı Cargo hedef

@@ -5269,6 +5269,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   değişmedi. `O_APPEND` reddedildi: spec/08 bütün-içerik okuma sözünü ve
   Windows metadata/K-342 penceresini bozar, eylem kaybını çözmez. Kalan
   benzer yollar K-347 (taşıma yedeği, `proje.dil` CAS'sız yazımı). ADR-075 eki.
+## K-345 — Sağlık bağlantısının işçiye mirası (19 Kasım 2026)
+
+- macOS'ta std accept CLOEXEC'i ayrı adımda koyduğu için yöneticinin sağlık
+  bağlantısı eşzamanlı başlatılan işçiye geçiyordu (GB-138). Önerilen
+  `POSIX_SPAWN_CLOEXEC_DEFAULT` spawn'ı std `Child` defterini platforma özgü
+  güvensiz kodla değiştirmeyi gerektirdiği için reddedildi; fd tarama tek
+  eşzamanlı üreticiyi gösterdi, kabul ile spawn kilitle sıraya kondu ve
+  yanıt sonrası shutdown eklendi. ADR-161 eki.
 
 ## K-343 — systemd soketiyle kesintisiz yeniden başlatma (19 Kasım 2026)
 
