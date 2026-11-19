@@ -1808,17 +1808,27 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
         std::thread::sleep(Duration::from_millis(50));
     }
     let dur = Arc::new(AtomicBool::new(false));
-    // (başlangıç anı, süre, başarılı mı)
-    let kayit = Arc::new(Mutex::new(Vec::<(Instant, Duration, bool)>::new()));
-    let istemciler: Vec<_> = (0..4)
+    // (başlangıç anı, süre, başarısızlık nedeni; başarıda None)
+    let kayit = Arc::new(Mutex::new(Vec::<(Instant, Duration, Option<String>)>::new()));
+    let istemciler: Vec<_> = (0..4u32)
         .map(|n| {
             let (dur, kayit) = (Arc::clone(&dur), Arc::clone(&kayit));
             std::thread::spawn(move || {
+                // Her istemci 2000 kimlik arasında döner: hızlı makinede tek
+                // kimlik uç nokta oran sınırına (100/60 sn, 429) takılıp kayıp
+                // sanılmaz; anahtar sayısı varsayılan kapasitenin altında kalır.
+                let mut sira = 0u32;
                 while !dur.load(Ordering::Relaxed) {
+                    let no = n * 2000 + sira % 2000;
+                    sira += 1;
+                    let kimlik = format!("198.18.{}.{}", no / 250, no % 250 + 1);
                     let basla = Instant::now();
-                    let tamam = kopma::tam_istek(kapi, "GET /", &format!("203.0.113.{}", 40 + n))
-                        .is_some_and(|y| y.starts_with("HTTP/1.1 200"));
-                    kayit.lock().unwrap().push((basla, basla.elapsed(), tamam));
+                    let neden = match kopma::tam_istek(kapi, "GET /", &kimlik) {
+                        Some(y) if y.starts_with("HTTP/1.1 200") => None,
+                        Some(y) => Some(y.get(9..12).unwrap_or("bos-yanit").to_string()),
+                        None => Some("baglanti".to_string()),
+                    };
+                    kayit.lock().unwrap().push((basla, basla.elapsed(), neden));
                 }
             })
         })
@@ -1850,7 +1860,11 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
     unsafe { libc::kill(yonetici.id() as libc::pid_t, libc::SIGTERM) };
     let _ = cikis_ve_stderr(yonetici, Duration::from_secs(60));
     let kayit = kayit.lock().unwrap();
-    let basarisiz = kayit.iter().filter(|(_, _, tamam)| !tamam).count();
+    let mut nedenler = std::collections::BTreeMap::<&str, usize>::new();
+    for neden in kayit.iter().filter_map(|(_, _, n)| n.as_deref()) {
+        *nedenler.entry(neden).or_default() += 1;
+    }
+    let basarisiz: usize = nedenler.values().sum();
     let azami: Vec<Duration> = pencereler
         .iter()
         .map(|(a, b)| {
@@ -1863,9 +1877,12 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
         })
         .collect();
     eprintln!(
-        "K-343 ölçüm: {} istek, {basarisiz} başarısız; yeniden başlatma başına en uzun istek {azami:?}",
+        "K-343 ölçüm: {} istek, {basarisiz} başarısız {nedenler:?}; yeniden başlatma başına en uzun istek {azami:?}",
         kayit.len()
     );
-    assert_eq!(basarisiz, 0, "yeniden başlatma sırasında istek kaybı");
+    assert_eq!(
+        basarisiz, 0,
+        "yeniden başlatma sırasında istek kaybı: {nedenler:?}"
+    );
     assert!(kayit.len() > 50, "yetersiz yük: {}", kayit.len());
 }

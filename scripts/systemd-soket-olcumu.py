@@ -56,9 +56,10 @@ def istek(kapi, kimlik):
                     break
                 veri += parca
         tamam = veri.startswith(b"HTTP/1.1 200 ")
-    except OSError:
-        tamam = False
-    return basla, time.monotonic() - basla, tamam
+        neden = veri[9:12].decode("ascii", "replace") if veri else "bos-yanit"
+    except OSError as hata:
+        tamam, neden = False, type(hata).__name__
+    return basla, time.monotonic() - basla, tamam, neden
 
 
 def main():
@@ -100,9 +101,15 @@ def main():
                 raise SystemExit("hizmet 60 sn içinde hazır olmadı")
             time.sleep(0.05)
 
+        # Her istemci 2000 kimlik arasında döner: tek kimliğin uç nokta oran
+        # sınırına (100/60 sn) takılması kayıp sanılmaz; anahtar sayısı da
+        # varsayılan 32768 kapasitenin altında kalır.
         def istemci(n):
+            sira = 0
             while not dur.is_set():
-                sonuc = istek(kapi, f"203.0.113.{40 + n}")
+                no = n * 2000 + sira % 2000
+                sira += 1
+                sonuc = istek(kapi, f"198.18.{no // 250}.{no % 250 + 1}")
                 with kilit:
                     kayit.append(sonuc)
 
@@ -124,10 +131,15 @@ def main():
         dur.set()
         for t in isler:
             t.join()
-        basarisiz = sum(1 for _, _, ok in kayit if not ok)
-        azami = [round(max((s for t, s, _ in kayit if a <= t <= b), default=0.0) * 1000, 1)
+        basarisiz = sum(1 for _, _, ok, _ in kayit if not ok)
+        nedenler = {}
+        for _, _, ok, neden in kayit:
+            if not ok:
+                nedenler[neden] = nedenler.get(neden, 0) + 1
+        azami = [round(max((s for t, s, _, _ in kayit if a <= t <= b), default=0.0) * 1000, 1)
                  for a, b in pencereler]
         rapor.update({"istek": len(kayit), "basarisiz": basarisiz,
+                      "basarisizlik_nedenleri": nedenler,
                       "yeniden_baslatma_basina_en_uzun_istek_ms": azami,
                       "durum": "gecti" if basarisiz == 0 and len(kayit) > 0 else "kaldi"})
     finally:
@@ -137,7 +149,7 @@ def main():
             subprocess.run(["sudo", "rm", "-f", yol], check=False)
         subprocess.run(["sudo", "systemctl", "daemon-reload"], check=False)
         (args.cikti / "systemd-soket-olcumu.json").write_text(json.dumps(rapor, ensure_ascii=False, indent=2) + "\n")
-    print(json.dumps({k: rapor.get(k) for k in ("istek", "basarisiz", "yeniden_baslatma_basina_en_uzun_istek_ms", "durum")}, ensure_ascii=False))
+    print(json.dumps({k: rapor.get(k) for k in ("istek", "basarisiz", "basarisizlik_nedenleri", "yeniden_baslatma_basina_en_uzun_istek_ms", "durum")}, ensure_ascii=False))
     if rapor.get("durum") != "gecti":
         raise SystemExit(1)
 

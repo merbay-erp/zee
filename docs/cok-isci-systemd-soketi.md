@@ -88,6 +88,14 @@ başlatmadaki en uzun istek süresini (kuyrukta bekleme) yazar. Yerel
 taşınabilir eşi `web_cok_surec_testi::isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez`
 testidir (soketi test tutar).
 
+Her istemci 2000 istemci kimliği arasında döner. Tek kimlikle hızlı bir
+makine varsayılan uç nokta oran sınırını (kimlik başına 60 sn'de 100,
+spec/12) aşar ve 429 yanıtları istek kaybı gibi görünür; ilk CI koşusu
+bunu gösterdi (2882 istekte tam 400 = 4 × 100 başarılı). Rapor
+başarısızlıkları nedene göre (HTTP durumu ya da bağlantı hatası) ayırır.
+Gerçek trafikte oran sınırı ayrı bir sözleşmedir; ölçüm yalnız yeniden
+başlatma kaybını sayar.
+
 ## Açık
 
 Tek süreçli worker için soket etkinleştirmesi, yöneticiden yöneticiye canlı
