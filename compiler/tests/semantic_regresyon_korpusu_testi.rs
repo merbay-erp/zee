@@ -38,6 +38,8 @@ mod native_metric_stdio_fixture;
 mod native_web_kopma_fixture;
 #[path = "semantic_regresyon/native_web_yukleme.rs"]
 mod native_web_yukleme_fixture;
+#[path = "semantic_regresyon/native_yedek_artigi.rs"]
+mod native_yedek_artigi_fixture;
 
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
@@ -77,6 +79,7 @@ const KIPLER: &[&str] = &[
     "native-eszamanli-ekleme",
     "native-isci-saglik-mirasi",
     "native-coken-degistirme",
+    "native-yedek-artigi",
 ];
 
 #[derive(Debug, Clone)]
@@ -243,6 +246,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-dosya-okuma-izsiz-penceresi"
                 | "native-eszamanli-ekleme"
                 | "native-coken-degistirme"
+                | "native-yedek-artigi"
         ),
         "concurrency" => kip == "run",
         "security" => matches!(
@@ -393,6 +397,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-coken-degistirme" {
         let (cikis, cikti) = native_coken_degistirme_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-yedek-artigi" {
+        let (cikis, cikti) = native_yedek_artigi_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -774,6 +786,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-eszamanli-ekleme"
                 | "native-isci-saglik-mirasi"
                 | "native-coken-degistirme"
+                | "native-yedek-artigi"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1199,6 +1212,41 @@ fn native_coken_degistirme_regresyonu_gercek_surecle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: kurtarma sonucu", vaka.ad);
+    }
+}
+
+#[test]
+fn native_yedek_artigi_kipi_yalniz_runtime_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-yedek-artigi"));
+    assert!(faz_kipi_kabul_eder("runtime", "native-yedek-artigi"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-yedek-artigi"));
+    }
+}
+
+/// K-351: başarılı yazımın silinemeyen yedeği gerçek native `dil`in sonraki
+/// yazımında silinir; hedef dışarıdan silinince eski içerik dirilmez. Yedek
+/// yalnız Windows `ReplaceFileW` yazarında oluşur; diğerlerinde ignored.
+#[test]
+#[cfg_attr(
+    not(windows),
+    ignore = "actual Windows ReplaceFileW backup leftover unavailable"
+)]
+fn native_yedek_artigi_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-yedek-artigi")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native yedek artığı regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: artık temizliği", vaka.ad);
     }
 }
 

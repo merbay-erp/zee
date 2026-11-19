@@ -13,7 +13,9 @@ use std::time::Duration;
 
 use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
 use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
+use adim::{nokta, sar, Adim};
 
+mod adim;
 mod metadata;
 mod ozel;
 pub use ozel::atomik_ozel_yaz;
@@ -86,7 +88,9 @@ fn satir_yaz_kilitli(
 ) -> io::Result<KilitliDegisim> {
     let _kilit = DosyaKilidi::al(yol)?;
     let onceki = if ekleme || izli {
-        mevcut_icerik(yol)?
+        nokta(Adim::MevcutOkuma)
+            .and_then(|()| mevcut_icerik(yol))
+            .map_err(sar(Adim::MevcutOkuma))?
     } else {
         None
     };
@@ -150,6 +154,19 @@ struct DosyaKilidi {
 
 impl DosyaKilidi {
     fn al(hedef: &Path) -> io::Result<Self> {
+        let kilit = Self::kilidi_al(hedef).map_err(sar(Adim::Kilit))?;
+        // K-348: önceki yazar ReplaceFileW ortasında öldüyse hedef yoktur;
+        // kilit altında eski bütün içerik yedekten geri konur. K-351: hedef
+        // varsa başarılı yazımın silinemeyen artık yedeği temizlenir.
+        #[cfg(windows)]
+        nokta(Adim::Kurtarma)
+            .and_then(|()| yasam_dongusu::yarim_degistirmeyi_kurtar(hedef))
+            .map_err(sar(Adim::Kurtarma))?;
+        Ok(kilit)
+    }
+
+    fn kilidi_al(hedef: &Path) -> io::Result<Self> {
+        nokta(Adim::Kilit)?;
         let klasor = ebeveyn(hedef);
         let kilit_yolu = klasor.join(pencere::YAZMA_KILIDI_ADI);
         let dosya = OpenOptions::new()
@@ -159,16 +176,11 @@ impl DosyaKilidi {
             .write(true)
             .open(kilit_yolu)?;
         // Hızlı yol: boş kilit iş parçacığı açmadan alınır.
-        let kilit = if platform::kilitlemeyi_dene(&dosya)? {
-            Self::tutulan(dosya)
+        if platform::kilitlemeyi_dene(&dosya)? {
+            Ok(Self::tutulan(dosya))
         } else {
-            Self::bekleyerek_al(dosya)?
-        };
-        // K-348: önceki yazar ReplaceFileW ortasında öldüyse hedef yoktur;
-        // kilit altında eski bütün içerik yedekten geri konur.
-        #[cfg(windows)]
-        yasam_dongusu::yarim_degistirmeyi_kurtar(hedef)?;
-        Ok(kilit)
+            Self::bekleyerek_al(dosya)
+        }
     }
 
     fn tutulan(dosya: File) -> Self {
@@ -193,7 +205,7 @@ impl DosyaKilidi {
                     }
                 }
             })?;
-        match al.recv_timeout(KILIT_BEKLEME) {
+        match al.recv_timeout(adim::kilit_bekleme()) {
             Ok(Ok(dosya)) => Ok(Self::tutulan(dosya)),
             Ok(Err(hata)) => Err(hata),
             Err(_) => Err(io::Error::new(
@@ -258,20 +270,36 @@ fn atomik_icerik_yaz<F>(hedef: &Path, icerik: &[u8], degistir: F) -> io::Result<
 where
     F: FnOnce(&Path, &Path) -> io::Result<()>,
 {
-    let eski_metadata = metadata::MetadataKaynagi::yakala(hedef)?;
-    let (mut dosya, mut gecici) = gecici_dosya_ac(hedef)?;
-    dosya.write_all(icerik)?;
+    // K-351: her adımın hatası adını taşır; tür (`kind`) korunur.
+    let eski_metadata = nokta(Adim::Metadata)
+        .and_then(|()| metadata::MetadataKaynagi::yakala(hedef))
+        .map_err(sar(Adim::Metadata))?;
+    let (dosya, mut gecici) = nokta(Adim::GeciciYazim)
+        .and_then(|()| gecici_dosya_ac(hedef))
+        .map_err(sar(Adim::GeciciYazim))?;
     let gecici_yol = gecici
         .yol
-        .as_deref()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "zee geçici dosya yolu kayboldu"))?;
-    eski_metadata.geciciye_uygula(&dosya)?;
-    dosya.sync_all()?;
-    drop(dosya);
-
-    degistir(gecici_yol, hedef)?;
+        .clone()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "zee geçici dosya yolu kayboldu"))
+        .map_err(sar(Adim::GeciciYazim))?;
+    gecici_icerigi_hazirla(dosya, icerik, &eski_metadata)?;
+    degistir(&gecici_yol, hedef)?;
     gecici.yol = None;
-    klasoru_eszamanla(ebeveyn(hedef))
+    nokta(Adim::KlasorEszamanlama)
+        .and_then(|()| klasoru_eszamanla(ebeveyn(hedef)))
+        .map_err(sar(Adim::KlasorEszamanlama))
+}
+
+fn gecici_icerigi_hazirla(
+    mut dosya: File,
+    icerik: &[u8],
+    metadata: &metadata::MetadataKaynagi,
+) -> io::Result<()> {
+    dosya.write_all(icerik).map_err(sar(Adim::GeciciYazim))?;
+    metadata
+        .geciciye_uygula(&dosya)
+        .map_err(sar(Adim::Metadata))?;
+    dosya.sync_all().map_err(sar(Adim::GeciciYazim))
 }
 
 #[cfg(unix)]
@@ -286,7 +314,9 @@ fn klasoru_eszamanla(_klasor: &Path) -> io::Result<()> {
 
 #[cfg(not(windows))]
 fn atomik_degistir(gecici: &Path, hedef: &Path) -> io::Result<()> {
-    std::fs::rename(gecici, hedef)
+    nokta(Adim::Rename)
+        .and_then(|()| std::fs::rename(gecici, hedef))
+        .map_err(sar(Adim::Rename))
 }
 
 #[cfg(windows)]

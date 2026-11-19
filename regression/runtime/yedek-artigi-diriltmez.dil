@@ -1,0 +1,8 @@
+# K-351: Windows'ta başarılı yazımın silinemeyen yedeği kalıyordu; hedef sonra dışarıdan silinince okuma ve ekleme eski içeriği diriltiyordu.
+
+ilk "ortak.txt" dosyasını okumayı dene olsun
+ilk başarılıysa
+    ilkin değeri yaz
+değilse
+    "okunamadı" yaz
+"ortak.txt" dosyasına "b-1" ekle

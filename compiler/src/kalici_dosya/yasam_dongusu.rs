@@ -114,10 +114,21 @@ pub fn atomik_sil_izli(yol: &Path) -> io::Result<super::KilitliDegisim> {
 /// kurtarır. Yazar başarı bildirmediğinden geçerli bütün eski içeriktir: en
 /// yeni yedek hedefe döner, eş geçici (yayımlanmamış yeni içerik) ve bayat
 /// yedekler silinir. Kilit tutulurken başka zee değiştirmesi süremez.
+///
+/// K-351: hedef varken duran yedek yarım değiştirme değildir (ReplaceFileW
+/// hedefi yalnız iki adımının arasında yok bırakır); başarılı yazımın
+/// silinemeyen artığıdır ve temizlenir. Kalsaydı hedef sonradan zee dışından
+/// silindiğinde eski içerik kurtarma diye diriltilirdi.
 #[cfg_attr(not(windows), allow(dead_code))]
 pub(super) fn yarim_degistirmeyi_kurtar(hedef: &Path) -> io::Result<bool> {
     match std::fs::symlink_metadata(hedef) {
-        Ok(_) => return Ok(false),
+        Ok(_) => {
+            // En iyi çaba: liste hatası yeni yazımı engellemez.
+            if let Ok(artiklar) = yarim::yedekler(hedef) {
+                yedek_eslerini_sil(artiklar.into_iter());
+            }
+            return Ok(false);
+        }
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => {}
         Err(hata) => return Err(hata),
     }
@@ -210,6 +221,13 @@ mod tests {
         assert!(artik.is_empty(), "izler silinmeli: {artik:?}");
         // Hedef varken kurtarma bir şey yapmaz; iz yokken de.
         assert!(!yarim_degistirmeyi_kurtar(&hedef).unwrap());
+        // K-351: hedef varken duran yedek başarılı yazımın artığıdır; geri
+        // konmaz, silinir. Kalsaydı hedef dışarıdan silinince dirilirdi.
+        let artik_yedek = gecici.0.join(".ortak.txt.zee-gecici-9-3.zee-yedek");
+        std::fs::write(&artik_yedek, "eski\n").unwrap();
+        assert!(!yarim_degistirmeyi_kurtar(&hedef).unwrap());
+        assert!(!artik_yedek.exists(), "artık yedek temizlenmeli");
+        assert_eq!(std::fs::read_to_string(&hedef).unwrap(), "a\nb\n");
         std::fs::remove_file(&hedef).unwrap();
         assert!(!yarim_degistirmeyi_kurtar(&hedef).unwrap());
     }

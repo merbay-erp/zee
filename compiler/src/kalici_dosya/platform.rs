@@ -60,6 +60,8 @@ mod uygulama {
     use std::os::windows::io::AsRawHandle;
     use std::path::{Path, PathBuf};
 
+    use super::super::adim::{baglamla, nokta, sar, Adim};
+
     type Handle = *mut c_void;
 
     #[repr(C)]
@@ -181,77 +183,127 @@ mod uygulama {
         };
     }
 
+    /// K-351: her sistem çağrısının hatası adımıyla (`ReplaceFileW`,
+    /// `MoveFileExW`, yedek geri alma) döner; `io::ErrorKind` korunur.
     pub fn atomik_degistir(gecici: &Path, hedef: &Path) -> io::Result<()> {
-        let eski = genis_yol(gecici)?;
-        let yeni = genis_yol(hedef)?;
+        let eski = genis_yol(gecici).map_err(sar(Adim::ReplaceFileW))?;
+        let yeni = genis_yol(hedef).map_err(sar(Adim::ReplaceFileW))?;
         let mut yedek_adi = gecici.as_os_str().to_os_string();
         yedek_adi.push(crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme::YEDEK_EKI);
         let yedek = PathBuf::from(yedek_adi);
         if yedek.exists() {
-            return Err(io::Error::new(
-                io::ErrorKind::AlreadyExists,
-                "benzersiz Windows metadata kurtarma yedeği oluşturulamadı",
+            return Err(baglamla(
+                Adim::ReplaceFileW,
+                io::Error::new(
+                    io::ErrorKind::AlreadyExists,
+                    "benzersiz Windows metadata kurtarma yedeği oluşturulamadı",
+                ),
             ));
         }
-        let yedek_genis = genis_yol(&yedek)?;
+        let yedek_genis = genis_yol(&yedek).map_err(sar(Adim::ReplaceFileW))?;
         // ReplaceFileW var olan hedefin DACL, security attributes, şifreleme,
         // sıkıştırma ve named stream metadata'sını taşır. Merge hatalarını
         // yoksayan hiçbir bayrak verilmez; yedek nadir kısmi-hata durumunda
         // eski inode'u geri getirebilmek içindir.
-        // SAFETY: Diziler NUL ile sonlandırılmış ve çağrı boyunca yaşamda.
-        let sonuc = unsafe {
-            ReplaceFileW(
-                yeni.as_ptr(),
-                eski.as_ptr(),
-                yedek_genis.as_ptr(),
-                0,
-                std::ptr::null_mut(),
-                std::ptr::null_mut(),
-            )
-        };
-        if sonuc != 0 {
-            return std::fs::remove_file(yedek);
-        }
-        let hata = io::Error::last_os_error();
-        if hata.raw_os_error() == Some(ERROR_UNABLE_TO_MOVE_REPLACEMENT_2) && yedek.exists() {
-            // SAFETY: NUL sonlu yollar geçerli; hedef eski yedekten atomik
-            // write-through taşımayla geri kurulur.
-            let geri_alindi = unsafe {
-                MoveFileExW(
-                    yedek_genis.as_ptr(),
+        let hata = match nokta(Adim::ReplaceFileW) {
+            Err(hata) => hata,
+            // SAFETY: Diziler NUL ile sonlandırılmış ve çağrı boyunca yaşamda.
+            Ok(()) => match unsafe {
+                ReplaceFileW(
                     yeni.as_ptr(),
-                    MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+                    eski.as_ptr(),
+                    yedek_genis.as_ptr(),
+                    0,
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
                 )
-            };
-            if geri_alindi == 0 {
-                return Err(io::Error::other(format!(
-                    "Windows replace başarısız oldu ({hata}); eski dosya `{}` yedeğinde kaldı: {}",
-                    yedek.display(),
-                    io::Error::last_os_error()
-                )));
-            }
-        }
-        if !matches!(
+            } {
+                0 => io::Error::last_os_error(),
+                _ => {
+                    yedegi_sil(&yedek);
+                    return Ok(());
+                }
+            },
+        };
+        let bulunamadi = matches!(
             hata.raw_os_error(),
             Some(ERROR_FILE_NOT_FOUND) | Some(ERROR_PATH_NOT_FOUND)
-        ) {
-            return Err(hata);
+        );
+        let hedef_var = std::fs::symlink_metadata(hedef).is_ok();
+        // K-351: yedek varsa ReplaceFileW eski hedefi yedeğe taşıyıp sonra
+        // düşmüştür (1177 ya da kısmi ilerleyip 2/3). Eski bütün yedektedir;
+        // silinmez, hedef yoksa yedekten geri kurulur. Hedef de varsa yedek
+        // artıktır ve sonraki kilit alımında temizlenir.
+        if yedek.exists()
+            && (bulunamadi || hata.raw_os_error() == Some(ERROR_UNABLE_TO_MOVE_REPLACEMENT_2))
+        {
+            if !hedef_var {
+                eskiyi_geri_kur(&yedek_genis, &yeni, &yedek, &hata)?;
+            }
+            return Err(baglamla(Adim::ReplaceFileW, hata));
         }
-        let _ = std::fs::remove_file(&yedek);
+        // K-351: ilk yerleştirme yalnız hedef gerçekten yokken. Hedef varken
+        // gelen 2/3 metadata merge'siz MoveFileExW ile ezilmez.
+        if !bulunamadi || hedef_var {
+            return Err(baglamla(Adim::ReplaceFileW, hata));
+        }
         // Hedef henüz yoksa metadata taşıma gerekmez; ilk yerleştirme yine
-        // aynı hacimde atomik ve write-through MoveFileExW ile yapılır.
-        let sonuc = unsafe {
-            MoveFileExW(
-                eski.as_ptr(),
-                yeni.as_ptr(),
-                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
-            )
-        };
+        // aynı hacimde atomik ve write-through MoveFileExW ile yapılır;
+        // arada beliren hedef ezilmez (REPLACE_EXISTING yok).
+        nokta(Adim::MoveFileExW).map_err(sar(Adim::MoveFileExW))?;
+        // SAFETY: NUL sonlu yollar çağrı boyunca yaşamda.
+        let sonuc = unsafe { MoveFileExW(eski.as_ptr(), yeni.as_ptr(), MOVEFILE_WRITE_THROUGH) };
         if sonuc != 0 {
             Ok(())
         } else {
-            Err(io::Error::last_os_error())
+            let tasima = io::Error::last_os_error();
+            // Önceki ReplaceFileW kodu da metinde kalır: NotFound iki
+            // çağrıdan hangisinin olduğu ayırt edilir.
+            Err(baglamla(
+                Adim::MoveFileExW,
+                io::Error::new(
+                    tasima.kind(),
+                    format!("{tasima} (önceki ReplaceFileW: {hata})"),
+                ),
+            ))
         }
+    }
+
+    /// Eski bütünü yedekten hedefe atomik write-through taşımayla geri kurar.
+    /// Başarısızsa yedek yerinde kalır; sonraki kilit alımı kurtarır (K-348).
+    fn eskiyi_geri_kur(
+        yedek_genis: &[u16],
+        hedef_genis: &[u16],
+        yedek: &Path,
+        hata: &io::Error,
+    ) -> io::Result<()> {
+        // SAFETY: NUL sonlu yollar geçerli ve çağrı boyunca yaşamda.
+        let geri_alindi = nokta(Adim::YedekGeriAlma).is_ok()
+            && unsafe {
+                MoveFileExW(
+                    yedek_genis.as_ptr(),
+                    hedef_genis.as_ptr(),
+                    MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+                )
+            } != 0;
+        if geri_alindi {
+            return Ok(());
+        }
+        Err(baglamla(
+            Adim::YedekGeriAlma,
+            io::Error::other(format!(
+                "Windows replace başarısız oldu ({hata}); eski dosya `{}` yedeğinde kaldı: {}",
+                yedek.display(),
+                io::Error::last_os_error()
+            )),
+        ))
+    }
+
+    /// K-351: hedef zaten yeni bütündür; yedeğin silinememesi (ör. dış süreç
+    /// paylaşımsız açık tutuyor) yazımı hata yapmaz. Artık yedek, sonraki
+    /// yazımın ya da silmenin kilidi altında temizlenir (`yasam_dongusu`).
+    fn yedegi_sil(yedek: &Path) {
+        let _ = nokta(Adim::YedekSilme).and_then(|()| std::fs::remove_file(yedek));
     }
 
     fn genis_yol(yol: &Path) -> io::Result<Vec<u16>> {

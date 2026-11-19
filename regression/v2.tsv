@@ -49,3 +49,4 @@ ayri-port-birincillik	K-341	dd8820c1a9ba3001bd982ae60807bf60ff741496	9e51868caed
 eszamanli-ekleme-geri-alma	K-346	88b15cddfb46df6ccb4ef74017146c11a732d6cf	-	0.8.0-dev	runtime	native-eszamanli-ekleme	-	-	0	b 1000\nc 1000\nbozuk 0	regression/runtime/eszamanli-ekleme-geri-alma.dil
 isci-grubu-saglik-mirasi	K-345	4c0d7473b05bd5784c1f7fedc3cc8f841161a39f	9e51868caedbf1f1c42ab0b7f050b592f835fb1d	0.8.0-dev	cli	native-isci-saglik-mirasi	-	-	0	miras 0\nasili 0	regression/cli/isci-grubu-saglik-mirasi.dil
 coken-degistirme-kurtarma	K-348	754845cb259cbfc103bd54ffc87c07ebc8325409	-	0.8.0-dev	runtime	native-coken-degistirme	-	-	0	okundu\na-1\na-2\nsonra\na-1\na-2\nb-1\niz 0	regression/runtime/coken-degistirme-kurtarma.dil
+yedek-artigi-diriltmez	K-351	bd55ad227c4409bf74229604cf29615224398e43	-	0.8.0-dev	runtime	native-yedek-artigi	-	-	0	a-1\niz 0\nokunamadı\nson b-1	regression/runtime/yedek-artigi-diriltmez.dil
