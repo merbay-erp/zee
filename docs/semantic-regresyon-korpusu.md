@@ -248,6 +248,18 @@ dosyasını tekil kilitler (K-342 eki). Aynı fazdaki
 bırakmadan kurar (iki değiştirmenin arası); ilk K-342 sürümünün iz tahmini
 burada `okunamadı: …` verir, kilit bariyeri yeni bütünü okur.
 
+## Native çöken değiştirme kipi (K-348)
+
+`runtime` fazındaki `native-coken-degistirme` kipi, Windows CI teşhisinde
+`ReplaceFileW` ortasında öldürülen yazarın bıraktığı durumu Cargo hedef
+klasöründeki geçici projede aynı adlarla kurar: hedef yok, eski bütün
+`.ortak.txt.zee-gecici-4242-1.zee-yedek`te, yayımlanmamış yeni içerik eş
+geçicide. Gerçek native `dil` önce okur, sonra ekler, sonra yeniden okur.
+Çıktı program satırları ve kalan `zee-gecici` iz sayısıdır (`iz <n>`);
+düzeltme öncesi `okunamadı` ve dosya yalnız `b-1` olur. Kurtarma yalnız
+Windows yazarında olduğundan kip Windows dışında görünür ignored durumundadır;
+toplu replay bu kipi atlar.
+
 ## Native eşzamanlı ekleme kipi (K-346)
 
 `runtime` fazındaki `native-eszamanli-ekleme` kipi gerçek native `dil`
