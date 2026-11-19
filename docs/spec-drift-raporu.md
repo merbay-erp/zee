@@ -16,8 +16,8 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/08-kalici-dosya.md` | 5 | 4 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
-| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 15 | 15 | 0 | 0 |
-| `spec/12-web-guvenlik-profili.md` | 36 | 34 | 0 | 2 |
+| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 16 | 16 | 0 | 0 |
+| `spec/12-web-guvenlik-profili.md` | 35 | 33 | 0 | 2 |
 | `spec/13-surumlu-morfoloji-profili.md` | 8 | 8 | 0 | 0 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |

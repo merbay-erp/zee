@@ -55,6 +55,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Geri alınan eylem başka sürecin eklediği satırı silmez (K-346, ADR-075
+  eki):** Bir `eylem` dosyaya yazıp başarısız olunca dosyayı eylem başındaki
+  hâline geri alır. Aynı anda başka bir süreç (ör. çok işçi grubundaki başka
+  bir işçi) aynı dosyaya `ekle` ile satır yazdıysa, geri alma bu başarılı
+  satırı da silebiliyordu: eylemin yedeği yazma kilidi dışında okunuyordu.
+  Yedek artık yazımla aynı kilit altında alınır; araya başka yazar girdiyse
+  geri alma onun satırını ezmek yerine C021 ile görünür biçimde başarısız
+  olur. Eylem dışındaki düz `ekle` zaten kayıpsızdı ve değişmedi (dört süreç ×
+  1000 ekleme 4000/4000). Göç gerekmez; C021 alan program, eylemin kendi
+  yazdıklarının dosyada kaldığını bilmelidir.
 - **Çok işçi sağlık uç noktası asılı kalmaz (K-345, ADR-161 eki):** macOS'ta
   `--web-saglik-port` isteği, grup işçi başlatırken gelirse yanıtı tam
   alıp bağlantının kapanmasını o işçi çıkana dek bekleyebiliyordu (sağlık

@@ -248,6 +248,19 @@ dosyasını tekil kilitler (K-342 eki). Aynı fazdaki
 bırakmadan kurar (iki değiştirmenin arası); ilk K-342 sürümünün iz tahmini
 burada `okunamadı: …` verir, kilit bariyeri yeni bütünü okur.
 
+## Native eşzamanlı ekleme kipi (K-346)
+
+`runtime` fazındaki `native-eszamanli-ekleme` kipi gerçek native `dil`
+süreçlerini Cargo hedef klasöründe kurulan geçici bir projede yarıştırır:
+harness'ın ürettiği iki yazar programı her biri 1000 satırı düz `ekle` ile
+`ortak.txt` dosyasına yazarken iki iş parçacığı regression kaynağını (eylem
+içinde ekleyip başarısız Sonuç döndürür) döngüde yeniden başlatır; eylem
+araya giren yazarı gördüğünde C021 ile çıkar. Yazarlar bitince geri alanlar
+öldürülür. Çıktı `b <satır>`, `c <satır>` ve `bozuk <adet>` (biçim dışı ya da
+yarım son satır) satırlarıdır; düzeltme öncesi kaynakta yazar sayıları
+1000'in altına düşer. Kip tüm platformlarda koşar; toplu replay bu kipi
+atlar, ayrı native libtest vakası boş listeyi reddeder.
+
 ## Native web yükleme kipi (K-332)
 
 `security` fazındaki `native-web-yukleme` kipi fixture'ı Cargo hedef

@@ -9,13 +9,13 @@ Kaynak: `regression/v2.tsv`
 | Faz | Vaka |
 | --- | --- |
 | checker | 4 |
-| cli | 6 |
+| cli | 5 |
 | concurrency | 2 |
 | hir | 4 |
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 10 |
+| runtime | 11 |
 | security | 12 |
 
 | Tanı | Vaka |
@@ -40,8 +40,8 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 17 | 0 | 0 | 17 |
-| orta | 35 | 16 | 2 | 53 |
-| dusuk | 35 | 30 | 1 | 66 |
+| orta | 36 | 16 | 2 | 54 |
+| dusuk | 34 | 30 | 1 | 65 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
 Toplam bulgu: 137.
@@ -62,8 +62,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/08-kalici-dosya.md | 4 | 1 | 0 | 5 | 80 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
-| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 15 | 0 | 0 | 15 | 100 |
-| spec/12-web-guvenlik-profili.md | 34 | 0 | 2 | 36 | 94 |
+| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 16 | 0 | 0 | 16 | 100 |
+| spec/12-web-guvenlik-profili.md | 33 | 0 | 2 | 35 | 94 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 0 | 8 | 100 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |

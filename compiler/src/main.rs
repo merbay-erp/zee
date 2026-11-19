@@ -1946,6 +1946,9 @@ struct EylemDosyaYedegi {
     onceki: Option<Vec<u8>>,
     /// Bu savepoint'in hedefte bıraktığını en son gördüğü bütün içerik.
     beklenen: Option<Vec<u8>>,
+    /// K-346: savepoint'in iki yazımı arasında başka yazar hedefi değiştirdi;
+    /// geri alma onun verisini ezmemek için C021 ile reddedilir.
+    catisma: bool,
 }
 
 impl GercekIo {
@@ -1968,9 +1971,33 @@ impl GercekIo {
                 .or_insert_with(|| EylemDosyaYedegi {
                     onceki: onceki.clone(),
                     beklenen: onceki.clone(),
+                    catisma: false,
                 });
         }
         Ok(())
+    }
+
+    /// K-346: yazım ve önceki içerik aynı kilit penceresinden gelir. İlk
+    /// dokunuş yedeği oradan alır; sonraki dokunuşta önceki içerik savepoint'in
+    /// bıraktığından farklıysa araya başka yazar girmiştir.
+    fn dosya_eylem_degisimi(
+        &mut self,
+        yol: &std::path::Path,
+        degisim: dil::kalici_dosya::KilitliDegisim,
+    ) {
+        for yedek in &mut self.eylem_yedekleri {
+            let kayit = yedek
+                .entry(yol.to_path_buf())
+                .or_insert_with(|| EylemDosyaYedegi {
+                    onceki: degisim.onceki.clone(),
+                    beklenen: degisim.onceki.clone(),
+                    catisma: false,
+                });
+            if kayit.beklenen != degisim.onceki {
+                kayit.catisma = true;
+            }
+            kayit.beklenen = degisim.sonraki.clone();
+        }
     }
 
     fn dosya_eylem_bekleneni(&mut self, yol: &std::path::Path, beklenen: Option<Vec<u8>>) {
@@ -2089,6 +2116,12 @@ impl GercekIo {
         let mut girdiler = yedek.into_iter().collect::<Vec<_>>();
         girdiler.sort_by(|(a, _), (b, _)| a.cmp(b));
         for (yol, kayit) in girdiler {
+            if kayit.catisma {
+                return Err(format!(
+                    "\"{}\" geri yüklenemedi: dosya eylem sırasında başka bir yazar tarafından değiştirildi; geri alma onun verisini ezmedi",
+                    yol.display()
+                ));
+            }
             dil::kalici_dosya::atomik_karsilastir_ve_geri_al(
                 &yol,
                 kayit.beklenen.as_deref(),
@@ -3049,12 +3082,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
-        self.dosya_eylem_yedegini_al(&gercek_yol)?;
-        dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
-            .map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))?;
-        let sonraki = dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&gercek_yol)
-            .map_err(|hata| format!("transaction yazımı doğrulanamadı: {}", hata))?;
-        self.dosya_eylem_bekleneni(&gercek_yol, Some(sonraki));
+        let yazim_hatasi = |hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata);
+        if self.eylem_yedekleri.is_empty() {
+            return dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
+                .map_err(yazim_hatasi);
+        }
+        let degisim = dil::kalici_dosya::atomik_satir_yaz_izli(&gercek_yol, satir, ekleme)
+            .map_err(yazim_hatasi)?;
+        self.dosya_eylem_degisimi(&gercek_yol, degisim);
         Ok(())
     }
     fn dosya_atomik_tasi(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
@@ -3097,15 +3132,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         // doğrula. Var olan hedeflerde symlink/kök denetimi yine dosya_yolu
         // içinde uygulanır.
         let gercek_yol = self.dosya_yolu(yol, true)?;
-        self.dosya_eylem_yedegini_al(&gercek_yol)?;
-        match dil::kalici_dosya::atomik_sil(&gercek_yol) {
-            Ok(true) => {
-                self.dosya_eylem_bekleneni(&gercek_yol, None);
-                Ok(1)
-            }
-            Ok(false) => Ok(0),
-            Err(hata) => Err(format!("\"{}\" dosyası silinemedi: {}", yol, hata)),
+        let silme_hatasi = |hata| format!("\"{}\" dosyası silinemedi: {}", yol, hata);
+        if self.eylem_yedekleri.is_empty() {
+            return dil::kalici_dosya::atomik_sil(&gercek_yol)
+                .map(i64::from)
+                .map_err(silme_hatasi);
         }
+        let degisim = dil::kalici_dosya::atomik_sil_izli(&gercek_yol).map_err(silme_hatasi)?;
+        let silindi = degisim.onceki.is_some();
+        self.dosya_eylem_degisimi(&gercek_yol, degisim);
+        Ok(i64::from(silindi))
     }
     fn dosyalari_listele(&mut self, dizin: &str) -> Result<Vec<String>, String> {
         self.politika
@@ -4928,6 +4964,56 @@ mod web_profili_testleri {
         let mut bayt = [0u8; 1];
         let hata = son_tarihli_soket_oku(&mut istemci, &mut bayt, gecmis).unwrap_err();
         assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
+    }
+
+    /// K-346: eylemin iki yazımı arasına başka bir süreç eklerse geri alma,
+    /// eylem başı yedeğini geri koyup o satırı silmez; C021 ile reddedilir.
+    #[test]
+    fn eylem_geri_almasi_araya_giren_yazarin_eklemesini_ezmez() {
+        let klasor = std::env::temp_dir().join(format!(
+            "zee-k346-eylem-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(&klasor).unwrap();
+        let hedef = klasor.join("ortak.txt");
+        let yol = hedef.to_str().unwrap().to_string();
+        let mut io = GercekIo::yeni_argumanlarla(
+            &klasor,
+            &klasor,
+            WebModu::Kapali,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
+            None,
+            None,
+        );
+        std::fs::write(&hedef, "ilk\n").unwrap();
+
+        io.eylem_baslat().unwrap();
+        io.dosya_yaz(&yol, "a-1", true).unwrap();
+        dil::kalici_dosya::atomik_satir_yaz(&hedef, "b-1", true).unwrap();
+        io.dosya_yaz(&yol, "a-2", true).unwrap();
+        let hata = io.eylem_geri_al().unwrap_err();
+        assert!(hata.mesaj.contains("başka bir yazar"), "{}", hata.mesaj);
+        assert_eq!(
+            std::fs::read_to_string(&hedef).unwrap(),
+            "ilk\na-1\nb-1\na-2\n"
+        );
+
+        // Araya kimse girmezse geri alma eylem başındaki içeriği geri koyar.
+        io.eylem_baslat().unwrap();
+        io.dosya_yaz(&yol, "a-3", true).unwrap();
+        io.dosya_sil(&yol).unwrap();
+        io.eylem_geri_al().unwrap();
+        assert_eq!(
+            std::fs::read_to_string(&hedef).unwrap(),
+            "ilk\na-1\nb-1\na-2\n"
+        );
+        let _ = std::fs::remove_dir_all(&klasor);
     }
 
     #[test]
