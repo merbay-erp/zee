@@ -2503,6 +2503,25 @@ oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
 `web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
 eşzamanlılık 4 / tek istek ≥ 3,5×). GB-133.
 
+## K-344 — Çok işçi testleri yükten bağımsız
+
+**Durum: KAPALI.** Test sağlamlaştırması (ürün davranışı değişmedi): 4×
+paralel yükte `web_cok_surec_testi` master'da 12 koşunun 11'inde düşüyordu.
+Nedenler testteydi: (1) geçici aralıktan seçilen boş kapıyı paralel test
+ikililerinin giden bağlantıları yerel kapı olarak alıyordu (`bos_kapi` artık
+20000–32767'den rastgele başlangıçla tarar ve seçtiği kapıyı paralel test
+ikililerine karşı süreç ömrü boyunca dosya kilidiyle ayırır); (2) K-338 ardışık çökme testi
+başlatmayı yönetici stderr'inden sayıyordu, işçilerin miras stderr çıktısı
+satırı bölüyordu (ikincil kendi dosyasına yazar; fixture yeniden başlatma
+satırı + 1 sayar); (3) 40 sn kapanış testi işçiyi SIGTERM işleyicisi
+kurulmadan dondurabiliyordu ve süreyi SIGTERM'den değil kendi
+beklemesinden ölçüyordu; (4) sağlık okuması tek zaman aşımında düşüyordu
+(sınırlı yeniden deneme); (5) K-341 testi dinleme anında açılış
+günlüğünü okuyordu (üç kaydın varlığı beklenir); stdout okuyucu geçersiz
+UTF-8 satırında sayımı bırakmaz. Kanıt: son kodda 4×3 paralel koşu 12/12,
+6×3 iki tur 36/36.
+Bulunan ürün hatası ayrı: K-345.
+
 ## K-341 — Ayrı portlu süreçlerde birincillik
 
 **Durum: KAPALI.** ADR-161 eki, GB-136: grup dışında elle açılan ayrı

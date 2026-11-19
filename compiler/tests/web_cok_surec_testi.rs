@@ -711,20 +711,77 @@ fn grubu_baslat(kaynak: &Path, kapi: u16, isci: u16, saglik: Option<u16>) -> Sun
     }))
 }
 
+/// Sağlık uç noktası tek iş parçacıklıdır; paralel yükte yanıt bir okuma
+/// zaman aşımını geçebilir. Ayrıca macOS'ta yöneticinin kabul ettiği sağlık
+/// bağlantısı aynı anda başlatılan işçiye miras kalabilir: yanıt tam gelir ama
+/// EOF işçi çıkana dek gelmez (ürün hatası, K-345). Okuma hatası yeni
+/// bağlantıyla yeniden denenir; toplam bütçe cömert ama sınırlıdır.
+const SAGLIK_BUTCESI: Duration = Duration::from_secs(60);
+
+/// İşçi grubunu başlatır; işçilerin stdout satırlarını (stdout satır
+/// tamponludur, satır tek write ile gider) toplar ve yönetici stderr'ini
+/// kaynağın yanındaki `yonetici.log`a yazar (başarısızlık tanısı için).
+#[cfg(unix)]
+fn grubu_dinleyenleri_sayarak_baslat(
+    kaynak: &Path,
+    kapi: u16,
+    isci: u16,
+    saglik: u16,
+) -> (
+    Sunucu,
+    std::sync::Arc<std::sync::Mutex<Vec<String>>>,
+    PathBuf,
+) {
+    use std::os::unix::process::CommandExt;
+    let gunluk = kaynak.with_file_name("yonetici.log");
+    let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args([
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            &kapi.to_string(),
+            "--web-isci-sayisi",
+            &isci.to_string(),
+            "--web-saglik-port",
+            &saglik.to_string(),
+            kaynak.to_str().expect("UTF-8 kaynak yolu"),
+        ])
+        .current_dir(kaynak.parent().expect("kaynak klasörü"))
+        .stdout(Stdio::piped())
+        .stderr(std::fs::File::create(&gunluk).expect("yönetici günlüğü"))
+        .process_group(0)
+        .spawn()
+        .expect("yönetici");
+    let cikti = cocuk.stdout.take().expect("yönetici stdout borusu");
+    let satirlar = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+    let yaz = std::sync::Arc::clone(&satirlar);
+    std::thread::spawn(move || {
+        use std::io::BufRead;
+        let mut okuyucu = std::io::BufReader::new(cikti);
+        let mut tampon = Vec::new();
+        while okuyucu.read_until(b'\n', &mut tampon).unwrap_or(0) > 0 {
+            yaz.lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .push(String::from_utf8_lossy(&tampon).trim_end().to_string());
+            tampon.clear();
+        }
+    });
+    (Sunucu(cocuk), satirlar, gunluk)
+}
+
 #[cfg(unix)]
 fn saglik_oku(kapi: u16) -> (u16, String) {
-    let son = Instant::now() + Duration::from_secs(10);
+    let son = Instant::now() + SAGLIK_BUTCESI;
     loop {
-        if let Ok(mut akis) = TcpStream::connect(("127.0.0.1", kapi)) {
-            akis.set_read_timeout(Some(Duration::from_secs(5))).ok();
-            akis.write_all(b"GET /saglik HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n")
-                .expect("sağlık isteği");
-            let mut yanit = String::new();
-            akis.read_to_string(&mut yanit).expect("sağlık yanıtı");
+        if let Some(yanit) = saglik_ham(kapi, "GET /saglik HTTP/1.1") {
             let govde = yanit.split("\r\n\r\n").nth(1).unwrap_or_default();
             return (durum(&yanit), govde.to_string());
         }
-        assert!(Instant::now() < son, "sağlık portu açılmadı");
+        assert!(
+            Instant::now() < son,
+            "sağlık yanıtı {SAGLIK_BUTCESI:?} içinde alınamadı"
+        );
         std::thread::sleep(Duration::from_millis(20));
     }
 }
@@ -965,14 +1022,25 @@ fn isci_grubu_yonetici_olurse_isciler_dinleyiciyi_birakir() {
 }
 
 #[cfg(unix)]
+/// Bağlantı kurulamazsa (kapı henüz/artık açık değil) hemen `None`. Kurulan
+/// bağlantıda yanıt gelmezse `SAGLIK_BUTCESI` içinde yeniden dener.
 fn saglik_ham(kapi: u16, istek_satiri: &str) -> Option<String> {
-    let mut akis = TcpStream::connect(("127.0.0.1", kapi)).ok()?;
-    akis.set_read_timeout(Some(Duration::from_secs(5))).ok();
-    akis.write_all(format!("{istek_satiri}\r\nHost: 127.0.0.1\r\n\r\n").as_bytes())
-        .ok()?;
-    let mut yanit = String::new();
-    akis.read_to_string(&mut yanit).ok()?;
-    Some(yanit)
+    let son = Instant::now() + SAGLIK_BUTCESI;
+    loop {
+        let mut akis = TcpStream::connect(("127.0.0.1", kapi)).ok()?;
+        akis.set_read_timeout(Some(Duration::from_secs(5))).ok();
+        let mut yanit = String::new();
+        let sonuc = akis
+            .write_all(format!("{istek_satiri}\r\nHost: 127.0.0.1\r\n\r\n").as_bytes())
+            .and_then(|()| akis.read_to_string(&mut yanit));
+        if sonuc.is_ok() && !yanit.is_empty() {
+            return Some(yanit);
+        }
+        if Instant::now() >= son {
+            return None;
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
 }
 
 #[cfg(unix)]
@@ -1003,7 +1071,7 @@ fn isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir() 
             "sahip birincil süreç olsun\n\
              sahip ise\n    toplam 0 olsun\n    1 den 1000000 e kadar her sayı için\n        \
              toplamı sayıyla artır\n\
-             değilse\n    programı 3 ile bitir\n\
+             değilse\n    \"baslatma.log\" dosyasına \"ikincil\" ekle\n    programı 3 ile bitir\n\
              {kapi} kapısında sunucu başlat\n\n\
              GET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"
         ),
@@ -1086,11 +1154,18 @@ fn isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir() 
     let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(90));
     assert_eq!(cikis.code(), Some(1), "{cikis}");
     let metin = std::fs::read_to_string(&gunluk).expect("yönetici günlüğü");
+    // Başlatma sayısı yönetici stderr'inden sayılmaz: işçiler aynı stderr'i
+    // miras alır ve `eprintln!` satırı birden çok write ile yazar; paralel
+    // yükte yeni işçinin açılış satırları yöneticinin "başladı" satırını
+    // böler. Her ikincil çıkmadan önce dosyaya tek satır ekler.
+    let baslatma = std::fs::read_to_string(gecici.0.join("baslatma.log")).unwrap_or_default();
     assert_eq!(
-        metin.matches("zee-web işçi 2 başladı").count(),
+        baslatma.lines().count(),
         10,
         "ikinci yuva tam 10 kez başlamalı (ilk + 9 yeniden):\n{metin}"
     );
+    // Yeniden başlatma satırı, çıkan işçi bittikten ve yenisi başlamadan
+    // yazılır; bölünmez.
     assert_eq!(metin.matches("zee-web işçi 2 (pid ").count(), 9, "{metin}");
     assert!(
         metin.contains("zee-web işçi 2 art arda 10 kez hızlı çıktı; grup durduruluyor"),
@@ -1117,13 +1192,35 @@ fn isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir() {
         format!("{kapi} kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"),
     )
     .expect("kaynak");
-    let mut grup = grubu_baslat(&yol, kapi, 2, Some(saglik));
-    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(120));
+    let (mut grup, cikti, gunluk) = grubu_dinleyenleri_sayarak_baslat(&yol, kapi, 2, saglik);
+    let dinleyen = || {
+        cikti
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .iter()
+            .filter(|s| s.starts_with("Sunucu dinliyor"))
+            .count()
+    };
+    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(150));
+    // `canli` yalnız sürecin var olduğunu söyler. SIGTERM işleyicisi
+    // `sunucu başlat` içinde kurulur; işçi ondan önce dondurulursa iletilen
+    // SIGTERM varsayılan eylemle onu öldürür. İki işçi de dinlemeye geçmeli.
+    let son = Instant::now() + Duration::from_secs(90);
+    while dinleyen() < 2 {
+        assert!(
+            Instant::now() < son,
+            "iki işçi dinlemeye geçmedi; stdout: {:?}\nyönetici: {}",
+            cikti.lock().unwrap_or_else(|e| e.into_inner()),
+            std::fs::read_to_string(&gunluk).unwrap_or_default()
+        );
+        std::thread::sleep(Duration::from_millis(20));
+    }
     let pidler = surecler(&saglik_bekle(saglik, |g| g.contains("\"canli\":2")));
     assert_eq!(pidler.len(), 2);
     assert!(sinyal(pidler[1], "-STOP"));
+    let term_ani = Instant::now();
     assert!(sinyal(grup.0.id(), "-TERM"));
-    let son = Instant::now() + Duration::from_secs(10);
+    let son = Instant::now() + Duration::from_secs(20);
     let kapaniyor = loop {
         let yanit = saglik_ham(saglik, "GET /saglik HTTP/1.1").unwrap_or_default();
         if yanit.contains("\"durum\":\"kapaniyor\"") {
@@ -1133,20 +1230,28 @@ fn isci_grubu_kapanista_bitmeyen_isciyi_40_sn_sonra_sonlandirir() {
         std::thread::sleep(Duration::from_millis(20));
     };
     assert_eq!(durum(&kapaniyor), 503, "{kapaniyor}");
-    let son = Instant::now() + Duration::from_secs(10);
+    let son = Instant::now() + Duration::from_secs(30);
     while sinyal(pidler[0], "-0") {
         assert!(Instant::now() < son, "donmamış işçi SIGTERM ile çıkmalı");
         std::thread::sleep(Duration::from_millis(50));
     }
+    // Yönetici SIGTERM'i term_ani'dan sonra alır; 40 sn dolmadan donmuş işçi
+    // yaşıyor olmalı. Kontrol bütçenin içinde kalmalı ki ölçüm anlamlı olsun.
+    assert!(
+        term_ani.elapsed() < Duration::from_secs(35),
+        "kapanış denetimleri 35 sn'yi aştı: {:?}",
+        term_ani.elapsed()
+    );
     assert!(
         sinyal(pidler[1], "-0"),
         "donmuş işçi süre dolmadan yaşamalı"
     );
-    let (cikis, sure) = grup_cikisini_bekle(&mut grup, Duration::from_secs(60));
+    let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(90));
+    let sure = term_ani.elapsed();
     assert_eq!(cikis.code(), Some(1), "{cikis}");
     assert!(
-        sure >= Duration::from_secs(38),
-        "zorla sonlandırma 40 sn dolmadan yapılmamalı: {sure:?}"
+        sure >= Duration::from_secs(40),
+        "zorla sonlandırma SIGTERM'den 40 sn dolmadan yapılmamalı: {sure:?}"
     );
     assert!(
         !sinyal(pidler[1], "-0"),
@@ -1479,6 +1584,16 @@ fn ayri_portlu_surecler_tek_birincil_secer_ve_acilisi_bekler() {
     let iki = ayri_sureci_ac(&yol, kapi2);
     dinleyene_dek_bekle(kapi1, Duration::from_secs(90));
     dinleyene_dek_bekle(kapi2, Duration::from_secs(90));
+    // Sıra günlükten okunur; dinleme anını değil, üç kaydın varlığını bekle.
+    let son = Instant::now() + Duration::from_secs(30);
+    while gunluk().lines().count() < 3 {
+        assert!(
+            Instant::now() < son,
+            "üç açılış kaydı gelmedi: {:?}",
+            gunluk()
+        );
+        std::thread::sleep(Duration::from_millis(20));
+    }
     assert_eq!(
         gunluk().lines().collect::<Vec<_>>(),
         vec!["açılış başladı", "açılış bitti", "ikincil"],

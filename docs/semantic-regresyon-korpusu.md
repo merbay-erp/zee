@@ -288,7 +288,12 @@ Kaynak koşu başına Cargo hedef klasöründe geçici bir projeye kopyalanır
 (K-341: birincil işçinin `.zee` süreç kilitleri depo ağacına yazılmaz,
 eşzamanlı iki koşu birbirini canlı katılımcı görmez).
 Exit yöneticinin çıkış kodudur; çıktı stderr'den sayılan iki satırdır:
-`yuva 2 başlatma <n>` ve günlükteki `durma <n>`. Fixture'da ikincil yuva her
+`yuva 2 başlatma <n>` ve günlükteki `durma <n>`. Başlatma sayısı yeniden
+başlatma satırlarının (`zee-web işçi 2 (pid …) çıktı`) bir fazlasıdır
+(K-344): işçiler yöneticinin stderr'ini miras alır ve `eprintln!` bir
+satırı birden çok write ile yazdığından yeni işçinin açılış çıktısı
+yöneticinin "başladı" satırını bölebilir; yeniden başlatma satırı ise çıkan
+işçi bittikten, yenisi başlamadan yazılır. Fixture'da ikincil yuva her
 açılışta `programı 3 ile bitir` ile çıkar; düzeltme öncesi kaynakta çıktı
 `yuva 2 başlatma 11` / `durma 10`, düzeltmeyle `10` / `10`'dur. Koşu
 gecikme dizisi nedeniyle ≈28 sn sürer. Yönetici kendi süreç grubunda başlar;
