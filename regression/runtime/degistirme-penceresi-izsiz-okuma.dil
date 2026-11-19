@@ -1,0 +1,8 @@
+# K-342 eki: ReplaceFileW penceresinde yazarın geçici dosya izi görünmese de (iki değiştirmenin arası) okuyucu zee yazma kilidini bekler; paylaşım ihlali (os error 32) yerine yeni bütünü görür.
+
+"başladı" yaz
+sonuç "anlik.txt" dosyasını okumayı dene olsun
+sonuç başarılıysa
+    "okundu " ile sonucun değeri yaz
+değilse
+    "okunamadı: " ile sonucun hatası yaz

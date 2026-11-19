@@ -74,7 +74,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   da "bulunamadı" hatası alabiliyordu. Okuyucu artık süren değiştirmeyi
   tanıyıp bitmesini bekler ve eski ya da yeni içeriğin bütününü görür.
   Gerçekten olmayan dosya eskisi gibi hemen hata verir. Linux ve macOS
-  değişmedi; göç gerekmez.
+  değişmedi; göç gerekmez. Aynı gün akşam bekleme kesinleşti: okuyucu
+  değiştirmeyi tahminle değil, klasörün `.zee-yazma-kilidi` dosyasını
+  paylaşımlı kilitleyerek bekler; yoğun makinede kalan ara sıra paylaşım
+  ihlali hatası da giderildi.
 
 - **Çok işçi grubu çöken işçide söz verilen sınırda durur (K-338, ADR-161
   eki):** `--web-isci-sayisi` ile açılan grupta bir işçi 10 saniye dolmadan
