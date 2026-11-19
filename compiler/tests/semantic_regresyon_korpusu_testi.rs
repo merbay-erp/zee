@@ -18,6 +18,8 @@ mod lsp_utf16_fixture;
 
 #[path = "semantic_regresyon/native_dosya_exdev.rs"]
 mod native_dosya_exdev_fixture;
+#[path = "semantic_regresyon/native_dosya_okuma_penceresi.rs"]
+mod native_dosya_okuma_penceresi_fixture;
 #[path = "semantic_regresyon/native_listener_deadline.rs"]
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
@@ -58,6 +60,7 @@ const KIPLER: &[&str] = &[
     "native-web-kopma",
     "native-dosya-exdev",
     "native-web-yukleme",
+    "native-dosya-okuma-penceresi",
 ];
 
 #[derive(Debug, Clone)]
@@ -215,7 +218,10 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "parser" => matches!(kip, "parser" | "diagnostics" | "run"),
         "checker" | "morphology" => matches!(kip, "compile" | "run" | "diagnostics"),
         "hir" => matches!(kip, "hir" | "definition" | "run"),
-        "runtime" => matches!(kip, "run" | "trace" | "native-dosya-exdev"),
+        "runtime" => matches!(
+            kip,
+            "run" | "trace" | "native-dosya-exdev" | "native-dosya-okuma-penceresi"
+        ),
         "concurrency" => kip == "run",
         "security" => matches!(
             kip,
@@ -326,6 +332,15 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-dosya-exdev" {
         let (cikis, cikti) = native_dosya_exdev_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-dosya-okuma-penceresi" {
+        let (cikis, cikti) =
+            native_dosya_okuma_penceresi_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -676,6 +691,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-web-kopma"
                 | "native-dosya-exdev"
                 | "native-web-yukleme"
+                | "native-dosya-okuma-penceresi"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -924,6 +940,44 @@ fn native_dosya_exdev_regresyonu_gercek_aygit_siniri_ile_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: taşıma sonucu", vaka.ad);
+    }
+}
+
+#[test]
+fn native_dosya_okuma_penceresi_kipi_yalniz_runtime_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-dosya-okuma-penceresi"));
+    assert!(faz_kipi_kabul_eder(
+        "runtime",
+        "native-dosya-okuma-penceresi"
+    ));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-dosya-okuma-penceresi"));
+    }
+}
+
+/// K-342: Windows `ReplaceFileW` penceresi kısa bütçeyi aşsa da gerçek native
+/// `dil` okuyucusu yeni bütünü görür. Unix rename'inde pencere yoktur; sahte
+/// başarı yerine görünür ignored durumundadır.
+#[test]
+#[cfg_attr(
+    not(windows),
+    ignore = "actual Windows ReplaceFileW window unavailable"
+)]
+fn native_dosya_okuma_penceresi_regresyonu_gercek_okuyucu_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-dosya-okuma-penceresi")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native dosya okuma penceresi regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: okuma sonucu", vaka.ad);
     }
 }
 

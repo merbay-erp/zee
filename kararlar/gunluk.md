@@ -5189,3 +5189,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   launcher'ını genişletmek (değer yine env'e dönerdi), Windows'ta aynı yolu
   açmak (DACL sözleşmesi yok; fail-closed). ADR-105 eki, spec/23 §K-339,
   GB-135. Ürün adı ADR-087 gereği anonimdir.
+
+## K-342 — Windows'ta atomik değiştirme sırasında okuyucu hatası (19 Kasım 2026)
+
+- **Olay:** 19.11 Windows CI'da `okuyucu_yalniz_eski_ya_da_yeni_butunu_gorur`
+  `ERROR_SHARING_VIOLATION (32)` ile düştü; aynı commit'in diğer koşusu geçti.
+- **Teşhis (Windows CI, geçici dal):** 400 yazmada `ReplaceFileW` her
+  değiştirmede okuyucuya 2 ve 32 hata penceresi açtı (boşta en uzun ~1,5 ms);
+  POSIX rename sıfır hata verdi. K-182 bütçesi sayıya bağlı 25 × 2 ms
+  (ölçülen ~62 ms) idi; yazar değiştirmenin ortasında kesilince aşıldı. Test
+  değil ürün sözü bozuluyordu: zee programının `dosyasını okumayı dene`
+  çağrısı da aynı yoldan hata alırdı.
+- **Karar:** Kısa bütçe zamana bağlı 50 ms; sonrasında hedefin
+  `.<ad>.zee-gecici-*` geçici/yedek izi durdukça yazma kilidinin 5 sn
+  bütçesine kadar beklenir. Reddedilen: düz uzun bütçe (her olmayan-dosya
+  okuması Windows'ta 5 sn gecikirdi), okuyucunun yazma kilidini alması (salt
+  okunur klasörde kilit dosyası açılamaz, okuyucular yazarları bekletir),
+  `ReplaceFileW` yerine POSIX rename (DACL/named stream taşıma sözü elle
+  yeniden yazılmalı; core freeze altında büyük değişiklik).

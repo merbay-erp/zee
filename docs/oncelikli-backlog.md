@@ -2545,3 +2545,17 @@ yoksa açık hata; ret iletisi değer/yol taşımaz (GB-135). Windows fail-close
 Kanıt: `guvenlik::sir_dizini::testler` (11), `systemd_credential_testi` (3,
 gerçek ikili), dogfood `zee-cekirdek/systemd-credential`. Açık: gerçek
 systemd unit kabulü, rotasyon, ürün unit geçişi.
+
+## K-342 — Windows'ta atomik değiştirme sırasında okuyucu hatası
+
+**Durum: KAPALI.** spec/08 "eski ya da yeni bütün" sözü Windows'ta yük altında
+bozuluyordu: `ReplaceFileW` her değiştirmede okuyucuya hedef-yok (2) ve
+paylaşım ihlali (32) penceresi açar (boşta ~1 ms; POSIX rename'de sıfır).
+K-182'nin sayıya bağlı yeniden denemesi (25 × 2 ms ≈ 62 ms) tam test yükünde
+yazar değiştirmenin ortasında kesilince tükendi; 19.11 Windows CI'da
+`okuyucu_yalniz_eski_ya_da_yeni_butunu_gorur` okuma hatasıyla düştü. Okuyucu
+artık 50 ms'den sonra yalnız hedefin `.<ad>.zee-gecici-*` geçici/yedek izi
+durdukça 5 sn kilit bütçesine kadar bekler. Kanıt: `kalici_dosya::tests`
+(pencere/iz/bütçe vakaları), regression `degistirme-penceresi-okuma`
+(`native-dosya-okuma-penceresi`, Windows), Windows CI 200 koşu döngüsü.
+Açık: zee dışı okuyucular pencereyi yine görebilir (ReplaceFileW sınırı).

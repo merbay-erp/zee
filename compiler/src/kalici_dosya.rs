@@ -193,7 +193,9 @@ fn gecici_dosyayi_acarak(
         let sira = GECICI_SAYACI.fetch_add(1, Ordering::Relaxed);
         let mut ad = OsString::from(".");
         ad.push(dosya_adi);
-        ad.push(format!(".zee-gecici-{}-{}", std::process::id(), sira));
+        // K-342: okuyucu bu eki değiştirme izi olarak tanır.
+        ad.push(crate::kaynak_sinirlari::degistirme_penceresi::ZEE_GECICI_EKI);
+        ad.push(format!("{}-{}", std::process::id(), sira));
         let yol = ebeveyn(hedef).join(ad);
         match ac(&yol) {
             Ok(dosya) => return Ok((dosya, GeciciDosya { yol: Some(yol) })),
@@ -524,6 +526,86 @@ mod tests {
             );
         }
         yazar.join().expect("yazar düşmemeli");
+    }
+
+    /// K-342: yüklü Windows'ta `ReplaceFileW` penceresi 50 ms'yi aşabilir;
+    /// hedefin zee değiştirme izi sürdükçe okuyucu kısa bütçeyle düşmez.
+    #[test]
+    fn okuyucu_suren_degistirme_izinde_kisa_butceyi_asar() {
+        use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
+        let gecici = GeciciKlasor::yeni();
+        let hedef = gecici.0.join("Durum.json");
+        std::fs::write(
+            gecici.0.join(".durum.json.zee-gecici-1-1.zee-yedek"),
+            b"eski",
+        )
+        .unwrap();
+        assert!(
+            pencere::degistirme_izi_var(&hedef),
+            "Windows adları harf duyarsız"
+        );
+        let baslangic = Instant::now();
+        let gecikme = pencere::KISA_BUTCE * 5;
+        let sonuc = pencere::pencereyi_bekleyerek(&hedef, KILIT_BEKLEME, || {
+            match baslangic.elapsed() < gecikme / 2 {
+                true => Err(io::Error::from_raw_os_error(2)),
+                false if baslangic.elapsed() < gecikme => Err(io::Error::from_raw_os_error(32)),
+                false => Ok("yeni bütün"),
+            }
+        });
+        assert_eq!(sonuc.expect("pencere kapanınca okunur"), "yeni bütün");
+        assert!(baslangic.elapsed() >= gecikme);
+    }
+
+    #[test]
+    fn izsiz_ya_da_takili_pencere_sinirli_hata_verir() {
+        use crate::kaynak_sinirlari::degistirme_penceresi as pencere;
+        let gecici = GeciciKlasor::yeni();
+        let hedef = gecici.0.join("yok.txt");
+        // Başka hedefin izi ve klasör yazma kilidi bu hedefin izi sayılmaz.
+        std::fs::write(gecici.0.join(".baska.txt.zee-gecici-1-1"), b"").unwrap();
+        std::fs::write(gecici.0.join(".zee-yazma-kilidi"), b"").unwrap();
+        assert!(!pencere::degistirme_izi_var(&hedef));
+        let baslangic = Instant::now();
+        let hata = pencere::pencereyi_bekleyerek(&hedef, KILIT_BEKLEME, || {
+            Err::<(), _>(io::Error::from_raw_os_error(2))
+        })
+        .expect_err("gerçekten olmayan dosya");
+        assert_eq!(hata.raw_os_error(), Some(2));
+        assert!(
+            baslangic.elapsed() < KILIT_BEKLEME / 2,
+            "izsiz hata kısa bütçede döner"
+        );
+
+        std::fs::write(gecici.0.join(".yok.txt.zee-gecici-9-9"), b"").unwrap();
+        let uzun = pencere::KISA_BUTCE * 4;
+        let baslangic = Instant::now();
+        let hata = pencere::pencereyi_bekleyerek(&hedef, uzun, || {
+            Err::<(), _>(io::Error::from_raw_os_error(32))
+        })
+        .expect_err("takılı iz bütçeyi aşamaz");
+        assert_eq!(hata.raw_os_error(), Some(32));
+        assert!(baslangic.elapsed() >= uzun && baslangic.elapsed() < KILIT_BEKLEME);
+
+        let mut cagri = 0;
+        let hata = pencere::pencereyi_bekleyerek(&hedef, uzun, || {
+            cagri += 1;
+            Err::<(), _>(io::Error::from_raw_os_error(87))
+        })
+        .expect_err("pencere dışı hata");
+        assert_eq!((hata.raw_os_error(), cagri), (Some(87), 1));
+    }
+
+    #[test]
+    fn atomik_yazicinin_gecici_dosyasi_okuyucuya_iz_birakir() {
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("iz.txt");
+        atomik_icerik_yaz(&yol, b"yeni", |gecici_yol, hedef| {
+            assert!(crate::kaynak_sinirlari::degistirme_penceresi::degistirme_izi_var(hedef));
+            std::fs::rename(gecici_yol, hedef)
+        })
+        .expect("yazma");
+        assert!(!crate::kaynak_sinirlari::degistirme_penceresi::degistirme_izi_var(&yol));
     }
 
     #[test]

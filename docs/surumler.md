@@ -38,6 +38,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 **Göç:** Ortamdan geçen bir sırrı credential'a taşırken
 `Environment=`/`EnvironmentFile=` satırındaki aynı adı kaldırın.
 
+### Düzeltilenler
+
+- **Windows'ta yazılırken okunan dosya hata vermez (K-342):** Bir zee
+  programı dosyayı atomik olarak yeniden yazarken başka bir program (ya da
+  aynı programın başka işi) onu `dosyasını okumayı dene` ile okursa, yoğun
+  makinede okuma ara sıra "dosya başka bir işlem tarafından kullanılıyor" ya
+  da "bulunamadı" hatası alabiliyordu. Okuyucu artık süren değiştirmeyi
+  tanıyıp bitmesini bekler ve eski ya da yeni içeriğin bütününü görür.
+  Gerçekten olmayan dosya eskisi gibi hemen hata verir. Linux ve macOS
+  değişmedi; göç gerekmez.
+
 ## 18 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

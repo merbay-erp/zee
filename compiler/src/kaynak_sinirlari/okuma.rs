@@ -64,25 +64,17 @@ fn sinirli_metin_oku(yol: &Path, azami: usize) -> io::Result<String> {
     })
 }
 
-/// Windows'ta `ReplaceFileW` iki yeniden adlandırma arasında hedefi yok
-/// gösterir; sınırlı yeniden deneme spec/08 "eski ya da yeni bütün" sözünü
-/// tutar (K-182). Gerçekten yok olan dosya en çok ~50 ms sonra hata verir.
+/// Windows'ta `ReplaceFileW` penceresinde okuyucu yeniden dener; spec/08
+/// "eski ya da yeni bütün" sözü (K-182, K-342 `degistirme_penceresi`).
 fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
     #[cfg(windows)]
     {
-        let mut kalan = 25u32;
-        loop {
-            match std::fs::File::open(yol) {
-                // ERROR_FILE_NOT_FOUND(2) / PATH_NOT_FOUND(3) / ACCESS_DENIED(5) /
-                // SHARING_VIOLATION(32): son ikisi `Uncategorized` sınıfına düşer,
-                // bu yüzden ham kod eşlenir.
-                Err(hata) if kalan > 0 && matches!(hata.raw_os_error(), Some(2 | 3 | 5 | 32)) => {
-                    kalan -= 1;
-                    std::thread::sleep(std::time::Duration::from_millis(2));
-                }
-                sonuc => return sonuc,
-            }
-        }
+        let uzun = std::time::Duration::from_millis(
+            VARSAYILAN_KAYNAK_SINIRLARI
+                .kalici_dosya()
+                .kilit_bekleme_ms(),
+        );
+        super::degistirme_penceresi::pencereyi_bekleyerek(yol, uzun, || std::fs::File::open(yol))
     }
     #[cfg(not(windows))]
     std::fs::File::open(yol)

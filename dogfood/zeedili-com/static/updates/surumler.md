@@ -5,6 +5,50 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 19 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **systemd credentials (K-339, ADR-105 eki):** `proje.dil` içindeki gizli
+  değer bağları (`gizli_anahtar_değişkeni`, `e_posta_bağlantı_değişkeni`,
+  PostgreSQL bağlantı değişkeni ve `_TLS_CA_PEM` eki,
+  `http_gizli_değişkenleri`) artık systemd credential dosyasından da okunur.
+  Unit dosyasında aynı adı credential kimliği olarak verin:
+
+  ```ini
+  [Service]
+  LoadCredential=UYGULAMA_SMTP_URL:/etc/uygulama/smtp-url
+  LoadCredential=UYGULAMA_GIZLI_ANAHTAR:/etc/uygulama/gizli-anahtar
+  ```
+
+  Değer ortam değişkenine dönüşmez, alt süreçlere miras kalmaz.
+  `CREDENTIALS_DIRECTORY` yoksa davranış değişmez.
+
+### Değişenler
+
+- Aynı ad hem ortamda hem credential dizininde tanımlıysa okuma reddedilir
+  (öncelik seçilmez). Credential dosyası tek satır olmalı (PEM hariç), sonda
+  satır sonu taşımamalı; sembolik bağ, grupça yazılabilir ya da herkesçe
+  okunabilir dosya kabul edilmez. Windows'ta `CREDENTIALS_DIRECTORY`
+  ayarlıysa gizli değer okuması reddedilir.
+
+**Göç:** Ortamdan geçen bir sırrı credential'a taşırken
+`Environment=`/`EnvironmentFile=` satırındaki aynı adı kaldırın.
+
+### Düzeltilenler
+
+- **Windows'ta yazılırken okunan dosya hata vermez (K-342):** Bir zee
+  programı dosyayı atomik olarak yeniden yazarken başka bir program (ya da
+  aynı programın başka işi) onu `dosyasını okumayı dene` ile okursa, yoğun
+  makinede okuma ara sıra "dosya başka bir işlem tarafından kullanılıyor" ya
+  da "bulunamadı" hatası alabiliyordu. Okuyucu artık süren değiştirmeyi
+  tanıyıp bitmesini bekler ve eski ya da yeni içeriğin bütününü görür.
+  Gerçekten olmayan dosya eskisi gibi hemen hata verir. Linux ve macOS
+  değişmedi; göç gerekmez.
+
 ## 18 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
