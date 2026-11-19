@@ -1223,9 +1223,33 @@ fn isci_grubu_zee_ayar_ile_baslar_ve_cli_ezer() {
     let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(45));
     assert!(cikis.success(), "{cikis}");
     drop(grup);
+    // K-341: `/` isteğinde `birincil süreç`i değerlendiren işçiler canlı
+    // kilide katıldı; grup çıkınca çekirdek kilidi hemen bırakmış olmalı.
+    let canli = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(gecici.0.join(".zee/birincil-canli.kilit"))
+        .expect("canlı kilit dosyası");
+    canli
+        .try_lock()
+        .expect("çıkan grubun işçileri canlı kilidi bırakmalı");
+    drop(canli);
 
-    let mut grup = baslat(&["--web-isci-sayisi", "2"]);
-    let govde = saglik_bekle(saglik, |g| g.contains("\"canli\":2"));
+    // İkinci grup taze kapılarla açılır: ilk grubun bıraktığı kapıları aynı
+    // anda koşan başka test ikilisi alabilir (faz matrisinde görülen
+    // "Address already in use" çıkış 1). CLI bayrakları config'i ezer.
+    let (kapi2, saglik2) = (bos_kapi(), bos_kapi());
+    let (kapi2, saglik2) = (kapi2.to_string(), saglik2.to_string());
+    let mut grup = baslat(&[
+        "--web-isci-sayisi",
+        "2",
+        "--web-worker-port",
+        &kapi2,
+        "--web-saglik-port",
+        &saglik2,
+    ]);
+    let saglik2: u16 = saglik2.parse().expect("kapı");
+    let govde = saglik_bekle(saglik2, |g| g.contains("\"canli\":2"));
     assert!(govde.contains("\"isci\":2"), "CLI config'i ezmeli: {govde}");
     assert!(sinyal(grup.0.id(), "-TERM"));
     let (cikis, _) = grup_cikisini_bekle(&mut grup, Duration::from_secs(45));
