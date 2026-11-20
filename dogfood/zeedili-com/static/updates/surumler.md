@@ -67,6 +67,19 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Windows'ta başarılı yazım hata gibi görünmez; yazım hataları adımını
+  söyler (K-351, ADR-032 eki):** Windows'ta zee dosyayı değiştirdikten sonra
+  eski hâlin geçici yedeğini siler. Başka bir program (ör. virüs tarayıcı ya da
+  yedekleme aracı) o yedeği o anda açık tutuyorsa silme başarısız oluyor ve
+  zee, dosya aslında yazılmış olduğu hâlde "dosyaya yazılamadı" diyordu. Artık
+  yazım başarılı sayılır; kalan yedek sonraki yazımda temizlenir. Ayrıca
+  dosyaya yazma hatası iletisi hangi adımda düştüğünü (ör. `yazma kilidi`,
+  `ReplaceFileW`, `geçici dosya yazımı`) belirtir; hata kodu (C013) aynıdır.
+  Nadir bir Windows hatasında eski içeriğin yedeği silinip dosya izin/akış
+  bilgisi taşınmadan değiştirilebiliyordu; artık eski içerik geri konur ve
+  yazım hata verir.
+  Göç gerekmez.
+
 - **Windows'ta yazarken çöken süreç dosyayı kaybettirmez (K-348, ADR-032
   eki):** Windows'ta zee bir dosyayı iki adımda değiştirir. Süreç tam bu iki
   adımın arasında çökerse ya da öldürülürse (servis durdurma, görev
@@ -124,6 +137,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   gruplarda davranış değişmedi; göç gerekmez. Sağlık uç noktasının 503
   `basliyor`/`eksik`/`kapaniyor` durumları, HEAD ve 404 yanıtları ile 40 sn
   kapanış sınırı artık otomatik testle korunur.
+- **zeedili.com kesintisiz yeniden başlatma ve Windows yazım haberleri:** Ana
+  sayfanın gelişmeler bölümüne K-343 systemd soketiyle kesintisiz yeniden
+  başlatma ile K-346/K-348/K-351 Windows dosya yazımı düzeltmeleri eklendi;
+  `/belge/surumler/` sayfası bu kaydın güncel hâlinden yeniden üretildi.
 - **zeedili.com 19 Kasım gelişmeleri:** Ana sayfanın gelişmeler bölümü
   systemd credentials, `zee.ayar` işçi alanları ve çok işçi profilinin
   sağlamlaştırılmasını anar; site worker'ı güncel derleyiciyle koşar.
