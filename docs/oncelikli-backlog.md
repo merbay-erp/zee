@@ -2518,6 +2518,22 @@ temizler. Kanıt: regression `coken-degistirme-kurtarma`
 (kurtarılamayan 0) ve K-346 regresyonu 25 tekrar. Açık sınır: zee dışı silme
 ile ikinci adım sonrası ölen yazarın bayat yedeği aynı anda.
 
+## K-352 — Mixed-revision iptal testi yükten bağımsız
+
+**Durum: KAPALI.** Test sağlamlaştırması (betik ve ürün davranışı değişmedi):
+PR #42 macOS koşusu 44612598865'te K291 hazırlık testi
+`scripts/tests/mixed-revision-test.py::Cases::test_legacy_private_identity_adapter_bounded_and_global_binding_restored`
+iptali 0,325 sn'de gözledi, sınır 0,3 sn idi; aynı SHA diğer koşuda geçti.
+Neden testteydi: `legacy_deadline` uyku döngüsü `stop`'u 20 ms dilimlerle
+denetliyor (sınırı aşan yoklama aralığı değil); 0,3 sn duvar saati sınırı
+`threading.Timer` uyanması ve yüklü koşucudaki iş parçacığı zamanlamasını
+ölçüyordu. Test artık iptali olay olarak doğrular: iptal eden iş parçacığı
+eski betik gerçekten yoklama uykusuna girince `stop`'u kurar; son tarih
+1 saat ileride olduğundan yalnız iptal reddedebilir; her uyku dilimi ≤ 20 ms,
+`stop` sonrası en çok bir dilim başlar ve ret 100 sn'lik uykudan çok önce
+(30 sn içinde) gelir. Kanıt: 0,5 sn dilimli yoklama mutasyonu testi kırar;
+2×çekirdek CPU yükünde 40/40 geçer.
+
 ## K-351 — Kalıcı yazım hatasında adım bağlamı ve silinemeyen yedek
 
 **Durum: KAPALI.** ADR-032 eki, GB-141. Windows CI koşusu 44576442062'de

@@ -14,11 +14,26 @@ class Cases(unittest.TestCase):
             path.write_text('import subprocess\nsubprocess.check_output(["foreign"])\n')
             with self.assertRaises(M.Rejected):run.legacy_deadline(path,root/'bad.json')
             self.assertIs(M.subprocess.check_output,original);self.assertIs(M.sys.argv,argv);self.assertEqual(len(calls),1)
-            path.write_text('import time\ntime.sleep(100)\n');timer=threading.Timer(.02,lambda:setattr(run,'stop',True));start=time.monotonic();timer.start()
-            try:
-                with self.assertRaises(M.Rejected):run.legacy_deadline(path,root/'cancel.json')
-                self.assertLess(time.monotonic()-start,.3);self.assertIs(M.sys.argv,argv)
-            finally:timer.join(1)
+            # K-352: cancellation is an event, not a wall-clock race. The canceller waits until the
+            # legacy sleep is really polling, sets stop, and the poll loop must reject within one
+            # interval (every slice <=20 ms, at most one begun after stop) and well before the 100 s sleep.
+            # Deadline is far, so only stop can reject; no bound on scheduler latency.
+            path.write_text('import time\ntime.sleep(100)\n');run.end=time.monotonic()+3600;real_sleep=M.time.sleep;polling=threading.Event();stopped=threading.Event();after=[];slices=[];at=[]
+            def sleep(seconds):
+                slices.append(seconds)
+                if stopped.is_set():after.append(seconds)
+                polling.set();real_sleep(seconds)
+            def cancel():
+                if polling.wait(60):at.append(time.monotonic());run.stop=True;stopped.set()
+            canceller=threading.Thread(target=cancel,daemon=True)
+            with mock.patch.object(M.time,'sleep',sleep):
+                canceller.start()
+                try:
+                    with self.assertRaises(M.Rejected):run.legacy_deadline(path,root/'cancel.json')
+                    rejected=time.monotonic()
+                finally:polling.set();canceller.join(60)
+            self.assertTrue(stopped.is_set());self.assertFalse(canceller.is_alive());self.assertLessEqual(len(after),1);self.assertTrue(slices and all(0<=v<=.02 for v in slices));self.assertLess(rejected-at[0],30)
+            self.assertIs(M.time.sleep,real_sleep);self.assertIs(M.sys.argv,argv)
 
     def server(self,response):
         sock=socket.socket();sock.bind(('127.0.0.1',0));sock.listen();port=sock.getsockname()[1]
