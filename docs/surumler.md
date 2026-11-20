@@ -137,6 +137,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   gruplarda davranış değişmedi; göç gerekmez. Sağlık uç noktasının 503
   `basliyor`/`eksik`/`kapaniyor` durumları, HEAD ve 404 yanıtları ile 40 sn
   kapanış sınırı artık otomatik testle korunur.
+- **zeedili.com kesintisiz yeniden başlatma ve Windows yazım haberleri:** Ana
+  sayfanın gelişmeler bölümüne K-343 systemd soketiyle kesintisiz yeniden
+  başlatma ile K-346/K-348/K-351 Windows dosya yazımı düzeltmeleri eklendi;
+  `/belge/surumler/` sayfası bu kaydın güncel hâlinden yeniden üretildi.
 - **zeedili.com 19 Kasım gelişmeleri:** Ana sayfanın gelişmeler bölümü
   systemd credentials, `zee.ayar` işçi alanları ve çok işçi profilinin
   sağlamlaştırılmasını anar; site worker'ı güncel derleyiciyle koşar.
