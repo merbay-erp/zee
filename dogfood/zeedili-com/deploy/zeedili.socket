@@ -1,0 +1,12 @@
+# K-343: dinleyiciyi systemd tutar; zeedili.service yeniden başlarken gelen
+# bağlantılar reddedilmez, kuyrukta bekleyip yeni işçi grubunca yanıtlanır.
+# Port, zeedili.service içindeki --web-worker-port ve Nginx proxy_pass ile aynıdır.
+[Unit]
+Description=zeedili.com Zee web dinleyici soketi
+
+[Socket]
+ListenStream=127.0.0.1:8126
+Accept=no
+
+[Install]
+WantedBy=sockets.target

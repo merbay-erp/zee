@@ -1,6 +1,7 @@
 [Unit]
-Description=zeedili.com Zee web worker
-After=network-online.target
+Description=zeedili.com Zee web işçi grubu (K-343 systemd soketi)
+Requires=zeedili.socket
+After=zeedili.socket network-online.target
 Wants=network-online.target
 
 [Service]
@@ -8,10 +9,13 @@ Type=simple
 User=zeedili
 Group=zeedili
 WorkingDirectory=/opt/zeedili
-ExecStart=/opt/zee/bin/dil çalıştır --web-proxy https://zeedili.com --web-worker-port 8126 /opt/zeedili
+ExecStart=/opt/zee/bin/dil çalıştır --web-proxy https://zeedili.com --web-worker-port 8126 --web-isci-sayisi 4 --web-systemd-soketi /opt/zeedili
 Restart=on-failure
 RestartSec=3
-TimeoutStopSec=15
+# SIGTERM yalnız yöneticiye gider; yönetici işçileri boşaltır (K-336/K-360).
+# TimeoutStopSec yöneticinin 40 sn boşaltma süresinden uzun olmalıdır.
+KillMode=mixed
+TimeoutStopSec=50
 KillSignal=SIGTERM
 Environment=RUST_BACKTRACE=0
 NoNewPrivileges=true

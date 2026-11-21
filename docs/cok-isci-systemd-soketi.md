@@ -82,6 +82,11 @@ Etkinleştirme: `systemctl enable --now zee-uygulama.socket`, ardından
 `systemctl start zee-uygulama.service`. Yeniden başlatma
 `systemctl restart zee-uygulama.service`; soket birimi yeniden başlatılmaz.
 
+Depo içi gerçek kullanım: zeedili.com birimleri
+(`dogfood/zeedili-com/deploy/zeedili.socket`, `zeedili.service`) bu
+şablonu sıkı sandbox ayarlarıyla birlikte uygular; ilk geçiş ve geri dönüş
+adımları site README'sindedir.
+
 ## Ölçüm
 
 CI (ubuntu-24.04, gerçek systemd) yukarıdaki şablonlarla birimleri kurar,

@@ -126,9 +126,9 @@ Nginx / sunucu A
    ├── /assets/*, robots.txt, sitemap.xml, webmanifest
    ├── canonical slash ve HEAD→GET upstream normalizasyonu
    ├── CSP/HSTS/COOP/nosniff/referrer/permissions başlıkları
-   └── 127.0.0.1:8126
+   └── 127.0.0.1:8126  (zeedili.socket — dinleyiciyi systemd tutar)
           ▼
-       Zee --web-proxy worker
+       Zee --web-proxy işçi grubu (yönetici + 4 işçi, K-343)
           └── HTML, rotalar, içerik, SEO metadata
 ```
 
@@ -243,12 +243,40 @@ dogfood/zeedili-com/scripts/dagit.sh
 
 Betik önce kaynak/test/statik kapılarını çalıştırır, dosyaları `sunucu A` staging
 alanına taşır ve idempotent sunucu kurulumunu çağırır. `zeedili.service`
-worker'ı `zeedili` sistem kullanıcısıyla ve yalnız `/opt/zeedili/.zee` kalıcı
+işçi grubunu `zeedili` sistem kullanıcısıyla ve yalnız `/opt/zeedili/.zee` kalıcı
 web durumuna yazabilen sıkı systemd sandbox'ında koşar. Nginx yapılandırması
 yalnız sertifika mevcutsa etkinleştirilir. Yerel geliştirme durumunu taşıyan
 `.zee` klasörü staging aktarımından açıkça dışlanır; üretim durumu yalnız sunucu A
 üzerinde doğar ve korunur. Staging alanında önceki koşudan kalmış dışlanan
 durum da her aktarımda silinir.
+
+### Kesintisiz yeniden başlatma (K-343)
+
+Site tek süreçli worker yerine `--web-isci-sayisi 4 --web-systemd-soketi`
+işçi grubuyla çalışır; `127.0.0.1:8126` dinleyicisini `zeedili.socket`
+tutar ([çok işçi systemd soketi](../../docs/cok-isci-systemd-soketi.md)).
+`systemctl restart zeedili.service` ve her `dagit.sh` dağıtımı sırasında
+gelen bağlantılar soket kuyruğunda bekler ve yeni grup tarafından yanıtlanır;
+Nginx 502 görmez. Soket birimi yeniden başlatılmaz.
+
+- `sunucu-kur.sh` iki birimi kurar ve `daemon-reload` sonrası etkin
+  `ExecStart`'ın `--web-isci-sayisi`, `--web-systemd-soketi` ve
+  `--web-worker-port 8126` taşıdığını denetler; ExecStart'ı ezen bir
+  drop-in bunları taşımıyorsa hiçbir şey durdurmadan çıkar.
+- `.zee/` çalışan işçilerin kalıcı web durumudur; kurulum betiği onu
+  özyinelemeli `chown`/`chmod` dışında tutar. Önceki sürüm canlı trafikte
+  işçinin atomik geçici dosyasıyla yarışıp dağıtımı düşürüyordu (VM
+  ölçümünde görüldü).
+- Soket henüz etkin değilse (eski tek süreçli kurulumdan ilk geçiş) hizmet
+  bir kez durdurulup soket açılır; yalnız bu geçişte kısa kesinti olur.
+- `KillMode=mixed`: SIGTERM yalnız yöneticiye gider, kabul edilen istekler
+  tamamlanır (K-336/K-360); `TimeoutStopSec=50` yöneticinin 40 sn boşaltma
+  süresinden uzundur. Kullanıcı ve sandbox ayarları değişmedi.
+- systemd varsayılan başlatma sınırı (10 sn'de 5) korunur: art arda elle
+  yeniden başlatmalar birkaç saniye arayla yapılmalıdır.
+- Geri dönüş: `systemctl stop zeedili.service zeedili.socket`,
+  `systemctl disable zeedili.socket`, önceki tek süreçli birimi geri koyup
+  `daemon-reload` ve `systemctl start zeedili.service`.
 
 ### Public yayın topolojisi
 
