@@ -283,6 +283,19 @@ yeniden yayımlar. Ardından üç istek gönderir; çıktı `başarılı <n>`, `
 ve `diğer <n>` sayılarıdır. Düzeltme öncesi worker durumu kilit dışında okuyup
 CAS ile yayımladığından her turu kaybeder ve `503 3` görülür; düzeltme
 sonrası `başarılı 3`. Toplu replay bu kipi atlar.
+
+## Native işçi kabul/SIGTERM kipi (K-360)
+
+`cli` fazındaki `native-isci-kabul-term` kipi yönetici rolünü harness'a
+verir: ortak dinleyiciyi bağlar, tek birincil işçiyi gerçek grup ortamıyla
+(`ZEE_WEB_ISCI_*`) başlatır. Isınma isteğinden sonra işçinin `dil` iş
+parçacığı dinleyici `poll`'unda ptrace ile yakalanır, bağlantı gönderilir ve
+iş parçacığı başarılı `accept4` dönüşünde durdurulur; sürece giden SIGTERM
+`join` bekleyen ana iş parçacığında işlenip işleyici `futex`'e dönünce iş
+parçacığı bırakılır. Uyku ile eşitleme yoktur. Üç tur; çıktı `korundu <n>`
+ve `kayıp <n>`. Düzeltme öncesi `kayıp 3`, sonrası `korundu 3`. ptrace ve
+`/proc` gerektiğinden kip Linux dışında görünür ignored durumundadır;
+toplu replay bu kipi atlar.
 ## Native eşzamanlı ekleme kipi (K-346)
 
 `runtime` fazındaki `native-eszamanli-ekleme` kipi gerçek native `dil`

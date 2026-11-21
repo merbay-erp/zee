@@ -28,6 +28,8 @@ mod native_dosya_okuma_penceresi_fixture;
 mod native_eszamanli_ekleme_fixture;
 #[path = "semantic_regresyon/native_isci_grubu.rs"]
 mod native_isci_grubu_fixture;
+#[path = "semantic_regresyon/native_isci_kabul_term.rs"]
+mod native_isci_kabul_term_fixture;
 #[path = "semantic_regresyon/native_isci_saglik_mirasi.rs"]
 mod native_isci_saglik_mirasi_fixture;
 #[path = "semantic_regresyon/native_listener_deadline.rs"]
@@ -83,6 +85,7 @@ const KIPLER: &[&str] = &[
     "native-coken-degistirme",
     "native-yedek-artigi",
     "native-web-depo-cekismesi",
+    "native-isci-kabul-term",
 ];
 
 #[derive(Debug, Clone)]
@@ -269,6 +272,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-isci-grubu"
                 | "native-ayri-port-birincil"
                 | "native-isci-saglik-mirasi"
+                | "native-isci-kabul-term"
         ),
         "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
         _ => false,
@@ -361,6 +365,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-yukleme" {
         let (cikis, cikti) = native_web_yukleme_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-isci-kabul-term" {
+        let (cikis, cikti) = native_isci_kabul_term_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -800,6 +812,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
                 | "native-web-depo-cekismesi"
+                | "native-isci-kabul-term"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1108,6 +1121,40 @@ fn native_isci_saglik_mirasi_regresyonu_gercek_yonetici_ile_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: 32 işçi canlı", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: miras/asılı", vaka.ad);
+    }
+}
+
+#[test]
+fn native_isci_kabul_term_kipi_yalniz_cli_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-isci-kabul-term"));
+    assert!(faz_kipi_kabul_eder("cli", "native-isci-kabul-term"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "cli") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-isci-kabul-term"));
+    }
+}
+
+/// K-360: grup işçisi kabul ile SIGTERM denetimi arasına düşen bağlantıyı
+/// düşürmez; ortak dinleyicide kabul edilen istek yanıtlanır.
+#[test]
+#[cfg_attr(
+    not(target_os = "linux"),
+    ignore = "Linux ptrace accept window capability unavailable"
+)]
+fn native_isci_kabul_term_regresyonu_gercek_isci_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-isci-kabul-term")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "işçi kabul/SIGTERM regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: kayıpsız kabul", vaka.ad);
     }
 }
 

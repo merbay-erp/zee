@@ -281,3 +281,36 @@ bloklardan üretir.
 - Dil yüzeyi: `profil cli-web-systemd-soketi`, `profil zee-ayar.systemd-soketi`
   (ADR-064). Grammar, tanı kodu ve `dil::api::v1` değişmedi. Güvenlik sınırı
   GB-140.
+
+## Ek — K-360: kabul ile SIGTERM denetimi arasındaki bağlantı (21 Kasım 2026)
+
+K-353 sonrası kalan sıfır kayıp boşluğu: işçinin istek döngüsü kabul sonrası
+kapanış denetiminde yalnız ADR-118 native profilini "paylaşılan dinleyici"
+sayıyordu. K-336 grup işçisi (`adopt_group`) dinleyicinin yalnız bir
+kopyasını tutar, ama kod onu tek süreçli doğrudan bind gibi ele alıyordu:
+kabul ile denetim arasına SIGTERM düşerse kabul edilmiş akış düşürülüyordu.
+Tek süreçte bu doğruydu (dinleyici de kapanır, K-253); grupta ortak
+dinleyici yöneticide/systemd'de açık kaldığından bağlantı yalnız o istek
+için kayboluyordu. Pencere birkaç mikrosaniyedir; K-343 ölçümünde
+gözlenmedi.
+
+Karar: devralınan her dinleyici (native profil ve işçi grubu) paylaşılan
+sayılır. Paylaşılan dinleyicide başarılı kabul admission noktasıdır:
+kabul edilen istek mevcut bütçelerle yanıtlanır, bir sonraki `istek_al`
+döngü başı denetimi kabulü durdurur ve işçinin kopyasını kapatır. Doğrudan
+bind tek süreç K-253 sınırını korur.
+
+- Reddedilen: kabul edilen akışı yöneticiye geri devretmek (yeni fd
+  kanalı/protokol, aynı sonucu daha geniş yüzeyle verir); SIGTERM'i
+  kabulden önce maskeleyip sonra açmak (her istekte iki sistem çağrısı,
+  pencereyi kaldırmaz yalnız taşır).
+- Kanıt: `web_profili_testleri::grup_iscisi_kabul_sonrasi_term_istegi_tamamlar`
+  (gerçek `sunucu_kur` grup devralma yolu, test kancasıyla kabulden hemen
+  sonra gerçek SIGTERM; düzeltme öncesi "kabul edilen grup isteği
+  düşürüldü"), regression `cli/isci-kabul-term-penceresi`
+  (`native-isci-kabul-term`, Linux: harness ptrace ile işçiyi başarılı
+  `accept4` dönüşünde durdurur, SIGTERM'in ana iş parçacığında işlendiğini
+  görünce bırakır; eski `kayıp 3`, yeni `korundu 3`), Linux systemd soket
+  ölçümü tekrarları.
+- Dil yüzeyi, grammar, tanı ve `dil::api::v1` değişmedi. Güvenlik sınırı
+  GB-143.
