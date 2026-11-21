@@ -10,6 +10,11 @@ bağını bu kaynak yüzeyine eklemiştir.
   `hesap_araclari.dil` dosyasını bağlar; bulunamazsa A010.
 - Birim adı tanımlayıcı kurallarına uyar (tire kullanılamaz — RFC-0009
   dosya adı notu).
+- Birim adı dosya adıyla NFC'de birebir eşleşmek ZORUNDADIR (K-363). Büyük/
+  küçük harf duyarsız dosya sistemi (macOS APFS, Windows NTFS) `çay` için
+  `Çay.dil`'i açsa da bağlanmaz; yalnız harfi ya da Unicode biçimi farklı
+  dosya her platformda aynı A010 tanısıdır. NFD saklanmış `çay.dil` aynı
+  kimliktir ve her platformda bağlanır.
 - Kullanan dosya, birimin **tanımlarını** (işlem, yapı) görür; birimin
   **üst düzey cümleleri kapsüllüdür** — kullananın çıktısına karışmaz.
 - Birimin testleri `dil dene` kapsamına `birim: <ad>` önekiyle katılır.
@@ -81,6 +86,10 @@ içerik, mtime ve izin yazımı YASAKTIR. Varsayılan `biçimle` yazma kipi sür
   `yerel_bağımlılıklar` üyesi X'in giriş kaynağını bağlar; yoksa A011.
 - Paket adı bağımlı bildirimin `proje` alanıdır ve küçük harfli tek
   Türkçe/Latin tanımlayıcı olmalıdır. Grafikte adlar benzersizdir (P007).
+  Alfabe lexer'ın tanımlayıcı kümesidir (ASCII küçük harf/rakam, `_`,
+  `ç ğ ı ö ş ü â î û`; rakamla başlamaz). Başka yazıdan homoglif (Kiril `р`,
+  Yunan `ρ`), birleştirici im, bağ harfi ve görünmez biçim karakteri
+  yerel bağımlılıkta P007, uzak bağımlılıkta P017'dir (K-363).
 - Paket de birim gibi yalnız işlem/yapı/test tanımlarını dışarı verir; üst
   düzey cümleleri çalışmaz. Paket içi birim, onu kullanan gerçek dosyanın
   klasöründen çözülür.

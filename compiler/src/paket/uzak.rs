@@ -51,6 +51,9 @@ impl RegistryCozumPolitikasi {
                 gerekce.trim().is_empty()
                     || gerekce.len() > 1024
                     || gerekce.chars().any(char::is_control)
+                    || gerekce
+                        .chars()
+                        .any(crate::artefakt_dogrulama::gorunmez_bicim_imi)
             }) {
                 return Err(format!(
                     "{} gerekçesi boş, denetim karakterli veya 1024 byte'tan uzun olamaz.",

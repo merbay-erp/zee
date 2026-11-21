@@ -53,7 +53,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/lib.rs::kaynagi_tanilari_kokenlerle#1` | 100→1 (-99/+10) | 10→1 (-9/+2) | İYİLEŞTİ |
 | `compiler/src/lib.rs::kaynagi_tanilari_oturumlu#1` | 106→106 (+0/+11) | 11→11 (+0/+3) | SABİT |
 | `compiler/src/lsp.rs::mesaj_isle#1` | 195→209 (+14/+20) | 12→12 (+0/+3) | PAY İÇİNDE |
-| `compiler/src/lsp.rs::yeniden_adlandirma_plani#1` | 81→82 (+1/+9) | 12→12 (+0/+3) | PAY İÇİNDE |
+| `compiler/src/lsp.rs::yeniden_adlandirma_plani#1` | 81→80 (-1/+9) | 12→12 (+0/+3) | İYİLEŞTİ |
 | `compiler/src/lsp/esitleme.rs::degisim_parametreleri#1` | 39→39 (+0/+8) | 13→13 (+0/+3) | SABİT |
 | `compiler/src/main.rs::cikar_komutu#1` | 99→99 (+0/+10) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/main.rs::dene_komutu#1` | 80→80 (+0/+8) | 11→11 (+0/+3) | SABİT |

@@ -1,0 +1,7 @@
+# K-363: "çay birimini kullan" büyük/küçük harf duyarsız dosya sisteminde
+# Çay.dil'i bağlıyor, Linux'ta bulamıyordu; NFD saklanan ad Linux'ta
+# bulunamıyordu. Bu kaynak harness'in farklı adlarla yazdığı birimdir.
+# senaryo: birim-harf-farki
+işlem selam ver
+    değer döndürmez
+    "merhaba" yaz

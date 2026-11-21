@@ -1,0 +1,5 @@
+# K-363: paket adı denetimi `is_alphabetic` kullanıyordu; Kiril/Yunan homoglifi
+# (görünüşte "paket"), CJK, bağ harfi ve birleştirici im spec/07'nin
+# "küçük harfli tek Türkçe/Latin tanımlayıcı" kuralına rağmen kabul ediliyordu.
+# senaryo: paket-adi
+1 yaz

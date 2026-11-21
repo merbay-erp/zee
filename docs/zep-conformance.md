@@ -34,18 +34,26 @@ beklenen hex'i yenilemek yasaktır.
 
 ## Kalıcı saldırı korpusu
 
-`compiler/tests/fixtures/zep-saldiri-korpusu/yollar-v1.tsv` 80 vaka taşır:
+`compiler/tests/fixtures/zep-saldiri-korpusu/yollar-v1.tsv` 81 vaka taşır:
 
 - üst dizin, mutlak yol, ters bölü, boş/`.` bileşen, NUL ve denetim karakteri;
 - NFD Türkçe yol;
 - Unicode 17.0 UTS #39 `/`, `\\`, `.`, `:` benzerleri ve tam genişlikli
   eşleri;
-- sıfır genişlikli ve çift yönlü metin biçim denetleyicileri.
+- sıfır genişlikli ve çift yönlü metin biçim denetleyicileri (K-363: Arap harf
+  işareti ALM U+061C dahil; Unicode'un 12 bidi biçim karakterinin tamamı).
 
 Korpus kod noktalarını hex yazar; böylece görünmez saldırı karakterleri belge
-incelemesini yanıltmaz. Test veri satırı sayısını da `80`e sabitler. Uzunluk,
+incelemesini yanıltmaz. Test veri satırı sayısını da `81`e sabitler. Uzunluk,
 dosya sayısı, yinelenen/sırasız yol, beklenmedik son ve UTF-8 gövde saldırıları
 ayrı yapısal testlerde üretilir.
+
+K-363'ten beri büyük/küçük harf katlamasından (tam büyük → tam küçük harf →
+NFC) sonra aynı olan, farklı yazılmış iki yol ya da klasör öneki (`A.dil` /
+`a.dil`, `K/` / `k/`, `ı` / `i`) üreticide ve tüketicide reddedilir; bu kontrol
+`artefakt_dogrulama::testler::harf_katlama_cakismasi_uretici_ve_tuketicide_reddedilir`
+ve kurulum testindedir. Böylece büyük/küçük harf duyarsız dosya sistemi
+(macOS APFS, Windows NTFS) aynı arşivi Linux'tan farklı açamaz.
 
 ## Yerel doğrulama
 

@@ -29,13 +29,13 @@ kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
 lib	adapter	agac,ayristirici,cozumleyici,faz,tani,yorumlayici	Dis derleme ve yurutme cephesi
-lsp	adapter	agac,ayristirici,bicimleyici,faz,hir,kaynak_sinirlari,kimlik,lib,morfoloji,paket,proje,surum,tani	Editor protokolu ve semantic sorgular
+lsp	adapter	agac,ayristirici,bicimleyici,faz,hir,kaynak_sinirlari,kimlik,lib,morfoloji,paket,proje,sozcukleyici,surum,tani	Editor protokolu ve semantic sorgular
 morfoloji	sozdizimi	guvenlik	Surumlu Turkce ek profili
 ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,artefakt_dogrulama,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,registry,sozcukleyici,tani	Paket grafigi ve kilit cozumu
 paket_modeli	model	-	Paket yayin ve registry icin davranissiz ortak veri sozlesmesi
 postgresql	altyapi	guvenlik,kaynak_sinirlari,veritabani_modeli	Sinirli PostgreSQL tasimasi ve migration uygulayicisi
-proje	proje	agac,bicimleyici,faz,morfoloji,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
+proje	proje	agac,bicimleyici,faz,morfoloji,sozcukleyici,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
 registry	proje	ag_istemcisi,artefakt_dogrulama,guvenlik,kalici_dosya,kaynak_sinirlari,morfoloji,paket_modeli,yetkinlik	Registry metadata ve cache zinciri
 semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma

@@ -26,6 +26,24 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Paket ve birim adlarında Unicode kimliği sıkılaştı (K-363, GB-146):**
+  Paket adı yalnız küçük Türkçe/Latin tanımlayıcı olabilir; Kiril/Yunan
+  benzeri harf (`раket`), CJK, bağ harfi ve birleştirici im yerel
+  bağımlılıkta P007, `dil ekle`de P017'dir. `.zep` paketi yalnız büyük/küçük
+  harfi farklı iki dosya ya da klasör (`A.dil`/`a.dil`) ve Arap harf işareti
+  (U+061C) taşıyamaz; böyle paket her platformda kurulumdan önce reddedilir.
+  `çay birimini kullan` artık yalnız `çay.dil` dosyasını bağlar: macOS ve
+  Windows'ta `Çay.dil` sessizce yüklenmez, her platformda aynı A010 tanısı
+  verilir. Editörde yeniden adlandırma derlenmeyecek bir ad (başka alfabe,
+  rakamla başlayan) önermez. `--yanked-kabul`/`--kritik-kabul` gerekçesi ve
+  registry duyuru kimliği görünmez yön/sıfır genişlikli karakter taşıyamaz.
+  Paket kurulumu ve registry cache yayınının eşzamanlılık ve süre sınırları
+  ayrıca test kanıtı aldı (davranış değişmedi).
+
+  **Göç:** Birim dosyasının adı `kullan` satırındaki adla büyük/küçük harfiyle
+  aynı olmalı (`Çay.dil` → `çay.dil`). Başka alfabeli paket adını Türkçe/Latin
+  harfle yeniden adlandır.
+
 - **P33 güvenlik kanıtı genişledi (K-362, GB-109):** Native HTTP istek
   ayrıştırıcısı bağımsız bir ayrıştırıcıyla (`httparse`, yalnız testte)
   karşılaştırılır: zee onun reddettiği hiçbir isteği kabul etmez, kabul

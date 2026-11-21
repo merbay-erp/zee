@@ -1040,11 +1040,12 @@ fn yeniden_adlandirma_plani(
     let varlik = semantik_varlik_bul(&program, metin, satir, sutun)?;
     let hir = program.hir();
 
+    // K-363: yeni ad lexer'ın kabul edeceği tanımlayıcı olmalı; aksi hâlde
+    // yeniden adlandırma Kiril homoglifi (S028) ya da rakamla başlayan ad
+    // gibi derlenmeyen kaynak üretir.
     let tek_ad_gecerli = |ad: &str| {
-        !ad.is_empty()
-            && ad
-                .chars()
-                .all(|karakter| karakter.is_alphanumeric() || karakter == '_')
+        ad.chars().next().is_some_and(|ilk| !ilk.is_ascii_digit())
+            && ad.chars().all(crate::sozcukleyici::harf_gecerli)
     };
     let islem_adi_gecerli = |ad: &str| {
         !ad.is_empty()

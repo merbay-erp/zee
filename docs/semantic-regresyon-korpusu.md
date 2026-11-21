@@ -297,6 +297,24 @@ targets sürümü ya da tanı kodu ve son kalıcı targets sürümüdür. Düzel
 öncesi `aynı zincir başarılı 1`, `ileri P016 durum 3`, `geri P016 durum 4`,
 `çelişki P016 durum 3`. Toplu replay bu kipi atlar.
 
+## Native Unicode kimlik kipi (K-363)
+
+`security` fazındaki `native-unicode-kimlik` kipi vakanın `# senaryo: <ad>`
+başlığıyla tek arızayı seçer; büyük/küçük harf yalnız-farklı dosyalar ve
+görünmez biçim karakterli adlar depoya güvenle alınamadığından senaryo verisi
+`CARGO_TARGET_TMPDIR` altında çalışma anında üretilir. Senaryolar:
+`paket-adi` (`UzakBagimlilik::ayristir`), `zep-harf-katlama` ve `zep-alm`
+(ham `.zep` + `paket_arsivini_kur`; çıktı kurulum sonucu ve yayın adının
+varlığı), `birim-harf-farki` (gerçek `dil çalıştır`; vaka kaynağı birimin
+kendisidir, `Çay.dil`, NFD `çay.dil` ve tam ad olarak yazılır), `lsp-yeni-ad`
+(`lsp::Sunucu` rename) ve `kabul-gerekcesi` (`RegistryCozumPolitikasi`).
+Düzeltme öncesi macOS ölçümü: paket adı ve gerekçede her homoglif/bidi
+`kabul`; `.zep` harf çakışması `dosya sistemi hatası` (klasör çakışmasında
+yayın adı bozuk ağaçla `kurulum var` kalıyordu), ALM `kuruldu`; `Çay.dil`
+`çıkış 0 merhaba`; LSP her adı `düzenleme 2`. Linux'ta öncesi harf çakışması
+`kuruldu`, `Çay.dil` ve NFD birim `A010 bulunamadı` idi. Toplu replay bu kipi
+atlar.
+
 ## Native işçi kabul/SIGTERM kipi (K-360)
 
 `cli` fazındaki `native-isci-kabul-term` kipi yönetici rolünü harness'a

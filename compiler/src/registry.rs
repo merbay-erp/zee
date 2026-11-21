@@ -997,6 +997,9 @@ fn guvenli_kimlik(kimlik: &str, ad: &str) -> Result<(), RegistryHatasi> {
         || kimlik.len() > 256
         || kimlik.trim() != kimlik
         || kimlik.chars().any(char::is_control)
+        || kimlik
+            .chars()
+            .any(crate::artefakt_dogrulama::gorunmez_bicim_imi)
         || kimlik.contains(['/', '\\', ':'])
     {
         return Err(RegistryHatasi::metadata(format!("{} güvenli değil.", ad)));
@@ -1009,6 +1012,9 @@ fn gecerli_paket_adi(ad: &str) -> bool {
         && ad.len() <= 128
         && ad.trim() == ad
         && !ad.chars().any(char::is_control)
+        && !ad
+            .chars()
+            .any(crate::artefakt_dogrulama::gorunmez_bicim_imi)
         && !ad.contains(['@', '/', '\\', ':'])
 }
 
@@ -1546,6 +1552,29 @@ mod testler {
                 },
             )
             .is_ok());
+    }
+
+    /// K-363: targets'taki paket adı ve duyuru kimliği ekrana/kilide yazılır;
+    /// `char::is_control` yalnız Cc'yi kapsadığından bidi/sıfır genişlikli
+    /// Cf karakterleri önceden geçiyordu.
+    #[test]
+    fn registry_adi_ve_kimligi_gorunmez_bicim_karakteri_tasiyamaz() {
+        assert!(gecerli_paket_adi("miras"));
+        assert!(guvenli_kimlik("ZSA-2026-0001", "duyuru kimliği").is_ok());
+        for karakter in [
+            '\u{061c}', '\u{200b}', '\u{200d}', '\u{202e}', '\u{2067}', '\u{feff}',
+        ] {
+            let metin = format!("mi{karakter}ras");
+            assert!(!gecerli_paket_adi(&metin), "U+{:04X}", karakter as u32);
+            assert!(
+                guvenli_kimlik(&metin, "duyuru kimliği")
+                    .unwrap_err()
+                    .mesaj
+                    .contains("güvenli değil"),
+                "U+{:04X}",
+                karakter as u32
+            );
+        }
     }
 
     #[test]

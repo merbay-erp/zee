@@ -42,6 +42,8 @@ mod native_listener_deadline_fixture;
 mod native_metric_stdio_fixture;
 #[path = "semantic_regresyon/native_registry_durum_cekismesi.rs"]
 mod native_registry_durum_cekismesi_fixture;
+#[path = "semantic_regresyon/native_unicode_kimlik.rs"]
+mod native_unicode_kimlik_fixture;
 #[path = "semantic_regresyon/native_web_depo_cekismesi.rs"]
 mod native_web_depo_cekismesi_fixture;
 #[path = "semantic_regresyon/native_web_kopma.rs"]
@@ -95,6 +97,7 @@ const KIPLER: &[&str] = &[
     "native-eszamanli-tasima",
     "native-eszamanli-paket-ekle",
     "native-registry-durum-cekismesi",
+    "native-unicode-kimlik",
 ];
 
 #[derive(Debug, Clone)]
@@ -275,6 +278,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-web-yukleme"
                 | "native-web-depo-cekismesi"
                 | "native-registry-durum-cekismesi"
+                | "native-unicode-kimlik"
         ),
         "cli" => matches!(
             kip,
@@ -442,6 +446,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     if vaka.kip == "native-registry-durum-cekismesi" {
         let (cikis, cikti) =
             native_registry_durum_cekismesi_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-unicode-kimlik" {
+        let (cikis, cikti) = native_unicode_kimlik_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -854,6 +866,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-eszamanli-tasima"
                 | "native-eszamanli-paket-ekle"
                 | "native-registry-durum-cekismesi"
+                | "native-unicode-kimlik"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1412,6 +1425,40 @@ fn native_registry_durum_cekismesi_regresyonu_gercek_yarisla_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: uzlaşan durum", vaka.ad);
+    }
+}
+
+#[test]
+fn native_unicode_kimlik_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-unicode-kimlik"));
+    for faz in FAZLAR {
+        assert_eq!(
+            faz_kipi_kabul_eder(faz, "native-unicode-kimlik"),
+            *faz == "security",
+            "{faz}"
+        );
+    }
+}
+
+/// K-363: paket/birim/yeniden adlandırma kimlikleri Unicode biçimine göre
+/// platformdan bağımsız kabul/ret verir; her vaka tek senaryoyu seçer.
+#[test]
+fn native_unicode_kimlik_regresyonlari_calisma_aninda_uretilen_adlarla_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-unicode-kimlik")
+        .collect();
+    assert_eq!(
+        vakalar.len(),
+        6,
+        "K-363 regresyonları gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: kimlik kararı", vaka.ad);
     }
 }
 

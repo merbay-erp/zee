@@ -51,7 +51,11 @@ impl Token {
 
 /// Tanımlayıcılarda geçerli karakterler: ASCII harf/rakam, alt çizgi,
 /// Türkçe harfler ve Türkçe yazımda kullanılan şapkalı ünlüler (kâr, îma).
-fn harf_gecerli(k: char) -> bool {
+/// Tanımlayıcı alfabesi (RFC-0002 §2): ASCII harf/rakam, `_`, Türkçe harfler
+/// ve şapkalı ünlüler. Paket/birim adı (spec/07) ve LSP yeniden adlandırma
+/// (K-363) aynı kümeyi kullanır; böylece kaynağa yazılamayacak bir ad başka
+/// yoldan kimlik olamaz.
+pub(crate) fn harf_gecerli(k: char) -> bool {
     k.is_ascii_alphanumeric() || k == '_' || "çÇğĞıİöÖşŞüÜâÂîÎûÛ".contains(k)
 }
 

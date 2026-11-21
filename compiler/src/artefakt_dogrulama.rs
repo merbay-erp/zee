@@ -11,6 +11,7 @@ use crate::proje::{bildirimi_oku, ProjeBildirimi};
 use ed25519_dalek::{Signature, Signer, SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Component, Path};
@@ -352,6 +353,49 @@ fn kaynak_yollarini_sirala_ve_cakismayi_denetle(
             "Paket kaynaklarında NFC normalizasyonundan sonra çakışan dosya yolları var.".into(),
         );
     }
+    harf_katlama_cakismasini_denetle(girdiler.iter().map(|girdi| girdi.yol.as_str()))
+}
+
+/// K-363: büyük/küçük harf duyarsız dosya sistemleri (macOS APFS varsayılanı,
+/// Windows NTFS) `A.dil` ile `a.dil`'i ya da `K/` ile `k/` klasörünü aynı
+/// girdiye açar. Önceden böyle bir arşiv Linux'ta kuruluyor, macOS/Windows'ta
+/// ham işletim sistemi hatasıyla düşüyordu; paket kimliği platforma bağlıydı.
+/// Katlama tam büyük harf → tam küçük harf → NFC'dir (`ı`/`i`/`İ`, `ß`/`ss`
+/// gibi dosya sistemine göre değişen eşleşmeleri de kapsar); farklı yazılmış
+/// iki yol ya da klasör öneki aynı katlamaya düşerse arşiv reddedilir.
+fn harf_katlama_cakismasini_denetle<'a>(
+    yollar: impl IntoIterator<Item = &'a str>,
+) -> Result<(), String> {
+    let katla = |metin: &str| {
+        metin
+            .chars()
+            .flat_map(char::to_uppercase)
+            .flat_map(char::to_lowercase)
+            .nfc()
+            .collect::<String>()
+    };
+    let mut gorulen = BTreeMap::<String, String>::new();
+    for yol in yollar {
+        for (konum, _) in yol
+            .match_indices('/')
+            .chain(std::iter::once((yol.len(), "")))
+        {
+            let onek = &yol[..konum];
+            match gorulen.entry(katla(onek)) {
+                Entry::Vacant(bos) => {
+                    bos.insert(onek.to_string());
+                }
+                Entry::Occupied(dolu) if dolu.get() != onek => {
+                    return Err(format!(
+                        "Paket yolları büyük/küçük harf duyarsız dosya sisteminde çakışıyor: {:?} ve {:?}.",
+                        dolu.get(),
+                        onek
+                    ));
+                }
+                Entry::Occupied(_) => {}
+            }
+        }
+    }
     Ok(())
 }
 
@@ -420,6 +464,7 @@ fn arsivi_oku(arsiv: &[u8]) -> Result<BTreeMap<String, Vec<u8>>, String> {
     if !okuyucu.bitti() {
         return Err("Paket son girdiden sonra fazladan byte taşıyor.".into());
     }
+    harf_katlama_cakismasini_denetle(sonuc.keys().map(String::as_str))?;
     Ok(sonuc)
 }
 
@@ -581,7 +626,20 @@ fn guvensiz_unicode_yol_imi(karakter: char) -> bool {
             | '\u{11dd9}'
             | '\u{2a74}'
             | '\u{29f4}'
-            // Görünmez/bidi biçim denetleyicileri.
+    ) || gorunmez_bicim_imi(karakter)
+}
+
+/// Görünmez/bidi biçim denetleyicileri: Unicode'un 12 bidi biçim
+/// karakterinin tamamı (ALM U+061C, LRM/RLM, LRE–RLO, LRI–PDI), sıfır
+/// genişlikli boşluk/birleştiriciler, görünmez işleçler ve BOM. `char::
+/// is_control` yalnız Cc'yi kapsar; bu Cf karakterleri terminalde ve
+/// incelemede metni görünenden farklı sıraya dizer (Trojan Source). K-363:
+/// U+061C önceden kümede yoktu; registry kimlikleri ve kabul gerekçeleri
+/// de aynı kümeyi reddeder.
+pub(crate) fn gorunmez_bicim_imi(karakter: char) -> bool {
+    matches!(
+        karakter,
+        '\u{061c}'
             | '\u{200b}'..='\u{200f}'
             | '\u{202a}'..='\u{202e}'
             | '\u{2060}'..='\u{206f}'
@@ -945,7 +1003,7 @@ mod testler {
             );
             sayi += 1;
         }
-        assert_eq!(sayi, 80, "korpus satırı sessizce kaybolmamalı");
+        assert_eq!(sayi, 81, "korpus satırı sessizce kaybolmamalı");
     }
 
     #[test]
@@ -976,6 +1034,85 @@ mod testler {
         }])
         .expect("ham NFD arşivi");
         assert!(arsivi_oku(&arsiv).unwrap_err().contains("NFC"));
+    }
+
+    /// K-363: büyük/küçük harf duyarsız dosya sisteminde aynı girdiye açılan
+    /// yollar üreticide ve tüketicide aynı tanıyla reddedilir; katlama
+    /// dosya sistemine göre değişen eşleşmeleri (ı/i, ß/ss) de kapsar.
+    #[test]
+    fn harf_katlama_cakismasi_uretici_ve_tuketicide_reddedilir() {
+        let girdi = |yol: &str| KaynakGirdisi {
+            yol: yol.into(),
+            icerik: b"x".to_vec(),
+        };
+        for (yollar, beklenen) in [
+            (&["Çay.dil", "çay.dil"][..], "\"Çay.dil\" ve \"çay.dil\""),
+            (
+                &["kaynak/a.dil", "Kaynak/b.dil"][..],
+                "\"Kaynak\" ve \"kaynak\"",
+            ),
+            (
+                &["ılık.dil", "ilik.dil"][..],
+                "\"ilik.dil\" ve \"ılık.dil\"",
+            ),
+            (&["ss.dil", "ß.dil"][..], "\"ss.dil\" ve \"ß.dil\""),
+        ] {
+            let mut uretici = yollar.iter().map(|yol| girdi(yol)).collect::<Vec<_>>();
+            let hata = kaynak_yollarini_sirala_ve_cakismayi_denetle(&mut uretici)
+                .expect_err("üretici çakışmayı reddeder");
+            assert_eq!(
+                hata,
+                format!(
+                    "Paket yolları büyük/küçük harf duyarsız dosya sisteminde çakışıyor: {beklenen}."
+                )
+            );
+            let arsiv = arsivi_yaz(&uretici).expect("ham arşiv sıralı yazılır");
+            assert_eq!(
+                arsivi_oku(&arsiv).unwrap_err(),
+                hata,
+                "tüketici aynı tanıyı verir"
+            );
+        }
+        let mut ayri = [
+            "a.dil",
+            "kaynak/a.dil",
+            "kaynak/b.dil",
+            "kâr.dil",
+            "kar.dil",
+        ]
+        .iter()
+        .map(|yol| girdi(yol))
+        .collect::<Vec<_>>();
+        kaynak_yollarini_sirala_ve_cakismayi_denetle(&mut ayri)
+            .expect("aynı klasör öneki ve farklı harf (â/a) çakışma değildir");
+        assert_eq!(
+            arsivi_oku(&arsivi_yaz(&ayri).expect("arşiv"))
+                .expect("kabul")
+                .len(),
+            5
+        );
+    }
+
+    /// K-363: Unicode'un 12 bidi biçim karakterinin tamamı yol imidir;
+    /// ALM (U+061C) önceden kümede yoktu ve `.zep` yolunda kabul ediliyordu.
+    #[test]
+    fn butun_bidi_bicim_karakterleri_gorunmez_im_sayilir() {
+        let bidi = [
+            '\u{061c}', '\u{200e}', '\u{200f}', '\u{202a}', '\u{202b}', '\u{202c}', '\u{202d}',
+            '\u{202e}', '\u{2066}', '\u{2067}', '\u{2068}', '\u{2069}',
+        ];
+        for karakter in bidi {
+            assert!(gorunmez_bicim_imi(karakter), "U+{:04X}", karakter as u32);
+            let yol = format!("kaynak/a{karakter}b.dil");
+            assert!(
+                guvenli_arsiv_yolu(&yol).unwrap_err().contains("Güvensiz"),
+                "U+{:04X}",
+                karakter as u32
+            );
+        }
+        for karakter in ['a', 'ç', 'İ', '\u{00ad}', '\u{0627}'] {
+            assert!(!gorunmez_bicim_imi(karakter), "U+{:04X}", karakter as u32);
+        }
     }
 
     #[test]

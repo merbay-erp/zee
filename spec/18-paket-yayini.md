@@ -47,7 +47,11 @@ girdi için big-endian u32 yol uzunluğu + yol + u64 içerik uzunluğu + içerik
 taşır. Yollar `/` ayraçlı NFC UTF-8 göreli yoldur ve byte sırasıyla kesin
 artar. Üretici dosya sistemi bileşenlerini Unicode 17.0 UAX #15 NFC'ye
 çevirir; normalizasyondan sonra çakışan iki yolu reddeder. Tüketici arşiv
-yolunu normalize etmez, zaten NFC değilse reddeder. Yalnız gerçek UTF-8 `.dil`
+yolunu normalize etmez, zaten NFC değilse reddeder. Üretici ve tüketici
+büyük/küçük harf katlamasından (tam büyük harf → tam küçük harf → NFC) sonra
+aynı olan, farklı yazılmış iki yolu ya da klasör önekini (`A.dil`/`a.dil`,
+`K/`/`k/`, `ı`/`i`, `ß`/`ss`) kurulumdan önce reddeder; büyük/küçük harf
+duyarsız dosya sistemi arşivi Linux'tan farklı açamaz (K-363). Yalnız gerçek UTF-8 `.dil`
 dosyaları pakete girer. Zaman/sahip/izin/platform metadata'sı girmez.
 
 ZORUNLU limitler:
@@ -60,9 +64,11 @@ ZORUNLU limitler:
 Mutlak yol, ters bölü, NUL, boş/`.`/`..` bileşen, yinelenen/sırasız yol,
 sembolik bağ ve son girdiden sonra byte YASAKTIR. Unicode 17.0 UTS #39'da
 `/`, `\\`, `.`, `:` iskeletine giden karakterler; tam genişlikli `/` ve `.`;
-U+200B–U+200F, U+202A–U+202E, U+2060–U+206F ve U+FEFF görünmez biçim
-denetleyicileri de yol içinde YASAKTIR. Bu küme `.zep` v1'e dondurulmuştur;
-Unicode veri yükseltmesi RFC/spec/conformance incelemesi ister. Uzunluk toplama
+U+061C (ALM), U+200B–U+200F, U+202A–U+202E, U+2060–U+206F ve U+FEFF
+görünmez biçim denetleyicileri de yol içinde YASAKTIR. Bu küme `.zep` v1'e
+dondurulmuştur; Unicode veri yükseltmesi RFC/spec/conformance incelemesi
+ister. K-363 kümeye yalnız eksik kalan bidi biçim karakteri ALM'yi ekledi;
+Unicode'un 12 bidi biçim karakterinin tamamı artık kümededir. Uzunluk toplama
 taşması hata olur; ayırma sınır denetiminden sonra yapılır. Pakette `proje.dil`
 ZORUNLUDUR.
 

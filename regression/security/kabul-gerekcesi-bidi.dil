@@ -1,0 +1,5 @@
+# K-363: kilide yazılan yanked/kritik kabul gerekçesi yalnız Cc denetim
+# karakterini reddediyordu; bidi ve sıfır genişlikli biçim karakterleri
+# (Trojan Source) incelemede görünenden farklı metin taşıyabiliyordu.
+# senaryo: kabul-gerekcesi
+1 yaz
