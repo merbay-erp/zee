@@ -315,6 +315,8 @@ ZORUNLU: `--web-worker-port` ile açılan her süreç (grup işçisi ya da elle 
 
 TANIMLI: Beklenmedik biçimde çıkan işçi aynı yuvada ikincil olarak 250 ms'den 5 sn'ye katlanan gecikmeyle yeniden başlatılır; 10 sn dolmadan art arda 10 kez çıkan yuva grubu durdurur (çıkış 1). SIGTERM ya da SIGINT alan yönetici işçilere SIGTERM iletir; işçi kabul ettiği isteği tamamlar ve yeni bağlantı almaz; 40 sn içinde bitmeyen işçi sonlandırılır. Yönetici kaybolursa (SIGKILL) işçiler en çok bir boşta yoklama aralığında (100 ms) yeni istek kabul etmeyi bırakıp çıkar.
 
+ZORUNLU: Grup işçisinin dinleyicisi yönetici (ya da systemd) ve kardeş işçilerle paylaşılır; işçi SIGTERM ile kendi kopyasını kapatsa da kuyruktaki bağlantılar grupta kalır. Bu yüzden işçinin başarıyla kabul ettiği bağlantı, kabul ile kapanış denetimi arasına SIGTERM düşse de düşürülmez: istek mevcut bütçelerle yanıtlanır, sonraki kabul denetimi yeni bağlantı almayı durdurur. Dinleyicinin tek sahibi olan tek süreç (doğrudan bind) bu yarışta kabul edilen akışı dinleyiciyle birlikte kapatır (K-253; K-360).
+
 TANIMLI: `--web-saglik-port S` yalnız `127.0.0.1:S` üzerinde `GET /saglik` ve `HEAD /saglik` yanıtlar: birincil hazır ve N işçi süreci yaşıyorsa 200, aksi hâlde 503; gövde `durum` (`basliyor`/`hazir`/`eksik`/`kapaniyor`), `isci`, `canli`, `yeniden_baslatma` ve `surecler` (işçi PID'leri) alanlı JSON'dur. Başka yol 404'tür. Sağlık yanıtı uygulama hazırlığı (DB/göç) kanıtı değildir.
 
 ZORUNLU: Yönetici sağlık bağlantısını işçilere miras bırakmaz: bağlantının kabulü ve FD_CLOEXEC işaretlenmesi işçi başlatmayla aynı anda yapılmaz. Yanıt yazıldıktan sonra bağlantı iki yönde kapatılır; istemci yanıtı her zaman EOF ile alır, başka bir süreçte kopya kalsa da bekletilmez (K-345).

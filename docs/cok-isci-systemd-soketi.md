@@ -20,6 +20,9 @@ yanıtlanır.
   bind'e geri dönülmez.
 - Yalnız işçi grubu (`--web-isci-sayisi`) ve Unix. Windows'ta grup zaten
   reddedilir (çıkış 2).
+- SIGTERM alan işçi kabul ettiği bağlantıyı, sinyal kabul ile kapanış
+  denetiminin arasına düşse de yanıtlar; sonra yeni bağlantı almaz (K-360).
+  Kabul etmediği bağlantılar soket kuyruğunda yeni gruba kalır.
 
 ## Birim şablonları
 
@@ -97,6 +100,9 @@ ilk on başarısızlığın yanıt gövdesini, süresini ve ilk yeniden başlatm
 göre zamanını (`basarisizlik_ornekleri`, `yeniden_baslatma_pencereleri_sn`)
 yazar. Yalnız durum kodu kök nedeni göstermedi: bir koşudaki tek 503'ün
 ortak web deposu çekişmesi olduğu (K-353) ancak yeniden üretimle bulundu.
+Ölçümde hiç görülmeyen dar pencere (işçinin kabul ettiği bağlantıyı
+SIGTERM denetiminde düşürmesi, K-360) ise ptrace'li regression ile kanıtlanıp
+kapatıldı.
 Gerçek trafikte oran sınırı ayrı bir sözleşmedir; ölçüm yalnız yeniden
 başlatma kaybını sayar.
 

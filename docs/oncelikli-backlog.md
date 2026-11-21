@@ -2571,6 +2571,26 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
+## K-360 — Grup işçisinde kabul ile SIGTERM arasındaki bağlantı kaybı
+
+**Durum: KAPALI.** ADR-161 eki, ADR-034 revizyonu, spec/12, GB-143. K-353'ün
+açık bıraktığı son sıfır kayıp boşluğu: istek döngüsü kabul sonrası kapanış
+denetiminde yalnız native profili paylaşılan dinleyici sayıyordu; K-336 grup
+işçisi (`adopt_group`) de dinleyicinin yalnız bir kopyasını tuttuğu hâlde
+kabul ile denetim arasına SIGTERM düşerse kabul edilmiş akışı düşürüyordu.
+Ortak dinleyici yöneticide/systemd'de açık kaldığından o istek
+kayboluyordu (K-343 sözü 0 kayıp). Düzeltme: devralınan her dinleyici
+paylaşılan sayılır; kabul edilen istek yanıtlanır, sonraki `istek_al`
+döngü başı denetimi kabulü durdurur. Doğrudan bind tek süreç K-253
+sınırını korur. Kanıt: `web_profili_testleri::grup_iscisi_kabul_sonrasi_term_istegi_tamamlar`
+(gerçek grup devralma yolu, kabulden hemen sonra gerçek SIGTERM; düzeltme
+öncesi kırılır), regression `isci-kabul-term-penceresi`
+(`native-isci-kabul-term`, Linux ptrace ile `accept4` dönüşünde
+belirlenimli pencere; eski `kayıp 3`, yeni `korundu 3`, 30 tekrar 0 hata)
+ve Linux (arm64 VM) systemd soket ölçümü: 5 koşu × 5 `systemctl restart`,
+3799 istek, 0 başarısız. Açık: macOS'ta regression
+kipi ignored (ptrace/`/proc` yok); birim testi macOS'ta da koşar.
+
 ## K-353 — Çok işçi yeniden başlatmasında web deposu 503'ü
 
 **Durum: KAPALI.** ADR-034 revizyonu, spec/12, GB-142. K-343 systemd soket
@@ -2592,10 +2612,8 @@ kilit beklemesidir. Kanıt: regression `web-depo-cekismesi`
 aynı yükte 0 ret (en uzun 1,0 sn) ve Linux systemd ölçümü tekrarları. K-343
 ölçümü artık ret gövdesini de raporlar. Açık: registry durumu
 (`registry/istemci.rs`) aynı iyimser CAS'ı kullanır; tek yazarlı CLI
-akışında çekişme beklenmez, ayrı izlenir. Ayrıca grup işçisinde kabul ile
-SIGTERM sonrası denetim arasına düşen bağlantı düşürülür (paylaşılan dinleyici
-kapanmadığından o istek kaybolur); pencere çok dardır ve ölçümde
-gözlenmedi, ayrı iş olarak izlenir.
+akışında çekişme beklenmez, ayrı izlenir. Grup işçisinde kabul ile SIGTERM
+sonrası denetim arasına düşen bağlantının düşürülmesi K-360'ta kapandı.
 
 ## K-352 — Mixed-revision iptal testi yükten bağımsız
 

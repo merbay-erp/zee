@@ -5378,3 +5378,20 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   listede `içermeli`, K-358 boş koleksiyon değerinin türü, K-359 örtük çoğul
   döngü kaynağı. Hepsi freeze altında açılmaz; syntax freeze sonrası RFC
   adayıdır. K-355 kapandı; K-354 açık kalır.
+
+## K-360 — Grup işçisinde kabul ile SIGTERM arasındaki bağlantı (21 Kasım 2026)
+
+- K-353 kaydının açık bıraktığı son sıfır kayıp boşluğu. İşçinin kabul
+  sonrası kapanış denetimi yalnız native profili paylaşılan dinleyici
+  sayıyordu; grup işçisi kabul ile denetim arasına SIGTERM düşerse kabul
+  edilmiş akışı yanıtsız kapatıyor, ortak dinleyici açık kaldığından istek
+  kayboluyordu. Linux strace ile görüldü: süreç-yönlü SIGTERM `join`
+  bekleyen ana iş parçacığına düşer, `poll` bölünmez; bağlantı `poll`'u
+  uyandırır, `accept4` başarılı, denetim bayrağı görür, akış kapanır.
+  Karar: devralınan her dinleyici paylaşılan sayılır, kabul edilen istek
+  yanıtlanır. Kabul edilen akışı yöneticiye geri devretmek (yeni fd
+  protokolü) ve kabul çevresinde SIGTERM maskelemek (pencereyi taşır,
+  kaldırmaz) reddedildi. Üretim koduna ortamla açılan enjeksiyon kancası
+  eklenmedi; süreç düzeyi regression pencereyi ptrace ile belirlenimli
+  kurar. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-161 eki,
+  GB-143.

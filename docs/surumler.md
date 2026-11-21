@@ -12,6 +12,15 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Çok işçi grubu yeniden başlatmada kabul ettiği isteği düşürmez (K-360,
+  ADR-161 eki):** `--web-isci-sayisi` işçisi SIGTERM aldığı anda bir
+  bağlantıyı yeni kabul etmişse o bağlantıyı yanıt vermeden kapatıyordu;
+  ortak dinleyici açık kaldığından bu istek kayboluyordu (çok dar pencere,
+  ölçümde görülmedi). Artık kabul edilen istek yanıtlanır, işçi ardından
+  yeni bağlantı almadan çıkar. Tek süreçli sunucunun kapanışı değişmedi.
+
+  **Göç:** Gerekmez.
+
 - **Çok işçi grubu yoğun yükte ve yeniden başlatmada 503 vermez (K-353,
   ADR-034 revizyonu):** `--web-proxy` profilinde işçiler oturum ve oran
   sınırı durumunu `.zee/web-durumu-v1.json` dosyasında paylaşır. Yoğun

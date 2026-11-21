@@ -327,6 +327,12 @@ fn kilit_dosyasi(yol: &std::path::Path) -> std::io::Result<std::fs::File> {
     secenek.open(yol)
 }
 
+/// K-360 testi: yönetici ortamı olmadan grup işçisi devralmasını kurar.
+#[cfg(all(test, unix))]
+pub(crate) fn test_devralinan_dinleyici_ver(fd: i32) {
+    cocuk().dinleyici = Some(fd);
+}
+
 /// Devralınan dinleyici descriptor'ı bir kez verilir.
 #[cfg_attr(not(unix), allow(dead_code))]
 pub(crate) fn devralinan_dinleyici() -> Option<i32> {

@@ -6,6 +6,9 @@
   loopback bind+peer değişmezini ekledi.
 - **Revizyon:** 21 Kasım 2026 — K-353: kilit dışı okuma + 128 denemeli CAS
   döngüsü kaldırıldı; durum yazma kilidi altında okunup yayımlanır.
+- **Revizyon:** 21 Kasım 2026 — K-360: paylaşılan dinleyicili işçi (grup,
+  native profil) kabul ile SIGTERM denetimi arasına düşen bağlantıyı
+  yanıtlar; ayrıntı ADR-161 eki.
 - **İlgili kayıt:** K-137, K-139, B-046, B-052, RFC-0017, ADR-018, V1-P0-03
 
 ## Bağlam
