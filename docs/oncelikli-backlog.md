@@ -2571,6 +2571,68 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
+## K-362 — P33 kanıt dilimi: bağımsız HTTP kâhini ve oturum çökme kesitleri
+
+**Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün beş kanıt alanından
+ikisi test kanıtı aldı; davranış değişmedi, compiler bug bulunmadı.
+
+1. **Bağımsız HTTP parser kâhini.** `compiler/tests/ortak/http_kahini.rs`
+   zee `HttpIstegi::ayristir` sonucunu `httparse` 1.10.1 (yalnız dev/fuzz
+   bağımlılığı; `ureq-proto` ile aynı kilitli sürüm, yeni crate yok) ve RFC
+   9112 §6.3 gövde çerçevesiyle karşılaştırır. Sözleşme: zee kabul ederse
+   kâhin aynı başlık sonunu, request-line'ı, başlık değerlerini ve gövdeyi
+   görür; kâhinin reddettiğini zee kabul edemez. zee'nin reddedip kâhinin
+   kabul ettiği her girdi şu belgelenmiş katı ret sınıflarından birine
+   dayanmalıdır: istek satırı öncesi boş satır, yalın LF, origin-form dışı hedef
+   (`*`, absolute-form, `#`, ASCII dışı), başlık değerinde obs-text,
+   Transfer-Encoding (TE+CL dahil), çoklu Content-Length (eşit değerli de),
+   geçersiz Content-Length (`+`, liste, onaltılık, taşma), Content-Length
+   dışı fazla/eksik bayt (pipelining yok), NUL/geçersiz UTF-8 gövde. Kanıt:
+   `http_kahini_testi` (kalıcı fuzz korpusu; request-line, obs-fold, yalın
+   CR/LF, NUL, geçersiz token ve smuggling vakaları; 40 000 deterministik
+   üretilmiş istek, her katılık sınıfına ulaşıldığı denetlenir; üç tohumun
+   her baytında tek bayt ekleme/değiştirme/silme; 16 KiB sınırında büyük
+   başlık bölümü) ve aynı kâhini koşan `http_istegi` fuzz hedefi. Belgelenmemiş
+   ayrılık 0; zee'nin kâhinden gevşek olduğu girdi bulunmadı. Yerel macOS
+   libFuzzer koşusu (sanitizer'sız; ASan'lı stable derleme yerelde başlangıçta
+   asılı kalıyor, nightly ASan hedefi `fuzz.yml`'da aynı kâhini koşar) 181 sn'de
+   1 899 384 girdi, 0 bulgu; korpus depoya alınmadı. Duyarlılık
+   denetimi: TE reddi geçici olarak kaldırılınca test kırılır. Başlık
+   sınırının sahibi native okuyucudur:
+   `web_profili_testleri::istek_baslik_siniri_exact_baytta_431_verir`
+   (tam 16 KiB kabul, +1 bayt ayrıştırıcıya ulaşmadan 431, sınırdan fazla
+   okunmaz).
+2. **Oturum kalıcılığının çökme kesitleri.** `web_guvenligi::tests::kesit`
+   web deposu commit'inin her `kalici_dosya` adım noktasında (kilit →
+   Windows kurtarma → metadata → geçici yazım+`sync_all` → rename /
+   `ReplaceFileW` → Windows yedek silme → klasör eşzamanlama) depo klasörünün
+   görüntüsünü alır. Her görüntüde hedef tam eski ya da tam yeni bayttır
+   (değiştirme öncesi eski, sonrası yeni); yeni süreç depoyu açar, oturum
+   görünürlüğü buna uyar ve depoya yeni commit yazılabilir. Rename öncesi
+   görüntüde geçici dosya 0/1/yarı/eksik-bir bayta kesilse de hedef ve
+   kurtarma etkilenmez; Windows'ta eski hedef yedeğe taşınmış yarım
+   `ReplaceFileW` görüntüsünde ilk kilit alımı eski bütünü geri koyar. Giriş
+   ve çıkış commit'i ayrı sınanır. Commit adım günlüğü `commit-dondu`
+   kaydını klasör eşzamanlamasından sonra gösterir; her adımda sistem
+   çağrısı hatası commit'i `Err` yapar (yedek silme K-351 gereği en iyi
+   çaba). `web_profili_testleri::kalici_oturum_commiti_dusunce_basari_yaniti_ve_cerez_gitmez`
+   main.rs'nin `Err`de başarı gövdesi ve `Set-Cookie` göndermeden 503
+   yazdığını kanıtlar (düşmeyen aynı akış 200 + `Set-Cookie` verir).
+   Belgelenmiş sınır: klasör eşzamanlaması rename'den sonradır; o adım
+   düşerse istemci 503 alır ama hedef yenidir (giriş için belirteci kimsenin
+   bilmediği öksüz oturum, çıkış için fail-closed iptal). Unix'te çökmeden
+   kalan geçici dosya okunmaz ama silinmez. Kesitler kullanıcı alanından
+   görünen disk durumudur; sayfa önbelleği kaybı `sync_all` sırasına dayanır,
+   güç kesmesi donanım testi değildir.
+
+Açık (bu dilimde yapılmadı): dosya yetkinliği kontrolü ile açma arası
+(koordineli yerel dosya değişimi reproducer'ı araç incelemesince reddedildi;
+yeniden denenmez ve etrafından dolaşılmaz), paket/cache yayın süresi, Unicode
+gösterim/rename/registry alanları. Takip: 431 yanıtında okunmamış istek
+baytı varken bağlantı kapanışı istemciye RST olarak ulaşıp 431 gövdesini
+kesebilir (gerçek soket deneyinde gözlendi; güvenlik etkisi yok, ret yine
+uygulanır).
+
 ## K-361 — Registry kalıcı durumunda eşzamanlı güncelleme düşmesi
 
 **Durum: KAPALI.** ADR-075 eki, spec/19, GB-145. K-353'ün açık bıraktığı son

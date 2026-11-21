@@ -4964,6 +4964,65 @@ mod web_profili_testleri {
         assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
     }
 
+    /// K-362 / GB-109: native okuyucu başlık sınırı exact baytta keser.
+    /// Tam sınırda biten başlık kabul edilir; bir bayt fazlası ayrıştırıcıya
+    /// ulaşmadan 431 alır. Bağımsız kâhin (`http_kahini_testi`) aynı boyuttaki
+    /// başlığı iki tarafta da aynı çözer; sınırın sahibi bu okuyucudur.
+    #[test]
+    fn istek_baslik_siniri_exact_baytta_431_verir() {
+        struct BellekAkisi {
+            girdi: std::io::Cursor<Vec<u8>>,
+            cikti: Vec<u8>,
+        }
+        impl Read for BellekAkisi {
+            fn read(&mut self, tampon: &mut [u8]) -> std::io::Result<usize> {
+                self.girdi.read(tampon)
+            }
+        }
+        impl Write for BellekAkisi {
+            fn write(&mut self, baytlar: &[u8]) -> std::io::Result<usize> {
+                self.cikti.write(baytlar)
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        impl WebTasima for BellekAkisi {
+            fn set_read_timeout(&self, _: Option<std::time::Duration>) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+            .http()
+            .istek_baslik_bayti();
+        let son_tarih = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        for (uzunluk, kabul) in [(sinir, true), (sinir + 1, false)] {
+            let mut istek = b"GET / HTTP/1.1\r\nX: ".to_vec();
+            istek.resize(uzunluk - 4, b'a');
+            istek.extend_from_slice(b"\r\n\r\n");
+            let mut akis = BellekAkisi {
+                girdi: std::io::Cursor::new(istek),
+                cikti: Vec::new(),
+            };
+            let sonuc = istek_basliklarini_oku(&mut akis, son_tarih, false);
+            let yanit = String::from_utf8_lossy(&akis.cikti).into_owned();
+            if kabul {
+                let (tampon, govde_basi) = sonuc.expect("sınırdaki başlık kabul edilir");
+                assert_eq!(govde_basi, sinir);
+                assert!(HttpIstekBasligi::ayristir(&tampon[..govde_basi]).is_ok());
+                assert!(yanit.is_empty(), "{yanit}");
+            } else {
+                assert!(sonuc.is_none(), "sınır aşımı ayrıştırıcıya ulaşmaz");
+                assert!(yanit.starts_with("HTTP/1.1 431"), "{yanit}");
+                assert_eq!(
+                    akis.girdi.position() as usize,
+                    sinir,
+                    "sınırdan fazla okunmaz"
+                );
+            }
+        }
+    }
+
     /// K-346: eylemin iki yazımı arasına başka bir süreç eklerse geri alma,
     /// eylem başı yedeğini geri koyup o satırı silmez; C021 ile reddedilir.
     #[test]
@@ -5109,6 +5168,59 @@ mod web_profili_testleri {
         assert!(yanit.starts_with("HTTP/1.1 504 Gateway Timeout"));
         assert!(yanit.ends_with("zaman aşımı"));
         assert!(!yanit.contains("erken başarı"));
+    }
+
+    /// K-362 / GB-109: kalıcı oturum commit'i başarısızsa (kalıcı katman
+    /// `Err` döndürür — kütüphane kesit testleri her yazım adımının hatasının
+    /// bu `Err`e dönüştüğünü ve `Ok`un klasör eşzamanlamasından sonra
+    /// geldiğini kanıtlar) istemciye başarı gövdesi ve oturum çerezi gitmez;
+    /// tek yanıt 503'tür.
+    #[test]
+    fn kalici_oturum_commiti_dusunce_basari_yaniti_ve_cerez_gitmez() {
+        let klasor = std::env::temp_dir().join(format!(
+            "zee-k362-commit-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let depo = klasor.join(".zee/web-durumu-v1.json");
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let mut istemci = std::net::TcpStream::connect(dinleyici.local_addr().unwrap()).unwrap();
+        let (sunucu, _) = dinleyici.accept().unwrap();
+        let mut io = GercekIo::yeni_argumanlarla(
+            std::path::Path::new("."),
+            std::path::Path::new("."),
+            WebModu::Deneysel,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
+            None,
+            None,
+        );
+        io.web_guvenligi = dil::web_guvenligi::WebGuvenligi::kalici(&depo);
+        io.bekleyen_akis = Some(sunucu.into());
+        io.web_istek_yedegi = Some(WebIstekYedegi {
+            bekleyen_cerezler: Vec::new(),
+            bekleyen_silinen_cerezler: Vec::new(),
+        });
+        io.oturum_ac("Mustafa", "yönetici").unwrap();
+        io.yanit_gonder("giriş başarılı");
+        // Commit anında kalıcı katman düşer (bozuk durum fail-closed `Err`).
+        std::fs::write(&depo, b"{bozuk").unwrap();
+        assert_eq!(io.istek_islemini_tamamla(), Ok(()));
+
+        let mut yanit = String::new();
+        istemci.read_to_string(&mut yanit).unwrap();
+        assert!(yanit.starts_with("HTTP/1.1 503"), "{yanit}");
+        assert!(yanit.contains("güvenle kaydedilemedi"), "{yanit}");
+        assert!(!yanit.contains("giriş başarılı"), "{yanit}");
+        assert!(
+            !yanit.to_ascii_lowercase().contains("set-cookie"),
+            "{yanit}"
+        );
+        let _ = std::fs::remove_dir_all(&klasor);
     }
 
     #[test]

@@ -45,5 +45,9 @@ ureq = { version = "=3.4.0", default-features = false, features = ["rustls"] }
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"
 
+# K-362: bağımsız HTTP kâhini yalnız testte; ureq-proto ile aynı kilitli sürüm.
+[dev-dependencies]
+httparse = "=1.10.1"
+
 [patch.crates-io]
 postgres-protocol = { path = "third_party/postgres-protocol" }

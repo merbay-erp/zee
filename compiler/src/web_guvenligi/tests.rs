@@ -1,5 +1,8 @@
 use super::*;
 
+#[cfg(not(target_arch = "wasm32"))]
+mod kesit;
+
 fn uretici() -> impl FnMut() -> Result<String, String> {
     let mut sira = 0;
     move || {
