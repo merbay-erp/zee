@@ -23,7 +23,12 @@ azaltır, güvenli ayrı yedekleme sorumluluğunu kaldırmaz.
 
 `paketle` geçerli `proje.dil` ister. Yerel yol bağımlılığı, sembolik bağ veya
 UTF-8 olmayan `.dil` kaynak varsa P012 ile hiçbir yayın çıktısı üretmeden
-durur. Varsayılan çıktı `<proje>/hedef/paket`tir.
+durur. Projenin `proje` adı tüketicinin paket adı kuralına
+([spec/07](07-birimler.md): küçük harfli tek Türkçe/Latin tanımlayıcı)
+uymak ZORUNDADIR; uymayan ad (`Uygulama`, `kötü ad`, başka alfabe harfi)
+P012 içinde tüketiciyle aynı P007 metniyle hiçbir çıktı üretmeden reddedilir
+ve imzalı yayın doğrulaması da aynı adı reddeder (K-366). Varsayılan çıktı
+`<proje>/hedef/paket`tir.
 
 ## Çıktı kümesi (ZORUNLU)
 
@@ -68,7 +73,15 @@ U+061C (ALM), U+200B–U+200F, U+202A–U+202E, U+2060–U+206F ve U+FEFF
 görünmez biçim denetleyicileri de yol içinde YASAKTIR. Bu küme `.zep` v1'e
 dondurulmuştur; Unicode veri yükseltmesi RFC/spec/conformance incelemesi
 ister. K-363 kümeye yalnız eksik kalan bidi biçim karakteri ALM'yi ekledi;
-Unicode'un 12 bidi biçim karakterinin tamamı artık kümededir. Uzunluk toplama
+Unicode'un 12 bidi biçim karakterinin tamamı artık kümededir.
+Windows'ta taşınamayan bileşenler de her platformda YASAKTIR (K-366): Win32
+ayrılmış aygıt adları `CON`, `PRN`, `AUX`, `NUL`, `CONIN$`, `CONOUT$`,
+`COM0`–`COM9`, `LPT0`–`LPT9` ve üst simgeli `COM¹`–`COM³`/`LPT¹`–`LPT³`;
+eşleşme ilk noktadan önceki gövdenin sonundaki boşluklar atılarak ASCII
+büyük/küçük harf duyarsız yapılır, uzantılı hâller (`con.dil`, `nul.txt.dil`,
+`con .dil`) ve klasör bileşeni (`prn/`) dahildir. Sonu nokta ya da boşlukla
+biten bileşen (`kaynak./`, `kaynak /`) de yasaktır. Üretici ve tüketici aynı
+tanıyı verir. Uzunluk toplama
 taşması hata olur; ayırma sınır denetiminden sonra yapılır. Pakette `proje.dil`
 ZORUNLUDUR.
 

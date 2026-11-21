@@ -936,6 +936,17 @@ pub(crate) fn gecerli_paket_adi(ad: &str) -> bool {
         && harfler.all(kucuk_harf)
 }
 
+/// K-366: tüketicinin (yerel bağımlılık P007, registry) paket adı reddinin
+/// tek metni; `dil paketle` ve imzalı yayın doğrulaması aynı kuralı kullanır.
+pub(crate) fn paket_adi_hatasi(ad: &str) -> Option<String> {
+    (!gecerli_paket_adi(ad)).then(|| {
+        format!(
+            "\"{}\" paket adı kaynakta tek kelime olarak kullanılamaz.",
+            ad
+        )
+    })
+}
+
 fn gecerli_sha256(ozet: &str) -> bool {
     ozet.strip_prefix("sha256:").is_some_and(|ham| {
         ham.len() == 64

@@ -2557,6 +2557,32 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-368 — TOTP doğrulamasında giriş kovası aşımı 429 döner
+
+**Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F021 (ZeeMail uçtan uca
+MFA betiği: 6. doğrulamada doğru kod da "hatalı"). `kod gizli anahtarıyla
+doğrulanıyorsa` web isteğinde giriş kovasının `totp` anahtarını (istemci
+başına 300 sn/5) artırıyor, aşımda yanıt yazmadan `yanlış` dönüyordu; doğru
+kod reddediliyor, rota "hatalı" yanıtını 200 ile gönderiyordu (gerçek native
+sunucuda 6. ve 7. doğru kod "hatalı 200"). spec/12 oran tablosunda TOTP satırı
+yoktu.
+
+Düzeltme: aşımda kod denetlenmeden parola doğrulamasıyla aynı sabit 429
+`çok fazla giriş denemesi` (depo hatasında 503) bekleyen ilk yanıt olur ve
+native `rate_reject` metriği sayılır (K-365 sabitleri). Web dışında kova
+yoktur. Yeni grammar, tanı, CLI ya da `dil::api::v1` yok.
+
+Kanıt: `urun_e_yetkinlik_testi::totp_web_giris_kovasi_asiminda_dogru_kod_da_429_doner`
+(eski kod 6. istekte 200), `totp_web_disinda_oran_kovasina_tabi_degildir`,
+regression `security/totp-oran-asimi` (kip `web`), spec/12 tablo satırı ve
+§5 ZORUNLU maddesi.
+
+Açık: doğrulama aşımda rotaya `yanlış` döndürmeye devam eder; rota kendi
+hesap kilidi sayacını artırabilir ve aşımı yanlış koddan ayıramaz (spec/12 §5
+AÇIK maddesi). Ayrı değer ya da rota kesme `GirdiCikti` bool sözleşmesini ve
+IO izi şemasını değiştirir; core freeze altında ürün kanıtıyla ayrıca karar
+gerekir.
+
 ## K-367 — Şapkalı ünlülü köklerde kanonik üretim (zee-tr-2 adayı)
 
 **Durum: AÇIK (zee-tr-2 adayı, V1 sonrası).** `compiler/src/morfoloji.rs`
@@ -2640,7 +2666,34 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
-## K-363 — P33 kanıt dilimi: paket/cache yayın süresi ve Unicode kimlikleri
+## K-366 — `.zep` Windows taşınabilirliği ve yayıncı paket adı
+
+**Durum: KAPALI.** K-363'ün açık bıraktığı iki takip; aynı sınıf (paket
+kimliği platforma ya da tarafa göre farklı karar veriyordu). GB-147.
+
+1. `zep-windows-aygit-adi`: `.zep` üretici ve tüketicisi Windows ayrılmış
+   aygıt adlarını (`CON`, `PRN`, `AUX`, `NUL`, `CONIN$`, `CONOUT$`,
+   `COM0`–`COM9`, `LPT0`–`LPT9`, `COM¹²³`/`LPT¹²³`; ASCII büyük/küçük harf
+   duyarsız, uzantılı ve uzantı öncesi boşluklu hâlleri, klasör bileşeni) ve
+   sonu nokta/boşlukla biten bileşenleri kabul ediyordu. macOS'ta (5801c89)
+   `AUX.dil`, `kaynak./a.dil`, `bosluk /b.dil` taşıyan proje `dil paketle`
+   ile paketlendi ve kuruldu; Windows Win32 katmanı bu adları aygıta açar ya
+   da kırpar, kurulum ham OS hatası ya da yanlış girdiyle düşer. Artık
+   `guvenli_arsiv_yolu` her platformda aynı "Windows ayrılmış aygıt adı"
+   tanısıyla reddeder (spec/18, ADR-028 eki 8, RFC-0020 §3); saldırı korpusu
+   92.
+2. `paketle-proje-adi-alfabesi`: `dil paketle` ana projenin `proje` adını
+   denetlemiyordu; `Uygulama`, `kötü ad` ve Kiril harfli adla imzalı paket
+   (çıktı adı `kötü ad-0.1.0.zep`) üretiliyordu, tüketici (yerel bağımlılık
+   P007, registry P017) aynı adı reddettiği için paket kullanılamazdı.
+   Artık üretici ve imzalı yayın doğrulaması tüketicinin tek metnini
+   (`proje::paket_adi_hatasi`) kullanır: P012 içinde P007.
+
+Yeni tanı kodu, grammar, CLI ya da `dil::api::v1` değişikliği yok; kabul
+kümesi daralır, wire biçimi ve kanonik fixture byte'ı aynıdır. Windows
+çalışma anı kanıtı CI'nın windows-latest matrisindeki aynı regression ve
+birim testidir (yerel Windows/wine yok; xwin derleme ve clippy yerelde).
+
 
 **Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün kalan üç kanıt
 alanından ikisi test kanıtı aldı; Unicode alanında bulunan altı açık minimal
@@ -2701,6 +2754,7 @@ Açık sınırlar ve takip: ana projenin kendi `proje` adı (yayıncı tarafı)
 denetlenmez; tüketici bu adı reddettiği için yayımlanan böyle bir paket
 kullanılamaz. Windows'ta sonu nokta/boşluklu yol ve aygıt adları (`CON`,
 `NUL`) arşivde yasak değildir; kurulum doğrulaması fail-closed düşer.
+(İkisi de K-366'da kapandı.)
 Morfoloji takibi: `Kâr` adı için belirtme eki `Kârı` yerine `Kâri` üretilir
 (şapkalı ünlü uyumu; güvenlik dışı). GB-109 dosya yetkinliği alanı nedeniyle
 `acik` kalır.

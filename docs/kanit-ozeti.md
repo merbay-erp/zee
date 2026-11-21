@@ -16,7 +16,7 @@ Kaynak: `regression/v2.tsv`
 | morphology | 2 |
 | parser | 5 |
 | runtime | 14 |
-| security | 21 |
+| security | 24 |
 
 | Tanı | Vaka |
 | --- | --- |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 51 |
+| - | 54 |
 
-Toplam 62 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 62/62.
+Toplam 65 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 65/65.
 
 ## Güvenlik bulguları
 
@@ -41,10 +41,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 17 | 0 | 0 | 17 |
 | orta | 38 | 16 | 2 | 56 |
-| dusuk | 41 | 30 | 1 | 72 |
+| dusuk | 42 | 30 | 1 | 73 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 146.
+Toplam bulgu: 147.
 
 ## Spec maddeleri
 
@@ -63,13 +63,13 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 17 | 0 | 0 | 17 | 100 |
-| spec/12-web-guvenlik-profili.md | 38 | 0 | 2 | 40 | 95 |
+| spec/12-web-guvenlik-profili.md | 39 | 0 | 3 | 42 | 92 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |
 | spec/16-keyfi-hassasiyetli-ondalik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/17-deger-semantigi-ve-gezme.md | 5 | 0 | 0 | 5 | 100 |
-| spec/18-paket-yayini.md | 12 | 1 | 0 | 13 | 92 |
+| spec/18-paket-yayini.md | 13 | 1 | 0 | 14 | 92 |
 | spec/19-registry-metadata-guveni.md | 10 | 0 | 0 | 10 | 100 |
 | spec/20-ifade-grameri.md | 7 | 0 | 0 | 7 | 100 |
 | spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
@@ -82,7 +82,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 269 | 4 | 7 | 280 | 96 |
+| **Toplam** | 271 | 4 | 8 | 283 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -145,16 +145,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 66 |
-| semantic-bugfix | 28 |
+| maintenance | 67 |
+| semantic-bugfix | 30 |
 | semantic-change | 54 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
-| correctness | 33 |
+| correctness | 34 |
 | dogfood-change | 32 |
-| maintenance | 63 |
-| security | 14 |
+| maintenance | 64 |
+| security | 15 |
 
-Toplam: 148 compiler değişiklik beyanı, 144 core freeze beyanı.
+Toplam: 151 compiler değişiklik beyanı, 147 core freeze beyanı.
