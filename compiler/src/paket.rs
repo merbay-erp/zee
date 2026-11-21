@@ -586,13 +586,13 @@ impl GrafikKurucu {
             kaynak: bildirim_kaynagi.clone(),
             yol: bildirim_yolu.clone(),
         })?;
-        if bagimlilik_mi && !crate::proje::gecerli_paket_adi(&bildirim.ad) {
+        if let Some(mesaj) = bagimlilik_mi
+            .then(|| crate::proje::paket_adi_hatasi(&bildirim.ad))
+            .flatten()
+        {
             return Err(proje_hatasi(
                 "P007",
-                &format!(
-                    "\"{}\" paket adı kaynakta tek kelime olarak kullanılamaz.",
-                    bildirim.ad
-                ),
+                &mesaj,
                 "Yerel bağımlılığın proje adını küçük harfli tek bir tanımlayıcı yap; örnek: grafik_araclari.",
                 bildirim_yolu,
                 bildirim_kaynagi,

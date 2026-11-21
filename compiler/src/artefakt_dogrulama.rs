@@ -230,6 +230,9 @@ pub fn yayini_dogrula(
         .map_err(|_| "Paket içindeki proje.dil UTF-8 değil.".to_string())?;
     let bildirim = bildirimi_oku(bildirim_kaynagi)
         .map_err(|tani| format!("Paket proje.dil doğrulaması {}: {}", tani.kod, tani.mesaj))?;
+    if let Some(mesaj) = crate::proje::paket_adi_hatasi(&bildirim.ad) {
+        return Err(format!("Paket proje.dil doğrulaması P007: {}", mesaj));
+    }
     if bildirim.ad != zarf.imzali.paket
         || bildirim.surum != zarf.imzali.surum
         || bildirim.morfoloji != zarf.imzali.morfoloji
@@ -546,7 +549,49 @@ fn guvenli_arsiv_yolu(yol: &str) -> Result<(), String> {
     {
         return Err(format!("Güvensiz paket yolu: {:?}.", yol));
     }
+    if yol.split('/').any(windows_tasinamaz_bilesen) {
+        return Err(format!(
+            "Güvensiz paket yolu: {:?}; Windows ayrılmış aygıt adı ya da sonu nokta/boşlukla biten bileşen her platformda yasaktır.",
+            yol
+        ));
+    }
     Ok(())
+}
+
+/// K-366: Windows Win32 yol katmanı `CON`, `PRN`, `AUX`, `NUL`, `CONIN$`,
+/// `CONOUT$`, `COM0`–`COM9`, `LPT0`–`LPT9` ve üst simge `COM¹²³`/`LPT¹²³`
+/// adlarını (büyük/küçük harf duyarsız, uzantılı hâlleri ve uzantıdan önceki
+/// boşlukla birlikte) aygıta açar; sonu nokta ya da boşlukla biten bileşeni
+/// sessizce kırpar. Böyle bir arşiv Linux/macOS'ta kuruluyor, Windows'ta
+/// kurulamıyordu (ya da başka girdiye yazıyordu); paket kimliği platforma
+/// bağlıydı. Ret her platformda aynıdır; yanlış pozitif bilinçli tercih.
+fn windows_tasinamaz_bilesen(parca: &str) -> bool {
+    if parca.ends_with(['.', ' ']) {
+        return true;
+    }
+    let govde = parca
+        .split('.')
+        .next()
+        .unwrap_or(parca)
+        .trim_end_matches(' ')
+        .to_ascii_uppercase();
+    if matches!(
+        govde.as_str(),
+        "CON" | "PRN" | "AUX" | "NUL" | "CONIN$" | "CONOUT$"
+    ) {
+        return true;
+    }
+    let Some(sira) = govde
+        .strip_prefix("COM")
+        .or_else(|| govde.strip_prefix("LPT"))
+    else {
+        return false;
+    };
+    let mut kalan = sira.chars();
+    matches!(
+        (kalan.next(), kalan.next()),
+        (Some('0'..='9' | '\u{00b9}' | '\u{00b2}' | '\u{00b3}'), None)
+    )
 }
 
 /// UTS #39 Unicode 17.0 confusable verisinde `/`, `\\`, `.`, `:` iskeletine
@@ -1003,7 +1048,7 @@ mod testler {
             );
             sayi += 1;
         }
-        assert_eq!(sayi, 81, "korpus satırı sessizce kaybolmamalı");
+        assert_eq!(sayi, 92, "korpus satırı sessizce kaybolmamalı");
     }
 
     #[test]
@@ -1091,6 +1136,50 @@ mod testler {
                 .len(),
             5
         );
+    }
+
+    /// K-366: Windows ayrılmış aygıt adları ve sonu nokta/boşlukla biten
+    /// bileşenler üreticide (dosya sistemi yolu) ve tüketicide (ham arşiv)
+    /// aynı tanıyla, her platformda reddedilir; benzer ama ayrılmamış adlar
+    /// kabul edilir.
+    #[test]
+    fn windows_tasinamaz_adlar_uretici_ve_tuketicide_ayni_taniyla_reddedilir() {
+        for yol in [
+            "CON.dil",
+            "kaynak/nul.dil",
+            "Aux.txt.dil",
+            "kaynak/com1.dil",
+            "LPT\u{00b3}.dil",
+            "conout$.dil",
+            "prn/a.dil",
+            "kaynak./a.dil",
+            "kaynak /a.dil",
+            "con .dil",
+            "kaynak/a.dil.",
+        ] {
+            let uretici = duz_guvenli_yol(Path::new(yol)).expect_err(yol);
+            assert!(
+                uretici.contains("Windows ayrılmış aygıt adı"),
+                "{yol}: {uretici}"
+            );
+            let arsiv = arsivi_yaz(&[KaynakGirdisi {
+                yol: yol.into(),
+                icerik: b"x".to_vec(),
+            }])
+            .expect("ham arşiv");
+            assert_eq!(arsivi_oku(&arsiv).unwrap_err(), uretici, "{yol}");
+        }
+        for yol in [
+            "console.dil",
+            "kaynak/com10.dil",
+            "lpt.dil",
+            "nulluk.dil",
+            "aux_araclari/a.dil",
+            "kaynak/con-ek.dil",
+            "com\u{2074}.dil",
+        ] {
+            duz_guvenli_yol(Path::new(yol)).unwrap_or_else(|hata| panic!("{yol}: {hata}"));
+        }
     }
 
     /// K-363: Unicode'un 12 bidi biçim karakterinin tamamı yol imidir;

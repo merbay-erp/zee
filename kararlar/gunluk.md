@@ -5481,6 +5481,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   nöbetçi kaydı. spec/12, hata kataloğu, regression
   `security/parola-ozeti-oran-asimi`.
 
+## K-366 — `.zep` Windows aygıt adları ve yayıncı paket adı (21 Kasım 2026)
+
+- K-363 takibi. Karar: Windows ayrılmış aygıt adları ve sonu nokta/boşlukla
+  biten bileşenler `.zep` yol profilinde her platformda yasaktır; üretici ve
+  tüketici aynı `guvenli_arsiv_yolu` tanısını verir (yalnız Windows
+  kurulumunda reddetmek reddedildi: aynı imzalı paket platforma göre farklı
+  sonuç verirdi). Eşleşme bilinçli geniştir (`COM0`/`LPT0`/`CONIN$` dahil,
+  yanlış pozitif tercih). `dil paketle` ve imzalı yayın doğrulaması ana proje
+  adını tüketicinin tek P007 metniyle denetler (ayrı ikinci kural yazmak
+  reddedildi). Yeni tanı kodu, grammar, CLI ya da dil::api::v1 değişikliği
+  yok. spec/07, spec/18, ADR-028 eki 8, RFC-0020 §3, GB-147.
+
 ## K-368 — TOTP doğrulaması giriş kovası aşımı 429 (21 Kasım 2026)
 
 - ZM-F021 (`urun-h`): TOTP doğrulaması giriş kovası (`totp`, 300 sn/5)

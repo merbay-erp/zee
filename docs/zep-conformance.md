@@ -34,17 +34,20 @@ beklenen hex'i yenilemek yasaktır.
 
 ## Kalıcı saldırı korpusu
 
-`compiler/tests/fixtures/zep-saldiri-korpusu/yollar-v1.tsv` 81 vaka taşır:
+`compiler/tests/fixtures/zep-saldiri-korpusu/yollar-v1.tsv` 92 vaka taşır:
 
 - üst dizin, mutlak yol, ters bölü, boş/`.` bileşen, NUL ve denetim karakteri;
 - NFD Türkçe yol;
 - Unicode 17.0 UTS #39 `/`, `\\`, `.`, `:` benzerleri ve tam genişlikli
   eşleri;
 - sıfır genişlikli ve çift yönlü metin biçim denetleyicileri (K-363: Arap harf
-  işareti ALM U+061C dahil; Unicode'un 12 bidi biçim karakterinin tamamı).
+  işareti ALM U+061C dahil; Unicode'un 12 bidi biçim karakterinin tamamı);
+- K-366: Windows ayrılmış aygıt adları (`CON.dil`, `nul.dil`, `aux.txt.dil`,
+  `COM1.dil`, `LPT¹.dil`, `CONIN$.dil`, `prn/` klasörü, `con .dil`) ve sonu
+  nokta/boşlukla biten bileşenler (`kaynak./`, `kaynak /`, `a.dil.`).
 
 Korpus kod noktalarını hex yazar; böylece görünmez saldırı karakterleri belge
-incelemesini yanıltmaz. Test veri satırı sayısını da `81`e sabitler. Uzunluk,
+incelemesini yanıltmaz. Test veri satırı sayısını da `92`ye sabitler. Uzunluk,
 dosya sayısı, yinelenen/sırasız yol, beklenmedik son ve UTF-8 gövde saldırıları
 ayrı yapısal testlerde üretilir.
 
@@ -54,6 +57,12 @@ NFC) sonra aynı olan, farklı yazılmış iki yol ya da klasör öneki (`A.dil`
 `artefakt_dogrulama::testler::harf_katlama_cakismasi_uretici_ve_tuketicide_reddedilir`
 ve kurulum testindedir. Böylece büyük/küçük harf duyarsız dosya sistemi
 (macOS APFS, Windows NTFS) aynı arşivi Linux'tan farklı açamaz.
+
+K-366'dan beri Windows'ta taşınamayan bileşen (ayrılmış aygıt adı, sonu
+nokta/boşluk) de her platformda aynı tanıyla reddedilir:
+`artefakt_dogrulama::testler::windows_tasinamaz_adlar_uretici_ve_tuketicide_ayni_taniyla_reddedilir`
+üretici (dosya sistemi yolu) ve tüketici (ham arşiv) metnini karşılaştırır,
+benzer ama ayrılmamış adları (`console.dil`, `com10.dil`) kabul eder.
 
 ## Yerel doğrulama
 

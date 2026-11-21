@@ -23,7 +23,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
 | `spec/16-keyfi-hassasiyetli-ondalik.md` | 2 | 2 | 0 | 0 |
 | `spec/17-deger-semantigi-ve-gezme.md` | 5 | 5 | 0 | 0 |
-| `spec/18-paket-yayini.md` | 13 | 12 | 1 | 0 |
+| `spec/18-paket-yayini.md` | 14 | 13 | 1 | 0 |
 | `spec/19-registry-metadata-guveni.md` | 10 | 10 | 0 | 0 |
 | `spec/20-ifade-grameri.md` | 7 | 7 | 0 | 0 |
 | `spec/21-deterministik-io-izi.md` | 5 | 5 | 0 | 0 |
@@ -36,7 +36,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **281** | **270** | **4** | **7** |
+| **Toplam** | **282** | **271** | **4** | **7** |
 
 ## Kısmi kanıtlı maddeler
 
