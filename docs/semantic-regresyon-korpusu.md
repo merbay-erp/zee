@@ -316,7 +316,9 @@ süreçleriyle ekler; "başka bir süreç" iletisiyle reddedilen komut yeniden
 denenir. Çıktı başarı bildiren komutların kalıcı `bağımlılık <n>`, kaybolan
 `kayıp <n>` ve son kilidin `dil çalıştır` doğrulamasıyla `kilit
 geçerli|bozuk` satırlarıdır; düzeltme öncesi `bağımlılık 4`, `kayıp 20`.
-Toplu replay atlar.
+Yeniden denenmeyen hata ve kilit doğrulama hatası stderr ile test çıktısına
+yazılır. `fixed_by` Windows kaynak toplama düzeltmesidir (vaka ikisini birlikte
+ister). Toplu replay atlar.
 
 ## Native eşzamanlı ekleme kipi (K-346)
 
