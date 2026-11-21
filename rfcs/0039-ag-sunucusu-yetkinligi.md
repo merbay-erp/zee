@@ -431,28 +431,37 @@ RFC'nin hiçbir katmanı şu zincir kurulmadan uygulanmaz:
 5. Grammar değişikliği ayrıca RFC-0028 ve syntax freeze kurallarına tabidir;
    V1 syntax freeze penceresi içinde açılmaz.
 
-### Faz-0 ürün girdisi (21 Kasım 2026)
+### Faz-0 ürün girdisi ve dogfood kaydı (21 Kasım 2026)
 
-ZeeOS e-posta ürünü kapı öncesi şu durumu bildirdi; kayıt bilgi amaçlıdır ve
-yukarıdaki 1. adımı karşılamaz:
+ZeeOS e-posta ürünü K-355 ile `urun-h` olarak etkin dogfood ürünüdür
+(`docs/dogfood-projeleri-v1.tsv`, exact harici köken
+`91fcfc76a81f08b7551bf0e78c35c972d376e695`); depo içi kanıt kökü
+[`dogfood/urun-h`](../dogfood/urun-h/README.md). Bu kayıt yukarıdaki 1.
+adımı ve 2. adımın gerçek Zee kodu + K-164 karşılaştırması kısmını
+karşılar; 3. adım her alt RFC'nin kendi işidir.
 
-- Zee'de saf SMTP komut durum makinesi (soket yok, stdio deneme aracı) ve
-  19 `dil dene` testi; üç reproducer. Ürün henüz sürüm denetiminde ve uzak
-  depoda değildir, bu yüzden exact provenance ve dogfood kaydı açıktır.
-- Bildirilen sürtünmeler (K-164 kataloğuyla karşılaştırma alt RFC işidir):
-  - **ASCII harf katlama yok:** yerleşik büyük/küçük harf dönüşümü Türkçe
-    yerel ayarlıdır (`mail` → `MAİL`); SMTP/IMAP fiilleri ve DNS adları
-    ASCII harf duyarsızdır (RFC 5321 §2.4). Katman A/D'ye ASCII katlama
-    yüzeyi adayı olarak eklenir.
-  - **Metin kaçışında `\r` yok** (S040): çıplak CR denetimi Zee'de
+- Ürün Zee kodu: saf SMTP komut durum makinesi (soket yok, stdio deneme
+  aracı), 19 `dil dene` testi. Reproducer'lar `dogfood/korpus-v1.tsv`
+  içinde exact beklentiyle kayıtlıdır.
+- Katmana bağlanan sürtünmeler (K-355/Fnnn, karşılaştırma karar
+  günlüğünde):
+  - **F009 — `... dinleyicisinde bağlantı geldiğinde` → S036:** bugün yalnız
+    HTTP rota kalıbı var; Katman A yüzeyinin doğrudan reproducer'ı
+    (`korpus/f009-dinleyici-yok.dil`).
+  - **F004 — metin kaçışında `\r` yok** (S040): çıplak CR denetimi Zee'de
     yazılamıyor; Katman A'nın "çıplak LF/CR reddi çalışma zamanı
-    değişmezidir" kararını destekler.
-  - **`... dinleyicisinde bağlantı geldiğinde` → S036:** bugün yalnız HTTP
-    rota kalıbı var; Katman A yüzeyinin doğrudan reproducer'ı.
-  - **İstemsiz satır okuma yok:** stdio protokol araçlarında her okuma boş
-    istem satırı basar.
-  - Listede `içermeli` T022; olumsuz içerme yalnız
-    `X Y içeriyorsa olmamalı` biçimiyle.
+    değişmezidir" kararını destekler. Kaçış eksikliği K-164/F011 sınıfının
+    üçüncü ürün tekrarıdır (K-356 tasarım maddesi).
+  - **F001 — ASCII harf katlama yok:** yerleşik büyük/küçük harf dönüşümü
+    bilinçli olarak Türkçe yerel ayarlıdır (`mail` → `MAİL`); SMTP/IMAP
+    fiilleri ve DNS adları ASCII harf duyarsızdır (RFC 5321 §2.4). Hata
+    değil eksik yüzeydir; Katman D'ye ASCII katlama adayı. Ürün çözümü
+    26 değiştirmeyle elle katlamadır (`korpus/f001-*.dil`).
+  - **F010 — istemsiz satır okuma yok:** `"" diye sor` her okumada boş
+    istem satırı basar; ağ yüzeyinde Katman A satır okuyucusu karşılar.
+- Diğer tekrarlar (sıra erişimi K-180, listede `içermeli` K-357, boş
+  koleksiyon türü K-358, örtük çoğul döngü kaynağı K-359) ağ yetkinliğinden
+  bağımsızdır ve bu RFC'nin kapsamında değildir.
 
 V1 kapı listesine (`docs/v1-surum-kapilari.md`) bu RFC eklenmez: ağ sunucusu
 yetkinliği V1 sözü değildir.
@@ -494,8 +503,9 @@ yetkinliği V1 sözü değildir.
 
 ## Korpus etkisi
 
-Yok. Taslak; golden, regression, dogfood korpusu ve dil yüzeyi fixture'ı
-değişmez.
+Taslağın kendisi golden, regression ve dil yüzeyi fixture'ını değiştirmez.
+Dogfood korpusuna K-355 ile ürün H'nin dört vakası girdi; katman alt
+RFC'leri kabul edildiğinde S036/S040 vakaları ret/çözüm çiftine dönüşür.
 
 ## Açık sorular
 

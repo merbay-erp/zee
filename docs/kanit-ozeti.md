@@ -98,6 +98,7 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | urun-e (active) | dogfood/urun-e |
 | zeedili-com (active) | dogfood/zeedili-com |
 | urun-g (active) | dogfood/urun-g |
+| urun-h (active) | dogfood/urun-h |
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -106,11 +107,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
+| urun-h | 2 | 2 | 0 | 2 | 2 | 4 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 64.
+Toplam korpus vakası: 68.
 
 ## Deprecation kayıtları
 

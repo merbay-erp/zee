@@ -1,0 +1,7 @@
+# K-355/F009 — Ürün H SMTP karşılayıcısı: Zee kodu TCP dinleyicisi açamaz.
+# Tek bağlantı yüzeyi HTTP rotasıdır; ağ dinleyicisi kalıbı S036 verir.
+# RFC-0039 katman A kabul edilince bu dosya en küçük SMTP karşılayıcısına
+# dönüşür.
+
+"smtp" dinleyicisinde bağlantı geldiğinde
+    bağlantıya "220 mx.ornek.test ESMTP" satırını yaz

@@ -1,0 +1,20 @@
+# K-355/F001 çözümü — Ürün H ASCII katlamayı 26 değiştirmeyle elle yapar;
+# dilde ASCII katlama yüzeyi yoktur (RFC-0039 katman D adayı).
+
+işlem ascii büyüt
+    girdiyi Metin olarak al
+    Metin döndürür
+
+    eşlemeler "a:A,b:B,c:C,d:D,e:E,f:F,g:G,h:H,i:I,j:J,k:K,l:L,m:M,n:N,o:O,p:P,q:Q,r:R,s:S,t:T,u:U,v:V,w:W,x:X,y:Y,z:Z" olsun
+    çiftler eşlemelerin "," ile parçaları olsun
+    sonuç girdi olsun
+    her çift için
+        parçalar çiftin ":" ile parçaları olsun
+        küçük parçaların ilki olsun
+        büyük parçaların sonu olsun
+        sonuç sonucun küçük yerine büyük değişmişi olsun
+    sonucu döndür
+
+komut "mail from:<a@b.test>" olsun
+ascii_komut komut için ascii büyüt olsun
+ascii_komut yaz

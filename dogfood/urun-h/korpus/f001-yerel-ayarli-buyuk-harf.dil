@@ -1,0 +1,7 @@
+# K-355/F001 — Yerleşik büyük harf Türkçe yerel ayarlıdır (TANIMLI):
+# "mail" → "MAİL". SMTP/IMAP fiilleri ve DNS adları ASCII harf duyarsızdır
+# (RFC 5321 §2.4); yerel ayarlı dönüşüm fiili tanımaz.
+
+komut "mail from:<a@b.test>" olsun
+büyük komutun büyük harflisi olsun
+büyük yaz
