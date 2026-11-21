@@ -2532,6 +2532,32 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
+## K-353 — Çok işçi yeniden başlatmasında web deposu 503'ü
+
+**Durum: KAPALI.** ADR-034 revizyonu, spec/12, GB-142. K-343 systemd soket
+ölçümü (Actions koşusu 44682814581, `test (ubuntu-24.04)`) 1117 istekte bir
+503 ve aynı yeniden başlatmada 1396 ms'lik istek gördü; K-343 sözü sıfır
+kayıptır. Ölçüm yapay değildi: `--web-proxy` ortak deposu
+`.zee/web-durumu-v1.json` her istekte durumu yazma kilidi dışında okuyup
+ayrıştırıyor, kilit altında eski byte'larla karşılaştırıyor (CAS) ve
+çakışmada baştan alıyordu; 128 ardışık çakışmada istek `oran sınırı/web
+güvenlik deposuna erişilemedi … 128 kez değişti` ile 503 oluyordu. Çok işçide
+yavaş süreç (yeniden başlatmada yeni açılan işçi, büyümüş depo) her turu
+kaybedebiliyordu; yerelde 8 işçi/32 istemci sabit yükte yeniden başlatmasız
+da üretildi (1443 istekte 3× 503, en uzun 2,4 sn). Düzeltme: yeni
+`kalici_dosya::kilit_altinda_guncelle` oku-değiştir-yaz'ı tek kilit
+penceresinde yapar; ilerlemeyi ADR-075 kilit kuyruğu verir, tek sınır 5 sn
+kilit beklemesidir. Kanıt: regression `web-depo-cekismesi`
+(`native-web-depo-cekismesi`; düzeltme öncesi `503 3`, sonrası
+`başarılı 3`), `kalici_dosya::tests::kilit_altinda_guncelle_yazari_bekletir_ve_reddi_yazmaz`,
+aynı yükte 0 ret (en uzun 1,0 sn) ve Linux systemd ölçümü tekrarları. K-343
+ölçümü artık ret gövdesini de raporlar. Açık: registry durumu
+(`registry/istemci.rs`) aynı iyimser CAS'ı kullanır; tek yazarlı CLI
+akışında çekişme beklenmez, ayrı izlenir. Ayrıca grup işçisinde kabul ile
+SIGTERM sonrası denetim arasına düşen bağlantı düşürülür (paylaşılan dinleyici
+kapanmadığından o istek kaybolur); pencere çok dardır ve ölçümde
+gözlenmedi, ayrı iş olarak izlenir.
+
 ## K-352 — Mixed-revision iptal testi yükten bağımsız
 
 **Durum: KAPALI.** Test sağlamlaştırması (betik ve ürün davranışı değişmedi):

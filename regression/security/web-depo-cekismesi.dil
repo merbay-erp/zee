@@ -1,0 +1,6 @@
+# K-353: kalıcı web deposu durumu kilit dışında okuyup CAS ile yayımlıyordu; başka yazar her turda araya girince 128 denemeden sonra istek 503 ile reddediliyordu (çok işçi yeniden başlatmasında kayıp istek).
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder

@@ -92,7 +92,11 @@ Her istemci 2000 istemci kimliği arasında döner. Tek kimlikle hızlı bir
 makine varsayılan uç nokta oran sınırını (kimlik başına 60 sn'de 100,
 spec/12) aşar ve 429 yanıtları istek kaybı gibi görünür; ilk CI koşusu
 bunu gösterdi (2882 istekte tam 400 = 4 × 100 başarılı). Rapor
-başarısızlıkları nedene göre (HTTP durumu ya da bağlantı hatası) ayırır.
+başarısızlıkları nedene göre (HTTP durumu ya da bağlantı hatası) ayırır ve
+ilk on başarısızlığın yanıt gövdesini, süresini ve ilk yeniden başlatmaya
+göre zamanını (`basarisizlik_ornekleri`, `yeniden_baslatma_pencereleri_sn`)
+yazar. Yalnız durum kodu kök nedeni göstermedi: bir koşudaki tek 503'ün
+ortak web deposu çekişmesi olduğu (K-353) ancak yeniden üretimle bulundu.
 Gerçek trafikte oran sınırı ayrı bir sözleşmedir; ölçüm yalnız yeniden
 başlatma kaybını sayar.
 

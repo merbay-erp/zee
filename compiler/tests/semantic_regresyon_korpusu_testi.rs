@@ -34,6 +34,8 @@ mod native_isci_saglik_mirasi_fixture;
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
 mod native_metric_stdio_fixture;
+#[path = "semantic_regresyon/native_web_depo_cekismesi.rs"]
+mod native_web_depo_cekismesi_fixture;
 #[path = "semantic_regresyon/native_web_kopma.rs"]
 mod native_web_kopma_fixture;
 #[path = "semantic_regresyon/native_web_yukleme.rs"]
@@ -80,6 +82,7 @@ const KIPLER: &[&str] = &[
     "native-isci-saglik-mirasi",
     "native-coken-degistirme",
     "native-yedek-artigi",
+    "native-web-depo-cekismesi",
 ];
 
 #[derive(Debug, Clone)]
@@ -257,6 +260,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-listener-deadline"
                 | "native-web-kopma"
                 | "native-web-yukleme"
+                | "native-web-depo-cekismesi"
         ),
         "cli" => matches!(
             kip,
@@ -397,6 +401,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-coken-degistirme" {
         let (cikis, cikti) = native_coken_degistirme_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-web-depo-cekismesi" {
+        let (cikis, cikti) = native_web_depo_cekismesi_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -787,6 +799,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-isci-saglik-mirasi"
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
+                | "native-web-depo-cekismesi"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1247,6 +1260,36 @@ fn native_yedek_artigi_regresyonu_gercek_surecle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: artık temizliği", vaka.ad);
+    }
+}
+
+#[test]
+fn native_web_depo_cekismesi_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-web-depo-cekismesi"));
+    assert!(faz_kipi_kabul_eder("security", "native-web-depo-cekismesi"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-web-depo-cekismesi"));
+    }
+}
+
+/// K-353: kalıcı web deposuna her turda araya giren başka yazar varken gerçek
+/// native worker isteği 503 ile reddetmez; durum kilit içinde güncellenir.
+#[test]
+fn native_web_depo_cekismesi_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-web-depo-cekismesi")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native web depo çekişmesi regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: kayıpsız istek", vaka.ad);
     }
 }
 
