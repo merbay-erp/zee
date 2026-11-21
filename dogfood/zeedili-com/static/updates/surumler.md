@@ -12,7 +12,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Site
 
-- **zeedili.com 21 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-353/K-360 kesintisiz yeniden başlatma, K-347 eşzamanlı komut güvenliği ve RFC-0039 ağ sunucusu taslağı haberleri eklendi. Dil davranışı değişmedi.
+- **zeedili.com 21 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-353/K-360 kesintisiz yeniden başlatma, K-347 eşzamanlı komut güvenliği, RFC-0039 ağ sunucusu taslağı ve K-363 adlarda Unicode güvenliği haberleri eklendi. Dil davranışı değişmedi.
 - **zeedili.com kesintisiz yeniden başlatmaya geçer (K-343):** Sitenin
   dağıtım birimleri tek süreçli worker yerine 4 işçili grup ve
   `zeedili.socket` systemd soketiyle gelir; dağıtım ve `systemctl restart`
@@ -25,6 +25,47 @@ Bu kayıt yeni sürüm etiketi değildir.
   (kısa kesinti); ayrıntı `dogfood/zeedili-com/README.md`.
 
 ### Düzeltilenler
+
+- **Parola özeti üretimi giriş sınırında 429 döner (K-365):** Web isteğinde
+  `parolanın argon2 özeti` parola doğrulamasıyla aynı giriş sınırını (5
+  deneme / 300 saniye) kullanır. Sınır aşıldığında istek artık 500 sunucu
+  hatası değil, doğrulamayla aynı `429 çok fazla giriş denemesi` yanıtıyla
+  biter; oran deposuna erişilemezse 503 döner. İsteğin oturum/çerez
+  değişiklikleri geri alınır, sunucu sonraki isteği almaya devam eder. Komut
+  satırında çalışan programda sınır yoktur; `kriptografi` yetkinliği
+  kapalıysa C028 değişmedi.
+
+  **Göç:** Gerekmez. Özet üretimi ile girişi ayrı sayan bir sınır henüz
+  yoktur; yoğun parola değiştirme akışlarında 429 yanıtını kullanıcıya
+  "biraz sonra yeniden dene" olarak göster.
+- **Paket ve birim adlarında Unicode kimliği sıkılaştı (K-363, GB-146):**
+  Paket adı yalnız küçük Türkçe/Latin tanımlayıcı olabilir; Kiril/Yunan
+  benzeri harf (`раket`), CJK, bağ harfi ve birleştirici im yerel
+  bağımlılıkta P007, `dil ekle`de P017'dir. `.zep` paketi yalnız büyük/küçük
+  harfi farklı iki dosya ya da klasör (`A.dil`/`a.dil`) ve Arap harf işareti
+  (U+061C) taşıyamaz; böyle paket her platformda kurulumdan önce reddedilir.
+  `çay birimini kullan` artık yalnız `çay.dil` dosyasını bağlar: macOS ve
+  Windows'ta `Çay.dil` sessizce yüklenmez, her platformda aynı A010 tanısı
+  verilir. Editörde yeniden adlandırma derlenmeyecek bir ad (başka alfabe,
+  rakamla başlayan) önermez. `--yanked-kabul`/`--kritik-kabul` gerekçesi ve
+  registry duyuru kimliği görünmez yön/sıfır genişlikli karakter taşıyamaz.
+  Paket kurulumu ve registry cache yayınının eşzamanlılık ve süre sınırları
+  ayrıca test kanıtı aldı (davranış değişmedi).
+
+  **Göç:** Birim dosyasının adı `kullan` satırındaki adla büyük/küçük harfiyle
+  aynı olmalı (`Çay.dil` → `çay.dil`). Başka alfabeli paket adını Türkçe/Latin
+  harfle yeniden adlandır.
+
+- **P33 güvenlik kanıtı genişledi (K-362, GB-109):** Native HTTP istek
+  ayrıştırıcısı bağımsız bir ayrıştırıcıyla (`httparse`, yalnız testte)
+  karşılaştırılır: zee onun reddettiği hiçbir isteği kabul etmez, kabul
+  edip zee'nin reddettikleri belgelenmiş katı kurallardır (yalın LF,
+  Transfer-Encoding, çoklu Content-Length, origin-form dışı hedef…). Kalıcı
+  web oturum deposunun her yazım adımında çökme görüntüsü alınır; depo
+  hep tam eski ya da tam yenidir, yeniden başlatma kurtarır ve başarı
+  yanıtı/oturum çerezi kalıcı commit'ten önce gitmez. Davranış değişmedi.
+
+  **Göç:** Gerekmez.
 
 - **Eşzamanlı registry çözümü birbirini düşürmez (K-361, ADR-075 eki):**
   Aynı projede aynı anda iki çevrimiçi registry çözümü (ör. iki `dil`

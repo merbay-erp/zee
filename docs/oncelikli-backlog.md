@@ -2557,20 +2557,6 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
-## K-354 — Ağ sunucusu yetkinliği çatı RFC taslağı
-
-**Durum: AÇIK (taslak).** [RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md):
-protokol motorları dahil bütünüyle Zee ile yazılacak bir e-posta sunucusunun
-(SMTP 25/587/465, IMAP 143/993, dayanıklı kuyruk, DKIM/SPF/DMARC) istediği
-yedi katman — dinleyici/bağlantı ve sınırlı CRLF satır okuma, sunucu TLS'i
-ve STARTTLS, bağlantı başına görev ve engellemeyen IO, bayt/kripto
-intrinsic'leri, DNS, dayanıklılık, güvenlik profili — ile ZeeOS'un uygulayacağı
-adlı çoklu FD devri sözleşmesi ve kabul ölçütleri. Bugünkü eksikler kaynakla
-doğrulandı (loopback IPv4 tek dinleyici, sunucu TLS'i/bayt türü/MX-TXT/RSA
-yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
-ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
-ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
-
 ## K-365 — Parola özeti üretiminde giriş kovası aşımı 429 döner
 
 **Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F020 (K-364 taslağı
@@ -2599,6 +2585,42 @@ Açık ve kapsam dışı: özet üretimine ayrı kova ya da yakalanabilir `Sonu�
 biçimi grammar/API genişlemesidir, K-364 taslağının açık sorusudur. TOTP
 doğrulaması giriş kovası aşımında yanıt yazmadan `yanlış` döner (429 değil);
 ayrı takip.
+
+## K-364 — WebDAV/CalDAV/CardDAV web adaptörü RFC taslağı
+
+**Durum: AÇIK (taslak).** [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
+`urun-h` takvim/kişi verisini standart masaüstü/telefon istemcilerine CalDAV
+(RFC 4791) ve CardDAV (RFC 6352) ile sunmak istiyor. Ürünün çıkardığı altı
+eksik 83d48cb kaynağıyla tek tek doğrulandı: kapalı yöntem kümesi (PROPFIND/
+OPTIONS 405, `Allow` yok), Zee'nin istek başlığı okuyamaması, yanıt içerik
+türünün ilk karakterden seçilmesi (XML → `text/html`) ve ETag/DAV/
+WWW-Authenticate yokluğu, octet-stream dışı gövdenin 64 KiB form çözümü, Basic
+yokluğu + Argon2 5/300 sn + `_csrf`/`Origin` zorunluluğu, well-known için
+yalnız GET/303. Ek iki ürün sürtünmesi: Argon2 özet üretimi doğrulamayla aynı
+giriş kovasını tüketip aşımda yakalanamayan C028 → 500 veriyor (spec metnine
+aykırı değil, spec boşluğu; 429/`Sonuç` ve ayrı kova ayrı fix adayı) ve
+iCalendar/vCard CRLF'i (`\r` kaçışı yok; öneri: türlü yanıtta çalışma zamanı
+LF→CRLF, K-356'ya bağlanmaz). Yedi katman: yöntem kaydı, kapalı başlık okuma listesi, içerik
+türü/başlık kaydı, DOCTYPE'sız sınırlı XML ağacı, uygulama parolası (128+ bit,
+HMAC, cihaz başına iptal) ile çerezsiz Basic ve ayrı oran kapıları, açık
+`dav istemcisi` politikasına bağlı CSRF/Origin muafiyeti, well-known keşif.
+Core freeze altında uygulama yok; her katman `urun-h`nin depo içi DAV
+reproducer'ını (henüz yok) ister. RFC-0039'a bağımlı değildir, büyük gövde
+tutamak ilkelini onunla paylaşır. V1 kapısı değildir.
+
+## K-354 — Ağ sunucusu yetkinliği çatı RFC taslağı
+
+**Durum: AÇIK (taslak).** [RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md):
+protokol motorları dahil bütünüyle Zee ile yazılacak bir e-posta sunucusunun
+(SMTP 25/587/465, IMAP 143/993, dayanıklı kuyruk, DKIM/SPF/DMARC) istediği
+yedi katman — dinleyici/bağlantı ve sınırlı CRLF satır okuma, sunucu TLS'i
+ve STARTTLS, bağlantı başına görev ve engellemeyen IO, bayt/kripto
+intrinsic'leri, DNS, dayanıklılık, güvenlik profili — ile ZeeOS'un uygulayacağı
+adlı çoklu FD devri sözleşmesi ve kabul ölçütleri. Bugünkü eksikler kaynakla
+doğrulandı (loopback IPv4 tek dinleyici, sunucu TLS'i/bayt türü/MX-TXT/RSA
+yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
+ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
+ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
 ## K-363 — P33 kanıt dilimi: paket/cache yayın süresi ve Unicode kimlikleri
 
