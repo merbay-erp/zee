@@ -10,6 +10,10 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Site
+
+- **zeedili.com 21 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-353/K-360 kesintisiz yeniden başlatma, K-347 eşzamanlı komut güvenliği ve RFC-0039 ağ sunucusu taslağı haberleri eklendi. Dil davranışı değişmedi.
+
 ### Düzeltilenler
 
 - **Çok işçi grubu yeniden başlatmada kabul ettiği isteği düşürmez (K-360,
