@@ -603,6 +603,196 @@ fn exact_registry_paketi_proje_grafigi_kilit_ve_offline_derlemeye_baglanir() {
     assert!(hata.tani.mesaj.contains("yeni açık gerekçe"));
 }
 
+/// K-361: yarış kancalı taşıyıcı. İlk istekte (her iki istemci de kalıcı
+/// durumu okuduktan sonra) ortak engelde buluşur; `bekle` verilmişse targets
+/// isteğinde öbür istemcinin bütün güncellemeyi bitirmesini bekler. Böylece
+/// iki güncellemenin aynı başlangıç durumundan doğrulayıp sırayla yazması
+/// uyku kullanmadan belirlenimli kurulur.
+struct YarisTasiyicisi {
+    ic: SahteTasiyici,
+    engel: Option<std::sync::Arc<std::sync::Barrier>>,
+    bekle: Option<std::sync::mpsc::Receiver<()>>,
+}
+
+impl RegistryTasiyici for YarisTasiyicisi {
+    fn getir(
+        &mut self,
+        goreli_yol: &str,
+        azami_bayt: usize,
+    ) -> Result<Option<Vec<u8>>, RegistryHatasi> {
+        if let Some(engel) = self.engel.take() {
+            engel.wait();
+        }
+        if goreli_yol.ends_with(".targets.json") {
+            if let Some(bekle) = self.bekle.take() {
+                bekle.recv().expect("birinci güncelleme bitti");
+            }
+        }
+        self.ic.getir(goreli_yol, azami_bayt)
+    }
+}
+
+struct Yaris {
+    birinci: Result<RegistryPaketCiktisi, RegistryHatasi>,
+    ikinci: Result<RegistryPaketCiktisi, RegistryHatasi>,
+    durum: Option<KaliciRegistryDurumu>,
+}
+
+/// İki istemci aynı cache'i boş durumdan açar, ikisi de durumu okuduktan
+/// sonra doğrular; `birinci` tamamen yazdıktan sonra `ikinci` yazar.
+fn yaris(
+    birinci: (SahteTasiyici, HedefPolitikasi),
+    ikinci: (SahteTasiyici, HedefPolitikasi),
+) -> Yaris {
+    let gecici = GeciciKlasor::yeni();
+    let anahtarlar = anahtarlar();
+    let root = root(&anahtarlar);
+    let root_ozeti = format!("sha256:{}", sha256_hex(&root));
+    let istemci = RegistryIstemcisi::yeni(gecici.yol().join("cache"), root, root_ozeti);
+    let engel = std::sync::Arc::new(std::sync::Barrier::new(2));
+    let (bitti, bekle) = std::sync::mpsc::channel();
+    let kos = |ic, politika, bekle: Option<std::sync::mpsc::Receiver<()>>| {
+        let (istemci, engel) = (istemci.clone(), engel.clone());
+        std::thread::spawn(move || {
+            let mut tasiyici = YarisTasiyicisi {
+                ic,
+                engel: Some(engel),
+                bekle,
+            };
+            istemci.paketi_guncelle_zamanla(&mut tasiyici, "miras", "1.2.3", politika, 1)
+        })
+    };
+    let ikinci_ip = kos(ikinci.0, ikinci.1, Some(bekle));
+    let birinci_ip = kos(birinci.0, birinci.1, None);
+    let birinci = birinci_ip.join().expect("birinci iş parçacığı");
+    bitti.send(()).expect("ikinci bekliyor");
+    let ikinci = ikinci_ip.join().expect("ikinci iş parçacığı");
+    let durum = istemci.durumu_oku().expect("son durum").0;
+    Yaris {
+        birinci,
+        ikinci,
+        durum,
+    }
+}
+
+/// K-361: eşzamanlı iki `paketi_guncelle` aynı başlangıç durumunu okuyup
+/// sırayla yazar. Düzeltme öncesi ikinci yazım kilit altında tek bir
+/// karşılaştırma (CAS) yapıyor ve araya giren yazarı gördüğünde P016 ile
+/// düşüyordu; aynı zinciri getiren iki komut bile çakışıyordu. Artık durum
+/// kilit altında uzlaştırılır: aynı ya da ileri zincir yazılır, geride kalan
+/// güncelleme sonucunu kalıcı yeni durumla yeniden doğrular; aynı sürümde
+/// farklı içerik (çelişki) P013 ile reddedilir ve durum korunur.
+#[test]
+fn eszamanli_guncellemeler_durumu_uzlastirir_ve_geri_gitmez() {
+    let gecici = GeciciKlasor::yeni();
+    let anahtarlar = anahtarlar();
+    let yayin = yayin_fixture(&gecici);
+    let olagan = HedefPolitikasi::default();
+    let kritik_kabul = HedefPolitikasi {
+        kritik_duyuru_kabul: true,
+        ..HedefPolitikasi::default()
+    };
+    let hedef =
+        |durum: &Option<KaliciRegistryDurumu>| durum.as_ref().map(|durum| durum.metadata.targets);
+
+    let ayni = yaris(
+        (tasiyici(&anahtarlar, &yayin, 3), olagan),
+        (tasiyici(&anahtarlar, &yayin, 3), olagan),
+    );
+    assert!(ayni.birinci.is_ok(), "{:?}", ayni.birinci.err());
+    assert!(
+        ayni.ikinci.is_ok(),
+        "aynı zincir çakışmamalı: {:?}",
+        ayni.ikinci.err()
+    );
+    assert_eq!(hedef(&ayni.durum), Some(3));
+
+    let ileri = yaris(
+        (tasiyici(&anahtarlar, &yayin, 3), olagan),
+        (tasiyici(&anahtarlar, &yayin, 4), olagan),
+    );
+    assert!(ileri.birinci.is_ok(), "{:?}", ileri.birinci.err());
+    let sonuc = ileri.ikinci.expect("ileri zincir yazılmalı");
+    assert_eq!(sonuc.metadata_surumleri.targets, 4);
+    assert_eq!(hedef(&ileri.durum), Some(4));
+
+    let geri = yaris(
+        (tasiyici(&anahtarlar, &yayin, 4), olagan),
+        (tasiyici(&anahtarlar, &yayin, 3), olagan),
+    );
+    assert!(geri.birinci.is_ok(), "{:?}", geri.birinci.err());
+    let sonuc = geri
+        .ikinci
+        .expect("geride kalan yeni durumla yeniden doğrulanmalı");
+    assert_eq!(sonuc.metadata_surumleri.targets, 4);
+    assert!(!sonuc.cevrimdisi);
+    assert_eq!(hedef(&geri.durum), Some(4), "durum geri gitmemeli");
+
+    // Geride kalan güncelleme eski zincirle başarı bildiremez: yeni kalıcı
+    // durum pakete kritik duyuru taşıyorsa sonuç yeni durumla reddedilir.
+    let dondurma = yaris(
+        (
+            tasiyici_duyurularla(&anahtarlar, &yayin, 4, &["ZSA-2026-0001"]),
+            kritik_kabul,
+        ),
+        (tasiyici(&anahtarlar, &yayin, 3), olagan),
+    );
+    assert!(dondurma.birinci.is_ok(), "{:?}", dondurma.birinci.err());
+    let hata = dondurma
+        .ikinci
+        .expect_err("eski zincir yeni duyuruyu atlayamaz");
+    assert_eq!(hata.kod, "P014", "{hata}");
+    assert_eq!(hedef(&dondurma.durum), Some(4));
+
+    let celiski = yaris(
+        (
+            tasiyici_duyurularla(&anahtarlar, &yayin, 3, &["ZSA-2026-0001"]),
+            kritik_kabul,
+        ),
+        (tasiyici(&anahtarlar, &yayin, 3), olagan),
+    );
+    let ilk_durum = celiski.durum.clone();
+    assert!(celiski.birinci.is_ok(), "{:?}", celiski.birinci.err());
+    let hata = celiski.ikinci.expect_err("aynı sürümde farklı içerik");
+    assert_eq!(hata.kod, "P013", "{hata}");
+    assert!(hata.mesaj.contains("çelişkili"), "{hata}");
+    assert_eq!(celiski.durum, ilk_durum);
+    assert_ne!(
+        ilk_durum
+            .as_ref()
+            .map(|durum| durum.metadata.targets_sha256.clone()),
+        None
+    );
+}
+
+/// K-361: zincir sırası rol rol sürüm+özetle karar verir; bir rolde ileri,
+/// ötekinde geri sıra (karışık görünüm) çelişkidir.
+#[test]
+fn zincir_sirasi_karisik_gorunumu_celiski_sayar() {
+    let durum = |timestamp: u64, snapshot: u64| KaliciRegistryDurumu {
+        sema: DURUM_SEMASI.into(),
+        sabit_kok_sha256: "sha256:kok".into(),
+        etkin_kok_sha256: "sha256:kok".into(),
+        dogrulama_zamani: 1,
+        metadata: MetadataSurumleri {
+            root: 1,
+            timestamp,
+            timestamp_sha256: format!("t{timestamp}"),
+            snapshot,
+            snapshot_sha256: format!("s{snapshot}"),
+            targets: 1,
+            targets_sha256: "h1".into(),
+        },
+    };
+    use std::cmp::Ordering;
+    let sira = durum::zincir_sirasi;
+    assert_eq!(sira(&durum(2, 2), &durum(2, 2)), Ok(Ordering::Equal));
+    assert_eq!(sira(&durum(3, 2), &durum(2, 2)), Ok(Ordering::Greater));
+    assert_eq!(sira(&durum(2, 2), &durum(3, 3)), Ok(Ordering::Less));
+    let hata = sira(&durum(3, 1), &durum(2, 2)).expect_err("karışık sıra");
+    assert_eq!(hata.kod, "P013");
+}
+
 fn hex_yaz(baytlar: &[u8]) -> String {
     const BASAMAK: &[u8; 16] = b"0123456789abcdef";
     let mut sonuc = String::with_capacity(baytlar.len() * 2);

@@ -139,6 +139,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/kaynak_sinirlari.rs", 280),
         ("src/registry/istemci.rs", 600),
         ("src/registry/istemci/depo.rs", 100),
+        ("src/registry/istemci/durum.rs", 200),
         ("src/registry/istemci/tasima.rs", 120),
         ("src/paket/uzak.rs", 480),
         ("src/paket/uzak/politika.rs", 180),

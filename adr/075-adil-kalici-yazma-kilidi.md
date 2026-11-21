@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 10 Eylül 2026
-- **İlgili kayıt:** K-183, K-182, K-346, K-347, ADR-032, RFC-0016, spec/08, spec/11
+- **İlgili kayıt:** K-183, K-182, K-346, K-347, K-361, ADR-032, RFC-0016, spec/08, spec/11
 
 ## Bağlam
 
@@ -162,3 +162,34 @@ yeniden çalıştırılabilir; ürün yolunda (web/eylem) kullanılmaz.
 `proje_testi::bildirim_yazimi_araya_giren_komutun_bagimliligini_ezmez`;
 regression `eszamanli-tasima-geri-alma` (`native-eszamanli-tasima`) ve
 `eszamanli-paket-ekle` (`native-eszamanli-paket-ekle`). GB-144.
+
+## Ek — K-361: registry kalıcı durumunun kilit içi uzlaştırması (21 Kasım 2026)
+
+**Bağlam.** K-353 iyimser oku+CAS döngüsünü web deposunda kaldırdı; registry
+istemcisi (`registry/istemci.rs`) aynı deseni yeniden denemesiz kullanıyordu.
+`durum-v1.json` kilit dışında okunur, zincir ağdan doğrulanır, durum kilit
+altında tek CAS ile yayımlanırdı. Aynı başlangıç durumunu okuyan ikinci
+çevrimiçi çözüm aynı zinciri getirse bile P016 ile düşüyordu (yarış
+regresyonunda 4 senaryonun 4'ünde).
+
+**Karar.** Okuma kilit dışında kalır: doğrulama ağ ister ve kilit spec/08'in 5
+sn bekleme sınırını aşacak süre tutulamaz. Yayın `kilit_altinda_guncelle` ile
+yapılır ve CAS değil uzlaştırmadır: başlangıç byte'ları yerindeyse yeni durum
+yazılır; değilse güncel durum aynı pencerede kapalı/kanonik şemayla
+ayrıştırılır, ağ dışı root sabitlemesi aynı olmalıdır (aksi P016) ve
+root/timestamp/snapshot/targets rolleri sürüm+özetle karşılaştırılır. Her
+rolde eşit → dosyaya dokunulmaz; eşit ya da ileri → yeni durum yazılır;
+eşit ya da geri → durum korunur ve sonuç yeni kalıcı durumla çevrimdışı
+yeniden doğrulanır, böylece yanked/kritik duyuru eski zincirle atlanamaz.
+Aynı sürümde farklı özet ya da karışık sıra çelişkidir (P013). Yeniden deneme
+döngüsü yoktur; ilerlemeyi ADR-075 kilit kuyruğu verir.
+
+**Reddedilen.** (1) Bütün güncellemeyi kilit altında koşmak: ağ süresi kilit
+bekleyenleri 5 sn sınırında düşürür. (2) CAS kaybında bütün güncellemeyi
+yeniden denemek: K-353'ün açlık sınıfını ve ağ tekrarını geri getirir. (3)
+Geride kalan sonucu eski zincirle döndürmek: yeni durumun gördüğü duyuru
+atlanırdı (freeze).
+
+**Kanıt.** `registry::istemci::testler::eszamanli_guncellemeler_durumu_uzlastirir_ve_geri_gitmez`
+(aynı/ileri/geri/duyuru/çelişki), `zincir_sirasi_karisik_gorunumu_celiski_sayar`;
+regression `registry-durum-cekismesi` (`native-registry-durum-cekismesi`). GB-145.
