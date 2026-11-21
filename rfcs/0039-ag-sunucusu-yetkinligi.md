@@ -268,10 +268,16 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
   (NXDOMAIN, NODATA) olarak sınıflandırılmış; SMTP 4xx/5xx kararı buna
   bağlıdır.
 - Çözücü: `hickory-resolver` ya da sistem çözücüsüne (`res_query`) dar bağ;
-  seçim alt RFC'de. Varsayılan hedef yerel çözücüdür; ZeeOS imajı
-  systemd-resolved loopback stub çözücüsünü sağlar (21 Kasım 2026 yanıtı),
-  doğrulayıcı çözücü yoktur. Loopback çözücü adresi bildirimle izinli
-  tek DNS hedefidir; DNSSEC doğrulaması bu RFC'de vaat edilmez.
+  seçim alt RFC'de. Varsayılan hedef yerel çözücüdür: **gereksinim**,
+  loopback stub çözücünün (systemd-resolved) bildirimle izinli tek DNS
+  hedefi olmasıdır; doğrulayıcı çözücü beklenmez, DNSSEC doğrulaması bu
+  RFC'de vaat edilmez.
+  **Durum: ZeeOS sağlamalı; bugün yok (ZeeOS P0-Z3 açık).** Düzeltme
+  (ZeeOS ADR-076, 21 Kasım 2026): imajın systemd-resolved taşıdığı yönündeki
+  önceki yanıt izinli sürüm listesinden okunmuştu, kurulu paketlerden değil.
+  r5 sürümünün dpkg durumunda (156 paket) systemd-resolved kurulu değildir ve
+  ağ yapılandırması `[DHCPv4] UseDNS=no` olduğundan bugün hiçbir DNS çözüm
+  yolu yapılandırılmamıştır.
 - Sınırlar: sorgu son tarihi, yanıt boyutu, kayıt sayısı, TXT parça birleştirme
   kuralı (RFC 7208/6376'ya uygun), CNAME zinciri derinliği.
 - Yetkinlik: yeni `dns` yetkinliği; spec/23 `ağ` origin listesinin yerine
@@ -289,7 +295,10 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
 Mevcut primitive'ler: atomik tek dosya yazma/ekleme `sync_all` + üst dizin
 eşzamanlama; aynı klasörde süreçler arası sıralı yazarlar; spec/26'da
 no-clobber atomik taşıma ve kalıcı dizin eşzamanlama; spec/25 PostgreSQL
-transaction'ı. Kabul akışı bunlarla kurulabilir:
+transaction'ı. **PostgreSQL durumu: ZeeOS sağlamalı; bugün yok (ZeeOS
+P0-Z3 açık)** — r5 imajında postgresql-17 kurulu değildir (aynı ADR-076
+düzeltmesi); outbox'ın PostgreSQL kolu bu sağlanana kadar ürün hedefinde
+kanıtlanamaz. Kabul akışı bunlarla kurulabilir:
 
 1. `DATA` gövdesi geçici dosyaya akar, SHA-256 aynı akışta (Katman A);
 2. geçici dosya `fsync`'lenir ve içerik adresli blob yoluna no-clobber
@@ -403,7 +412,12 @@ karar kayıtları ZeeOS deposunda tutulur.
   oldu. Her fd'nin adı, ailesi ve kapısı kendi içinde tutarlıydı; yalnız
   sıra bildirim sırasından farklıydı. Aynı koşuda `LISTEN_PID` eşleşti, IPv6
   soketlerinde `IPV6_V6ONLY=1`, hepsi `SOCK_STREAM` + `listen` idi;
-  `Type=notify` ile `READY=1` ve SIGTERM→`STOPPING=1` çalıştı.
+  `Type=notify` ile `READY=1` ve SIGTERM→`STOPPING=1` çalıştı. İkinci
+  kanıt: r5 imzalı çekirdek + kök dosya sistemiyle amd64 VM'de canlı
+  denetimler 37/37 geçti ve fd'ler yine bildirim dışı sırayla geldi
+  (`imap_v6:imaps_v6:imap_v4:…`). İmaj kökeni zinciri: Debian OpenPGP →
+  `InRelease` → `Packages` → 156/156 paketin `.deb` SHA-256 eşleşmesi;
+  kök dosya sisteminde paketinden ayrışan dosya 0.
 - Hizmet süreci ayrıcalıksız kullanıcıyla, `CAP_NET_BIND_SERVICE` ve diğer
   yetkinlikler olmadan başlar.
 - TLS sertifika ve anahtarları credential dizininden (`CREDENTIALS_DIRECTORY`)
