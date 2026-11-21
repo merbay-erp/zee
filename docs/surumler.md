@@ -26,6 +26,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **TOTP doğrulaması giriş sınırında 429 döner (K-368):** Web isteğinde
+  `kod gizli anahtarıyla doğrulanıyorsa` 300 saniyede 5 denemelik TOTP
+  sınırını aştığında artık doğru kodu da yanlış sayıp uygulamanın "hatalı"
+  yanıtını göndermez; kod denetlenmeden parola doğrulamasıyla aynı
+  `429 çok fazla giriş denemesi` yanıtı gönderilir (oran deposuna
+  erişilemezse 503). Komut satırında çalışan programda sınır yoktur.
+
+  **Göç:** Gerekmez. Rota aşımda koşulu yine `yanlış` görür; hesap kilidi
+  sayacı tutan uygulamada bu sayaç aşım sırasında da artabilir (spec/12 §5
+  açık madde).
 - **Paketler Windows'ta kurulamayan dosya adı taşıyamaz (K-366, GB-147):**
   `.zep` paketindeki dosya ya da klasör adı Windows'un ayrılmış aygıt adı
   olamaz (`CON`, `PRN`, `AUX`, `NUL`, `COM1`…`COM9`, `LPT1`…`LPT9` ve

@@ -564,8 +564,16 @@ impl GirdiCikti for ToplayanIo {
                 "totp",
                 self.an_son_degeri,
             );
-            if !matches!(karar, Ok(karar) if karar.izinli) {
-                return false;
+            match karar {
+                Ok(karar) if karar.izinli => {}
+                Ok(_) => {
+                    self.durum_yaniti_gonder(429, crate::web_guvenligi::GIRIS_ORAN_ASIMI);
+                    return false;
+                }
+                Err(_) => {
+                    self.durum_yaniti_gonder(503, crate::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK);
+                    return false;
+                }
             }
         }
         let (yil, ay, gun, saat, dakika) = self.zaman;

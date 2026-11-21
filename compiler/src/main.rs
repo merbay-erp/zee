@@ -4073,8 +4073,21 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 "totp",
                 web_duvar_saati_ms(),
             );
-            if !matches!(karar, Ok(karar) if karar.izinli) {
-                return false;
+            // K-368 (ZM-F021): aşım "yanlış kod" değildir; parola
+            // doğrulaması gibi kod denetlenmeden sabit 429/503 yanıtı.
+            match karar {
+                Ok(karar) if karar.izinli => {}
+                Ok(_) => {
+                    if let Some(sink) = &self.metrik {
+                        sink.rate_reject();
+                    }
+                    self.durum_yaniti_gonder(429, dil::web_guvenligi::GIRIS_ORAN_ASIMI);
+                    return false;
+                }
+                Err(_) => {
+                    self.durum_yaniti_gonder(503, dil::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK);
+                    return false;
+                }
             }
         }
         let saniye = std::time::SystemTime::now()
