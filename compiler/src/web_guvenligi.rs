@@ -28,6 +28,12 @@ pub const AZAMI_ANONIM_OTURUM_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILA
 
 /// Kayar yenilemenin aşamayacağı, oluşturmadan sayılan mutlak oturum tavanı (30 gün).
 pub const OTURUM_MUTLAK_TAVAN_SANIYE: i64 = 30 * 24 * 60 * 60;
+/// Giriş kovası (300 sn/5) aşımı: parola doğrulaması ve özet üretimi aynı
+/// 429 gövdesini verir (spec/12 §5, K-365). Adaptör `parola_ozeti_uret`
+/// hatası olarak da bu exact metni döndürür; yorumlayıcı onu `Ç002`ye çevirir.
+pub const GIRIS_ORAN_ASIMI: &str = "çok fazla giriş denemesi";
+/// Giriş oran deposuna erişilemedi: fail-closed 503 (spec/12 §5, K-365).
+pub const GIRIS_ORAN_DEPOSU_YOK: &str = "giriş oran sınırı deposuna erişilemedi";
 /// Proje ayarıyla seçilebilecek en kısa kimlikli oturum ömrü (5 dakika).
 pub const OTURUM_OMRU_ALT_SANIYE: i64 = 5 * 60;
 

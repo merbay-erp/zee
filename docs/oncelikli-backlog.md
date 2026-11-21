@@ -2571,6 +2571,35 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
+## K-365 — Parola özeti üretiminde giriş kovası aşımı 429 döner
+
+**Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F020 (K-364 taslağı
+sırasında 83d48cb ile doğrulandı). `parolanın argon2 özeti` web isteğinde
+parola doğrulamasıyla aynı giriş kovasını (aynı istemci, kapsam `parola`,
+300 sn/5) artırıyordu; spec/12 bunu tanımlıyor ama aşım yanıtını
+tanımlamıyordu. Aşımda doğrulama 429 dönerken üretim adaptör hatasıyla C028
+tanısına düşüyor, tanı istek-yerel hata sınırında 500 oluyordu (gerçek native
+sunucuda 6. istek 500, ardından doğrulama 429).
+
+Düzeltme (davranış daralır, yeni grammar/API yok): adaptör aşımda
+`web_guvenligi::GIRIS_ORAN_ASIMI`, depo hatasında `GIRIS_ORAN_DEPOSU_YOK`
+döndürür; intrinsic bu iki exact hatayı kullanıcıya sızmayan iç nöbetçi
+`Ç002`ye (mesajı 429/503) çevirir; istek döngüsü isteği geri alır ve parola
+doğrulamasıyla aynı sabit gövdeyi gönderir, işçi sonraki isteği alır. Native
+aşım metriği `rate_reject` doğrulamayla aynı sayılır. Web dışı akışta kova
+yoktur; yetkinlik kapalılığı ve adaptör üretim hatası C028 kalır. Eşzamanlı
+görev sarmalayıcısı artık bütün `Ç` nöbetçilerini metinsel sarmalamaz.
+
+Kanıt: `urun_e_yetkinlik_testi::argon2_ozeti_web_giris_kovasi_asiminda_dogrulamayla_ayni_429_doner`
+(eski kod `[200, 500, 429, 200]`), `argon2_ozeti_web_disinda_oran_kovasina_tabi_degildir`,
+regression `security/parola-ozeti-oran-asimi` (kip `web`), spec/12 §5 ZORUNLU
+maddesi, hata kataloğu Ç002.
+
+Açık ve kapsam dışı: özet üretimine ayrı kova ya da yakalanabilir `Sonuç`
+biçimi grammar/API genişlemesidir, K-364 taslağının açık sorusudur. TOTP
+doğrulaması giriş kovası aşımında yanıt yazmadan `yanlış` döner (429 değil);
+ayrı takip.
+
 ## K-363 — P33 kanıt dilimi: paket/cache yayın süresi ve Unicode kimlikleri
 
 **Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün kalan üç kanıt

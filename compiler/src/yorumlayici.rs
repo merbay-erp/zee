@@ -954,6 +954,16 @@ fn calistir_program_kodla(
                         &format!("istek {} saniyelik son tarihini aştı", zaman_asimi / 1000),
                     );
                 }
+                Err(tani) if tani.kod == "Ç002" => {
+                    // Giriş kovası reddi (K-365): rota mutation'ı geri alınır,
+                    // parola doğrulamasıyla aynı sabit gövde gönderilir.
+                    io.istek_islemini_geri_al();
+                    if tani.mesaj == "503" {
+                        io.durum_yaniti_gonder(503, crate::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK);
+                    } else {
+                        io.durum_yaniti_gonder(429, crate::web_guvenligi::GIRIS_ORAN_ASIMI);
+                    }
+                }
                 Err(tani) => {
                     io.istek_islemini_geri_al();
                     let Some((durum, mesaj)) = web_istek::istek_hatasi_yaniti(&tani.kod) else {
@@ -1382,9 +1392,10 @@ async fn gorevleri_calistir<'a>(
                                 iptal_edilenler.join(", ")
                             )
                         };
-                        // Ç000 çıkış kodunu, Ç001 deadline sahibini mesajında
-                        // taşır; iç akış nöbetçilerini metinsel olarak sarmalama.
-                        if tani.kod != "Ç000" && tani.kod != "Ç001" {
+                        // Ç000 çıkış kodunu, Ç001 deadline sahibini, Ç002 giriş
+                        // reddi durumunu mesajında taşır; iç akış nöbetçilerini
+                        // metinsel olarak sarmalama.
+                        if !tani.kod.starts_with('Ç') {
                             tani.mesaj = format!(
                                 "\"{}\" görevi başarısız oldu.{} {}",
                                 calismalar[sira].ad, iptal, tani.mesaj
