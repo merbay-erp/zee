@@ -1440,8 +1440,9 @@ fn native_unicode_kimlik_kipi_yalniz_security_fazina_aittir() {
     }
 }
 
-/// K-363: paket/birim/yeniden adlandırma kimlikleri Unicode biçimine göre
-/// platformdan bağımsız kabul/ret verir; her vaka tek senaryoyu seçer.
+/// K-363/K-366: paket/birim/yeniden adlandırma kimlikleri ve `.zep` yolları
+/// Unicode biçimine ve Windows ad kurallarına göre platformdan bağımsız
+/// kabul/ret verir; her vaka tek senaryoyu seçer.
 #[test]
 fn native_unicode_kimlik_regresyonlari_calisma_aninda_uretilen_adlarla_korunur() {
     let vakalar: Vec<_> = vakalari_oku()
@@ -1450,8 +1451,8 @@ fn native_unicode_kimlik_regresyonlari_calisma_aninda_uretilen_adlarla_korunur()
         .collect();
     assert_eq!(
         vakalar.len(),
-        6,
-        "K-363 regresyonları gerçek manifest vakası olmadan geçemez"
+        8,
+        "K-363/K-366 regresyonları gerçek manifest vakası olmadan geçemez"
     );
     for vaka in vakalar {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");

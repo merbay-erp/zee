@@ -89,7 +89,8 @@ içerik, mtime ve izin yazımı YASAKTIR. Varsayılan `biçimle` yazma kipi sür
   Alfabe lexer'ın tanımlayıcı kümesidir (ASCII küçük harf/rakam, `_`,
   `ç ğ ı ö ş ü â î û`; rakamla başlamaz). Başka yazıdan homoglif (Kiril `р`,
   Yunan `ρ`), birleştirici im, bağ harfi ve görünmez biçim karakteri
-  yerel bağımlılıkta P007, uzak bağımlılıkta P017'dir (K-363).
+  yerel bağımlılıkta P007, uzak bağımlılıkta P017'dir (K-363). `dil paketle`
+  ana projenin adına aynı kuralı uygular (K-366, spec/18).
 - Paket de birim gibi yalnız işlem/yapı/test tanımlarını dışarı verir; üst
   düzey cümleleri çalışmaz. Paket içi birim, onu kullanan gerçek dosyanın
   klasöründen çözülür.

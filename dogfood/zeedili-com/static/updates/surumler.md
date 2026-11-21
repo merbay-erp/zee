@@ -26,6 +26,22 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Paketler Windows'ta kurulamayan dosya adı taşıyamaz (K-366, GB-147):**
+  `.zep` paketindeki dosya ya da klasör adı Windows'un ayrılmış aygıt adı
+  olamaz (`CON`, `PRN`, `AUX`, `NUL`, `COM1`…`COM9`, `LPT1`…`LPT9` ve
+  benzerleri; büyük/küçük harf fark etmez, `con.dil`, `nul.txt.dil`,
+  `prn/` dahil) ve nokta ya da boşlukla bitemez (`kaynak./`, `kaynak /`).
+  Önceden böyle bir paket Linux/macOS'ta üretilip kuruluyor, Windows'ta
+  kurulamıyordu; artık `dil paketle` ve kurulum her platformda aynı tanıyla
+  reddeder. `dil paketle` ayrıca projenin `proje` adını bağımlılık olarak
+  kullanılabilecek ad kuralıyla denetler: `Uygulama` ya da `kötü ad` gibi ad
+  artık paket üretmez (P012 içinde P007).
+
+  **Göç:** Paketlenen projede `con.dil`, `aux/` gibi dosya/klasörleri yeniden
+  adlandır (`konsol.dil`, `yardimci/`), sondaki nokta ya da boşluğu kaldır.
+  Proje adını küçük harfli tek Türkçe/Latin tanımlayıcı yap
+  (`proje "uygulama" olsun`).
+
 - **Parola özeti üretimi giriş sınırında 429 döner (K-365):** Web isteğinde
   `parolanın argon2 özeti` parola doğrulamasıyla aynı giriş sınırını (5
   deneme / 300 saniye) kullanır. Sınır aşıldığında istek artık 500 sunucu
@@ -38,6 +54,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez. Özet üretimi ile girişi ayrı sayan bir sınır henüz
   yoktur; yoğun parola değiştirme akışlarında 429 yanıtını kullanıcıya
   "biraz sonra yeniden dene" olarak göster.
+
 - **Paket ve birim adlarında Unicode kimliği sıkılaştı (K-363, GB-146):**
   Paket adı yalnız küçük Türkçe/Latin tanımlayıcı olabilir; Kiril/Yunan
   benzeri harf (`раket`), CJK, bağ harfi ve birleştirici im yerel

@@ -39,6 +39,11 @@ pub fn paketle_zamanla(
         .map_err(|hata| format!("proje.dil okunamadı: {}.", hata))?;
     let bildirim =
         bildirimi_oku(&bildirim_kaynagi).map_err(|tani| format!("{}: {}", tani.kod, tani.mesaj))?;
+    // K-366: tüketici (yerel bağımlılık P007, registry) adı lexer alfabesiyle
+    // denetler; üretici aynı kuralı uygulamadan kullanılamaz paket üretiyordu.
+    if let Some(mesaj) = crate::proje::paket_adi_hatasi(&bildirim.ad) {
+        return Err(format!("P007: {}", mesaj));
+    }
     if !bildirim.yerel_bagimliliklar.is_empty() || !bildirim.uzak_bagimliliklar.is_empty() {
         return Err("Yerel yol bağımlılığı veya uzak registry bağımlılığı henüz yayınlanamaz; kaynak paketi v1 bağımsız olmalı.".into());
     }

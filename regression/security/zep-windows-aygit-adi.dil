@@ -1,0 +1,6 @@
+# K-366: .zep üreticisi ve tüketicisi Windows ayrılmış aygıt adlarını (CON,
+# NUL, AUX, COM1, LPT1… uzantılı ve büyük/küçük harf duyarsız) ve sonu
+# nokta/boşlukla biten bileşenleri kabul ediyordu; arşiv Linux/macOS'ta
+# kuruluyor, Windows'ta kurulamıyordu.
+# senaryo: zep-windows-adi
+1 yaz
