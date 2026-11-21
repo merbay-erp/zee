@@ -284,6 +284,19 @@ ve `diğer <n>` sayılarıdır. Düzeltme öncesi worker durumu kilit dışında
 CAS ile yayımladığından her turu kaybeder ve `503 3` görülür; düzeltme
 sonrası `başarılı 3`. Toplu replay bu kipi atlar.
 
+## Native registry durum çekişmesi kipi (K-361)
+
+`security` fazındaki `native-registry-durum-cekismesi` kipi `dil::registry`
+istemcisini iki gerçek iş parçacığında aynı cache köküyle çalıştırır;
+taşıyıcı imzalı metadata ve vakanın `.dil` kaynağından üretilen yayını
+bellekten sunar. İlk istekte (ikisi de kalıcı durumu okuduktan sonra) ortak
+engelde buluşturur, ikinci istemci targets isteğinde birincinin bitmesini
+kanalla bekler; uyku ile eşitleme yoktur. Dört senaryo: aynı zincir, ileri,
+geri ve aynı sürümde farklı içerik. Çıktı başarılı sayı, ikincinin döndürdüğü
+targets sürümü ya da tanı kodu ve son kalıcı targets sürümüdür. Düzeltme
+öncesi `aynı zincir başarılı 1`, `ileri P016 durum 3`, `geri P016 durum 4`,
+`çelişki P016 durum 3`. Toplu replay bu kipi atlar.
+
 ## Native işçi kabul/SIGTERM kipi (K-360)
 
 `cli` fazındaki `native-isci-kabul-term` kipi yönetici rolünü harness'a
