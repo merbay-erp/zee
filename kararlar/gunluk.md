@@ -5465,3 +5465,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   Digest ve genel başlık API'si reddedildi.
 - Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
   depo içi DAV reproducer'ı katman açılmadan önce ürünün işi. K-364 açık kalır.
+
+## K-365 — Parola özeti giriş kovası aşımı 429 (21 Kasım 2026)
+
+- ZM-F020 (`urun-h`): uygulama parolası oluşturma/parola değiştirme aynı
+  giriş kovasını tüketir; 6. özet üretimi 300 sn içinde C028 → 500 dönüyordu,
+  doğrulama 429. Karar: üretim aşımı doğrulamayla aynı 429 (depo hatası 503)
+  sabit yanıtına eşlenir; kullanıcı tanısı değil, iç nöbetçi `Ç002` ile istek
+  döngüsünde yanıta çevrilir. Reddedilen seçenekler: ayrı kova ve `Sonuç`
+  biçimi (grammar/API genişlemesi, core freeze; K-364 taslağına bırakıldı);
+  `GirdiCikti`ye bekleyen yanıt sorgusu eklemek (bütün sarmalayıcılara
+  dokunur, unutulan delege 500'e döner); C028'i hata metniyle 429'a çevirmek
+  (kullanıcı tanısı aynı kodla iki anlam taşırdı). Bucket paylaşımı bilinçli
+  kalır (spec/12 §5). Yeni grammar, CLI ya da dil::api::v1 yok; Ç002 iç
+  nöbetçi kaydı. spec/12, hata kataloğu, regression
+  `security/parola-ozeti-oran-asimi`.

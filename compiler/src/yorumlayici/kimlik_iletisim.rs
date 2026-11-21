@@ -4,6 +4,27 @@
 
 use super::*;
 
+/// Web isteğinde giriş kovası reddi kullanıcı tanısı değildir: `Ç002` iç
+/// nöbetçisi rotayı keser, istek döngüsü doğrulamayla aynı 429/503 yanıtını
+/// yazar (spec/12 §5, K-365). Diğer üretim hataları C028 kalır.
+fn parola_ozeti_hatasi(hata: &str, satir: usize) -> Tani {
+    let durum = match hata {
+        crate::web_guvenligi::GIRIS_ORAN_ASIMI => Some(429),
+        crate::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK => Some(503),
+        _ => None,
+    };
+    match durum {
+        Some(durum) => Tani::yeni("Ç002", durum.to_string(), satir, 1, 1),
+        None => Tani::yeni(
+            "C028",
+            format!("Parola özeti üretilemedi: {}.", hata),
+            satir,
+            1,
+            1,
+        ),
+    }
+}
+
 pub(super) fn intrinsic_degerlendir(
     kimlik: &str,
     degerler: &[Deger],
@@ -15,15 +36,7 @@ pub(super) fn intrinsic_degerlendir(
         (PAROLA_OZETI, [parola]) => io
             .parola_ozeti_uret(&metne_sinirli(parola, satir)?)
             .map(Deger::Metin)
-            .map_err(|hata| {
-                Tani::yeni(
-                    "C028",
-                    format!("Parola özeti üretilemedi: {}.", hata),
-                    satir,
-                    1,
-                    1,
-                )
-            }),
+            .map_err(|hata| parola_ozeti_hatasi(&hata, satir)),
         (TOTP_ANAHTARI, []) => io.totp_anahtari_uret().map(Deger::Metin).map_err(|hata| {
             Tani::yeni(
                 "C028",

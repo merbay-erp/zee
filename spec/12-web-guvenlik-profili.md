@@ -51,8 +51,8 @@ otomasyon için açık `--stdin` seçeneği vardır.
 
 K-210/ADR-083 ile PHC özeti dil içinde de üretilir: `parolanın argon2 özeti`
 Argon2id v19 (kitaplık varsayılan parametreleri, CSPRNG tuz) döndürür;
-`kriptografi` yetkinliği ister, web isteğinde giriş oran sınırına tabidir,
-playground'da C028'dir. İki adımlı doğrulama `yeni totp anahtarı` (160 bit
+`kriptografi` yetkinliği ister, web isteğinde giriş oran sınırına tabidir
+(aşım yanıtı §5, K-365), playground'da C028'dir. İki adımlı doğrulama `yeni totp anahtarı` (160 bit
 Base32, CSPRNG) ve `kod gizli anahtarıyla doğrulanıyorsa` (RFC 6238, 30 s adım,
 6 hane, HMAC-SHA1, ±1 adım pencere, sabit zamanlı karşılaştırma) ile kurulur;
 saat adaptörden gelir. Gizli anahtar sunucuda parola özeti gibi saklanır,
@@ -216,6 +216,10 @@ ZORUNLUDUR:
 | istemci + yöntem + sorgusuz path | 60 saniye | 100 | 429 |
 | CSRF doğrulaması | 60 saniye | 60 | 429 |
 | Argon2id/bcrypt parola doğrulaması | 300 saniye | 5 | Parola doğrulaması çalışmadan 429 |
+
+ZORUNLU: `parolanın argon2 özeti` web isteğinde parola doğrulamasıyla aynı giriş kovasını (aynı istemci ve kapsam, 300 saniye/5) artırır. Kova aşılmışsa özet üretilmez, rota o cümlede kesilir, isteğin bekleyen oturum/çerez mutation'ı ve istek transaction'ı rota hatasındaki gibi geri alınır ve yanıt parola doğrulamasıyla aynı sabit 429 `çok fazla giriş denemesi` gövdesidir; oran deposuna erişilemezse aynı biçimde 503 `giriş oran sınırı deposuna erişilemedi` döner. Bu ret kullanıcı tanısı değildir (C028 ya da 500 değildir), Zee kodu onu yakalamaz ve işçi sonraki isteği alır. Web isteği dışında (CLI `dil çalıştır` akışı, açılış bloğu) giriş kovası yoktur; yetkinlik kapalılığı ve adaptör üretim hatası C028 kalır (K-365).
+
+Özet üretimine ayrı kova ya da yakalanabilir `Sonuç` biçimi vermek grammar/API genişlemesidir; V1 core freeze altında K-364 CalDAV/CardDAV taslağının açık sorusudur.
 
 Sayaç artışı ile pencere sonu tek atomik transaction'dır. En çok 32768 canlı
 oran anahtarı tutulur. Süresi dolan anahtarlar temizlenir; tablo yalnız canlı
