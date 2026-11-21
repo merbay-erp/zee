@@ -24,6 +24,14 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Yalnız sunucu: ilk geçişte hizmet bir kez durdurulup soket açılır
   (kısa kesinti); ayrıntı `dogfood/zeedili-com/README.md`.
 
+### Bilinen sınırlar
+
+- **Şapkalı ünlülü adlarda ek üretimi (K-367):** `zee-tr-1` profili `â`, `î`,
+  `û` harflerini ünlü saymaz; editörde yeniden adlandırma `kâr` için `kâri`,
+  `rüzgâr` için `rüzgârü` gibi uyumsuz ek üretebilir. Doğru yazılan `kârı`,
+  `rüzgârı` sorunsuz çözülür; mevcut programların davranışı değişmez. Düzeltme
+  ileride yeni `zee-tr-2` profiliyle gelecek.
+
 ### Düzeltilenler
 
 - **TOTP doğrulaması giriş sınırında 429 döner (K-368):** Web isteğinde

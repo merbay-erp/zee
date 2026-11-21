@@ -2583,6 +2583,24 @@ AÇIK maddesi). Ayrı değer ya da rota kesme `GirdiCikti` bool sözleşmesini v
 IO izi şemasını değiştirir; core freeze altında ürün kanıtıyla ayrıca karar
 gerekir.
 
+## K-367 — Şapkalı ünlülü köklerde kanonik üretim (zee-tr-2 adayı)
+
+**Durum: AÇIK (zee-tr-2 adayı, V1 sonrası).** `compiler/src/morfoloji.rs`
+içindeki `unludur`, `dar_unlu`, `genis_unlu` ve `kok_bicimleri` ünlü denetimi
+`â/î/û` harflerini ünlü saymaz: son ünlü yoksa varsayılan `e` (`kâr` → `kâri`),
+şapkalı ünlü atlanınca önceki ünlü (`rüzgâr` → `rüzgârü`), eksik hece sayısıyla
+yumuşama yok (`kâğıt` → `kâğıtı`) ve çözücüde sahte ünlü-türemesi adayı
+(`rüzgârı` → `rüzgâür`). Çözücü doğru yazımı (`kârı`) zaten aynı köke çözer.
+Ölçülen etki (geçici yama, commit yok): uyumluluk kaydı `e6034e73…` →
+`ede9b18a…`, 53.248 kanonik üretimin 10.306'sı ve ortak yüzeylerin 2.865
+çözüm kümesi değişir, bağımsız conformance korpusu kırılır; yerel 120 Zee
+projesinde `dil denetle` farkı yok. spec/13 ve RFC-0018 bunu `zee-tr-1`
+içinde YASAK kırıcı değişiklik sayar; sınır spec/13'te AÇIK maddedir.
+Basit "â→a sınıfı" düzeltmesi de yanlıştır (`hâl` → `hâlı`); doğru kural
+şapkanın k/g/l inceltme işlevini ayrıca ele almalıdır (`kârı` ama `hâli`,
+`usulü`). Bağımlılık: RFC + `zee-tr-2` gerçeklemesi + yeni uyumluluk kaydı +
+proje/kilit geçişi + edition kararı. V1 kapısı değildir.
+
 ## K-365 — Parola özeti üretiminde giriş kovası aşımı 429 döner
 
 **Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F020 (K-364 taslağı
