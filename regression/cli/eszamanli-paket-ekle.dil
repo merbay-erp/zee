@@ -1,0 +1,5 @@
+# K-347: eşzamanlı `dil ekle` komutları proje.dil'i karşılaştırmasız yazıyordu; biri diğerinin eklediği bağımlılığı eziyordu. Bu kaynak eklenen her yerel paketin girişidir.
+
+işlem bir ver
+    TamSayı döndürür
+    1 döndür

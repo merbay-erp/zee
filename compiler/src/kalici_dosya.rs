@@ -17,13 +17,15 @@ use adim::{nokta, sar, Adim};
 
 mod adim;
 mod kilitli;
-pub use kilitli::{kilit_altinda_guncelle, KilitliGuncellemeHatasi};
+pub use kilitli::{
+    karsilastirip_cift_yaz, kilit_altinda_guncelle, CiftYazimHatasi, KilitliGuncellemeHatasi,
+};
 mod metadata;
 mod ozel;
 pub use ozel::atomik_ozel_yaz;
 mod yasam_dongusu;
 
-pub use yasam_dongusu::{atomik_sil, atomik_sil_izli, atomik_tasi};
+pub use yasam_dongusu::{atomik_sil, atomik_sil_izli, atomik_tasi, atomik_tasi_izli};
 
 const KILIT_BEKLEME: Duration = Duration::from_millis(
     crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI

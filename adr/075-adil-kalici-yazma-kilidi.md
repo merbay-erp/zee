@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 10 Eylül 2026
-- **İlgili kayıt:** K-183, K-182, K-346, ADR-032, RFC-0016, spec/08, spec/11
+- **İlgili kayıt:** K-183, K-182, K-346, K-347, ADR-032, RFC-0016, spec/08, spec/11
 
 ## Bağlam
 
@@ -88,7 +88,7 @@ taşımaz; (4) eylem geri alması yine önceki içeriği ister, kayıp sınıfı
 maliyeti açık sınır olarak kalır (her ekleme bütün içeriği yeniden yazar ve
 fsync eder). Ölçüm: macOS'ta 4 süreç × 1000 ekleme ~35 sn.
 
-**Ayrı K-347 (açık).** Aynı kilit-dışı okuma iki yolda daha var: atomik
+**Ayrı K-347 (kapandı, aşağıdaki ek).** Aynı kilit-dışı okuma iki yolda daha vardı: atomik
 taşımanın eylem yedeği kaynak içeriğini kilit dışında okur ve yalnız hedef
 klasörünü kilitler; `dil paket ekle/çıkar` `proje.dil`i karşılaştırmasız
 yazar, eşzamanlı iki komutta biri diğerinin bağımlılığını ezer. Kalıcı web
@@ -109,3 +109,56 @@ K-217 Gitsrv kabul incelemesi: paylaşılan disk üzerinde bekleyen yazar
 garantisi değildir; kapı normatif 5 sn kilit bütçesini kullanır. Bloklayan
 OS kilidi ve süre aşımında fail-closed dönüş değişmedi. OS kuyruğu tüm
 platformlarda FIFO sırası garantilemez; bu karar böyle bir söz vermez.
+
+## Ek — K-347: taşıma yedeği ve `proje.dil` karşılaştırması (21 Kasım 2026)
+
+**Bağlam.** K-346 taramasında kalan iki kilit-dışı okuma. (1) Eylem içindeki
+`atomik_tasi` kaynağın içeriğini ve eylem yedeğini kilit dışında okuyor,
+kilit olarak yalnız hedef klasörünü alıyordu. Eylem kaynağa ekleyip taşırken
+araya giren yazarın satırı "beklenen" içeriğe girer, yedeğe girmez; geri
+alma hedefi silip kaynağa eylem başı içeriğini koyar ve satır kaybolur.
+Ölçüm: eylem içinde ekleyip taşıyan ve başarısız dönen iki süreçle yarışan
+düz yazar 1000 satırdan 4–160'ını kaybetti (macOS debug, 4/4 koşu). (2) `dil
+ekle/çıkar` `proje.dil`i okuyup grafiği çözdükten sonra karşılaştırmasız
+yazıyordu; 4 tur × 6 eşzamanlı `dil ekle`de başarı bildiren 24 komuttan 20'sinin
+bağımlılığı ezildi.
+
+**Karar.** (1) `atomik_tasi` kaynak ve hedef klasör kilitlerini birlikte
+alır: aynı klasörde tek kilit (aynı süreçte ikinci kilit kendini 5 sn
+bekletirdi), ayrı klasörlerde kanonik klasör yolu sırasıyla; ters yönlü iki
+taşıma kilitlenmeye girmez. `atomik_tasi_izli` taşınan bütün içeriği
+adlandırmayla aynı kilit penceresinden döndürür ve eylem defteri bunu
+K-346 `KilitliDegisim` gibi kaydeder (kaynakta önceki içerik → yok, hedefte
+yok → içerik); önceki dokunuştan sonra kaynak değiştiyse kayıt çatışmalıdır.
+Geri alma çatışmayı hiçbir yolu değiştirmeden önce denetler ve içerik geri
+koymalarını silmelerden önce yapar. (2) `kalici_dosya::karsilastirip_cift_yaz`
+bildirimi okunan byte'larla karşılaştırır ve bildirim ile türetilmiş
+`proje.kilit`i tek kilit penceresinde yayımlar; kilit yazılamazsa iki dosya
+aynı kilit altında, karşılaştırmasız (araya kimse giremez) önceki byte'larına
+döner. Okuma yolu (`kaynak_dosyasi_oku`) byte'ları dönüştürmeden UTF-8 çözer;
+karşılaştırma bu yüzden kesindir. Windows'ta ikinci dosyanın yarım
+değiştirmesi de aynı kilit altında kurtarılır.
+
+**Windows kaynak toplama.** PR CI'ında Windows koşularından birinde bir
+eşzamanlı `dil ekle` karşılaştırma kaybı dışında bir hatayla düştü; yeniden
+koşuda üretilemedi ve stderr kaydedilmemişti (harness artık yazar). En olası
+neden incelemeyle bulundu: proje kaynak toplayıcısı her `.dil` dosyasını,
+`proje.dil` dahil, okumadan önce `canonicalize` ediyordu; Windows'ta bu dosyayı
+açar ve başka komutun `ReplaceFileW` penceresinde düşebilir, oysa ardından
+gelen okuma pencereyi bekler. Klasör zaten kanonik ve sembolik bağlar
+atlandığından çağrı kaldırıldı. `proje_testi::kaynak_toplama_proje_dil_degistirilirken_dusmez`
+bu yarışı sürekli yeniden yazılan `proje.dil` üstünde 300 çözümle zorlar.
+
+**Reddedilen: komutu kilit altında yeniden çözmek.** K-353
+`kilit_altinda_guncelle` tek dosyalık oku-değiştir-yaz için uygundur; burada
+dönüşüm paket grafiğini (ağ dahil registry zinciri) yeniden çözmek demektir
+ve kilidi saniyelerce tutardı. CLI komutu kaybedince dosyaya dokunmadan
+yeniden çalıştırılabilir; ürün yolunda (web/eylem) kullanılmaz.
+
+**Kanıt.** `main.rs::eylem_tasimasi_araya_giren_yazarin_satirini_geri_almada_silmez`,
+`yasam_dongusu::tests::tasima_icerigi_kilit_altinda_yakalanir`,
+`yasam_dongusu::tests::ters_yonlu_tasimalar_kilitlenmez`,
+`kilitli::tests::cift_yazim_karsilastirir_ve_ikincil_hatasinda_geri_alir`,
+`proje_testi::bildirim_yazimi_araya_giren_komutun_bagimliligini_ezmez`;
+regression `eszamanli-tasima-geri-alma` (`native-eszamanli-tasima`) ve
+`eszamanli-paket-ekle` (`native-eszamanli-paket-ekle`). GB-144.

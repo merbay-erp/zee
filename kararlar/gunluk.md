@@ -5395,3 +5395,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   eklenmedi; süreç düzeyi regression pencereyi ptrace ile belirlenimli
   kurar. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-161 eki,
   GB-143.
+## K-347 — Taşıma yedeği ve `proje.dil` karşılaştırması (21 Kasım 2026)
+
+- K-346 taramasında açık kalan iki kilit-dışı okuma kapandı. Eylem içindeki
+  `atomik_tasi` kaynak içeriğini ve yedeğini kilit dışında okuyordu; eylem
+  kaynağa ekleyip taşırken araya giren yazarın satırı geri almada siliniyordu
+  (1000'de 4–160). `dil ekle/çıkar` `proje.dil`i karşılaştırmasız yazıyordu
+  (24 eşzamanlı başarılı komuttan 20'sinin bağımlılığı ezildi). Karar:
+  taşıma iki klasör kilidini kanonik yol sırasıyla tutar, içeriği aynı
+  pencerede yakalar; geri alma çatışmayı mutasyondan önce denetler, geri
+  koymaları silmelerden önce yapar. Bildirim+kilit tek kilit penceresinde
+  karşılaştırmalı yayımlanır (`karsilastirip_cift_yaz`); kaybeden komut exit
+  2 ile yeniden çalıştırılır. Komutu kilit altında yeniden çözmek reddedildi
+  (registry zinciri kilidi saniyelerce tutardı). Grammar, tanı kimliği, CLI
+  sözdizimi, dil::api::v1 değişmedi. ADR-075 eki, spec/07, spec/11, GB-144.

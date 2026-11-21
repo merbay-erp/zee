@@ -200,6 +200,15 @@ almada silebilir. Aynı savepoint'in iki dokunuşu arasında hedef başka yazarc
 değişmişse geri alma eylem başı içeriğini geri koyamaz; C021 ile başarısız
 olur ve araya giren yazarın verisi kalır.
 
+ZORUNLU (K-347): Eylem içindeki atomik taşıma kaynak ve hedef klasörlerinin
+yazma kilitlerini birlikte tutar (aynı klasörde tek kilit, ayrı klasörlerde
+kanonik klasör yolu sırasıyla) ve taşınan içeriği adlandırmayla aynı kilit
+penceresinde yakalar; savepoint kaynağa daha önce dokunduysa ve kaynak o
+dokunuştan sonra başka yazarca değiştiyse kayıt çatışmalıdır. Geri alma bir
+savepoint'in herhangi bir kaydı çatışmalıysa hiçbir yolu değiştirmeden C021
+verir; aksi hâlde önce içerik geri koymalarını, sonra silmeleri yapar, böylece
+kısmi geri alma taşınan içeriği kaybettirmez.
+
 Bir web isteğinde eylem transaction'ının başlaması, tamamlanması veya geri
 alınması C021 üretirse istek yanıtı/çerez/oturum taslağı geri alınmalı, istemciye
 503 verilmelidir. Worker/process bu istek yüzünden SONLANMAMALI ve sonraki

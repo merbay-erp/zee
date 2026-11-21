@@ -1,5 +1,6 @@
 //! Hazırlanmış dosyayı yayımlama ve idempotent fiziksel temizleme işlemleri.
 
+use super::adim::{nokta, sar, Adim};
 use super::{ebeveyn, gecici_dosya_ac, klasoru_eszamanla, metadata::MetadataKaynagi, DosyaKilidi};
 use std::fs::File;
 use std::io;
@@ -12,31 +13,75 @@ use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
 /// (`EXDEV`; systemd `ReadWritePaths=` her yolu ayrı bind mount eder) hedef
 /// klasöründe geçici kopya üzerinden yine atomik görünürlükle taşır.
 pub fn atomik_tasi(kaynak: &Path, hedef: &Path) -> io::Result<()> {
-    atomik_tasi_ile(kaynak, hedef, |eski, yeni| std::fs::rename(eski, yeni))
+    atomik_tasi_ile(kaynak, hedef, false, |eski, yeni| {
+        std::fs::rename(eski, yeni)
+    })
+    .map(|_| ())
+}
+
+/// K-347: [`atomik_tasi`] ile aynı taşıma; taşınan bütün içeriği adlandırmayla
+/// aynı kilit penceresinden döndürür. Eylem geri alması kaynağa bu içeriği
+/// koyar; kilit dışında okunan kopya araya giren yazarın satırını içermiyordu.
+pub fn atomik_tasi_izli(kaynak: &Path, hedef: &Path) -> io::Result<Vec<u8>> {
+    atomik_tasi_ile(kaynak, hedef, true, |eski, yeni| {
+        std::fs::rename(eski, yeni)
+    })
+    .map(Option::unwrap_or_default)
+}
+
+/// K-347: kaynak ve hedef klasörlerinin yazma kilitleri. Aynı klasörde tek
+/// kilit alınır (aynı süreçte ikinci kilit kendini bekletirdi); ayrı
+/// klasörlerde kanonik klasör yolu sırasıyla alınır ki iki ters yönlü taşıma
+/// birbirini kilitlenmeye sokmasın.
+fn kilit_cifti(kaynak: &Path, hedef: &Path) -> io::Result<(DosyaKilidi, Option<DosyaKilidi>)> {
+    let kanonik = |yol: &Path| {
+        let klasor = ebeveyn(yol);
+        std::fs::canonicalize(klasor).unwrap_or_else(|_| klasor.to_path_buf())
+    };
+    let (kaynak_ust, hedef_ust) = (kanonik(kaynak), kanonik(hedef));
+    if kaynak_ust == hedef_ust {
+        return Ok((DosyaKilidi::al(hedef)?, None));
+    }
+    let (ilk, ikinci) = if kaynak_ust < hedef_ust {
+        (kaynak, hedef)
+    } else {
+        (hedef, kaynak)
+    };
+    let ilk = DosyaKilidi::al(ilk)?;
+    Ok((ilk, Some(DosyaKilidi::al(ikinci)?)))
 }
 
 fn atomik_tasi_ile(
     kaynak: &Path,
     hedef: &Path,
+    izli: bool,
     adlandir: impl Fn(&Path, &Path) -> io::Result<()>,
-) -> io::Result<()> {
+) -> io::Result<Option<Vec<u8>>> {
     if kaynak == hedef {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
             "kaynak ve hedef dosya aynı olamaz",
         ));
     }
-    let _kilit = DosyaKilidi::al(hedef)?;
+    let _kilitler = kilit_cifti(kaynak, hedef)?;
     if hedef.exists() {
         return Err(io::Error::new(
             io::ErrorKind::AlreadyExists,
             "hedef dosya zaten var",
         ));
     }
+    let icerik = if izli {
+        let icerik = nokta(Adim::MevcutOkuma)
+            .and_then(|()| crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(kaynak))
+            .map_err(sar(Adim::MevcutOkuma))?;
+        Some(icerik)
+    } else {
+        None
+    };
     match adlandir(kaynak, hedef) {
         Ok(()) => {}
         Err(hata) if hata.kind() == io::ErrorKind::CrossesDevices => {
-            return aygitlar_arasi_tasi(kaynak, hedef, &adlandir);
+            return aygitlar_arasi_tasi(kaynak, hedef, &adlandir).map(|()| icerik);
         }
         Err(hata) => return Err(hata),
     }
@@ -46,7 +91,7 @@ fn atomik_tasi_ile(
     if kaynak_ust != hedef_ust {
         klasoru_eszamanla(kaynak_ust)?;
     }
-    Ok(())
+    Ok(icerik)
 }
 
 /// EXDEV geri düşüşü: hedef klasöründe geçici dosyaya akışla kopya, kaynak
@@ -284,7 +329,8 @@ mod tests {
             std::fs::set_permissions(&kaynak, std::fs::Permissions::from_mode(0o640)).unwrap();
         }
         let kaynak_adi = kaynak.clone();
-        atomik_tasi_ile(&kaynak, &hedef, |eski, yeni| {
+        // K-347: iki ayrı klasörün kilidi birlikte alınır; içerik kilit altında yakalanır.
+        let tasinan = atomik_tasi_ile(&kaynak, &hedef, true, |eski, yeni| {
             if eski == kaynak_adi {
                 Err(aygitlar_arasi_hatasi())
             } else {
@@ -293,6 +339,7 @@ mod tests {
             }
         })
         .unwrap();
+        assert_eq!(tasinan.as_deref(), Some(icerik.as_slice()));
         assert!(!kaynak.exists());
         assert_eq!(std::fs::read(&hedef).unwrap(), icerik);
         assert_eq!(klasor_adlari(&medya), ["resim.bin"]);
@@ -313,8 +360,8 @@ mod tests {
         std::fs::create_dir_all(&medya).unwrap();
         let hedef = medya.join("resim.bin");
         std::fs::write(&kaynak, b"veri").unwrap();
-        let hata =
-            atomik_tasi_ile(&kaynak, &hedef, |_, _| Err(aygitlar_arasi_hatasi())).unwrap_err();
+        let hata = atomik_tasi_ile(&kaynak, &hedef, false, |_, _| Err(aygitlar_arasi_hatasi()))
+            .unwrap_err();
         assert_eq!(hata.kind(), io::ErrorKind::CrossesDevices);
         assert_eq!(std::fs::read(&kaynak).unwrap(), b"veri");
         assert!(klasor_adlari(&medya).is_empty(), "geçici kopya temizlenir");
@@ -327,7 +374,7 @@ mod tests {
         let hedef = gecici.0.join("resim.bin");
         std::fs::write(&kaynak, b"veri").unwrap();
         let cagri = std::cell::Cell::new(0);
-        let hata = atomik_tasi_ile(&kaynak, &hedef, |_, _| {
+        let hata = atomik_tasi_ile(&kaynak, &hedef, false, |_, _| {
             cagri.set(cagri.get() + 1);
             Err(io::Error::from(io::ErrorKind::PermissionDenied))
         })
@@ -387,5 +434,62 @@ mod tests {
         std::fs::write(&yol, b"icerik").unwrap();
         assert!(atomik_sil(&yol).unwrap());
         assert!(!atomik_sil(&yol).unwrap());
+    }
+
+    /// K-347: taşınan içerik kilit altında yakalanır; kaynağa yazmak isteyen
+    /// yazar taşıma bitene dek bekler ve yeni kaynağı ayrı oluşturur.
+    #[test]
+    fn tasima_icerigi_kilit_altinda_yakalanir() {
+        use crate::kalici_dosya::adim::test_kancasi::{kur, Enjeksiyon};
+        let gecici = GeciciKlasor::yeni();
+        let kaynak = gecici.0.join("kaynak.txt");
+        let hedef = gecici.0.join("hedef.txt");
+        std::fs::write(&kaynak, "ilk\n").unwrap();
+        let (kilitte, kilit_bildirimi) = std::sync::mpsc::channel();
+        let tasiyici = {
+            let (kaynak, hedef) = (kaynak.clone(), hedef.clone());
+            std::thread::spawn(move || {
+                kur(
+                    Adim::MevcutOkuma,
+                    Enjeksiyon::Eylem(Box::new(move || {
+                        kilitte.send(()).unwrap();
+                        std::thread::sleep(std::time::Duration::from_millis(200));
+                        Ok(())
+                    })),
+                );
+                atomik_tasi_izli(&kaynak, &hedef).unwrap()
+            })
+        };
+        kilit_bildirimi.recv().unwrap();
+        crate::kalici_dosya::atomik_satir_yaz(&kaynak, "b-1", true).unwrap();
+        assert_eq!(tasiyici.join().unwrap(), b"ilk\n");
+        assert_eq!(std::fs::read(&hedef).unwrap(), b"ilk\n");
+        assert_eq!(std::fs::read(&kaynak).unwrap(), b"b-1\n");
+    }
+
+    /// K-347: iki klasör kilidi kanonik sırayla alınır; ters yönlü eşzamanlı
+    /// taşımalar birbirini kilit zaman aşımına sokmaz.
+    #[test]
+    fn ters_yonlu_tasimalar_kilitlenmez() {
+        let gecici = GeciciKlasor::yeni();
+        let (a, b) = (gecici.0.join("a"), gecici.0.join("b"));
+        std::fs::create_dir_all(&a).unwrap();
+        std::fs::create_dir_all(&b).unwrap();
+        std::fs::write(a.join("x"), "x").unwrap();
+        std::fs::write(b.join("y"), "y").unwrap();
+        let iplikler: Vec<_> = [(a.clone(), b.clone(), "x"), (b, a, "y")]
+            .into_iter()
+            .map(|(ilk, ikinci, ad)| {
+                std::thread::spawn(move || {
+                    for _ in 0..100 {
+                        atomik_tasi_izli(&ilk.join(ad), &ikinci.join(ad)).unwrap();
+                        atomik_tasi_izli(&ikinci.join(ad), &ilk.join(ad)).unwrap();
+                    }
+                })
+            })
+            .collect();
+        for iplik in iplikler {
+            iplik.join().unwrap();
+        }
     }
 }

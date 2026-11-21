@@ -2698,14 +2698,32 @@ yeniden yazar (performans).
 
 ## K-347 — Taşıma yedeği ve `proje.dil` güncellemesinde kilit dışı okuma
 
-**Durum: AÇIK** (K-346 taramasında bulundu, düşük öncelik). (1) Eylem içindeki
-atomik taşıma kaynak içeriğini kilit dışında okur ve yalnız hedef klasörünü
-kilitler; araya giren yazarda geri alma kaynağa bayat içerik koyabilir.
-Çözüm yönü: iki klasör kilidini yol sırasıyla almak ve içeriği kilit altında
-yakalamak. (2) `dil paket ekle/çıkar` `proje.dil`/`proje.kilit`i
-karşılaştırmasız yazar; eşzamanlı iki komutta biri diğerinin bağımlılığını
-ezer. Çözüm yönü: `atomik_karsilastir_ve_yaz` ve karşılaştırmalı geri alma
-(okuma yolunun bayt eşitliği önce doğrulanmalı).
+**Durum: KAPALI.** ADR-075 eki, spec/07, spec/11, GB-144. (1) Eylem içindeki
+atomik taşıma kaynak içeriğini ve yedeğini kilit dışında okuyor, yalnız hedef
+klasörünü kilitliyordu; eylem kaynağa ekleyip taşırken araya giren yazarın
+satırı geri almada siliniyordu (iki taşıyıcı süreçle yarışan yazar 1000
+satırdan 4–160'ını kaybetti). Düzeltme: kaynak ve hedef klasör kilitleri
+birlikte (aynı klasörde tek, ayrı klasörlerde kanonik yol sırasıyla) alınır,
+içerik adlandırmayla aynı pencerede yakalanır (`atomik_tasi_izli`); kaynağa
+önceki dokunuştan sonra yabancı değişim çatışmadır, geri alma çatışmayı hiçbir
+yolu değiştirmeden denetler ve içerik geri koymalarını silmelerden önce yapar.
+(2) `dil ekle/çıkar` (yerel ve registry) `proje.dil`i karşılaştırmasız
+yazıyordu; 24 başarılı eşzamanlı komuttan 20'sinin bağımlılığı ezildi.
+Okuma yolunun bayt eşitliği doğrulandı (`kaynak_dosyasi_oku` dönüştürmesiz
+UTF-8 çözer). Düzeltme: `kalici_dosya::karsilastirip_cift_yaz` bildirimi
+karşılaştırır, bildirim ile kilidi tek kilit penceresinde yayımlar ve kilit
+hatasında ikisini aynı kilit altında geri koyar; kaybeden komut dosyaya
+dokunmadan exit 2 verir. K-353 `kilit_altinda_guncelle` uygun düşmedi: dönüşüm
+paket grafiğini (registry zinciri dahil) yeniden çözmek demektir. Kanıt:
+regression `eszamanli-tasima-geri-alma` (`native-eszamanli-tasima`, düzeltme
+öncesi `b 840–996`, sonrası `b 1000`) ve `eszamanli-paket-ekle`
+(`native-eszamanli-paket-ekle`, öncesi `bağımlılık 4 / kayıp 20`, sonrası
+`bağımlılık 24 / kayıp 0`); birim testleri ADR-075 ekinde. Windows CI'da bir kez görülen, yeniden
+üretilemeyen `dil ekle` düşüşünün en olası nedeni de kapatıldı: kaynak
+toplayıcı `proje.dil`i okumadan önce pencereyi beklemeyen `canonicalize` ile
+açıyordu (`kaynak_toplama_proje_dil_degistirilirken_dusmez`). Açık sınır: zee
+dışı yazarlar kilide katılmaz; kullanıcı programının kendi oku → hesapla →
+`yaz` dizisi dil düzeyinde atomik değildir (spec/08).
 ## K-345 — Sağlık bağlantısının işçiye mirası (macOS)
 
 **Durum: KAPALI.** ADR-161 eki, GB-138: macOS'ta yöneticinin sağlık

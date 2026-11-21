@@ -33,6 +33,20 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez; depo biçimi ve komutlar aynıdır.
 
+- **Eylem içindeki taşımanın geri alınması ve eşzamanlı `dil ekle`/`dil
+  çıkar` veri kaybetmez (K-347, ADR-075 eki):** Bir eylem dosyaya ekleyip
+  onu `atomik taşı` ile taşıdıktan sonra başarısız olunca, arada aynı dosyaya
+  yazan başka bir sürecin (ör. başka işçinin) satırı geri almada
+  silinebiliyordu. Artık taşınan içerik kaynak ve hedef klasör kilitleri
+  altında yakalanır; araya yazar girmişse geri alma hiçbir dosyayı
+  değiştirmeden C021 verir. Aynı projede eşzamanlı çalışan iki `dil ekle`
+  ya da `dil çıkar` komutundan biri diğerinin eklediği bağımlılığı sessizce
+  siliyordu; artık kaybeden komut hiçbir dosyaya dokunmadan "başka bir süreç
+  tarafından değiştirildi … Komutu yeniden çalıştır." iletisiyle exit 2 verir.
+
+  **Göç:** Gerekmez. Betiklerde eşzamanlı `dil ekle` çalıştırıyorsanız bu
+  iletide komutu yeniden deneyin.
+
 ## 19 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
