@@ -5480,3 +5480,15 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kalır (spec/12 §5). Yeni grammar, CLI ya da dil::api::v1 yok; Ç002 iç
   nöbetçi kaydı. spec/12, hata kataloğu, regression
   `security/parola-ozeti-oran-asimi`.
+
+## K-368 — TOTP doğrulaması giriş kovası aşımı 429 (21 Kasım 2026)
+
+- ZM-F021 (`urun-h`): TOTP doğrulaması giriş kovası (`totp`, 300 sn/5)
+  aşımında yanıt yazmadan `yanlış` dönüyor, doğru kod "hatalı" sayılıyordu.
+  Karar: K-365 ile tutarlı olarak aşım kod denetlenmeden parola
+  doğrulamasıyla aynı 429/503 ilk yanıtıdır; spec/12 tablosuna TOTP satırı.
+  Reddedilen: `totp_dogrula`yı `Result` yapmak ya da aşımda rotayı kesmek
+  (GirdiCikti bool sözleşmesi, IO izi `totp_dogrula` olay şeması ve kayıt/
+  oynatma determinizmi değişir; core freeze). Rotanın aşımda `yanlış` görmesi
+  spec/12 §5 AÇIK maddesidir. Yeni grammar, tanı, CLI ya da dil::api::v1 yok.
+  Regression `security/totp-oran-asimi`.

@@ -287,3 +287,67 @@ fn argon2_ozeti_web_disinda_oran_kovasina_tabi_degildir() {
     assert_eq!(cikti.len(), 6);
     assert!(cikti.iter().all(|o| o.starts_with("$argon2id$v=19$")));
 }
+
+const MFA_GIZLI: &str = "JBSWY3DPEHPK3PXP";
+
+fn mfa_dogru_kodu() -> String {
+    let epoch = 20_705i64 * 86_400 + 12 * 3_600; // ToplayanIo 2026-09-09 12:00 UTC
+    format!(
+        "{:06}",
+        dil::guvenlik::totp_kodu(&base32_coz_test(MFA_GIZLI), epoch)
+    )
+}
+
+/// K-368 (ZM-F021): TOTP giriş kovası (300 sn/5) aşımı "yanlış kod" değildir.
+/// Doğru kod da kod denetlenmeden parola doğrulamasıyla aynı 429 gövdesini
+/// alır; uygulamanın "hatalı" yanıtı gönderilmez, işçi devam eder.
+#[test]
+fn totp_web_giris_kovasi_asiminda_dogru_kod_da_429_doner() {
+    let program = dil::kaynagi_derle(
+        "\
+8080 kapısında sunucu başlat
+
+GET \"/totp\" adresine istek geldiğinde
+    kod isteğin \"kod\" değeri olsun
+    kod \"JBSWY3DPEHPK3PXP\" anahtarıyla doğrulanıyorsa
+        \"doğru\" yanıtını gönder
+    \"hatalı\" yanıtını gönder
+
+GET \"/saglik\" adresine istek geldiğinde
+    \"iyi\" yanıtını gönder
+",
+    )
+    .expect("derlenmeli");
+    let kod = mfa_dogru_kodu();
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.zaman = (2026, 9, 9, 12, 0);
+    for _ in 0..6 {
+        io.istekler.push_back(format!("GET /totp?kod={kod}"));
+    }
+    io.istekler.push_back("GET /saglik".into());
+    calistir_io(&program, &mut io).expect("oran reddi işçiyi bitirmemeli");
+    assert_eq!(io.sunucu_durumlari, [200, 200, 200, 200, 200, 429, 200]);
+    let govdeler: Vec<_> = io
+        .sunucu_yanitlari
+        .iter()
+        .map(|(_, g)| g.as_str())
+        .collect();
+    assert_eq!(govdeler[..5], ["doğru"; 5]);
+    assert_eq!(govdeler[5], "çok fazla giriş denemesi");
+    assert_eq!(govdeler[6], "iyi");
+}
+
+/// Web isteği dışında TOTP giriş kovasına tabi değildir: altıncı doğru kod da
+/// `doğru` sayılır.
+#[test]
+fn totp_web_disinda_oran_kovasina_tabi_degildir() {
+    let kod = mfa_dogru_kodu();
+    let program = dil::kaynagi_derle(&format!(
+        "6 kez tekrarla\n    \"{kod}\" \"{MFA_GIZLI}\" anahtarıyla doğrulanıyorsa\n        \"doğru\" yaz\n"
+    ))
+    .expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.zaman = (2026, 9, 9, 12, 0);
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.cikti, vec!["doğru"; 6]);
+}

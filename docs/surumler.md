@@ -26,6 +26,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **TOTP doğrulaması giriş sınırında 429 döner (K-368):** Web isteğinde
+  `kod gizli anahtarıyla doğrulanıyorsa` 300 saniyede 5 denemelik TOTP
+  sınırını aştığında artık doğru kodu da yanlış sayıp uygulamanın "hatalı"
+  yanıtını göndermez; kod denetlenmeden parola doğrulamasıyla aynı
+  `429 çok fazla giriş denemesi` yanıtı gönderilir (oran deposuna
+  erişilemezse 503). Komut satırında çalışan programda sınır yoktur.
+
+  **Göç:** Gerekmez. Rota aşımda koşulu yine `yanlış` görür; hesap kilidi
+  sayacı tutan uygulamada bu sayaç aşım sırasında da artabilir (spec/12 §5
+  açık madde).
 - **Parola özeti üretimi giriş sınırında 429 döner (K-365):** Web isteğinde
   `parolanın argon2 özeti` parola doğrulamasıyla aynı giriş sınırını (5
   deneme / 300 saniye) kullanır. Sınır aşıldığında istek artık 500 sunucu
