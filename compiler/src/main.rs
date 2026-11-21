@@ -4094,8 +4094,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
             match karar {
                 Ok(karar) if karar.izinli => {}
-                Ok(_) => return Err("çok fazla parola özeti isteği".into()),
-                Err(_) => return Err("giriş oran sınırı deposuna erişilemedi".into()),
+                Ok(_) => {
+                    if let Some(sink) = &self.metrik {
+                        sink.rate_reject();
+                    }
+                    return Err(dil::web_guvenligi::GIRIS_ORAN_ASIMI.into());
+                }
+                Err(_) => return Err(dil::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK.into()),
             }
         }
         dil::guvenlik::parola_ozeti_uret(parola)
@@ -4121,11 +4126,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 if let Some(sink) = &self.metrik {
                     sink.rate_reject();
                 }
-                self.durum_yaniti_gonder(429, "çok fazla giriş denemesi");
+                self.durum_yaniti_gonder(429, dil::web_guvenligi::GIRIS_ORAN_ASIMI);
                 false
             }
             Err(_) => {
-                self.durum_yaniti_gonder(503, "giriş oran sınırı deposuna erişilemedi");
+                self.durum_yaniti_gonder(503, dil::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK);
                 false
             }
         }

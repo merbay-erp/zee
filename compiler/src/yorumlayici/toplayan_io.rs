@@ -507,11 +507,11 @@ impl GirdiCikti for ToplayanIo {
         match karar {
             Ok(karar) if karar.izinli => crate::guvenlik::parola_dogrula(parola, ozet),
             Ok(_) => {
-                self.durum_yaniti_gonder(429, "çok fazla giriş denemesi");
+                self.durum_yaniti_gonder(429, crate::web_guvenligi::GIRIS_ORAN_ASIMI);
                 false
             }
             Err(_) => {
-                self.durum_yaniti_gonder(503, "giriş oran sınırı deposuna erişilemedi");
+                self.durum_yaniti_gonder(503, crate::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK);
                 false
             }
         }
@@ -525,8 +525,8 @@ impl GirdiCikti for ToplayanIo {
             );
             match karar {
                 Ok(karar) if karar.izinli => {}
-                Ok(_) => return Err("çok fazla parola özeti isteği".into()),
-                Err(_) => return Err("giriş oran sınırı deposuna erişilemedi".into()),
+                Ok(_) => return Err(crate::web_guvenligi::GIRIS_ORAN_ASIMI.into()),
+                Err(_) => return Err(crate::web_guvenligi::GIRIS_ORAN_DEPOSU_YOK.into()),
             }
         }
         // zee-io-1: tuz tohumlu sayaçtan gelir; aynı program aynı özeti üretir.

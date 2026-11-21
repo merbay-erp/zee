@@ -34,6 +34,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Parola özeti üretimi giriş sınırında 429 döner (K-365):** Web isteğinde
+  `parolanın argon2 özeti` parola doğrulamasıyla aynı giriş sınırını (5
+  deneme / 300 saniye) kullanır. Sınır aşıldığında istek artık 500 sunucu
+  hatası değil, doğrulamayla aynı `429 çok fazla giriş denemesi` yanıtıyla
+  biter; oran deposuna erişilemezse 503 döner. İsteğin oturum/çerez
+  değişiklikleri geri alınır, sunucu sonraki isteği almaya devam eder. Komut
+  satırında çalışan programda sınır yoktur; `kriptografi` yetkinliği
+  kapalıysa C028 değişmedi.
+
+  **Göç:** Gerekmez. Özet üretimi ile girişi ayrı sayan bir sınır henüz
+  yoktur; yoğun parola değiştirme akışlarında 429 yanıtını kullanıcıya
+  "biraz sonra yeniden dene" olarak göster.
 - **Paket ve birim adlarında Unicode kimliği sıkılaştı (K-363, GB-146):**
   Paket adı yalnız küçük Türkçe/Latin tanımlayıcı olabilir; Kiril/Yunan
   benzeri harf (`раket`), CJK, bağ harfi ve birleştirici im yerel

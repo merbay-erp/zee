@@ -1,0 +1,10 @@
+# web-istegi: GET /ozet
+# K-365 (ZM-F020): giriş oran kovasını (300 sn/5) aşan 6. parola özeti üretimi doğrulama gibi 429 döner, 500 değil.
+
+8080 kapısında sunucu başlat
+
+GET "/ozet" adresine istek geldiğinde
+    parola "uzun bir deneme parolası" olsun
+    6 kez tekrarla
+        özet parolanın argon2 özeti olsun
+    "bitmemeliydi" yanıtını gönder

@@ -228,3 +228,62 @@ fn gizli_deger_sifreleme_hermetikte_deterministik_ve_dogrulamali() {
     let coz = intrinsic::tanim(intrinsic::GIZLI_COZ).expect("kayıt");
     assert_eq!(coz.yetkinlik, Yetkinlik::Kriptografi);
 }
+
+/// K-365 (ZM-F020): özet üretimi giriş kovasını (300 sn/5) doğrulamayla
+/// paylaşır; aşımda rota kesilir ve doğrulamayla aynı 429 gövdesi döner —
+/// C028 → 500 değil. İşçi sonraki isteği almaya devam eder.
+#[test]
+fn argon2_ozeti_web_giris_kovasi_asiminda_dogrulamayla_ayni_429_doner() {
+    let program = dil::kaynagi_derle(
+        "\
+8080 kapısında sunucu başlat
+
+GET \"/ozet\" adresine istek geldiğinde
+    parola \"uzun bir deneme parolası\" olsun
+    3 kez tekrarla
+        özet parolanın argon2 özeti olsun
+    \"üretildi\" yanıtını gönder
+
+GET \"/dogrula\" adresine istek geldiğinde
+    \"x\" \"bozuk\" ile doğrulanıyorsa
+        \"olmamalı\" yanıtını gönder
+    \"yanlış\" yanıtını gönder
+
+GET \"/saglik\" adresine istek geldiğinde
+    \"iyi\" yanıtını gönder
+",
+    )
+    .expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    for istek in ["GET /ozet", "GET /ozet", "GET /dogrula", "GET /saglik"] {
+        io.istekler.push_back(istek.into());
+    }
+    calistir_io(&program, &mut io).expect("oran reddi işçiyi bitirmemeli");
+    assert_eq!(io.sunucu_durumlari, [200, 429, 429, 200]);
+    let govdeler: Vec<_> = io
+        .sunucu_yanitlari
+        .iter()
+        .map(|(_, g)| g.as_str())
+        .collect();
+    assert_eq!(
+        govdeler,
+        [
+            "üretildi",
+            "çok fazla giriş denemesi",
+            "çok fazla giriş denemesi",
+            "iyi"
+        ]
+    );
+}
+
+/// Web isteği dışında (CLI/çalıştır) giriş kovası yoktur: altıncı özet de
+/// üretilir; yetkinlik kapalıysa tanı C028 kalır (yukarıdaki test).
+#[test]
+fn argon2_ozeti_web_disinda_oran_kovasina_tabi_degildir() {
+    let cikti = kostur(
+        "parola \"uzun bir deneme parolası\" olsun\n6 kez tekrarla\n    özet parolanın argon2 özeti olsun\n    özet yaz\n",
+    )
+    .expect("CLI kipinde oran sınırı yok");
+    assert_eq!(cikti.len(), 6);
+    assert!(cikti.iter().all(|o| o.starts_with("$argon2id$v=19$")));
+}
