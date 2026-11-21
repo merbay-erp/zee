@@ -927,10 +927,13 @@ pub(crate) fn gecerli_paket_adi(ad: &str) -> bool {
     if ad.len() > 128 {
         return false;
     }
+    // K-363: spec/07 "küçük harfli tek Türkçe/Latin tanımlayıcı" der; eski
+    // `is_alphabetic` Kiril/Yunan homoglifini, CJK'yı, bağ harfini (ﬁ) ve
+    // birleştirici imleri (U+0345) kabul ediyordu. Küme lexer alfabesidir.
+    let kucuk_harf = |k: char| crate::sozcukleyici::harf_gecerli(k) && !k.is_uppercase();
     let mut harfler = ad.chars();
-    matches!(harfler.next(), Some(k) if k == '_' || k.is_alphabetic())
-        && harfler.all(|k| k == '_' || k.is_alphabetic() || k.is_ascii_digit())
-        && ad.chars().all(|k| !k.is_uppercase())
+    matches!(harfler.next(), Some(k) if kucuk_harf(k) && !k.is_ascii_digit())
+        && harfler.all(kucuk_harf)
 }
 
 fn gecerli_sha256(ozet: &str) -> bool {

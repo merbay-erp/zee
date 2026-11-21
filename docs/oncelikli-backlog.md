@@ -2571,6 +2571,71 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
+## K-363 — P33 kanıt dilimi: paket/cache yayın süresi ve Unicode kimlikleri
+
+**Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün kalan üç kanıt
+alanından ikisi test kanıtı aldı; Unicode alanında bulunan altı açık minimal
+düzeltildi (GB-146). Dosya yetkinliği kontrolü ile açma arası bu dilimde
+yapılmadı: koordineli yerel dosya değişimi reproducer'ı araç incelemesince
+reddedildi; yeniden denenmez ve etrafından dolaşılmaz.
+
+1. **Paket/cache yayın süresi (davranış değişmedi).**
+   `artefakt_dogrulama::kurulum::testler`: sekiz iş parçacığı aynı içerik
+   adresine aynı anda kurar (dört tur); hepsi başarılı, tek exact ağaç, her
+   dosya salt okunur, görünür ya da geçici kardeş kalmaz. Çöken sürecin yarım
+   `.zee-paket-gecici-*` kardeşi yayın adına taşınmadığından okunmaz
+   (belgelenmiş sınır: temizlenmez). Yayın adında eksik/kesik/aynı boyda
+   değişmiş/fazladan dosya/fazladan klasör ağacı bir sonraki kurulumda exact
+   tanıyla reddedilir ve onarılmaz. `registry::istemci::testler::yayin`:
+   `durum-v1.json` yayımlanmadan kalan nesneler çevrimdışı P016 cache miss'tir,
+   sonraki çevrimiçi güncelleme aynı nesneleri baytça doğrulayıp yeniden
+   kullanır; aynı adreste kesik nesne ağ varken de iyileştirilmez (P016, durum
+   ve nesne aynen kalır); süre sınırı kesindir (bitimden 1 sn önce kabul, tam
+   anında ve sonrasında ret), eskiyen zincir durumu değiştirmez, çevrimdışı
+   kip son kabul anıyla açılır ve güncellik iddia etmez; yeni süreli zincir
+   kabul anını ilerletir, eski sürüm P013'tür. Sekiz eşzamanlı güncelleme
+   sekiz nesneyi tek kez, kendi adresinde, salt okunur yayımlar; nesne
+   klasöründe boş `.zee-yazma-kilidi` dışında gizli dosya kalmaz.
+2. **Unicode gösterim/rename/registry (altı düzeltme, regression
+   `native-unicode-kimlik`).**
+   - `paket-adi-homoglif`: `gecerli_paket_adi` `is_alphabetic` kullanıyordu;
+     Kiril/Yunan homoglifi (`раket`), CJK, bağ harfi (`ﬁ`), `ǆ`, `ⅰ`, `ª` ve
+     birleştirici im (U+0345) kabul ediliyordu. Artık lexer'ın
+     `harf_gecerli` kümesinin küçük harfleridir (spec/07); yerel bağımlılıkta
+     P007, uzakta P017.
+   - `zep-harf-katlama-cakismasi`: `.zep` üretici ve tüketicisi büyük/küçük
+     harf katlamasından (tam büyük → tam küçük → NFC) sonra aynı olan, farklı
+     yazılmış yolu/klasör önekini reddeder. Önceden Linux kuruyor, macOS
+     `File exists`, klasörde ise ağacı yayın adına taşıdıktan sonra
+     "fazladan kaynak" ile düşüp bozuk kurulumu yerinde bırakıyordu (spec/18,
+     ADR-028 eki).
+   - `zep-alm-bidi`: yol bidi kümesinde ALM (U+061C) yoktu; 12 bidi biçim
+     karakterinin tamamı artık `gorunmez_bicim_imi`dir; saldırı korpusu 81.
+   - `birim-harf-farki`: `çay birimini kullan` macOS/Windows'ta `Çay.dil`'i
+     bağlıyor, Linux'ta bulamıyordu; NFD saklanan `çay.dil` Linux'ta
+     bulunamıyordu. Ad diskteki adla NFC-birebir eşleşir; harf farkı her
+     platformda aynı A010 metnidir, NFD ad proje kaynak listesinden her
+     platformda bağlanır (spec/07).
+   - `lsp-yeni-ad-alfabesi`: LSP yeniden adlandırma `is_alphanumeric` ile
+     Kiril, CJK, bağ harfi ve rakamla başlayan adı kabul edip derlenmeyen
+     kaynak üretiyordu; artık `result: null`.
+   - `kabul-gerekcesi-bidi`: kilide yazılan kabul gerekçesi, targets duyuru
+     kimliği ve registry paket adı yalnız Cc denetim karakterini reddediyordu;
+     bidi/sıfır genişlikli/BOM (Trojan Source) artık reddedilir (spec/19).
+   Doğrulanan, değişmeyen davranış: NFC/NFD `.zep` kuralı, bidi'li paket adı
+   (zaten reddediliyordu), `Puan` gibi büyük harfli yerel ad yeniden
+   adlandırması. Yeni tanı kodu, grammar, CLI ya da `dil::api::v1` değişikliği
+   yok; `proje→sozcukleyici` ve `lsp→sozcukleyici` katman kenarı eklendi
+   (tek alfabe kaynağı).
+
+Açık sınırlar ve takip: ana projenin kendi `proje` adı (yayıncı tarafı)
+denetlenmez; tüketici bu adı reddettiği için yayımlanan böyle bir paket
+kullanılamaz. Windows'ta sonu nokta/boşluklu yol ve aygıt adları (`CON`,
+`NUL`) arşivde yasak değildir; kurulum doğrulaması fail-closed düşer.
+Morfoloji takibi: `Kâr` adı için belirtme eki `Kârı` yerine `Kâri` üretilir
+(şapkalı ünlü uyumu; güvenlik dışı). GB-109 dosya yetkinliği alanı nedeniyle
+`acik` kalır.
+
 ## K-362 — P33 kanıt dilimi: bağımsız HTTP kâhini ve oturum çökme kesitleri
 
 **Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün beş kanıt alanından

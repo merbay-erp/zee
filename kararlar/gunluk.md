@@ -5424,3 +5424,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   altında koşmak, CAS kaybında yeniden denemek ve geride kalan sonucu eski
   zincirle döndürmek (freeze) reddedildi. Yeni tanı kodu, grammar, CLI ya da
   dil::api::v1 değişikliği yok. ADR-075 eki, spec/19, GB-145.
+
+## K-363 — P33 paket/cache yayın ve Unicode kimlik kanıtı (21 Kasım 2026)
+
+- GB-109'un kalan iki alanı. Paket kurulumu ve registry cache yayını
+  davranış değişmeden test kanıtı aldı (eşzamanlı yayın, yarım geçici, yarım
+  yayın, durum öncesi çökme, kesin süre sınırı, eskime). Unicode alanında altı
+  açık bulundu. Karar: paket adı ve LSP yeni adı lexer'ın tek `harf_gecerli`
+  kümesine bağlanır (ayrı ikinci alfabe yazmak reddedildi; drift riski);
+  `.zep` yol/klasör öneki büyük/küçük harf katlamasıyla çakışırsa üretici ve
+  tüketici reddeder (kurulumda dosya sistemine bırakmak reddedildi: platforma
+  bağlı sonuç); bidi kümesine ALM eklenir ve aynı görünmez biçim kümesi
+  registry kimliği/adı ile kabul gerekçesinde de geçerlidir; birim adı diskteki
+  adla NFC-birebir eşleşir, NFD ad proje kaynak listesinden bağlanır (NFD'yi
+  reddetmek reddedildi: Linux/macOS aynı kimliğe farklı karar verirdi). Dosya
+  yetkinliği kontrol-açma alanına dokunulmadı. Yeni tanı kodu, grammar, CLI ya
+  da dil::api::v1 değişikliği yok. spec/07, spec/18, spec/19, ADR-028 eki,
+  GB-146.
+

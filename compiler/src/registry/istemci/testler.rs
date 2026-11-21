@@ -243,6 +243,24 @@ fn tasiyici_duyurularla(
     surum: u64,
     kritik_kimlikleri: &[&str],
 ) -> SahteTasiyici {
+    tasiyici_sureli(
+        anahtarlar,
+        yayin,
+        surum,
+        kritik_kimlikleri,
+        "2100-01-01T00:00:00Z",
+    )
+}
+
+/// Çevrimiçi üç rolün (timestamp/snapshot/targets) `sona_erme` anı verilir;
+/// root 2100'e kadar geçerlidir.
+fn tasiyici_sureli(
+    anahtarlar: &Anahtarlar,
+    yayin: &YayinFixture,
+    surum: u64,
+    kritik_kimlikleri: &[&str],
+    sona_erme: &str,
+) -> SahteTasiyici {
     let mut hedefler = BTreeMap::new();
     let mut hedef = yayin.hedef.clone();
     hedef.duyurular = kritik_kimlikleri
@@ -271,7 +289,7 @@ fn tasiyici_duyurularla(
         TargetsMetadata {
             sema: "zee-registry-targets-v1".into(),
             surum,
-            sona_erme: "2100-01-01T00:00:00Z".into(),
+            sona_erme: sona_erme.into(),
             hedefler,
             duyurular,
         },
@@ -282,7 +300,7 @@ fn tasiyici_duyurularla(
         SnapshotMetadata {
             sema: "zee-registry-snapshot-v1".into(),
             surum,
-            sona_erme: "2100-01-01T00:00:00Z".into(),
+            sona_erme: sona_erme.into(),
             targets: MetadataDosyasi {
                 surum,
                 boyut: targets.len() as u64,
@@ -296,7 +314,7 @@ fn tasiyici_duyurularla(
         TimestampMetadata {
             sema: "zee-registry-timestamp-v1".into(),
             surum,
-            sona_erme: "2100-01-01T00:00:00Z".into(),
+            sona_erme: sona_erme.into(),
             snapshot: MetadataDosyasi {
                 surum,
                 boyut: snapshot.len() as u64,
@@ -802,3 +820,5 @@ fn hex_yaz(baytlar: &[u8]) -> String {
     }
     sonuc
 }
+
+mod yayin;

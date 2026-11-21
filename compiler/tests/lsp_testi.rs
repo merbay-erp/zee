@@ -617,3 +617,43 @@ fn birim_dosyasindaki_tani_kullan_satirina_tasinir_ve_birimi_soyler() {
     );
     let _ = std::fs::remove_dir_all(&klasor);
 }
+
+/// K-363 (GB-109 rename): yeni ad lexer'ın kabul ettiği Türkçe/Latin
+/// tanımlayıcı değilse yeniden adlandırma düzenleme üretmez (`null`). Önceden
+/// `is_alphanumeric` Kiril homoglifini (`раket`, sonra S028), CJK'yı, bağ
+/// harfini ve rakamla başlayan adı (sayı okunur) kabul edip derlenmeyen
+/// kaynak yazıyordu.
+#[test]
+fn yeniden_adlandirma_lexer_disi_adi_reddeder() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/unicode-rename.dil","text":"sayaç 3 olsun\nsayacı yaz\n"}}}"#);
+    let yeniden_adlandir = |sunucu: &mut Sunucu, ad: &str| {
+        let istek = format!(
+            r#"{{"jsonrpc":"2.0","id":40,"method":"textDocument/rename","params":{{"textDocument":{{"uri":"file:///tmp/unicode-rename.dil"}},"position":{{"line":0,"character":2}},"newName":"{ad}"}}}}"#
+        );
+        sunucu.mesaj_isle(&istek).govdeler[0].clone()
+    };
+    for ad in [
+        "\u{0440}\u{0430}ket",
+        "日本",
+        "\u{fb01}le",
+        "3kat",
+        "a\u{202e}b",
+        "a\u{200d}b",
+        "c\u{0327}ay",
+    ] {
+        let yanit = yeniden_adlandir(&mut sunucu, ad);
+        assert!(yanit.contains("\"result\":null"), "{ad:?}: {yanit}");
+    }
+    for (ad, ekli) in [("çay", "çayı"), ("Puan", "Puanı"), ("_iç2", "_iç2i")] {
+        let yanit = yeniden_adlandir(&mut sunucu, ad);
+        assert!(
+            yanit.contains(&format!("\"newText\":\"{ad}\"")),
+            "{ad}: {yanit}"
+        );
+        assert!(
+            yanit.contains(&format!("\"newText\":\"{ekli}\"")),
+            "{ad}: {yanit}"
+        );
+    }
+}

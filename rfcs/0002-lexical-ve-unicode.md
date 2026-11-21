@@ -81,7 +81,10 @@ dağıtım). Sonuçları:
    bitişik Türkçe virgül Ondalık, virgül+boşluk liste ayracıdır; ikinci bir
    ikilik kayan nokta kullanıcı türü yoktur.
 4. Büyük/küçük yalnız-fark uyarısı (A07) ve confusable denetiminin tanımlayıcı
-   ötesine (metin sabitlerine) genişletilmesi.
+   ötesine (metin sabitlerine) genişletilmesi. K-363 kısmi: tanımlayıcı
+   alfabesi metin olarak taşınan kimliklere de uygulanır — paket adı
+   (`proje`/`uzak_bağımlılıklar`), birim dosya adı (NFC-birebir) ve LSP
+   yeniden adlandırma yeni adı; metin sabitleri kapsam dışı kalır.
 5. Tam NFC: v0 "birleşik biçim zorunlu" kuralı yeterli mi, tablolu
    normalizasyon mu gelmeli? (ADR adayı.)
 

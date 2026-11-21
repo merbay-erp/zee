@@ -1366,3 +1366,153 @@ fn kaynak_toplama_proje_dil_degistirilirken_dusmez() {
         hatalar.first()
     );
 }
+
+/// K-363 (GB-109 Unicode gösterim/registry): paket adı spec/07 gereği küçük
+/// harfli tek Türkçe/Latin tanımlayıcıdır. Önceki `is_alphabetic` denetimi
+/// Kiril/Yunan homoglifini (`раket` görünüşte `paket`), CJK'yı, bağ harfini,
+/// unvan harfini ve birleştirici imi (U+0345) kabul ediyordu.
+#[test]
+fn paket_adi_yalniz_kucuk_turkce_latin_tanimlayicidir() {
+    for ad in ["paket", "çay", "kâr", "_iç", "ağ2", "a_b_1"] {
+        assert!(
+            UzakBagimlilik::ayristir(&format!("{ad}@1.0.0")).is_ok(),
+            "{ad} kabul edilmeli"
+        );
+    }
+    for ad in [
+        "\u{0440}\u{0430}ket", // Kiril р, а
+        "\u{03c1}aket",        // Yunan ρ
+        "c\u{0327}ay",         // NFD ç
+        "a\u{0345}",           // birleştirici Yunan ypogegrammeni
+        "\u{fb01}le",          // ﬁ bağ harfi
+        "\u{01c6}",            // ǆ
+        "日本",
+        "\u{2170}", // ⅰ
+        "\u{00aa}", // ª
+        "a\u{202e}b",
+        "a\u{200d}b",
+        "Paket",
+        "\u{0130}", // İ
+        "1paket",
+        "",
+    ] {
+        let hata = UzakBagimlilik::ayristir(&format!("{ad}@1.0.0"))
+            .expect_err(&format!("{ad:?} reddedilmeli"));
+        assert!(
+            hata.contains("küçük harfli tek tanımlayıcı"),
+            "{ad:?}: {hata}"
+        );
+    }
+}
+
+/// K-363: homoglif adlı yerel bağımlılık grafiğe girmez (P007).
+#[test]
+fn homoglif_adli_yerel_bagimlilik_p007_ile_reddedilir() {
+    let gecici = GeciciKlasor::yeni();
+    let uygulama = gecici.yol().join("uygulama");
+    let paket = gecici.yol().join("paket");
+    std::fs::create_dir(&uygulama).unwrap();
+    std::fs::create_dir(&paket).unwrap();
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../paket\" listesi olsun\n",
+    )
+    .unwrap();
+    std::fs::write(uygulama.join("ana.dil"), "1 yaz\n").unwrap();
+    std::fs::write(
+        paket.join("proje.dil"),
+        "proje \"\u{0440}\u{0430}ket\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"paket.dil\" olsun\n",
+    )
+    .unwrap();
+    std::fs::write(
+        paket.join("paket.dil"),
+        "işlem yedi ver\n    TamSayı döndürür\n    7 döndür\n",
+    )
+    .unwrap();
+    let hata = match dil::paket::ProjeGrafigi::cozumle(&uygulama) {
+        Ok(_) => panic!("homoglif paket adı grafiğe girmemeli"),
+        Err(hata) => hata,
+    };
+    assert_eq!(hata.tani.kod, "P007");
+    assert!(hata.tani.mesaj.contains("tek kelime olarak kullanılamaz"));
+}
+
+fn birim_projesi(gecici: &GeciciKlasor, birim_dosyasi: &str) -> PathBuf {
+    let kok = gecici.yol().join("uygulama");
+    std::fs::create_dir(&kok).unwrap();
+    std::fs::write(
+        kok.join("proje.dil"),
+        "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n",
+    )
+    .unwrap();
+    std::fs::write(kok.join("ana.dil"), "çay birimini kullan\nselam ver\n").unwrap();
+    std::fs::write(
+        kok.join(birim_dosyasi),
+        "işlem selam ver\n    değer döndürmez\n    \"merhaba\" yaz\n",
+    )
+    .unwrap();
+    kok
+}
+
+/// K-363: `çay birimini kullan` yalnız NFC adı `çay.dil` olan dosyayı
+/// bağlar. Önceden büyük/küçük harf duyarsız dosya sisteminde (macOS APFS,
+/// Windows NTFS) `Çay.dil` yükleniyor, Linux'ta birim bulunamıyordu; aynı
+/// proje platforma göre farklı anlam taşıyordu. Artık her platformda aynı
+/// A010 tanısıdır. NFD saklanan ad (`c` + U+0327) aynı kimliktir ve her
+/// platformda bağlanır.
+#[test]
+fn birim_adi_dosya_adiyla_nfc_birebir_eslesir() {
+    let gecici = GeciciKlasor::yeni();
+    let kok = birim_projesi(&gecici, "Çay.dil");
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", kok.to_str().expect("utf8")])
+        .output()
+        .expect("dil");
+    assert_eq!(cikti.status.code(), Some(1));
+    assert!(cikti.stdout.is_empty());
+    let hata = String::from_utf8_lossy(&cikti.stderr);
+    assert!(hata.contains("HATA A010"), "{hata}");
+    assert!(
+        hata.contains(
+            "\"çay\" birimi \"çay.dil\" dosyasıyla birebir eşleşmeli; diskteki \"Çay.dil\" yalnız büyük/küçük harf ya da Unicode biçimiyle farklı"
+        ),
+        "{hata}"
+    );
+
+    let gecici = GeciciKlasor::yeni();
+    let kok = birim_projesi(&gecici, "c\u{0327}ay.dil");
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", kok.to_str().expect("utf8")])
+        .output()
+        .expect("dil");
+    assert_eq!(
+        String::from_utf8_lossy(&cikti.stdout),
+        "merhaba\n",
+        "{}",
+        String::from_utf8_lossy(&cikti.stderr)
+    );
+    assert!(cikti.status.success());
+}
+
+/// K-363: `--yanked-kabul`/`--kritik-kabul` gerekçesi `proje.kilit`e yazılır
+/// ve incelemede okunur; bidi/sıfır genişlikli biçim karakteri (Trojan
+/// Source) Cc denetim karakteri gibi reddedilir.
+#[test]
+fn kabul_gerekcesi_gorunmez_bicim_karakteri_tasiyamaz() {
+    use dil::paket::RegistryCozumPolitikasi;
+    assert!(RegistryCozumPolitikasi::yeni(false, Some("bilinçli kabul".into()), None).is_ok());
+    for gerekce in [
+        "onay\u{202e}lanmadı",
+        "a\u{200b}b",
+        "a\u{061c}b",
+        "a\u{2066}b",
+        "a\nb",
+    ] {
+        let hata =
+            RegistryCozumPolitikasi::yeni(false, Some(gerekce.into()), None).expect_err(gerekce);
+        assert!(hata.contains("denetim karakterli"), "{gerekce:?}: {hata}");
+        let hata =
+            RegistryCozumPolitikasi::yeni(false, None, Some(gerekce.into())).expect_err(gerekce);
+        assert!(hata.contains("kritik duyuru kabul"), "{gerekce:?}: {hata}");
+    }
+}

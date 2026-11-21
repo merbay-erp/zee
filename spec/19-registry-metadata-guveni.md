@@ -92,8 +92,11 @@ targets tarafından yetkilendirilmeyen yayın P014'tür.
 Yanked hedef yeni seçimde varsayılan reddedilir. Etkin `kritik` duyuru da
 varsayılan reddedilir. Duyuru kimliği, paket, en az bir sıralı exact etkilenen
 sürüm, `düşük|orta|yüksek|kritik` önem, isteğe bağlı düzeltilen exact sürüm ve
-etkinlik taşır. Baypas yalnız çağıranın açık politikasıyla mümkündür; gelecekte
-kilide gerekçesiyle yazılmadan bağımlılık kabulüne dönüşemez.
+etkinlik taşır. Duyuru kimliği ve hedef paket adı ekrana ve kilit politika
+anahtarına yazıldığından denetim karakteri ya da görünmez biçim karakteri
+(spec/18 kümesi) taşıyamaz; böyle targets metadata hatasıdır (K-363). Baypas
+yalnız çağıranın açık politikasıyla mümkündür; gelecekte kilide gerekçesiyle
+yazılmadan bağımlılık kabulüne dönüşemez.
 
 ## Kaynak limitleri (ZORUNLU)
 
@@ -189,7 +192,8 @@ ve kaynak ağaç özeti; ağ dışı ilk root sürüm+özeti; etkin root,
 timestamp, snapshot ve targets sürüm+özetleri; yayıncı anahtar kimliği;
 `.zep`, SBOM, provenance ve yayın bildirimi özetleri; yanked durumu ve sıralı
 kritik duyuru kimlikleri. Yanked/kritik baypası ancak boş olmayan, en çok 1024
-byte ve denetim karaktersiz gerekçeyle mümkündür; `yanked_kabul` ve
+byte, denetim karaktersiz ve görünmez biçim karaktersiz (bidi, sıfır
+genişlikli, BOM — spec/18 kümesi; K-363) gerekçeyle mümkündür; `yanked_kabul` ve
 `kritik_kabul` kayıtları root+paket exact kimliğine bağlı olarak kilide yazılır.
 Kritik kabul anahtarı ayrıca sıralı etkin duyuru kimliği kümesini taşır. Aynı
 paket sürümüne sonradan eklenen veya değişen kritik duyuru, eski kabul

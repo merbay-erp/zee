@@ -36,11 +36,23 @@ testlerle değil, sürümlü ve incelenebilir bir korpusla korunması gerekir.
    RFC/spec, korpus ve conformance fixture'ı birlikte incelenir.
 5. `compiler/tests/fixtures/zep-kanonik-v1.hex`, Türkçe Unicode adlı gerçek bir
    proje ağacının beklenen `.zep` byte'ıdır. Aynı test GitHub CI'da Linux,
-   macOS ve Windows üzerinde koşar. `zep-saldiri-korpusu/yollar-v1.tsv` 80
-   kalıcı yol saldırısını, ayrı yapısal testler de limit/sıra/tekillik/fazladan
-   byte vakalarını korur.
+   macOS ve Windows üzerinde koşar. `zep-saldiri-korpusu/yollar-v1.tsv` 81
+   kalıcı yol saldırısını (K-363: ALM U+061C eklendi), ayrı yapısal testler
+   de limit/sıra/tekillik/fazladan byte vakalarını korur.
 6. UAX #15'i yeniden gerçeklemek yerine `unicode-normalization 0.1.25`
    (Unicode 17.0) `Cargo.lock` ile sabitlenir ve native+WASM kapılarından geçer.
+
+7. **K-363 eki (21 Kasım 2026).** Büyük/küçük harf katlamasından (tam büyük
+   harf → tam küçük harf → NFC) sonra aynı olan, farklı yazılmış iki yol ya da
+   klasör öneki üreticide ve tüketicide reddedilir. Önceden böyle bir arşiv
+   Linux'ta kuruluyor, macOS APFS/Windows NTFS'te ham işletim sistemi hatasıyla
+   düşüyordu; paket kimliği platformun dosya adı davranışına bırakılmıştı.
+   Katlama dosya sistemine göre değişen eşleşmeleri (`ı`/`i`, `ß`/`ss`) de
+   kapsayacak kadar geniştir; yanlış pozitif bilinçli olarak tercih edilir.
+   Güvenlik kümesine eksik kalan bidi biçim karakteri ALM (U+061C) eklendi;
+   aynı görünmez biçim kümesi registry duyuru kimliği/paket adı ve kabul
+   gerekçesinde de reddedilir (spec/19). Wire biçimi değişmez; kabul kümesi
+   daralır. Kanonik fixture byte'ı aynı kalır.
 
 ## Reddedilen seçenekler
 
@@ -51,6 +63,9 @@ testlerle değil, sürümlü ve incelenebilir bir korpusla korunması gerekir.
   güvenlik reddi daha dar ve denetlenebilirdir.
 - **Yalnız çıkarma anında denetlemek:** Doğrulanmış cache'e tehlikeli yolu
   kabul eder ve her çıkarıcının aynı güvenlik politikasını yinelemesini ister.
+- **Harf katlama çakışmasını kurulumda dosya sistemine bırakmak (K-363):**
+  Linux iki dosyayı kurar, macOS/Windows ikinciyi yazamaz; aynı imzalı arşiv
+  platforma göre farklı sonuç verir.
 - **Platformun dosya adı davranışına güvenmek:** Linux/macOS/Windows arasında
   normalizasyon ve yasak karakter davranışı aynı değildir; paket kimliği host
   davranışına bırakılamaz.

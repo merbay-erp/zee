@@ -406,20 +406,51 @@ impl ProjeGrafigi {
                 if !crate::proje::gecerli_paket_adi(istek.ad) {
                     return Err("birim adı tek bir Türkçe/Latin tanımlayıcı olmalı".into());
                 }
-                let aday = isteyen
-                    .parent()
-                    .unwrap_or(&sahip.kok)
-                    .join(format!("{}.dil", istek.ad));
+                let klasor = isteyen.parent().unwrap_or(&sahip.kok);
+                let beklenen = format!("{}.dil", istek.ad);
+                let aday = klasor.join(&beklenen);
                 if let Ok(kanonik) = std::fs::canonicalize(&aday) {
                     if !kanonik.starts_with(&sahip.kok) {
                         return Err("birim sembolik bağ üzerinden proje dışına çıkamaz".into());
                     }
-                    if let Some(kaynak) = sahip.kaynaklar.get(&kanonik) {
+                    if sahip.kaynaklar.contains_key(&kanonik) {
+                        // K-363: büyük/küçük harf duyarsız dosya sistemi
+                        // `çay` için `Çay.dil`'i açar; Linux'ta aynı proje
+                        // birimi bulamaz. Klasördeki girdi adı (proje içi
+                        // sembolik bağın kendi adı) NFC-birebir olmalı.
+                        if let Some(disk_adi) = klasor_girdisi(klasor, &beklenen) {
+                            if nfc(&disk_adi) != beklenen {
+                                return Err(birim_adi_farki(istek.ad, &disk_adi));
+                            }
+                        }
                         return Ok(YuklenenBirim {
-                            kaynak: kaynak.clone(),
+                            kaynak: sahip.kaynaklar[&kanonik].clone(),
                             koken: yol_metni(&kanonik),
                         });
                     }
+                }
+                // Disk adı NFD olabilir (Linux baytları korur); ad dosya
+                // sistemine sorulmadan proje kaynak listesinden de eşlenir,
+                // böylece sonuç platformdan bağımsızdır.
+                let klasor = std::fs::canonicalize(klasor).unwrap_or_else(|_| klasor.to_path_buf());
+                let mut harf_farki = None;
+                for (yol, kaynak) in &sahip.kaynaklar {
+                    if yol.parent() != Some(klasor.as_path()) {
+                        continue;
+                    }
+                    let disk_adi = dosya_adi(yol);
+                    if nfc(&disk_adi) == beklenen {
+                        return Ok(YuklenenBirim {
+                            kaynak: kaynak.clone(),
+                            koken: yol_metni(yol),
+                        });
+                    }
+                    if harf_katla(&disk_adi) == harf_katla(&beklenen) {
+                        harf_farki.get_or_insert(disk_adi);
+                    }
+                }
+                if let Some(disk_adi) = harf_farki {
+                    return Err(birim_adi_farki(istek.ad, &disk_adi));
                 }
                 crate::gomulu_birim(istek.ad)
                     .map(|kaynak| YuklenenBirim {
@@ -780,6 +811,55 @@ fn kaynak_ozeti(kok: &Path, kaynaklar: &BTreeMap<PathBuf, String>) -> String {
         veri.extend_from_slice(kaynak.as_bytes());
     }
     sha256_hex(&veri)
+}
+
+fn dosya_adi(yol: &Path) -> String {
+    yol.file_name()
+        .map(|ad| ad.to_string_lossy().into_owned())
+        .unwrap_or_default()
+}
+
+/// Klasörde NFC adı `beklenen` olan girdiyi, yoksa yalnız harf katlamasıyla
+/// eşleşen ilk girdiyi döndürür; klasör okunamazsa `None`.
+fn klasor_girdisi(klasor: &Path, beklenen: &str) -> Option<String> {
+    let mut katlanan = None;
+    for girdi in std::fs::read_dir(klasor).ok()?.flatten() {
+        let ad = girdi.file_name().to_string_lossy().into_owned();
+        if nfc(&ad) == beklenen {
+            return Some(ad);
+        }
+        if katlanan.is_none() && harf_katla(&ad) == harf_katla(beklenen) {
+            katlanan = Some(ad);
+        }
+    }
+    katlanan
+}
+
+fn birim_adi_farki(ad: &str, disk_adi: &str) -> String {
+    format!(
+        "\"{}\" birimi \"{}.dil\" dosyasıyla birebir eşleşmeli; diskteki \"{}\" yalnız büyük/küçük harf ya da Unicode biçimiyle farklı",
+        ad, ad, disk_adi
+    )
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn nfc(metin: &str) -> String {
+    use unicode_normalization::UnicodeNormalization;
+    metin.nfc().collect()
+}
+
+#[cfg(target_arch = "wasm32")]
+fn nfc(metin: &str) -> String {
+    metin.to_string()
+}
+
+/// `.zep` çakışma denetimiyle (artefakt_dogrulama) aynı katlama.
+fn harf_katla(metin: &str) -> String {
+    nfc(&metin
+        .chars()
+        .flat_map(char::to_uppercase)
+        .flat_map(char::to_lowercase)
+        .collect::<String>())
 }
 
 fn proje_hatasi(

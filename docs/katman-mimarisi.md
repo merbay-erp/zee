@@ -227,3 +227,11 @@ yayın yolu birleştirildi, biçim yanıtı eşitleme sahibine taşındı. CLI
 `govde` içindeki birim-test/native-köprü sırası `dene_kopru_komutu`
 yardımcısına ayrıldı. Genel büyüme payı artırılmadı; hata, bütçe ve
 komut dispatch sırası aynı olumlu/olumsuz testlerle korunur.
+
+K-363 iki exact kenar ekler: `proje -> sozcukleyici` ve `lsp -> sozcukleyici`.
+Paket/birim adı (spec/07) ve LSP yeniden adlandırma yeni adı lexer'ın tek
+`harf_gecerli` tanımlayıcı alfabesini kullanır; ikinci bir alfabe kopyası
+drift riski taşıdığından reddedildi. `sozcukleyici` sözdizimi katmanıdır ve
+yalnız `kaynak_sinirlari`/`tani`ya bağlıdır; çevrim oluşmaz. `paket` ve
+`registry`nin `artefakt_dogrulama::gorunmez_bicim_imi` kullanımı var olan
+kenarlardan geçer.

@@ -77,7 +77,7 @@ kalır (ADR-025).
 | A007 | `yeni <Ad>` — yapı tanımlı değil | Yapıyı kullanmadan önce tanımla |
 | A008 | Ad iki kaynaktan geliyor (birim çakışması) | Sessiz gölgeleme yoktur: adlardan birini değiştir ya da tek kaynakta topla (RFC-0009). Aynı tanımın elmas yoldan iki kez gelmesi çakışma değildir (ADR-072) |
 | A009 | Birimler döngüsel kullanıyor | Ortak tanımları üçüncü bir birime taşı |
-| A010 | Birim yüklenemedi | Aynı klasörde `<ad>.dil` dosyası olmalı (RFC-0009 §4) |
+| A010 | Birim yüklenemedi | Aynı klasörde adı birebir `<ad>.dil` olan dosya olmalı; yalnız büyük/küçük harfi farklı dosya (`Çay.dil`) bağlanmaz (RFC-0009 §4, K-363) |
 | A011 | Paket yüklenemedi | Paketi `yerel_bağımlılıklar` listesine ekle, ardından `dil kilitle .` çalıştır |
 | A012 | Lint: ad tanımlanıyor ama okunmuyor | Adı kullan veya gereksiz bağlamayı kaldır; değer ifadesinin etkisini incelemeden satırı silme. Örnek: `adet 3 olsun` ardından `adedi yaz`. Yalnız `--lint`/LSP lint açıkken uyarıdır |
 
@@ -199,7 +199,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P004 | Giriş mutlak, proje dışına çıkan veya `.dil` olmayan yol | Proje içinde kalan göreli `.dil` yolu kullan |
 | P005 | Yerel bağımlılık listesi ya da yollarından biri geçersiz | Göreli proje klasörlerini Metin listesiyle yaz: `yerel_bağımlılıklar "../ortak" listesi olsun` |
 | P006 | Yerel bağımlılık klasörü/bildirimi okunamadı | Yolun `proje.dil` taşıyan erişilebilir bir zee projesi olduğunu doğrula |
-| P007 | Bağımlılık döngüsü, yinelenen paket adı veya kaynakta kullanılamayan paket adı | Döngüyü kır; her pakete benzersiz, küçük harfli tek tanımlayıcı ad ver |
+| P007 | Bağımlılık döngüsü, yinelenen paket adı veya kaynakta kullanılamayan paket adı | Döngüyü kır; her pakete benzersiz, küçük harfli tek Türkçe/Latin tanımlayıcı ad ver (başka alfabe harfi, birleştirici im yok — K-363) |
 | P008 | `proje.kilit` eksik ya da kaynak/bildirim grafiğiyle uyuşmuyor | Değişikliği incele, sonra `dil kilitle .` çalıştır |
 | P009 | Paket/proje girişi güvenli ve gerçek bir `.dil` kaynağına çözülemedi | Girişi proje içindeki sembolik bağ olmayan bir kaynağa yönelt |
 | P010 | Kaldırılmak istenen paket en az bir proje kaynağında hâlâ kullanılıyor | Önce `<ad> paketini kullan` satırını ve pakete bağlı çağrıları kaldır |

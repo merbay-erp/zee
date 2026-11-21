@@ -196,3 +196,6 @@ fn salt_okunur_yap(kok: &Path, girdiler: &BTreeMap<String, Vec<u8>>) -> Result<(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod testler;
