@@ -80,3 +80,14 @@ format-right-to-left-override	iç	202E	Güvensiz
 format-left-to-right-isolate	iç	2066	Güvensiz
 format-pop-directional-isolate	iç	2069	Güvensiz
 format-byte-order-mark	iç	FEFF	Güvensiz
+windows-con	tam	0043 004F 004E 002E 0064 0069 006C	Windows
+windows-nul-kucuk	tam	006B 0061 0079 006E 0061 006B 002F 006E 0075 006C 002E 0064 0069 006C	Windows
+windows-aux-cift-uzanti	tam	0061 0075 0078 002E 0074 0078 0074 002E 0064 0069 006C	Windows
+windows-com1	tam	006B 0061 0079 006E 0061 006B 002F 0043 004F 004D 0031 002E 0064 0069 006C	Windows
+windows-lpt-ust-simge	tam	004C 0050 0054 00B9 002E 0064 0069 006C	Windows
+windows-conin	tam	0043 004F 004E 0049 004E 0024 002E 0064 0069 006C	Windows
+windows-prn-klasor	tam	0070 0072 006E 002F 0061 002E 0064 0069 006C	Windows
+windows-son-nokta-klasor	tam	006B 0061 0079 006E 0061 006B 002E 002F 0061 002E 0064 0069 006C	Windows
+windows-son-bosluk-klasor	tam	006B 0061 0079 006E 0061 006B 0020 002F 0061 002E 0064 0069 006C	Windows
+windows-uzanti-oncesi-bosluk	tam	0063 006F 006E 0020 002E 0064 0069 006C	Windows
+windows-son-nokta-dosya	tam	006B 0061 0079 006E 0061 006B 002F 0061 002E 0064 0069 006C 002E	Windows

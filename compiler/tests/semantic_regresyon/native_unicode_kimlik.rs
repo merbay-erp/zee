@@ -19,6 +19,11 @@
 //!   edip derlenmeyen kaynak üretiyordu.
 //! - `kabul-gerekcesi`: kilide yazılan kabul gerekçesi bidi/sıfır genişlikli
 //!   biçim karakteri taşıyabiliyordu (`char::is_control` yalnız Cc).
+//! - `zep-windows-adi` (K-366): Windows ayrılmış aygıt adı (`CON.dil`,
+//!   `nul.dil`, `prn/`) ya da sonu nokta/boşlukla biten bileşen taşıyan arşiv
+//!   Linux/macOS'ta kuruluyor, Windows'ta kurulamıyordu.
+//! - `paketle-proje-adi` (K-366): `dil paketle` ana proje adını tüketicinin
+//!   alfabe kuralıyla denetlemiyor, kullanılamaz paket üretiyordu.
 #![allow(dead_code)]
 
 use std::path::{Path, PathBuf};
@@ -111,6 +116,44 @@ fn birim_calistir(kok: &Path, birim_kaynagi: &str, dosya: &str) -> String {
         format!("beklenmeyen {}", stderr.lines().next().unwrap_or(""))
     };
     format!("çıkış {} {sonuc}", cikti.status.code().unwrap_or(-1))
+}
+
+fn paketle(kok: &Path, anahtar: &Path, ad: &str, proje_adi: &str) -> String {
+    let proje = kok.join(ad);
+    std::fs::create_dir_all(&proje).expect("proje");
+    std::fs::write(
+        proje.join("proje.dil"),
+        format!("proje \"{proje_adi}\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n"),
+    )
+    .expect("bildirim");
+    std::fs::write(proje.join("ana.dil"), "\"merhaba\" yaz\n").expect("ana");
+    let cikti_klasoru = kok.join(format!("{ad}-cikti"));
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .arg("paketle")
+        .arg(&proje)
+        .arg("--anahtar")
+        .arg(anahtar)
+        .arg("--çıktı")
+        .arg(&cikti_klasoru)
+        .output()
+        .expect("dil paketle");
+    let stderr = String::from_utf8_lossy(&cikti.stderr);
+    let sonuc = if cikti.status.success() {
+        "paketlendi"
+    } else if stderr.contains("P007") && stderr.contains("tek kelime") {
+        "P007 ret"
+    } else {
+        "beklenmeyen hata"
+    };
+    let yazim = if cikti_klasoru
+        .join(format!("{proje_adi}-0.1.0.zep"))
+        .exists()
+    {
+        "var"
+    } else {
+        "yok"
+    };
+    format!("{ad} {sonuc} çıktı {yazim}")
 }
 
 fn senaryo(kaynak: &str) -> &str {
@@ -213,7 +256,41 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
             format!("{ad} {}", if sonuc.is_ok() { "kabul" } else { "ret" })
         })
         .collect(),
-        diger => panic!("bilinmeyen K-363 senaryosu: {diger}"),
+        "zep-windows-adi" => {
+            let kok = gecici("zep-windows");
+            let ret = "Windows ayrılmış aygıt adı";
+            vec![
+                kur(&kok.0, "con", &[("CON.dil", "x")], ret),
+                kur(&kok.0, "nul-uzantili", &[("kaynak/nul.txt.dil", "x")], ret),
+                kur(&kok.0, "com1", &[("com1.dil", "x")], ret),
+                kur(&kok.0, "prn-klasor", &[("prn/a.dil", "x")], ret),
+                kur(&kok.0, "son-nokta", &[("kaynak./a.dil", "x")], ret),
+                kur(&kok.0, "son-bosluk", &[("kaynak /a.dil", "x")], ret),
+                kur(
+                    &kok.0,
+                    "benzer",
+                    &[("com10.dil", "x"), ("console.dil", "y")],
+                    ret,
+                ),
+            ]
+        }
+        "paketle-proje-adi" => {
+            let kok = gecici("paketle-ad");
+            let anahtar = kok.0.join("anahtar.txt");
+            let uretim = Command::new(env!("CARGO_BIN_EXE_dil"))
+                .args(["anahtar", "üret"])
+                .arg(&anahtar)
+                .output()
+                .expect("dil anahtar üret");
+            assert!(uretim.status.success(), "anahtar üretilmeli");
+            vec![
+                paketle(&kok.0, &anahtar, "büyük", "Uygulama"),
+                paketle(&kok.0, &anahtar, "boşluklu", "kötü ad"),
+                paketle(&kok.0, &anahtar, "kiril", "\u{0440}aket"),
+                paketle(&kok.0, &anahtar, "türkçe", "çaycı"),
+            ]
+        }
+        diger => panic!("bilinmeyen K-363/K-366 senaryosu: {diger}"),
     };
     (0, satirlar)
 }

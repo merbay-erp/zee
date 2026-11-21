@@ -1,0 +1,5 @@
+# K-366: `dil paketle` ana projenin `proje` adını tüketicinin (yerel bağımlılık
+# P007, registry) alfabe kuralıyla denetlemiyordu; büyük harfli ya da boşluklu
+# adla kullanılamaz paket üretiliyordu.
+# senaryo: paketle-proje-adi
+1 yaz

@@ -104,6 +104,10 @@ ağacı aynı byte dizisidir.
   sembolik bağ: YASAK;
 - Unicode 17.0 UTS #39'da `/`, `\\`, `.`, `:` iskeletine giden işaretler,
   tam genişlikli `/`/`.` ve görünmez bidi/biçim denetleyicileri: YASAK;
+- Windows ayrılmış aygıt adı (`CON`, `PRN`, `AUX`, `NUL`, `CONIN$`,
+  `CONOUT$`, `COM0-9`, `LPT0-9`, `COM¹²³`/`LPT¹²³`; uzantılı, büyük/küçük harf
+  duyarsız) ve sonu nokta/boşlukla biten bileşen: her platformda YASAK
+  (K-366, spec/18, ADR-028 eki 8);
 - son girdiden sonra byte: YASAK;
 - yerel yol bağımlılığı: YASAK;
 - post-install/build betiği: biçimde yoktur ve YASAKTIR.

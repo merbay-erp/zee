@@ -2622,7 +2622,34 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
-## K-363 — P33 kanıt dilimi: paket/cache yayın süresi ve Unicode kimlikleri
+## K-366 — `.zep` Windows taşınabilirliği ve yayıncı paket adı
+
+**Durum: KAPALI.** K-363'ün açık bıraktığı iki takip; aynı sınıf (paket
+kimliği platforma ya da tarafa göre farklı karar veriyordu). GB-147.
+
+1. `zep-windows-aygit-adi`: `.zep` üretici ve tüketicisi Windows ayrılmış
+   aygıt adlarını (`CON`, `PRN`, `AUX`, `NUL`, `CONIN$`, `CONOUT$`,
+   `COM0`–`COM9`, `LPT0`–`LPT9`, `COM¹²³`/`LPT¹²³`; ASCII büyük/küçük harf
+   duyarsız, uzantılı ve uzantı öncesi boşluklu hâlleri, klasör bileşeni) ve
+   sonu nokta/boşlukla biten bileşenleri kabul ediyordu. macOS'ta (5801c89)
+   `AUX.dil`, `kaynak./a.dil`, `bosluk /b.dil` taşıyan proje `dil paketle`
+   ile paketlendi ve kuruldu; Windows Win32 katmanı bu adları aygıta açar ya
+   da kırpar, kurulum ham OS hatası ya da yanlış girdiyle düşer. Artık
+   `guvenli_arsiv_yolu` her platformda aynı "Windows ayrılmış aygıt adı"
+   tanısıyla reddeder (spec/18, ADR-028 eki 8, RFC-0020 §3); saldırı korpusu
+   92.
+2. `paketle-proje-adi-alfabesi`: `dil paketle` ana projenin `proje` adını
+   denetlemiyordu; `Uygulama`, `kötü ad` ve Kiril harfli adla imzalı paket
+   (çıktı adı `kötü ad-0.1.0.zep`) üretiliyordu, tüketici (yerel bağımlılık
+   P007, registry P017) aynı adı reddettiği için paket kullanılamazdı.
+   Artık üretici ve imzalı yayın doğrulaması tüketicinin tek metnini
+   (`proje::paket_adi_hatasi`) kullanır: P012 içinde P007.
+
+Yeni tanı kodu, grammar, CLI ya da `dil::api::v1` değişikliği yok; kabul
+kümesi daralır, wire biçimi ve kanonik fixture byte'ı aynıdır. Windows
+çalışma anı kanıtı CI'nın windows-latest matrisindeki aynı regression ve
+birim testidir (yerel Windows/wine yok; xwin derleme ve clippy yerelde).
+
 
 **Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün kalan üç kanıt
 alanından ikisi test kanıtı aldı; Unicode alanında bulunan altı açık minimal
@@ -2683,6 +2710,7 @@ Açık sınırlar ve takip: ana projenin kendi `proje` adı (yayıncı tarafı)
 denetlenmez; tüketici bu adı reddettiği için yayımlanan böyle bir paket
 kullanılamaz. Windows'ta sonu nokta/boşluklu yol ve aygıt adları (`CON`,
 `NUL`) arşivde yasak değildir; kurulum doğrulaması fail-closed düşer.
+(İkisi de K-366'da kapandı.)
 Morfoloji takibi: `Kâr` adı için belirtme eki `Kârı` yerine `Kâri` üretilir
 (şapkalı ünlü uyumu; güvenlik dışı). GB-109 dosya yetkinliği alanı nedeniyle
 `acik` kalır.
