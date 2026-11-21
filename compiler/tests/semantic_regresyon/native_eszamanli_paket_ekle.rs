@@ -63,7 +63,8 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
             .map(|ad| {
                 let (kok, ad, uygulama) = (kok.clone(), ad.clone(), uygulama.clone());
                 std::thread::spawn(move || {
-                    for _ in 0..DENEME {
+                    let mut son_hata = String::new();
+                    for deneme in 0..DENEME {
                         let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
                             .current_dir(&kok)
                             .args(["ekle", ad.as_str(), uygulama.to_str().expect("utf8")])
@@ -72,11 +73,19 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
                         if cikti.status.success() {
                             return Some(ad);
                         }
+                        son_hata = String::from_utf8_lossy(&cikti.stderr).into_owned();
                         // Yalnız karşılaştırma kaybı yeniden denenir.
-                        if !String::from_utf8_lossy(&cikti.stderr).contains("başka bir süreç") {
+                        if !son_hata.contains("başka bir süreç") {
+                            // Tanı: libtest başarısız testin yakalanan stderr'ini gösterir.
+                            eprintln!(
+                                "K-347 harness: `dil ekle {ad}` {}. denemede {:?} ile düştü:\n{son_hata}",
+                                deneme + 1,
+                                cikti.status.code()
+                            );
                             return None;
                         }
                     }
+                    eprintln!("K-347 harness: `dil ekle {ad}` {DENEME} denemede kazanamadı; son:\n{son_hata}");
                     None
                 })
             })
@@ -100,7 +109,13 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
             .args(["çalıştır", uygulama.to_str().expect("utf8")])
             .output()
             .expect("dil çalıştır");
-        kilit_gecerli &= calistir.status.success();
+        if !calistir.status.success() {
+            eprintln!(
+                "K-347 harness: son kilit doğrulanamadı:\n{}",
+                String::from_utf8_lossy(&calistir.stderr)
+            );
+            kilit_gecerli = false;
+        }
     }
     (
         cikis,
