@@ -272,12 +272,16 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
   loopback stub çözücünün (systemd-resolved) bildirimle izinli tek DNS
   hedefi olmasıdır; doğrulayıcı çözücü beklenmez, DNSSEC doğrulaması bu
   RFC'de vaat edilmez.
-  **Durum: ZeeOS sağlamalı; bugün yok (ZeeOS P0-Z3 açık).** Düzeltme
+  **Durum: ZeeOS sağlamalı; bugün yalnız statik laboratuvar çözücüsü var
+  (QEMU user-net); sahada kullanılamaz (ZeeOS P0-Z3 açık).** Düzeltme
   (ZeeOS ADR-076, 21 Kasım 2026): imajın systemd-resolved taşıdığı yönündeki
   önceki yanıt izinli sürüm listesinden okunmuştu, kurulu paketlerden değil.
   r5 sürümünün dpkg durumunda (156 paket) systemd-resolved kurulu değildir ve
-  ağ yapılandırması `[DHCPv4] UseDNS=no` olduğundan bugün hiçbir DNS çözüm
-  yolu yapılandırılmamıştır.
+  ağ yapılandırması `[DHCPv4] UseDNS=no`'dur; imaj derlemede QEMU user-net
+  statik çözücüsünü gösteren sabit bir `/etc/resolv.conf` yazar, bu yalnız
+  laboratuvarda çalışır. ZeeOS önerisi (ZeeOS ADR-077, onay bekliyor):
+  systemd-resolved stub, üst çözücü DHCP'den, `/etc/resolv.conf` →
+  `stub-resolv.conf` sembolik bağı; yeni bir ZeeOS sürümü gerektirir.
 - Sınırlar: sorgu son tarihi, yanıt boyutu, kayıt sayısı, TXT parça birleştirme
   kuralı (RFC 7208/6376'ya uygun), CNAME zinciri derinliği.
 - Yetkinlik: yeni `dns` yetkinliği; spec/23 `ağ` origin listesinin yerine
