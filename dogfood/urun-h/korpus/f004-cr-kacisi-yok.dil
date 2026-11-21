@@ -1,0 +1,7 @@
+# K-355/F004 — Metin kaçışlarında \r yok (S040); çıplak CR (SMTP smuggling)
+# denetimi Zee'de yazılamaz. K-164/F011 (\t) sınıfının tekrarıdır; RFC-0039
+# katman A satır okuyucusunda CR reddi çalışma zamanı değişmezidir.
+
+satır "MAIL FROM:<a@b.test>\rRCPT TO:<c@d.test>" olsun
+satır "\r" içeriyorsa
+    "500 5.5.2 Bare CR or LF not allowed" yaz

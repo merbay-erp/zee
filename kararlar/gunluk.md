@@ -5347,3 +5347,34 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Core freeze altında uygulama, spec, test ve dil yüzeyi değişikliği yok;
   her katman kayıtlı dogfood ürünü ve gerçek Zee reproducer'ıyla ayrı alt
   RFC olarak açılır. K-354 açık kalır.
+
+## K-355 — Ürün H (e-posta sunucusu) dogfood kaydı ve sürtünme karşılaştırması (21 Kasım 2026)
+
+- RFC-0039 freeze kapısının 1. ve 2. adımı: bütünüyle Zee ile yazılacak
+  e-posta sunucusu `urun-h` olarak etkin dogfood ürünüdür; exact harici
+  köken `91fcfc76a81f08b7551bf0e78c35c972d376e695`, depo içi kanıt kökü
+  `dogfood/urun-h`. Ürün Zee kodu saf SMTP durum makinesi; `dil dene` 19/19
+  (dil `357a93c`). Üç ürün reproducer'ı ve ürünün ASCII katlama çözümü
+  korpusa girdi; ürün kaynağı, adlar ve adresler taşınmadı (ADR-087).
+- **Yeni sürtünme (K-355/F001, F003, F009, F010):** F001 yerleşik büyük/küçük
+  harf Türkçe yerel ayarlı (`mail` → `MAİL`), ASCII katlama yüzeyi yok —
+  `agac.rs` ve `ayristirici/ifade.rs` bunu bilinçli Türkçe kural olarak
+  tanımlar, hata değil eksik özelliktir (RFC-0039 katman D adayı, tek ürün);
+  F003 kısa adda iyelik (`s nin`) S015 — `zee-tr-2` ad seçimi adayı; F009
+  ağ dinleyicisi yok (S036) — RFC-0039 katman A; F010 `"" diye sor` boş
+  istem satırı basar — CLI `sor` istemi her zaman satır olarak yazar,
+  spec boş istemi tanımlamaz; hata değil, istemsiz satır okuma eksikliği
+  (ağ yüzeyinde katman A satır okuyucusu karşılar).
+- **Tekrarlar (K-164 kimliğiyle):** F002 sıra ile öğe erişimi = K-164/F010
+  (üçüncü ürün; K-180'e kanıt eklendi); F004 `\r` kaçışı yok = K-164/F011
+  sınıfı (K-164, K-179, ürün H); F005 `içermeli` listede T022 = K-164/F004;
+  F006 parametre kökü (`önekini`→`önekin`) = K-164/F006/F007 ailesi
+  (`zee-tr-2` adayına kanıt); F007 `her X için` kaynağı `Xler` = K-164/F015
+  ve K-179/F001 örtük çoğul sınıfı; F008 boş liste argümanı T017 =
+  K-164/F005 sınıfı (boş sözlük).
+- **Karar:** compiler değişikliği yok; korpusta gerçek compiler hatası
+  bulunmadı. İki ya da daha çok üründe tekrar eden ve henüz backlog maddesi
+  olmayan sınıflar tasarım maddesi oldu: K-356 metin kaçış kümesi, K-357
+  listede `içermeli`, K-358 boş koleksiyon değerinin türü, K-359 örtük çoğul
+  döngü kaynağı. Hepsi freeze altında açılmaz; syntax freeze sonrası RFC
+  adayıdır. K-355 kapandı; K-354 açık kalır.

@@ -873,7 +873,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
 | K-178 | **KAPALI** | Ölçüm: yorumlayıcı çerçevesi debug ~194 KiB/düzey, release ~11 KiB/düzey (macOS arm64 = Linux aarch64). Eski 32 MiB yığın debug CLI'yı 167. düzeyde doğal taşmayla düşürüyordu; resmî yığın 256 MiB rezervasyon oldu, regresyon koşucusu ve derinlik testleri resmî yığında; `derinlik-499-resmi-yiginda` vakası ve bütçe testi kapıda |
 | K-179 | **KAPALI** | ADR-074 `dogfood/kelime-avi`: üçüncü ürün (etkileşimli CLI oyunu, 3 birim/7 test, `kelime_avi_testi` hermetik); sürtünme tekrarı ölçüldü — 2 yeni (F001 iyelikli döngü adı A003, F003 `metnin satırları` T028), 4 tekrar (F010 ×3 yer, F009, F013, F011), 5 kılavuzla önlenen; compiler değişikliği yok
-| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; syntax freeze (11 Kasım) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
+| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; 21 Kasım 2026 üçüncü ürün ürün H aynı sayaç yardımcısını yazdı (K-355/F002); syntax freeze (11 Kasım) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
 | K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil |
 | K-184 | **KAPALI** | Public depo güvenliği: özel IO izi yazımı, platform izin/ACL testleri, SECURITY belgesi, Gitleaks geçmiş/ağaç CI taraması. ADR-026 ve güvenlik kayıtları GB-024/025. |
 | K-186 | **KAPALI** | ADR-077: Zee ERP korumalı rotalarında doğrulanmış kullanıcı → security-definer resolver → transaction-local `app.tenant_id`; aynı leased bağlantı, iç eylemlerde savepoint, hata/timeout rollback ve public rotada sıfır tenant bağlamı. |
@@ -2517,6 +2517,45 @@ temizler. Kanıt: regression `coken-degistirme-kurtarma`
 `kaynak_sinirlari::yarim_degistirme::tests`, Windows CI 600 öldürme turu
 (kurtarılamayan 0) ve K-346 regresyonu 25 tekrar. Açık sınır: zee dışı silme
 ile ikinci adım sonrası ölen yazarın bayat yedeği aynı anda.
+
+## K-355 — Ürün H (e-posta sunucusu) dogfood kaydı
+
+**Durum: KAPALI.** `docs/dogfood-projeleri-v1.tsv` `urun-h` satırı (exact
+harici köken `91fcfc76a81f08b7551bf0e78c35c972d376e695`) ve depo içi kanıt
+kökü [`dogfood/urun-h`](../dogfood/urun-h/README.md): dört korpus vakası
+(S036 dinleyici, S040 `\r` kaçışı, yerel ayarlı `MAİL`, ürünün elle ASCII
+katlama çözümü). Ürünün on sürtünmesi K-164 kataloğuyla karşılaştırıldı
+(K-355/F001–F010, karar günlüğü); dört yeni, altı tekrar; gerçek compiler
+hatası yok, compiler değişikliği yok. RFC-0039 freeze kapısının 1–2.
+adımını karşılar; alt RFC'ler bu kökü kanıt olarak anar.
+
+## K-356 — Metin kaçış kümesi (`\t`, `\r`)
+
+**Durum: AÇIK (tasarım).** Kaçış kümesi `\"`, `\\`, `\n` (K-036); eksik kaçış
+üç üründe tekrar etti: K-164/F011 ve K-179 `\t` (ham sekme ya da `|` ayracı),
+K-355/F004 `\r` (çıplak CR denetimi). Sözcükleyici değişikliği olduğu için
+syntax freeze sonrası RFC adayı; ağ girdisinde CR reddi ayrıca RFC-0039
+katman A çalışma zamanı değişmezidir.
+
+## K-357 — Listede `içermeli` doğrulaması
+
+**Durum: AÇIK (tasarım).** `içermeli` test doğrulaması listede T022 verir;
+iki üründe tekrar (K-164/F004, K-355/F005). Ürünler listeyi tek metne
+birleştirip arıyor. Freeze sonrası RFC adayı.
+
+## K-358 — Boş koleksiyon değerinin türü
+
+**Durum: AÇIK (tasarım).** Türü somutlaşmamış boş koleksiyon açık imzalı
+işleme verilemiyor (T017): boş sözlük K-164/F005, boş liste argümanı
+K-355/F008. Boş senaryo testi yazılamıyor; ürünler tek öğeli değerle
+geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
+
+## K-359 — Örtük çoğul döngü kaynağı
+
+**Durum: AÇIK (tasarım).** `her X için` kaynağı yalnız `X`'in örtük çoğulu
+(`Xler`) adıyla aranır (A003); üç üründe ad seçimini zorladı (K-164/F015,
+K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
+çoğul türetimi freeze sonrası RFC adayıdır.
 
 ## K-354 — Ağ sunucusu yetkinliği çatı RFC taslağı
 
