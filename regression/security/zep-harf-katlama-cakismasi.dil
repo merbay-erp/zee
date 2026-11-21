@@ -1,0 +1,5 @@
+# K-363: .zep tüketicisi yalnız büyük/küçük harfi farklı iki yolu (A.dil/a.dil)
+# ya da klasörü (K/k) kabul ediyordu; Linux'ta kurulan arşiv büyük/küçük harf
+# duyarsız dosya sisteminde ham işletim sistemi hatasıyla düşüyordu.
+# senaryo: zep-harf-katlama
+1 yaz

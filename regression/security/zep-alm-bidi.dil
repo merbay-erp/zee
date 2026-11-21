@@ -1,0 +1,4 @@
+# K-363: .zep yol imi kümesi ALM (U+061C) bidi biçim karakterini içermiyordu;
+# spec/18 görünmez bidi karakterlerini reddeder.
+# senaryo: zep-alm
+1 yaz

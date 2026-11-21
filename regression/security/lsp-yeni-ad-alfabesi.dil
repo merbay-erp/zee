@@ -1,0 +1,5 @@
+# K-363: LSP yeniden adlandırma `is_alphanumeric` ile Kiril homoglifini, CJK'yı
+# ve rakamla başlayan adı kabul edip lexer'ın reddettiği kaynak üretiyordu.
+# senaryo: lsp-yeni-ad
+sayaç 3 olsun
+sayacı yaz
