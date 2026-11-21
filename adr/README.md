@@ -81,7 +81,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-072 | [İkinci gerçek ürün; elmas birim içe alımı ve birim kökenli tanılar](072-ikinci-urun-ve-birim-kokenli-tanilar.md) | **kabul** (K-164) |
 | ADR-073 | [Aynı aracın Zee, Rust ve Go gerçeklemeleriyle karşılaştırma](073-zee-rust-go-karsilastirmasi.md) | **kabul** (K-165) |
 | ADR-074 | [Üçüncü ürün: sürtünme tekrarı dil tasarımının sinyalidir](074-ucuncu-urun-ve-surtunme-tekrari.md) | **kabul** (K-179) |
-| ADR-075 | [Adil kalıcı yazma kilidi: bekleyen yazar kuyrukta bloklanır](075-adil-kalici-yazma-kilidi.md) | **kabul** (K-183; ek K-346, K-347) |
+| ADR-075 | [Adil kalıcı yazma kilidi: bekleyen yazar kuyrukta bloklanır](075-adil-kalici-yazma-kilidi.md) | **kabul** (K-183; ek K-346, K-347, K-361) |
 | ADR-076 | [Doğrulanmış oturum bilgisi rota ortamında okunur](076-dogrulanmis-oturum-bilgisi.md) | **kabul** (K-185/GB-026) |
 | ADR-077 | [Request-bound PostgreSQL tenant bağlamı](077-request-bound-postgresql-tenant-baglami.md) | **kabul** (K-186/GB-027) |
 | ADR-078 | [Migration SQL seviye ayrıştırması](078-migration-sql-seviye-ayristirma.md) | **kabul** (K-187) |

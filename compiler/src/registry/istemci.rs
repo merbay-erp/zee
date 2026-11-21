@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
 mod depo;
+mod durum;
 mod tasima;
 
-use depo::{kanonik_json, nesne_yolu, sha256_onunu_ayir, sinirli_dosya_oku};
+use depo::{nesne_yolu, sha256_onunu_ayir, sinirli_dosya_oku};
+use durum::Uzlasma;
 #[cfg(test)]
 use tasima::goreli_yolu_dogrula;
 pub use tasima::{HttpsRegistryTasiyici, RegistryTasiyici};
@@ -177,9 +179,20 @@ impl RegistryIstemcisi {
             dogrulama_zamani: guncelleme_baslangici,
             metadata: acilis.dogrulayici.durum(),
         };
-        self.durumu_yaz(&yeni_durum, acilis.durum_baytlari.as_deref())?;
-        let kritik_duyurular = dogrulanmis.etkin_kritik_duyurular(&hedef);
-        Ok(cikti(&hedef, &yeni_durum, yollar, false, kritik_duyurular))
+        // K-361: eşzamanlı güncelleme durumu kilit altında uzlaştırır; daha
+        // yeni bir zincir araya girdiyse sonuç o kalıcı durumla yeniden
+        // doğrulanır (eski zincirle başarı bildirilmez).
+        match self.durumu_uzlastir(&yeni_durum, acilis.durum_baytlari.as_deref())? {
+            Uzlasma::Yazildi | Uzlasma::Ayni => {
+                let kritik_duyurular = dogrulanmis.etkin_kritik_duyurular(&hedef);
+                Ok(cikti(&hedef, &yeni_durum, yollar, false, kritik_duyurular))
+            }
+            Uzlasma::Geride => {
+                let mut sonuc = self.paketi_cevrimdisi_al(paket, surum, politika)?;
+                sonuc.cevrimdisi = false;
+                Ok(sonuc)
+            }
+        }
     }
 
     /// Ağ ve duvar saati kullanmadan yalnız daha önce tam doğrulanıp kalıcı
@@ -463,57 +476,6 @@ impl RegistryIstemcisi {
             )));
         }
         Ok(baytlar)
-    }
-
-    fn durumu_oku(
-        &self,
-    ) -> Result<(Option<KaliciRegistryDurumu>, Option<Vec<u8>>), RegistryHatasi> {
-        let yol = self.cache_koku.join(DURUM_DOSYASI);
-        let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .metadata()
-            .toplam_bayti();
-        let baytlar = match sinirli_dosya_oku(&yol, azami, None, "registry durumu") {
-            Ok(baytlar) => baytlar,
-            Err(hata) if !yol.exists() => return Ok((None, None)),
-            Err(hata) => return Err(hata),
-        };
-        let durum: KaliciRegistryDurumu = serde_json::from_slice(&baytlar).map_err(|hata| {
-            RegistryHatasi::tasima(format!("Kalıcı registry durumu okunamadı: {}.", hata))
-        })?;
-        if durum.sema != DURUM_SEMASI || durum.dogrulama_zamani < 0 {
-            return Err(RegistryHatasi::tasima(
-                "Kalıcı registry durum şeması veya doğrulama zamanı geçersiz.",
-            ));
-        }
-        let kanonik = kanonik_json(&durum, "registry durumu")?;
-        if kanonik != baytlar {
-            return Err(RegistryHatasi::tasima(
-                "Kalıcı registry durumu kanonik JSON değil.",
-            ));
-        }
-        Ok((Some(durum), Some(baytlar)))
-    }
-
-    fn durumu_yaz(
-        &self,
-        durum: &KaliciRegistryDurumu,
-        beklenen: Option<&[u8]>,
-    ) -> Result<(), RegistryHatasi> {
-        std::fs::create_dir_all(&self.cache_koku).map_err(|hata| {
-            RegistryHatasi::tasima(format!("Registry cache klasörü oluşturulamadı: {}.", hata))
-        })?;
-        let baytlar = kanonik_json(durum, "registry durumu")?;
-        crate::kalici_dosya::atomik_karsilastir_ve_yaz(
-            &self.cache_koku.join(DURUM_DOSYASI),
-            beklenen,
-            &baytlar,
-        )
-        .map_err(|hata| {
-            RegistryHatasi::tasima(format!(
-                "Kalıcı registry durumu atomik güncellenemedi: {}.",
-                hata
-            ))
-        })
     }
 }
 

@@ -1,0 +1,5 @@
+# K-361: registry istemcisi kalıcı doğrulama durumunu kilit dışında okuyup tek CAS ile yayımlıyordu; eşzamanlı ikinci çevrimiçi çözüm aynı zinciri getirse bile P016 ile düşüyordu. Bu kaynak registry'den çözülen paketin girişidir.
+
+işlem yedi ver
+    TamSayı döndürür
+    7 döndür

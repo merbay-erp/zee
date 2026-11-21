@@ -133,9 +133,22 @@ sessizce iyileştirilmez veya kullanılmaz.
 `durum-v1.json`, `zee-registry-cache-v1` kapalı/kanonik şemasında ağ dışı ilk
 root özeti, etkin root nesne özeti, son başarılı doğrulama zamanı ve bütün rol
 sürüm+özetlerini taşır. Önce değişmez nesneler atomik yazılır, en son durum
-dosyası karşılaştır-ve-değiştir ile yayımlanır. Böylece çökme kullanılmayan
-nesne bırakabilir ama yarım durumu görünür yapamaz; yarışan eski istemci yeni
-durumu ezemez. Başarısız zincir kalıcı durumu değiştirmez.
+dosyası yayımlanır. Böylece çökme kullanılmayan nesne bırakabilir ama yarım
+durumu görünür yapamaz. Başarısız zincir kalıcı durumu değiştirmez.
+
+Çevrimiçi doğrulama ağ gerektirdiğinden başlangıç durumu kilit dışında okunur;
+yayın ise durum dosyasının süreçler-arası yazma kilidi altında uzlaştırılır
+(K-361, ADR-075 eki). Başlangıçta okunan byte'lar yerindeyse yeni durum
+yazılır. Araya başka bir güncelleme girdiyse güncel durum aynı kilit
+penceresinde yeniden doğrulanıp root, timestamp, snapshot ve targets rolleri
+sürüm+özetle karşılaştırılır: aynı zincir dosyaya dokunmadan kabul edilir;
+her rolde eşit ya da ileri zincir yazılır; daha yeni kalıcı durum hiçbir
+zaman eskisiyle ezilmez ve geride kalan güncellemenin sonucu, başarı
+bildirilmeden önce o kalıcı durumla çevrimdışı yeniden doğrulanır (yeni
+durumdaki yanked/kritik duyuru eski zincirle atlanamaz). Aynı sürümde farklı
+özet ya da bir rolde ileri ötekinde geri sıra çelişkidir: P013, durum
+korunur. Farklı ağ dışı root sabitlemesi P016'dır. Eşzamanlı iki çözüm aynı
+zinciri getirdiği için düşmez; tek sınır 5 sn kilit beklemesidir (spec/08).
 
 Çevrimdışı kip duvar saati/ağ kullanmaz; yalnız son çevrimiçi kabul zamanında
 geçerli olduğu kaydedilmiş tam metadata zincirini ve exact hedef nesnelerini
@@ -202,6 +215,8 @@ Uyumlu gerçekleme en az şunları kanıtlar:
 - tam timestamp→snapshot→targets olumlu zinciri;
 - rollback, expiry/freeze, aynı sürümle farklı içerik ve mix-and-match reddi;
 - geçersiz fast-forward zincirinin kalıcı durumu değiştirmemesi;
+- eşzamanlı güncellemede aynı/ileri zincirin kabulü, geride kalan sonucun
+  yeni kalıcı durumla yeniden doğrulanması ve çelişkili durumun reddi;
 - sürümsüz/özetsiz bozuk kalıcı metadata durumunun reddi;
 - kanonik olmayan/aşırı metadata'nın fail-closed reddi;
 - yanked/kritik duyuru varsayılanı ve yanlış yayıncı reddi;

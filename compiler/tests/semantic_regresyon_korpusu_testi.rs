@@ -40,6 +40,8 @@ mod native_isci_saglik_mirasi_fixture;
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
 mod native_metric_stdio_fixture;
+#[path = "semantic_regresyon/native_registry_durum_cekismesi.rs"]
+mod native_registry_durum_cekismesi_fixture;
 #[path = "semantic_regresyon/native_web_depo_cekismesi.rs"]
 mod native_web_depo_cekismesi_fixture;
 #[path = "semantic_regresyon/native_web_kopma.rs"]
@@ -92,6 +94,7 @@ const KIPLER: &[&str] = &[
     "native-isci-kabul-term",
     "native-eszamanli-tasima",
     "native-eszamanli-paket-ekle",
+    "native-registry-durum-cekismesi",
 ];
 
 #[derive(Debug, Clone)]
@@ -271,6 +274,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-web-kopma"
                 | "native-web-yukleme"
                 | "native-web-depo-cekismesi"
+                | "native-registry-durum-cekismesi"
         ),
         "cli" => matches!(
             kip,
@@ -429,6 +433,15 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-depo-cekismesi" {
         let (cikis, cikti) = native_web_depo_cekismesi_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-registry-durum-cekismesi" {
+        let (cikis, cikti) =
+            native_registry_durum_cekismesi_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -840,6 +853,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-isci-kabul-term"
                 | "native-eszamanli-tasima"
                 | "native-eszamanli-paket-ekle"
+                | "native-registry-durum-cekismesi"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1364,6 +1378,40 @@ fn native_web_depo_cekismesi_regresyonu_gercek_surecle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: kayıpsız istek", vaka.ad);
+    }
+}
+
+#[test]
+fn native_registry_durum_cekismesi_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-registry-durum-cekismesi"));
+    assert!(faz_kipi_kabul_eder(
+        "security",
+        "native-registry-durum-cekismesi"
+    ));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-registry-durum-cekismesi"));
+    }
+}
+
+/// K-361: aynı registry cache'ine eşzamanlı iki çevrimiçi güncelleme sert
+/// hata vermez; kalıcı durum kilit altında uzlaşır, geri gitmez ve aynı
+/// sürümde farklı içerik P013 ile reddedilir.
+#[test]
+fn native_registry_durum_cekismesi_regresyonu_gercek_yarisla_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-registry-durum-cekismesi")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "registry durum çekişmesi regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: uzlaşan durum", vaka.ad);
     }
 }
 

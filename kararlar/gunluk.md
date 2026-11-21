@@ -5409,3 +5409,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   2 ile yeniden çalıştırılır. Komutu kilit altında yeniden çözmek reddedildi
   (registry zinciri kilidi saniyelerce tutardı). Grammar, tanı kimliği, CLI
   sözdizimi, dil::api::v1 değişmedi. ADR-075 eki, spec/07, spec/11, GB-144.
+
+## K-361 — Registry kalıcı durumunun kilit içi uzlaştırması (21 Kasım 2026)
+
+- K-353 kaydının açık bıraktığı son iyimser CAS. Registry istemcisi
+  `durum-v1.json`'u kilit dışında okuyup zinciri ağdan doğruladıktan sonra
+  kilit altında tek CAS ile yayımlıyordu; aynı başlangıcı okuyan ikinci
+  çevrimiçi çözüm aynı zinciri getirse bile P016 ile düşüyordu. Karar: okuma
+  kilit dışında kalır (ağ süresi 5 sn kilit sınırını aşar), yayın
+  `kilit_altinda_guncelle` içinde rol rol sürüm+özet uzlaştırmasıdır: aynı
+  zincir dokunulmadan, ileri zincir yazılarak kabul edilir; daha yeni durum
+  ezilmez ve geride kalan sonuç o durumla çevrimdışı yeniden doğrulanır;
+  aynı sürümde farklı özet/karışık sıra P013. Bütün güncellemeyi kilit
+  altında koşmak, CAS kaybında yeniden denemek ve geride kalan sonucu eski
+  zincirle döndürmek (freeze) reddedildi. Yeni tanı kodu, grammar, CLI ya da
+  dil::api::v1 değişikliği yok. ADR-075 eki, spec/19, GB-145.

@@ -2571,6 +2571,29 @@ yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
 ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
 ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
 
+## K-361 — Registry kalıcı durumunda eşzamanlı güncelleme düşmesi
+
+**Durum: KAPALI.** ADR-075 eki, spec/19, GB-145. K-353'ün açık bıraktığı son
+iyimser CAS: registry istemcisi `durum-v1.json`'u kilit dışında okuyup
+zinciri ağdan doğruladıktan sonra kilit altında tek bir karşılaştırmayla
+yayımlıyordu; yeniden deneme yoktu. Aynı projede eşzamanlı iki çevrimiçi
+çözümden ikincisi, aynı zinciri getirse bile, `P016 … başka bir süreççe
+değiştirildi` ile düşüyordu. Kilit ağ süresince tutulamaz (5 sn bekleme
+sınırı), bu yüzden okuma kilit dışında kalır; yayın artık
+`kalici_dosya::kilit_altinda_guncelle` ile uzlaştırılır: başlangıç byte'ları
+yerindeyse yazılır, değilse güncel durum aynı pencerede doğrulanıp rol rol
+sürüm+özetle karşılaştırılır — aynı zincir dokunulmadan, ileri zincir yazılarak
+kabul edilir; daha yeni durum ezilmez ve geride kalan güncellemenin sonucu o
+durumla çevrimdışı yeniden doğrulanır (yeni duyuru eski zincirle atlanamaz);
+aynı sürümde farklı özet/karışık sıra P013. Kanıt:
+`registry::istemci::testler::eszamanli_guncellemeler_durumu_uzlastirir_ve_geri_gitmez`,
+`zincir_sirasi_karisik_gorunumu_celiski_sayar`, regression
+`registry-durum-cekismesi` (`native-registry-durum-cekismesi`; iki gerçek iş
+parçacığı, engel+kanal ile uykusuz yarış; düzeltme öncesi `aynı zincir
+başarılı 1 / ileri P016 / geri P016 / çelişki P016`, sonrası `2 / 4 / 4 /
+P013`). Açık sınır: `kalici_dosya::atomik_karsilastir_ve_yaz` artık
+üretimde çağrılmaz, genel ilkel olarak kalır.
+
 ## K-360 — Grup işçisinde kabul ile SIGTERM arasındaki bağlantı kaybı
 
 **Durum: KAPALI.** ADR-161 eki, ADR-034 revizyonu, spec/12, GB-143. K-353'ün
@@ -2610,9 +2633,8 @@ kilit beklemesidir. Kanıt: regression `web-depo-cekismesi`
 (`native-web-depo-cekismesi`; düzeltme öncesi `503 3`, sonrası
 `başarılı 3`), `kalici_dosya::tests::kilit_altinda_guncelle_yazari_bekletir_ve_reddi_yazmaz`,
 aynı yükte 0 ret (en uzun 1,0 sn) ve Linux systemd ölçümü tekrarları. K-343
-ölçümü artık ret gövdesini de raporlar. Açık: registry durumu
-(`registry/istemci.rs`) aynı iyimser CAS'ı kullanır; tek yazarlı CLI
-akışında çekişme beklenmez, ayrı izlenir. Grup işçisinde kabul ile SIGTERM
+ölçümü artık ret gövdesini de raporlar. Registry durumundaki
+(`registry/istemci.rs`) aynı iyimser CAS K-361'de kapandı. Grup işçisinde kabul ile SIGTERM
 sonrası denetim arasına düşen bağlantının düşürülmesi K-360'ta kapandı.
 
 ## K-352 — Mixed-revision iptal testi yükten bağımsız
