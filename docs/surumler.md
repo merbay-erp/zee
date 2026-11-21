@@ -10,6 +10,19 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Değişenler
+
+- **zeedili.com kesintisiz yeniden başlatmaya geçer (K-343):** Sitenin
+  dağıtım birimleri tek süreçli worker yerine 4 işçili grup ve
+  `zeedili.socket` systemd soketiyle gelir; dağıtım ve `systemctl restart`
+  sırasında istekler kuyrukta bekler, 502 görülmez. `sunucu-kur.sh` artık
+  canlı trafikte `.zee/` durum dosyalarıyla yarışmaz ve bayraksız bir
+  ExecStart drop-in'ini hiçbir şeyi durdurmadan reddeder. Canlı geçiş ayrıca
+  uygulanır.
+
+  **Göç:** Yalnız sunucu: ilk geçişte hizmet bir kez durdurulup soket açılır
+  (kısa kesinti); ayrıntı `dogfood/zeedili-com/README.md`.
+
 ### Düzeltilenler
 
 - **Çok işçi grubu yeniden başlatmada kabul ettiği isteği düşürmez (K-360,
