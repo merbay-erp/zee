@@ -5315,3 +5315,20 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   adım noktalarına iş parçacığı başı hata/gecikme enjeksiyonu; disk durması
   deterministik yeniden üretildi. Süreç içi artık bayrağı ve üretimde enjeksiyon
   reddedildi. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-032 eki.
+
+## K-354 — RFC-0039 taslağı: Zee ağ sunucusu yetkinliği (21 Kasım 2026)
+
+- ZeeOS e-posta sunucusunu bütünüyle Zee ile yazmak istiyor; ürün sahibi
+  ayrı Rust/Go servis motorunu reddetti ("herşey zee ile olacak"). Çatı RFC
+  sorunu ve bugünkü eksikleri (2b23547 kaynağıyla) yazar, işi yedi katmana
+  böler, ZeeOS'un uygulayacağı `sd_listen_fds` uyumlu adlı çoklu FD devri
+  sözleşmesini ve kabul ölçütlerini (Zee'de en küçük SMTP alıcısı + swaks /
+  openssl s_client, smuggling ve STARTTLS enjeksiyonu vektörleri, `250`
+  sonrası SIGKILL, IDLE benzeri uzun oturum yükü) önden bağlar.
+- Kararlar: motor Zee'de, kripto/TLS/DNS tel biçimi doğrulanmış crate'lerde;
+  host'ta protokol motoru intrinsic'i, genel FFI, görev başına iş parçacığı,
+  async/await yüzeyi, uygulama içi ayrıcalıklı bind ve önce `Baytlar` türü
+  reddedildi. Bayt verisi önce tutamak (dosya + özet) yoluyla.
+- Core freeze altında uygulama, spec, test ve dil yüzeyi değişikliği yok;
+  her katman kayıtlı dogfood ürünü ve gerçek Zee reproducer'ıyla ayrı alt
+  RFC olarak açılır. K-354 açık kalır.

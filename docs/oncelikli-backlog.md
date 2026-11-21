@@ -2518,6 +2518,20 @@ temizler. Kanıt: regression `coken-degistirme-kurtarma`
 (kurtarılamayan 0) ve K-346 regresyonu 25 tekrar. Açık sınır: zee dışı silme
 ile ikinci adım sonrası ölen yazarın bayat yedeği aynı anda.
 
+## K-354 — Ağ sunucusu yetkinliği çatı RFC taslağı
+
+**Durum: AÇIK (taslak).** [RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md):
+protokol motorları dahil bütünüyle Zee ile yazılacak bir e-posta sunucusunun
+(SMTP 25/587/465, IMAP 143/993, dayanıklı kuyruk, DKIM/SPF/DMARC) istediği
+yedi katman — dinleyici/bağlantı ve sınırlı CRLF satır okuma, sunucu TLS'i
+ve STARTTLS, bağlantı başına görev ve engellemeyen IO, bayt/kripto
+intrinsic'leri, DNS, dayanıklılık, güvenlik profili — ile ZeeOS'un uygulayacağı
+adlı çoklu FD devri sözleşmesi ve kabul ölçütleri. Bugünkü eksikler kaynakla
+doğrulandı (loopback IPv4 tek dinleyici, sunucu TLS'i/bayt türü/MX-TXT/RSA
+yok, bloklayan adaptör dilimi). Core freeze altında uygulama yok; her katman
+ayrı alt RFC, kayıtlı dogfood ürünü ve gerçek Zee kodu reproducer'ı ister,
+ilk alt RFC dinleyici + engellemeyen scheduler. V1 kapısı değildir.
+
 ## K-352 — Mixed-revision iptal testi yükten bağımsız
 
 **Durum: KAPALI.** Test sağlamlaştırması (betik ve ürün davranışı değişmedi):
