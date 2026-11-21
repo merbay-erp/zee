@@ -383,7 +383,7 @@ karar kayıtları ZeeOS deposunda tutulur.
   bildirimle).
 - Dosya tanımlayıcıları 3'ten başlayıp ardışık; `LISTEN_PID` = hizmet
   sürecinin PID'i; `LISTEN_FDS` = soket sayısı; `LISTEN_FDNAMES` = her
-  soketin bildirimdeki adı (`:` ayrılmış, sıra fd sırasıyla aynı). Ad
+  soketin bildirimdeki adı (`:` ayrılmış; i'nci ad fd `3+i`'ye aittir). Ad
   **zorunludur**; adsız ya da yinelenen ad reddedilir. Ad kuralı
   `^[a-z][a-z0-9_]{0,31}$` (`:` ayraç olduğu için yasak).
 - Ad fd başınadır: systemd'de `FileDescriptorName=` soket birimi başına tek
@@ -394,6 +394,16 @@ karar kayıtları ZeeOS deposunda tutulur.
   içindir; `proje.dil` bildiriminin aile sonekli adları mı yoksa "aynı
   mantıksal dinleyicinin iki ailesi" kavramını mı taşıyacağı alt RFC A'da
   karar konusudur (Açık sorular).
+- **Sıra garanti değildir.** "3'ten başlayıp ardışık" yalnız fd
+  numaralarını ve ad↔fd eşlemesini tanımlar; soketlerin hangi sırayla
+  geldiğini değil. Canlı gözlem (ZeeOS ADR-076, 21 Kasım 2026; Debian 13
+  amd64, çekirdek 6.12, systemd 257.13; tek hizmete bağlı 10 soket birimi):
+  `Sockets=` satırı `smtp_v4:smtp_v6:gonderim_v4:…` sırasındayken gelen
+  `LISTEN_FDNAMES` `smtp_v4:imaps_v4:smtps_v4:imap_v6:smtp_v6:imap_v4:smtps_v6:imaps_v6:gonderim_v4:gonderim_v6`
+  oldu. Her fd'nin adı, ailesi ve kapısı kendi içinde tutarlıydı; yalnız
+  sıra bildirim sırasından farklıydı. Aynı koşuda `LISTEN_PID` eşleşti, IPv6
+  soketlerinde `IPV6_V6ONLY=1`, hepsi `SOCK_STREAM` + `listen` idi;
+  `Type=notify` ile `READY=1` ve SIGTERM→`STOPPING=1` çalıştı.
 - Hizmet süreci ayrıcalıksız kullanıcıyla, `CAP_NET_BIND_SERVICE` ve diğer
   yetkinlikler olmadan başlar.
 - TLS sertifika ve anahtarları credential dizininden (`CREDENTIALS_DIRECTORY`)
@@ -411,6 +421,10 @@ karar kayıtları ZeeOS deposunda tutulur.
   bildirimde yoksa ya da bildirimdeki bir ad gelmemişse, herhangi bir
   soketin türü/durumu/ailesi/adresi/kapısı bildirimle eşleşmiyorsa çıkış 2
   ile durur ve düzeltme önerisini yazar; hiçbir bağlantı kabul edilmez.
+- Dinleyicileri **yalnız `LISTEN_FDNAMES` adıyla** eşler, asla konumla:
+  doğrulama "beklenen ad kümesi = gelen ad kümesi" artı her ad için
+  ilgili fd'nin aile/adres/kapı eşleşmesidir. Sıra karşılaştırılmaz;
+  sıra denetimi geçerli bir devri yanlışlıkla reddeder.
 - `LISTEN_*` ortam kayıtlarını doğrulamadan hemen sonra siler (alt süreçlere
   sızmaz); soketlere `FD_CLOEXEC` ve engellemeyen kipi kendisi koyar.
 - Devir yoksa veya geçersizse **bind'e geri dönmez**.
@@ -421,7 +435,9 @@ karar kayıtları ZeeOS deposunda tutulur.
   işçilere aynı adlarla aktarır.
 
 Bu sözleşme bugünkü K-343 tek-soket devrinin (`LISTEN_FDS=1`, fd 3,
-`127.0.0.1`) genellemesidir; K-343 davranışı değişmeden kalır.
+`127.0.0.1`) genellemesidir; K-343 davranışı değişmeden kalır. K-343 tek
+soket aldığı için sıra bulgusundan etkilenmez; ad tabanlı eşleme yalnız
+çok soketli devirde (bu sözleşme) gerekir.
 
 ## Freeze ve kanıt kapısı
 
