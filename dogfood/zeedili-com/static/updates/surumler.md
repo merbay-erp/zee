@@ -5,6 +5,52 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 21 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Site
+
+- **zeedili.com 21 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-353/K-360 kesintisiz yeniden başlatma, K-347 eşzamanlı komut güvenliği ve RFC-0039 ağ sunucusu taslağı haberleri eklendi. Dil davranışı değişmedi.
+
+### Düzeltilenler
+
+- **Çok işçi grubu yeniden başlatmada kabul ettiği isteği düşürmez (K-360,
+  ADR-161 eki):** `--web-isci-sayisi` işçisi SIGTERM aldığı anda bir
+  bağlantıyı yeni kabul etmişse o bağlantıyı yanıt vermeden kapatıyordu;
+  ortak dinleyici açık kaldığından bu istek kayboluyordu (çok dar pencere,
+  ölçümde görülmedi). Artık kabul edilen istek yanıtlanır, işçi ardından
+  yeni bağlantı almadan çıkar. Tek süreçli sunucunun kapanışı değişmedi.
+
+  **Göç:** Gerekmez.
+
+- **Çok işçi grubu yoğun yükte ve yeniden başlatmada 503 vermez (K-353,
+  ADR-034 revizyonu):** `--web-proxy` profilinde işçiler oturum ve oran
+  sınırı durumunu `.zee/web-durumu-v1.json` dosyasında paylaşır. Yoğun
+  eşzamanlı istekte yavaş kalan bir işçi (ör. `systemctl restart` sonrası
+  yeni açılan) bu dosyayı güncellemeyi art arda kaybedebiliyor ve isteği
+  `503 … deposuna erişilemedi: kalıcı web deposu yoğun eşzamanlılıkta 128 kez
+  değişti` ile reddediyordu; K-343'ün kesintisiz yeniden başlatma ölçümünde
+  1117 istekte bir kez görüldü. Artık güncelleme dosya kilidi altında tek
+  adımda yapılır; istek yalnız kilit 5 saniyede alınamazsa 503 olur.
+
+  **Göç:** Gerekmez; depo biçimi ve komutlar aynıdır.
+
+- **Eylem içindeki taşımanın geri alınması ve eşzamanlı `dil ekle`/`dil
+  çıkar` veri kaybetmez (K-347, ADR-075 eki):** Bir eylem dosyaya ekleyip
+  onu `atomik taşı` ile taşıdıktan sonra başarısız olunca, arada aynı dosyaya
+  yazan başka bir sürecin (ör. başka işçinin) satırı geri almada
+  silinebiliyordu. Artık taşınan içerik kaynak ve hedef klasör kilitleri
+  altında yakalanır; araya yazar girmişse geri alma hiçbir dosyayı
+  değiştirmeden C021 verir. Aynı projede eşzamanlı çalışan iki `dil ekle`
+  ya da `dil çıkar` komutundan biri diğerinin eklediği bağımlılığı sessizce
+  siliyordu; artık kaybeden komut hiçbir dosyaya dokunmadan "başka bir süreç
+  tarafından değiştirildi … Komutu yeniden çalıştır." iletisiyle exit 2 verir.
+
+  **Göç:** Gerekmez. Betiklerde eşzamanlı `dil ekle` çalıştırıyorsanız bu
+  iletide komutu yeniden deneyin.
+
 ## 19 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
