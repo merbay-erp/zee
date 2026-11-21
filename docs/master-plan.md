@@ -164,6 +164,13 @@ yanıtında `public, max-age=0, s-maxage=N` alır; oturum/CSRF/çerez kullanım�
 T057, diğer yöntem T056'dır. `Vary`, ETag ve önbellek temizleme açık
 sınırdır. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
 kapılarıdır.
+
+Genel ağ sunucusu yetkinliği (IPv4/IPv6 dinleyici, bağlantı ve bayt akışı,
+sunucu TLS'i, binlerce uzun oturum için engellemeyen IO, DNS MX/TXT, imza
+intrinsic'leri) **açık iştir**: bugün Zee yalnız devralınmış loopback HTTP
+dinleyicisi arkasında rota yazar. K-354/[RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md)
+taslağı katmanları, FD devri sözleşmesini ve kabul ölçütlerini bağlar; core
+freeze altında uygulanmaz, V1 sözü değildir.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.
