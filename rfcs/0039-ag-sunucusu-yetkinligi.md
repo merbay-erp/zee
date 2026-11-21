@@ -384,7 +384,16 @@ karar kayıtları ZeeOS deposunda tutulur.
 - Dosya tanımlayıcıları 3'ten başlayıp ardışık; `LISTEN_PID` = hizmet
   sürecinin PID'i; `LISTEN_FDS` = soket sayısı; `LISTEN_FDNAMES` = her
   soketin bildirimdeki adı (`:` ayrılmış, sıra fd sırasıyla aynı). Ad
-  **zorunludur**; adsız ya da yinelenen ad reddedilir.
+  **zorunludur**; adsız ya da yinelenen ad reddedilir. Ad kuralı
+  `^[a-z][a-z0-9_]{0,31}$` (`:` ayraç olduğu için yasak).
+- Ad fd başınadır: systemd'de `FileDescriptorName=` soket birimi başına tek
+  addır ve IPv6 soketi (`BindIPv6Only=ipv6-only`) ayrı birim ister. Bu yüzden
+  çift yığında her aile ayrı ad taşır; ZeeOS ilk tümleşik denemesinde aile
+  sonekli adlar üretir (ör. `smtp_v4:smtp_v6:gonderim_v4:gonderim_v6:…`).
+  Yukarıdaki bildirim örneğindeki adlar (`smtp`, `gonderim`…) tek aile
+  içindir; `proje.dil` bildiriminin aile sonekli adları mı yoksa "aynı
+  mantıksal dinleyicinin iki ailesi" kavramını mı taşıyacağı alt RFC A'da
+  karar konusudur (Açık sorular).
 - Hizmet süreci ayrıcalıksız kullanıcıyla, `CAP_NET_BIND_SERVICE` ve diğer
   yetkinlikler olmadan başlar.
 - TLS sertifika ve anahtarları credential dizininden (`CREDENTIALS_DIRECTORY`)
@@ -520,6 +529,9 @@ RFC'leri kabul edildiğinde S036/S040 vakaları ret/çözüm çiftine dönüşü
   istemci yollarının geleceği.
 - Posta deposu proje kökü içinde mi kalır (ZeeOS önerisi), yoksa ayrı
   bağlama + EXDEV kanıtı mı gerekir?
+- Dinleyici bildiriminde çift yığın: aile sonekli iki ayrı ad mı
+  (`smtp_v4`, `smtp_v6`), yoksa tek mantıksal ad + ailelere göre
+  `LISTEN_FDNAMES` eşlemesi mi (alt RFC A)?
 - Sertifika yenilemede süreç içi yeniden yükleme.
 - Uzun oturumlu sunucularda yorumlayıcı başarımı Stage 0'da yeterli mi;
   değilse self-hosting/backend aşamalarıyla (ADR-008) ilişkisi.
