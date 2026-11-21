@@ -26,6 +26,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **P33 güvenlik kanıtı genişledi (K-362, GB-109):** Native HTTP istek
+  ayrıştırıcısı bağımsız bir ayrıştırıcıyla (`httparse`, yalnız testte)
+  karşılaştırılır: zee onun reddettiği hiçbir isteği kabul etmez, kabul
+  edip zee'nin reddettikleri belgelenmiş katı kurallardır (yalın LF,
+  Transfer-Encoding, çoklu Content-Length, origin-form dışı hedef…). Kalıcı
+  web oturum deposunun her yazım adımında çökme görüntüsü alınır; depo
+  hep tam eski ya da tam yenidir, yeniden başlatma kurtarır ve başarı
+  yanıtı/oturum çerezi kalıcı commit'ten önce gitmez. Davranış değişmedi.
+
+  **Göç:** Gerekmez.
+
 - **Eşzamanlı registry çözümü birbirini düşürmez (K-361, ADR-075 eki):**
   Aynı projede aynı anda iki çevrimiçi registry çözümü (ör. iki `dil`
   komutu) çalışınca ikincisi, aynı metadata'yı getirse bile `P016 Kalıcı

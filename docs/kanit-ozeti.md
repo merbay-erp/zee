@@ -145,7 +145,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 65 |
+| maintenance | 66 |
 | semantic-bugfix | 26 |
 | semantic-change | 54 |
 
@@ -154,7 +154,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | bugfix | 2 |
 | correctness | 32 |
 | dogfood-change | 32 |
-| maintenance | 62 |
+| maintenance | 63 |
 | security | 13 |
 
-Toplam: 145 compiler değişiklik beyanı, 141 core freeze beyanı.
+Toplam: 146 compiler değişiklik beyanı, 142 core freeze beyanı.

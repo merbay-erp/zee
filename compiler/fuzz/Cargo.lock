@@ -338,6 +338,7 @@ name = "dil-fuzz"
 version = "0.0.0"
 dependencies = [
  "dil",
+ "httparse",
  "libfuzzer-sys",
 ]
 

@@ -129,7 +129,7 @@ pub(super) fn kilit_bekleme() -> Duration {
 }
 
 #[cfg(test)]
-pub(super) mod test_kancasi {
+pub(crate) mod test_kancasi {
     use super::Adim;
     use std::cell::RefCell;
     use std::io;
@@ -155,6 +155,11 @@ pub(super) mod test_kancasi {
     /// Bu iş parçacığında `adim` noktasına tek kullanımlık enjeksiyon kurar.
     pub fn kur(adim: Adim, enjeksiyon: Enjeksiyon) {
         KURULU.with(|kurulu| kurulu.borrow_mut().push((adim, enjeksiyon)));
+    }
+
+    /// K-362: çalışmayan (adımı hiç gelmeyen) enjeksiyonları bırakır.
+    pub fn temizle() {
+        KURULU.with(|kurulu| kurulu.borrow_mut().clear());
     }
 
     pub fn kilit_beklemesini_kisalt(sure: Duration) {
