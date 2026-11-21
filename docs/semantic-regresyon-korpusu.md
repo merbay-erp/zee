@@ -283,6 +283,28 @@ yeniden yayımlar. Ardından üç istek gönderir; çıktı `başarılı <n>`, `
 ve `diğer <n>` sayılarıdır. Düzeltme öncesi worker durumu kilit dışında okuyup
 CAS ile yayımladığından her turu kaybeder ve `503 3` görülür; düzeltme
 sonrası `başarılı 3`. Toplu replay bu kipi atlar.
+## Native eşzamanlı taşıma kipi (K-347)
+
+`runtime` fazındaki `native-eszamanli-tasima` kipi geçici bir projede bir
+yazar programını (1000 satırı düz `ekle` ile `kaynak.txt`e yazar) ve regression
+kaynağının iki kopyasını (ayrı hedef adlarıyla) yarıştırır. Taşıyıcı eylem
+içinde kaynağa ekler, saf hesap döngüsüyle pencereyi açar, kaynağı hedefe
+`atomik taşı`r ve başarısız döner. Taşıyıcı öldürülmez (geri alma ortasında
+kesilen süreç satırı iki dosyada bırakabilirdi); C021 ile çıkınca harness
+kalan hedefi kenara alıp yeniden başlatır. Çıktı bütün dosyalarda `b <satır>`,
+birden çok dosyada görünen `kopya <adet>` ve `bozuk <adet>`; düzeltme öncesi
+`b` 840–996'ya düşer. Tüm platformlarda koşar; toplu replay atlar.
+
+## Native eşzamanlı paket ekleme kipi (K-347)
+
+`cli` fazındaki `native-eszamanli-paket-ekle` kipi dört turda altı yerel
+paketi (girişleri regression kaynağı) aynı uygulamaya eşzamanlı `dil ekle`
+süreçleriyle ekler; "başka bir süreç" iletisiyle reddedilen komut yeniden
+denenir. Çıktı başarı bildiren komutların kalıcı `bağımlılık <n>`, kaybolan
+`kayıp <n>` ve son kilidin `dil çalıştır` doğrulamasıyla `kilit
+geçerli|bozuk` satırlarıdır; düzeltme öncesi `bağımlılık 4`, `kayıp 20`.
+Toplu replay atlar.
+
 ## Native eşzamanlı ekleme kipi (K-346)
 
 `runtime` fazındaki `native-eszamanli-ekleme` kipi gerçek native `dil`

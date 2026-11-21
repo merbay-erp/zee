@@ -26,6 +26,10 @@ mod native_dosya_exdev_fixture;
 mod native_dosya_okuma_penceresi_fixture;
 #[path = "semantic_regresyon/native_eszamanli_ekleme.rs"]
 mod native_eszamanli_ekleme_fixture;
+#[path = "semantic_regresyon/native_eszamanli_paket_ekle.rs"]
+mod native_eszamanli_paket_ekle_fixture;
+#[path = "semantic_regresyon/native_eszamanli_tasima.rs"]
+mod native_eszamanli_tasima_fixture;
 #[path = "semantic_regresyon/native_isci_grubu.rs"]
 mod native_isci_grubu_fixture;
 #[path = "semantic_regresyon/native_isci_saglik_mirasi.rs"]
@@ -83,6 +87,8 @@ const KIPLER: &[&str] = &[
     "native-coken-degistirme",
     "native-yedek-artigi",
     "native-web-depo-cekismesi",
+    "native-eszamanli-tasima",
+    "native-eszamanli-paket-ekle",
 ];
 
 #[derive(Debug, Clone)]
@@ -248,6 +254,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-dosya-okuma-penceresi"
                 | "native-dosya-okuma-izsiz-penceresi"
                 | "native-eszamanli-ekleme"
+                | "native-eszamanli-tasima"
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
         ),
@@ -269,6 +276,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-isci-grubu"
                 | "native-ayri-port-birincil"
                 | "native-isci-saglik-mirasi"
+                | "native-eszamanli-paket-ekle"
         ),
         "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
         _ => false,
@@ -417,6 +425,23 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-yedek-artigi" {
         let (cikis, cikti) = native_yedek_artigi_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-eszamanli-tasima" {
+        let (cikis, cikti) = native_eszamanli_tasima_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-eszamanli-paket-ekle" {
+        let (cikis, cikti) =
+            native_eszamanli_paket_ekle_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -800,6 +825,8 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
                 | "native-web-depo-cekismesi"
+                | "native-eszamanli-tasima"
+                | "native-eszamanli-paket-ekle"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1320,6 +1347,51 @@ fn native_eszamanli_ekleme_regresyonu_gercek_surecler_ile_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: kalıcı satırlar", vaka.ad);
+    }
+}
+
+#[test]
+fn native_eszamanli_tasima_ve_paket_ekle_kipleri_tek_faza_aittir() {
+    for (kip, sahip) in [
+        ("native-eszamanli-tasima", "runtime"),
+        ("native-eszamanli-paket-ekle", "cli"),
+    ] {
+        assert!(KIPLER.contains(&kip));
+        for faz in FAZLAR {
+            assert_eq!(
+                faz_kipi_kabul_eder(faz, kip),
+                *faz == sahip,
+                "{kip} / {faz}"
+            );
+        }
+    }
+}
+
+/// K-347: eylem içinde taşıyıp geri alan süreç, kaynağa düz ekleyen yazarın
+/// hiçbir satırını silmez ve satırı iki dosyada bırakmaz; eşzamanlı `dil
+/// ekle` komutları birbirinin bağımlılığını ezmez, son kilit geçerlidir.
+#[test]
+fn native_eszamanli_tasima_ve_paket_ekle_regresyonlari_gercek_surecler_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| {
+            matches!(
+                vaka.kip.as_str(),
+                "native-eszamanli-tasima" | "native-eszamanli-paket-ekle"
+            )
+        })
+        .collect();
+    assert_eq!(
+        vakalar.len(),
+        2,
+        "K-347 regresyonları gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: kalıcı durum", vaka.ad);
     }
 }
 

@@ -1,0 +1,17 @@
+# K-347: eylem içindeki atomik taşıma kaynağın içeriğini ve yedeğini yazma kilidi dışında okuyordu; geri alma araya giren başka sürecin satırını siliyordu.
+
+eylem taşıDene
+    satırı Metin olarak al
+    TamSayı sonucu döndürür
+    "kaynak.txt" dosyasına satır ekle
+    sayaç 0 olsun
+    1 den 3000 e kadar her tekrar için
+        sayacı tekrarla artır
+    taşıma "kaynak.txt" dosyasını "hedef.txt" yoluna atomik taşımayı dene olsun
+    satır "yok" e eşitse
+        1 döndür
+    "vazgeçildi" hatasını döndür
+
+1 den 200 e kadar her sayı için
+    satır "a-" ile sayı olsun
+    sonuç satır ile taşıDene olsun
