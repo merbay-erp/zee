@@ -10,8 +10,9 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
-### Değişenler
+### Site
 
+- **zeedili.com 21 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-353/K-360 kesintisiz yeniden başlatma, K-347 eşzamanlı komut güvenliği ve RFC-0039 ağ sunucusu taslağı haberleri eklendi. Dil davranışı değişmedi.
 - **zeedili.com kesintisiz yeniden başlatmaya geçer (K-343):** Sitenin
   dağıtım birimleri tek süreçli worker yerine 4 işçili grup ve
   `zeedili.socket` systemd soketiyle gelir; dağıtım ve `systemctl restart`
