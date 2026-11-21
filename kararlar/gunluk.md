@@ -5315,3 +5315,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   adım noktalarına iş parçacığı başı hata/gecikme enjeksiyonu; disk durması
   deterministik yeniden üretildi. Süreç içi artık bayrağı ve üretimde enjeksiyon
   reddedildi. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-032 eki.
+
+## K-353 — Çok işçi yeniden başlatmasında web deposu 503'ü (21 Kasım 2026)
+
+- K-343 systemd ölçümü (Actions 44682814581) 1117 istekte bir 503 ve aynı
+  yeniden başlatmada 1396 ms'lik istek gördü. Ölçüm yapay değildi: ortak
+  `.zee/web-durumu-v1.json` deposu durumu kilit dışında okuyup kilit altında
+  CAS ile yayımlıyor, 128 ardışık çakışmada isteği 503 ile reddediyordu
+  (`… 128 kez değişti`). Yavaş süreç (yeni açılan işçi, büyümüş depo) hızlı
+  yazarlara her turda yenilebiliyordu; macOS'ta 8 işçi/32 istemci sabit yükte
+  yeniden başlatmasız da üretildi. Karar: oku-değiştir-yaz tek kilit
+  penceresinde (`kalici_dosya::kilit_altinda_guncelle`), ilerleme ADR-075
+  kilit kuyruğundan, tek sınır 5 sn kilit beklemesi. Daha büyük deneme sayısı
+  ya da geri çekilme (backoff) reddedildi: açlık olasılığını düşürür, kaldırmaz.
+  Oran deposunun belleğe alınması reddedildi (spec/12 grup geneli sayaç).
+  Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-034 revizyonu, GB-142.

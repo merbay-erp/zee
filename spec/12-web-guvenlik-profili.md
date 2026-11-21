@@ -83,7 +83,10 @@ fail-closed hata olur. Deneysel web bunu süreç içi adaptörle; `--web-proxy`
 production profili proje kökündeki `.zee/web-durumu-v1.json` kalıcı ortak
 adaptörüyle uygular. Kalıcı kayıt tokenın kendisini değil yalnız SHA-256
 özetini tutar. Bilinmeyen biçim sürümü, bozuk/aşırı büyük içerik, symlink,
-güvensiz dosya türü veya IO hatası 503'tür.
+güvensiz dosya türü veya IO hatası 503'tür. Kalıcı adaptör durumu klasör
+yazma kilidi altında okur, günceller ve yayımlar (K-353); eşzamanlı yazar
+sayısı isteği reddettirmez, yalnız spec/08'in 5 sn kilit bekleme sınırı
+aşılırsa istek 503 olur.
 
 Her rota gövdesinde `oturum`, `Metin` değerli bir sözlük olarak ZORUNLU
 bulunur. Geçerli kimlikli sunucu oturumunda tam olarak `kimlik`, `kullanıcı`,
