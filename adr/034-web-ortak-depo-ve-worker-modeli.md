@@ -4,6 +4,8 @@
 - **Tarih:** 2 Eylül 2026
 - **Revizyon:** 2 Eylül 2026 — K-139/ADR-036 kanonik origin ve açık
   loopback bind+peer değişmezini ekledi.
+- **Revizyon:** 21 Kasım 2026 — K-353: kilit dışı okuma + 128 denemeli CAS
+  döngüsü kaldırıldı; durum yazma kilidi altında okunup yayımlanır.
 - **İlgili kayıt:** K-137, K-139, B-046, B-052, RFC-0017, ADR-018, V1-P0-03
 
 ## Bağlam
@@ -31,9 +33,14 @@ Runtime doğrudan `HashMap` bilmez.
 2. `--web-proxy` production profili için proje kökündeki
    `.zee/web-durumu-v1.json` kalıcı ortak deposu.
 
-Kalıcı adaptör her değişikliği süreçler arası dosya kilidi, eski byte
-karşılaştırması ve atomik replace ile yayımlar. Yarışta güncel durum yeniden
-okunur; 128 ardışık çakışma sonrası istek fail-closed kalır. Bozuk JSON,
+Kalıcı adaptör her değişikliği süreçler arası dosya kilidi ve atomik replace
+ile yayımlar. K-353'ten beri durum aynı kilit penceresinde okunur, dönüştürülür
+ve yayımlanır; ilerlemeyi ADR-075 kilit kuyruğu sırası verir, tek sınır spec/08
+5 sn kilit beklemesidir (aşılırsa 503). İlk sürüm durumu kilit dışında okuyup
+kilit altında eski byte'larla karşılaştırıyor (CAS), çakışmada yeniden okuyup
+128 ardışık çakışmadan sonra isteği 503 ile reddediyordu: çok işçide yavaş
+süreç (yeniden başlatmada yeni açılan işçi, büyümüş depo) her turu
+kaybedebiliyordu (K-343 ölçümünde 1117 istekte bir 503). Bozuk JSON,
 bilinmeyen biçim sürümü, symlink, kayıt/alan sınırı veya IO hatası 503'tür.
 Unix'te `.zee` 0700, durum dosyası 0600'dür. Oturum belirtecinin yalnız
 SHA-256 özeti saklanır.
@@ -49,7 +56,7 @@ uygular:
 - CSRF doğrulaması: 60 saniyede 60 deneme;
 - Argon2id parola doğrulaması: 300 saniyede 5 deneme.
 
-Sayaç artışı ve pencere sonu aynı ortak CAS transaction'ındadır. Altıncı
+Sayaç artışı ve pencere sonu aynı kilitli ortak depo transaction'ındadır. Altıncı
 parola doğrulaması Argon2id çalıştırılmadan 429 olur. En çok 32768 canlı oran
 anahtarı tutulur; süresi dolanlar temizlenir, yalnız canlı kayıtlarla doluluk
 yeni kimliği tahliye ederek eşiği delmek yerine fail-closed reddeder.

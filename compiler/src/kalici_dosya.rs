@@ -16,6 +16,8 @@ use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
 use adim::{nokta, sar, Adim};
 
 mod adim;
+mod kilitli;
+pub use kilitli::{kilit_altinda_guncelle, KilitliGuncellemeHatasi};
 mod metadata;
 mod ozel;
 pub use ozel::atomik_ozel_yaz;
@@ -335,10 +337,10 @@ mod tests {
     use std::sync::atomic::{AtomicBool, Ordering as AtomikSira};
     use std::sync::{Arc, Barrier};
 
-    struct GeciciKlasor(PathBuf);
+    pub(super) struct GeciciKlasor(pub(super) PathBuf);
 
     impl GeciciKlasor {
-        fn yeni() -> Self {
+        pub(super) fn yeni() -> Self {
             let sira = GECICI_SAYACI.fetch_add(1, Ordering::Relaxed);
             let yol = std::env::temp_dir().join(format!(
                 "zee-atomik-test-{}-{}",

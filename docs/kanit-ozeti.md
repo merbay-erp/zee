@@ -16,7 +16,7 @@ Kaynak: `regression/v2.tsv`
 | morphology | 2 |
 | parser | 5 |
 | runtime | 13 |
-| security | 12 |
+| security | 13 |
 
 | Tanı | Vaka |
 | --- | --- |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 39 |
+| - | 40 |
 
-Toplam 50 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 50/50.
+Toplam 51 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 51/51.
 
 ## Güvenlik bulguları
 
@@ -41,10 +41,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 17 | 0 | 0 | 17 |
 | orta | 37 | 16 | 2 | 55 |
-| dusuk | 37 | 30 | 1 | 68 |
+| dusuk | 38 | 30 | 1 | 69 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 141.
+Toplam bulgu: 142.
 
 ## Spec maddeleri
 
@@ -144,15 +144,15 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 64 |
-| semantic-bugfix | 21 |
+| semantic-bugfix | 22 |
 | semantic-change | 54 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
-| correctness | 27 |
+| correctness | 28 |
 | dogfood-change | 32 |
 | maintenance | 61 |
 | security | 13 |
 
-Toplam: 139 compiler değişiklik beyanı, 135 core freeze beyanı.
+Toplam: 140 compiler değişiklik beyanı, 136 core freeze beyanı.

@@ -58,9 +58,11 @@ def istek(kapi, kimlik):
                 veri += parca
         tamam = veri.startswith(b"HTTP/1.1 200 ")
         neden = veri[9:12].decode("ascii", "replace") if veri else "bos-yanit"
+        # K-353: ret gövdesi kök nedeni söyler (yalnız durum kodu yetmedi).
+        govde = veri.partition(b"\r\n\r\n")[2][:200].decode("utf-8", "replace")
     except OSError as hata:
-        tamam, neden = False, type(hata).__name__
-    return basla, time.monotonic() - basla, tamam, neden
+        tamam, neden, govde = False, type(hata).__name__, str(hata)[:200]
+    return basla, time.monotonic() - basla, tamam, neden, govde
 
 
 def calisiyor_mu():
@@ -162,15 +164,24 @@ def main():
         dur.set()
         for t in isler:
             t.join()
-        basarisiz = sum(1 for _, _, ok, _ in kayit if not ok)
+        basarisiz = sum(1 for _, _, ok, _, _ in kayit if not ok)
         nedenler = {}
-        for _, _, ok, neden in kayit:
+        ornekler = []
+        ilk = pencereler[0][0] if pencereler else 0.0
+        for t, sure, ok, neden, govde in kayit:
             if not ok:
                 nedenler[neden] = nedenler.get(neden, 0) + 1
-        azami = [round(max((s for t, s, _, _ in kayit if a <= t <= b), default=0.0) * 1000, 1)
+                if len(ornekler) < 10:
+                    # Zaman ilk yeniden başlatmaya göredir; pencerelerle eşlenir.
+                    ornekler.append({"t_sn": round(t - ilk, 3), "sure_ms": round(sure * 1000, 1),
+                                     "neden": neden, "govde": govde})
+        azami = [round(max((s for t, s, _, _, _ in kayit if a <= t <= b), default=0.0) * 1000, 1)
                  for a, b in pencereler]
         rapor.update({"istek": len(kayit), "basarisiz": basarisiz,
                       "basarisizlik_nedenleri": nedenler,
+                      "basarisizlik_ornekleri": ornekler,
+                      "yeniden_baslatma_pencereleri_sn": [[round(a - ilk, 3), round(b - ilk, 3)]
+                                                          for a, b in pencereler],
                       "yeniden_baslatma_basina_en_uzun_istek_ms": azami,
                       "durum": "gecti" if basarisiz == 0 and len(kayit) > 0 else "kaldi"})
     except BaseException as hata:
@@ -186,7 +197,7 @@ def main():
             subprocess.run(["sudo", "rm", "-f", yol], check=False)
         subprocess.run(["sudo", "systemctl", "daemon-reload"], check=False)
         (args.cikti / "systemd-soket-olcumu.json").write_text(json.dumps(rapor, ensure_ascii=False, indent=2) + "\n")
-    print(json.dumps({k: rapor.get(k) for k in ("istek", "basarisiz", "basarisizlik_nedenleri", "yeniden_baslatma_basina_en_uzun_istek_ms", "durum")}, ensure_ascii=False))
+    print(json.dumps({k: rapor.get(k) for k in ("istek", "basarisiz", "basarisizlik_nedenleri", "basarisizlik_ornekleri", "yeniden_baslatma_basina_en_uzun_istek_ms", "durum")}, ensure_ascii=False))
     if rapor.get("durum") != "gecti":
         raise SystemExit(1)
 

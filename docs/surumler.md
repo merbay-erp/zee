@@ -5,6 +5,25 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 21 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Çok işçi grubu yoğun yükte ve yeniden başlatmada 503 vermez (K-353,
+  ADR-034 revizyonu):** `--web-proxy` profilinde işçiler oturum ve oran
+  sınırı durumunu `.zee/web-durumu-v1.json` dosyasında paylaşır. Yoğun
+  eşzamanlı istekte yavaş kalan bir işçi (ör. `systemctl restart` sonrası
+  yeni açılan) bu dosyayı güncellemeyi art arda kaybedebiliyor ve isteği
+  `503 … deposuna erişilemedi: kalıcı web deposu yoğun eşzamanlılıkta 128 kez
+  değişti` ile reddediyordu; K-343'ün kesintisiz yeniden başlatma ölçümünde
+  1117 istekte bir kez görüldü. Artık güncelleme dosya kilidi altında tek
+  adımda yapılır; istek yalnız kilit 5 saniyede alınamazsa 503 olur.
+
+  **Göç:** Gerekmez; depo biçimi ve komutlar aynıdır.
+
 ## 19 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

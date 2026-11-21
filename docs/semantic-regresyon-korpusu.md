@@ -272,6 +272,17 @@ koşar; son satır dosyanın son içeriğidir (`son <satırlar|>`). Düzeltme ö
 Yedek yalnız Windows yazarında oluştuğundan kip Windows dışında görünür
 ignored durumundadır; toplu replay bu kipi atlar.
 
+
+## Native web depo çekişmesi kipi (K-353)
+
+`security` fazındaki `native-web-depo-cekismesi` kipi, `--web-proxy` profilli
+gerçek native `dil` worker'ını ayağa kaldırır, `.zee/web-durumu-v1.json`
+ortak deposunu ~1 MiB geçerli oran kaydıyla doldurur ve bir iş parçacığında
+zee'nin klasör yazma kilidiyle (`kalici_dosya::atomik_yaz`) birkaç ms'de bir
+yeniden yayımlar. Ardından üç istek gönderir; çıktı `başarılı <n>`, `503 <n>`
+ve `diğer <n>` sayılarıdır. Düzeltme öncesi worker durumu kilit dışında okuyup
+CAS ile yayımladığından her turu kaybeder ve `503 3` görülür; düzeltme
+sonrası `başarılı 3`. Toplu replay bu kipi atlar.
 ## Native eşzamanlı ekleme kipi (K-346)
 
 `runtime` fazındaki `native-eszamanli-ekleme` kipi gerçek native `dil`

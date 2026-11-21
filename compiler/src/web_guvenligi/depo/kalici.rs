@@ -4,8 +4,6 @@ use super::DepoDurumu;
 use std::io;
 use std::path::{Path, PathBuf};
 
-const AZAMI_CAS_DENEMESI: usize = 128;
-
 pub(in crate::web_guvenligi) struct KaliciDepo {
     yol: PathBuf,
 }
@@ -15,13 +13,16 @@ impl KaliciDepo {
         Self { yol }
     }
 
+    /// K-353: durum kilit altında okunur, dönüştürülür ve yayımlanır. Eski
+    /// iyimser döngü (kilitsiz okuma + CAS, 128 deneme) çok işçide yavaş
+    /// süreci aç bırakıp isteği 503 ile reddediyordu.
     pub(super) fn guncelle<R, F>(&self, mut islem: F) -> Result<R, String>
     where
         F: FnMut(&mut DepoDurumu) -> Result<R, String>,
     {
+        use crate::kalici_dosya::KilitliGuncellemeHatasi as Hata;
         self.hazirla()?;
-        for _ in 0..AZAMI_CAS_DENEMESI {
-            let onceki = self.oku()?;
+        crate::kalici_dosya::kilit_altinda_guncelle(&self.yol, |onceki| {
             let mut durum = match &onceki {
                 Some(baytlar) if !baytlar.is_empty() => {
                     serde_json::from_slice::<DepoDurumu>(baytlar)
@@ -35,28 +36,13 @@ impl KaliciDepo {
             self.dogrula(&durum)?;
             let yeni = serde_json::to_vec(&durum)
                 .map_err(|hata| format!("kalıcı web deposu yazılamadı: {hata}"))?;
-            match crate::kalici_dosya::atomik_karsilastir_ve_yaz(
-                &self.yol,
-                onceki.as_deref(),
-                &yeni,
-            ) {
-                Ok(()) => return Ok(sonuc),
-                Err(hata) if hata.kind() == io::ErrorKind::WouldBlock => continue,
-                Err(hata) => return Err(format!("kalıcı web deposu yayımlanamadı: {hata}")),
-            }
-        }
-        Err(
-            "kalıcı web deposu yoğun eşzamanlılıkta 128 kez değişti; istek güvenle reddedildi"
-                .into(),
-        )
-    }
-
-    fn oku(&self) -> Result<Option<Vec<u8>>, String> {
-        match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&self.yol) {
-            Ok(icerik) => Ok(Some(icerik)),
-            Err(hata) if hata.kind() == io::ErrorKind::NotFound => Ok(None),
-            Err(hata) => Err(format!("kalıcı web deposu okunamadı: {hata}")),
-        }
+            Ok((yeni, sonuc))
+        })
+        .map_err(|hata| match hata {
+            Hata::Okuma(hata) => format!("kalıcı web deposu okunamadı: {hata}"),
+            Hata::Islem(hata) => hata,
+            Hata::Yazma(hata) => format!("kalıcı web deposu yayımlanamadı: {hata}"),
+        })
     }
 
     fn hazirla(&self) -> Result<(), String> {
