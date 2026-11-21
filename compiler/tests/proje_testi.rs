@@ -1276,3 +1276,49 @@ fn dosya_imzasi_gercek_ikili_dosyada_sinirli_ve_proje_kokunde_okunur() {
         "dosya-okuma olmadan derleme reddi"
     );
 }
+
+/// K-347: `dil ekle/çıkar` proje.dil'i okuduktan sonra başka bir komut
+/// bildirimi değiştirirse yazım karşılaştırmayla reddedilir; diğer komutun
+/// eklediği bağımlılık ezilmez, kilit de dokunulmadan kalır.
+#[test]
+fn bildirim_yazimi_araya_giren_komutun_bagimliligini_ezmez() {
+    let gecici = GeciciKlasor::yeni();
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&uygulama).expect("uygulama");
+    for ad in ["hesap", "takvim"] {
+        let paket = gecici.yol().join(ad);
+        std::fs::create_dir(&paket).expect("paket");
+        std::fs::write(
+            paket.join("proje.dil"),
+            format!("proje \"{ad}\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"paket.dil\" olsun\n"),
+        )
+        .expect("paket bildirim");
+        std::fs::write(
+            paket.join("paket.dil"),
+            "işlem bir ver\n    TamSayı döndürür\n    1 döndür\n",
+        )
+        .expect("paket kaynak");
+    }
+    let bildirim = uygulama.join("proje.dil");
+    let ilk = "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    std::fs::write(&bildirim, ilk).expect("uygulama bildirim");
+    std::fs::write(uygulama.join("ana.dil"), "\"tamam\" yaz\n").expect("ana");
+
+    let aday = |yol: &str| {
+        dil::proje::yerel_bagimliliklari_guncelle(ilk, &[yol.to_string()]).expect("aday bildirim")
+    };
+    let (a_kaynak, b_kaynak) = (aday("../hesap"), aday("../takvim"));
+    let a = dil::paket::ProjeGrafigi::cozumle_bildirimle(&uygulama, &a_kaynak).expect("a grafiği");
+    let b = dil::paket::ProjeGrafigi::cozumle_bildirimle(&uygulama, &b_kaynak).expect("b grafiği");
+
+    // İki komut da `ilk`i okudu; b önce yazar, a sonra.
+    b.bildirim_ve_kilidi_yaz(ilk, &b_kaynak).expect("b yazımı");
+    let b_kilidi = std::fs::read(uygulama.join("proje.kilit")).expect("b kilidi");
+    let hata = a.bildirim_ve_kilidi_yaz(ilk, &a_kaynak).unwrap_err();
+    assert!(hata.contains("başka bir süreç"), "{hata}");
+    assert_eq!(std::fs::read_to_string(&bildirim).unwrap(), b_kaynak);
+    assert_eq!(
+        std::fs::read(uygulama.join("proje.kilit")).unwrap(),
+        b_kilidi
+    );
+}

@@ -253,38 +253,48 @@ impl ProjeGrafigi {
             .map_err(|hata| format!("\"{}\" yazılamadı: {}", yol.display(), hata))
     }
 
-    /// Doğrulanmış aday bildirim ile bu grafiğin kilidini birlikte günceller;
-    /// kilit yazılamazsa iki dosyayı da önceki byte'larına geri döndürür.
+    /// Doğrulanmış aday bildirim ile bu grafiğin kilidini birlikte günceller.
+    /// K-347: `proje.dil` hâlâ komutun okuduğu `eski_bildirim` byte'larındaysa
+    /// iki dosya tek kilit penceresinde yayımlanır; araya giren komutun
+    /// bağımlılığı ezilmez. Kilit yazılamazsa iki dosya da önceki byte'larına
+    /// aynı kilit altında döner.
     pub fn bildirim_ve_kilidi_yaz(
         &self,
         eski_bildirim: &str,
         yeni_bildirim: &str,
     ) -> Result<(), String> {
+        use crate::kalici_dosya::CiftYazimHatasi;
         let bildirim_yolu = self.ana_kok.join("proje.dil");
         let kilit_yolu = self.ana_kok.join(KILIT_DOSYASI);
-        let eski_kilit = match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&kilit_yolu) {
-            Ok(icerik) => Some(icerik),
-            Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => None,
-            Err(hata) => return Err(format!("Önceki proje.kilit okunamadı: {}.", hata)),
-        };
-        crate::kalici_dosya::atomik_yaz(&bildirim_yolu, yeni_bildirim.as_bytes())
-            .map_err(|hata| format!("\"{}\" yazılamadı: {}", bildirim_yolu.display(), hata))?;
-        if let Err(hata) = self.kilidi_yaz() {
-            let bildirim_geri =
-                crate::kalici_dosya::atomik_yaz(&bildirim_yolu, eski_bildirim.as_bytes());
-            let kilit_geri = match eski_kilit {
-                Some(icerik) => crate::kalici_dosya::atomik_yaz(&kilit_yolu, &icerik),
-                None if kilit_yolu.exists() => std::fs::remove_file(&kilit_yolu),
-                None => Ok(()),
-            };
-            let geri_bildirimi = if bildirim_geri.is_err() || kilit_geri.is_err() {
-                " Uyarı: önceki proje dosyaları bütünüyle geri yüklenemedi."
-            } else {
-                " Proje bildirimi ve önceki kilit geri yüklendi."
-            };
-            return Err(format!("Paket kilitlenemedi: {}{}", hata, geri_bildirimi));
+        match crate::kalici_dosya::karsilastirip_cift_yaz(
+            &bildirim_yolu,
+            eski_bildirim.as_bytes(),
+            yeni_bildirim.as_bytes(),
+            &kilit_yolu,
+            self.kilit_metni().as_bytes(),
+        ) {
+            Ok(()) => Ok(()),
+            Err(CiftYazimHatasi::Degisti) => Err(format!(
+                "\"{}\" komut sürerken başka bir süreç tarafından değiştirildi; hiçbir dosya yazılmadı. Komutu yeniden çalıştır.",
+                bildirim_yolu.display()
+            )),
+            Err(CiftYazimHatasi::Birincil(hata)) => {
+                Err(format!("\"{}\" yazılamadı: {}", bildirim_yolu.display(), hata))
+            }
+            Err(CiftYazimHatasi::Ikincil {
+                hata,
+                geri_yuklendi,
+            }) => Err(format!(
+                "Paket kilitlenemedi: \"{}\" yazılamadı: {}{}",
+                kilit_yolu.display(),
+                hata,
+                if geri_yuklendi {
+                    " Proje bildirimi ve önceki kilit geri yüklendi."
+                } else {
+                    " Uyarı: önceki proje dosyaları bütünüyle geri yüklenemedi."
+                }
+            )),
         }
-        Ok(())
     }
 
     pub fn kilit_metni(&self) -> String {

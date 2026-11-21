@@ -107,6 +107,13 @@ içerik, mtime ve izin yazımı YASAKTIR. Varsayılan `biçimle` yazma kipi sür
   `X paketini kullan` bildirimi kalmışsa P010 verir ve bildirim/kilit byte-byte
   değişmez. Başarıda aday grafik önce çözülür; bildirim ile kilit birlikte
   güncellenir ve kilit yazımı başarısızsa ikisi geri alınır (K-080).
+- ZORUNLU (K-347): `dil ekle` ve `dil çıkar` (yerel ve registry) `proje.dil`i
+  yalnız hâlâ komutun okuduğu byte'lardaysa yazar; karşılaştırma, bildirim ve
+  `proje.kilit` yayını tek klasör yazma kilidi penceresindedir. Araya giren
+  komut bildirimi değiştirdiyse hiçbir dosya yazılmaz ve komut "başka bir
+  süreç tarafından değiştirildi … yeniden çalıştır" iletisiyle exit 2 verir;
+  eşzamanlı iki komut birbirinin bağımlılığını ezemez. Kilit yazılamazsa iki
+  dosya aynı kilit altında önceki byte'larına döner.
 
 ## Exact registry paketi ve kilit (TANIMLI — K-136)
 
