@@ -171,6 +171,14 @@ intrinsic'leri) **açık iştir**: bugün Zee yalnız devralınmış loopback HT
 dinleyicisi arkasında rota yazar. K-354/[RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md)
 taslağı katmanları, FD devri sözleşmesini ve kabul ölçütlerini bağlar; core
 freeze altında uygulanmaz, V1 sözü değildir.
+
+Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV
+yöntemleri, kapalı istek başlığı okuma listesi, XML/iCalendar/vCard yanıt
+türleri ve ETag, güvenli XML gövdesi, uygulama parolasıyla çerezsiz Basic ve
+dar CSRF muafiyeti, well-known keşif) **açık iştir**; mevcut HTTP adaptörü
+içinde kalır, yeni dinleyici istemez. K-364/[RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md)
+taslağı katmanları ve kabul ölçütlerini bağlar; core freeze altında
+uygulanmaz, V1 sözü değildir.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

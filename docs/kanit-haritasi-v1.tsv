@@ -14,6 +14,7 @@ rfcs/0012-ffi-ve-tehlikeli-sinir.md	taslak	-	Faz 4/5 gerçeklenmediği için tes
 rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Keyfî hassasiyet yuvarlama ve örtük binary float yasağı
 rfcs/0029-liste-sira-erisimi.md	taslak	-	K-180: freeze sonrası tasarım taslağı; uygulama ve conformance yok
 rfcs/0039-ag-sunucusu-yetkinligi.md	taslak	-	K-354: ağ sunucusu çatı taslağı; core freeze altında uygulama, spec ve test yok
+rfcs/0040-webdav-caldav-carddav-adaptoru.md	taslak	-	K-364: CalDAV/CardDAV web adaptörü taslağı; core freeze altında uygulama, spec ve test yok
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
 rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi metadata koruması ve rollback
