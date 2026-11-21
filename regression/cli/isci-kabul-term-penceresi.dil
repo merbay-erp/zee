@@ -1,0 +1,6 @@
+# K-360: grup işçisi kabul ile SIGTERM denetimi arasına düşen bağlantıyı düşürüyordu; ortak dinleyici açık kaldığından istek kayboluyordu (çok işçi yeniden başlatmasında kayıp istek).
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder

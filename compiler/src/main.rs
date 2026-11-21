@@ -1879,6 +1879,10 @@ struct GercekIo {
     native_control: Option<web_listener::Control>,
     #[cfg(unix)]
     native_taken: bool,
+    /// K-360: dinleyici başka süreçlerle paylaşılır (native profil, işçi
+    /// grubu); bu süreç kapatsa da backlog kardeşlere/yeni nesle kalır.
+    #[cfg(unix)]
+    paylasilan_dinleyici: bool,
     #[cfg(all(test, unix))]
     test_accept_term: bool,
     #[cfg(unix)]
@@ -2018,6 +2022,8 @@ impl GercekIo {
             native_control: None,
             #[cfg(unix)]
             native_taken: false,
+            #[cfg(unix)]
+            paylasilan_dinleyici: false,
             #[cfg(all(test, unix))]
             test_accept_term: false,
             #[cfg(unix)]
@@ -3338,6 +3344,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 .transpose()?,
             (inherited, _) => inherited,
         };
+        #[cfg(unix)]
+        {
+            self.paylasilan_dinleyici = inherited.is_some();
+        }
         let dinleyici = if let Some(listener) = inherited {
             listener
         } else {
@@ -3412,9 +3422,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 }
             }
             #[cfg(unix)]
-            if !self.native_taken && web_kapanisi_istendi(&self.web_kapanis) {
-                // A signal racing with nonblocking accept must not admit a new
-                // handler; dropping this stream and listener closes its backlog.
+            if !self.paylasilan_dinleyici && web_kapanisi_istendi(&self.web_kapanis) {
+                // Direct bind (K-253): a signal racing with nonblocking accept
+                // must not admit a new handler; dropping this stream and the
+                // only listener closes its backlog. A shared listener (native
+                // profile, K-336/K-360 worker group) stays open in siblings, so
+                // the accepted connection is admitted and served; the next
+                // istek_al stops admission before draining.
                 self.dinleyici = None;
                 return None;
             }
@@ -5265,6 +5279,97 @@ mod web_profili_testleri {
         assert!(yanit.contains(&format!("X-Zee-Build: {}\r\n", dil::surum::json())));
         assert!(yanit.ends_with("\r\n\r\ncanlı"));
         std::fs::remove_dir_all(gecici).unwrap();
+    }
+    /// K-360: grup işçisi ortak dinleyiciyi kapatamaz (kardeşler/yeni nesil
+    /// dinler); kabul ile SIGTERM denetimi arasına düşen bağlantı
+    /// düşürülürse istek kaybolur. Kabul edilen akış tamamlanmalı, sonraki
+    /// `istek_al` kabulü durdurmalı ve ortak dinleyici açık kalmalıdır.
+    #[cfg(unix)]
+    #[test]
+    fn grup_iscisi_kabul_sonrasi_term_istegi_tamamlar() {
+        if std::env::var_os("ZEE_K360_RACE_CHILD").is_none() {
+            let result = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "web_profili_testleri::grup_iscisi_kabul_sonrasi_term_istegi_tamamlar",
+                    "--nocapture",
+                ])
+                .env("ZEE_K360_RACE_CHILD", "1")
+                .output()
+                .unwrap();
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert!(String::from_utf8_lossy(&result.stdout)
+                .contains("k360-postaccept-TERM: group=completed200 shared=open"));
+            return;
+        }
+        use dil::yorumlayici::GirdiCikti;
+        use std::{
+            io::{Read, Write},
+            os::fd::AsRawFd,
+        };
+        let root =
+            std::env::temp_dir().join(format!("zee-k360-group-accept-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let address = listener.local_addr().unwrap();
+        web_isci_grubu::test_devralinan_dinleyici_ver(unsafe { libc::dup(listener.as_raw_fd()) });
+        let mode = WebModu::GuvenliProxy {
+            origin: AgHedefi::https_origininden("https://fixture.example").unwrap(),
+            worker_kapi: Some(address.port()),
+            oran_ayari: None,
+            listener_profile: None,
+        };
+        let mut io = GercekIo::yeni_argumanlarla(
+            &root,
+            &root,
+            mode,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
+            None,
+            None,
+        );
+        io.sunucu_kur(address.port().into()).unwrap();
+        let mut client = std::net::TcpStream::connect(address).unwrap();
+        client
+            .set_read_timeout(Some(std::time::Duration::from_secs(2)))
+            .unwrap();
+        client.write_all(b"GET /hazir HTTP/1.1\r\nHost: fixture.example\r\nForwarded: for=127.0.0.1;proto=https;host=fixture.example\r\nConnection: close\r\n\r\n").unwrap();
+        // Kabul başarılı olduktan sonra, denetimden önce gerçek SIGTERM.
+        io.test_accept_term = true;
+        assert!(
+            io.istek_al().is_some(),
+            "kabul edilen grup isteği düşürüldü"
+        );
+        io.web_yanit_taslagini_yaz(WebYanitTaslagi::Govde("admitted".into()))
+            .unwrap();
+        assert!(
+            io.istek_al().is_none(),
+            "SIGTERM sonrası yeni kabul durmalı"
+        );
+        drop(io);
+        let mut response = String::new();
+        client.read_to_string(&mut response).unwrap();
+        assert!(response.starts_with("HTTP/1.1 200 ") && response.ends_with("admitted"));
+        // Ortak dinleyici (yöneticinin ve kardeş işçilerin kopyası) açık kalır.
+        let sonraki = std::net::TcpStream::connect(address).unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let (sonraki_sunucu, _) = loop {
+            match listener.accept() {
+                Ok(kabul) => break kabul,
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    web_kapanis::bekle(&listener).unwrap();
+                }
+                Err(e) => panic!("{e}"),
+            }
+        };
+        drop((sonraki, sonraki_sunucu));
+        std::fs::remove_dir_all(&root).unwrap();
+        println!("k360-postaccept-TERM: group=completed200 shared=open");
     }
     #[cfg(unix)]
     #[test]

@@ -5379,6 +5379,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   döngü kaynağı. Hepsi freeze altında açılmaz; syntax freeze sonrası RFC
   adayıdır. K-355 kapandı; K-354 açık kalır.
 
+## K-360 — Grup işçisinde kabul ile SIGTERM arasındaki bağlantı (21 Kasım 2026)
+
+- K-353 kaydının açık bıraktığı son sıfır kayıp boşluğu. İşçinin kabul
+  sonrası kapanış denetimi yalnız native profili paylaşılan dinleyici
+  sayıyordu; grup işçisi kabul ile denetim arasına SIGTERM düşerse kabul
+  edilmiş akışı yanıtsız kapatıyor, ortak dinleyici açık kaldığından istek
+  kayboluyordu. Linux strace ile görüldü: süreç-yönlü SIGTERM `join`
+  bekleyen ana iş parçacığına düşer, `poll` bölünmez; bağlantı `poll`'u
+  uyandırır, `accept4` başarılı, denetim bayrağı görür, akış kapanır.
+  Karar: devralınan her dinleyici paylaşılan sayılır, kabul edilen istek
+  yanıtlanır. Kabul edilen akışı yöneticiye geri devretmek (yeni fd
+  protokolü) ve kabul çevresinde SIGTERM maskelemek (pencereyi taşır,
+  kaldırmaz) reddedildi. Üretim koduna ortamla açılan enjeksiyon kancası
+  eklenmedi; süreç düzeyi regression pencereyi ptrace ile belirlenimli
+  kurar. Grammar, tanı kodu, CLI, dil::api::v1 değişmedi. ADR-161 eki,
+  GB-143.
 ## K-347 — Taşıma yedeği ve `proje.dil` karşılaştırması (21 Kasım 2026)
 
 - K-346 taramasında açık kalan iki kilit-dışı okuma kapandı. Eylem içindeki
@@ -5392,4 +5408,4 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   karşılaştırmalı yayımlanır (`karsilastirip_cift_yaz`); kaybeden komut exit
   2 ile yeniden çalıştırılır. Komutu kilit altında yeniden çözmek reddedildi
   (registry zinciri kilidi saniyelerce tutardı). Grammar, tanı kimliği, CLI
-  sözdizimi, dil::api::v1 değişmedi. ADR-075 eki, spec/07, spec/11, GB-143.
+  sözdizimi, dil::api::v1 değişmedi. ADR-075 eki, spec/07, spec/11, GB-144.

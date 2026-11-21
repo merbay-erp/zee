@@ -151,4 +151,4 @@ yeniden çalıştırılabilir; ürün yolunda (web/eylem) kullanılmaz.
 `kilitli::tests::cift_yazim_karsilastirir_ve_ikincil_hatasinda_geri_alir`,
 `proje_testi::bildirim_yazimi_araya_giren_komutun_bagimliligini_ezmez`;
 regression `eszamanli-tasima-geri-alma` (`native-eszamanli-tasima`) ve
-`eszamanli-paket-ekle` (`native-eszamanli-paket-ekle`). GB-143.
+`eszamanli-paket-ekle` (`native-eszamanli-paket-ekle`). GB-144.
