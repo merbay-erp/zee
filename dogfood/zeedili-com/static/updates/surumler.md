@@ -26,6 +26,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Eşzamanlı registry çözümü birbirini düşürmez (K-361, ADR-075 eki):**
+  Aynı projede aynı anda iki çevrimiçi registry çözümü (ör. iki `dil`
+  komutu) çalışınca ikincisi, aynı metadata'yı getirse bile `P016 Kalıcı
+  registry durumu atomik güncellenemedi` ile düşüyordu. Artık kalıcı durum
+  kilit altında uzlaştırılır: aynı ya da daha yeni zincir kabul edilir, daha
+  yeni durum hiçbir zaman eskisiyle ezilmez ve geride kalan komutun sonucu
+  yeni durumla yeniden doğrulanır. Aynı sürümde farklı içerik görülürse
+  komut `P013 … çelişkili … metadata` ile durur, kalıcı durum korunur.
+
+  **Göç:** Gerekmez.
+
 - **Çok işçi grubu yeniden başlatmada kabul ettiği isteği düşürmez (K-360,
   ADR-161 eki):** `--web-isci-sayisi` işçisi SIGTERM aldığı anda bir
   bağlantıyı yeni kabul etmişse o bağlantıyı yanıt vermeden kapatıyordu;
