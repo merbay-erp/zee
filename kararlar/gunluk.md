@@ -5442,3 +5442,26 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   da dil::api::v1 değişikliği yok. spec/07, spec/18, spec/19, ADR-028 eki,
   GB-146.
 
+## K-364 — RFC-0040 taslağı: web adaptöründe CalDAV/CardDAV (21 Kasım 2026)
+
+- Ürün sahibi kararı: masaüstü/telefonda özel istemci yok; posta IMAP/SMTP
+  (RFC-0039), takvim CalDAV, kişiler CardDAV ile standart istemcilere
+  (Linux/macOS/Windows, Android/iOS) açılır. `urun-h`nin web tarafı takvim/
+  kişi/görev verisini Zee + PostgreSQL ile tutuyor; engel web adaptörünün
+  dar HTTP sözleşmesi.
+- Ürün oturumunun spec/11–12'den çıkardığı altı eksik kaynakla doğrulandı
+  (dördü tam yok, ikisi kısmi: 207 literali yazılabilir ama tür `text/html`
+  olur; well-known GET/303 yazılabilir ama PROPFIND 405). Ek bulgu: yol
+  parametresi yok, önekli rota + elle bölme. Sonradan gelen ZM-F020 (özet
+  üretimi giriş kovasını tüketir, aşımda C028 → 500; spec boşluğu, ayrı fix
+  adayı) ve ZM-F004 (CRLF; çalışma zamanı LF→CRLF önerildi, `\r` kaçışı
+  K-356'da ayrı kalır) da doğrulandı.
+- Kararlar: protokol mantığı Zee'de; yöntem, okunabilir başlık, içerik türü
+  ve yanıt başlığı kapalı kayıt (keyfi header builder yok); XML DOCTYPE'sız
+  ve tavanlı; DAV'da hesap parolası kabul edilmez, cihaz başına uygulama
+  parolası HMAC ile hızlı doğrulanır, Argon2 kapısı değişmez; CSRF/Origin
+  muafiyeti yalnız açık politika cümlesiyle, yabancı `Origin` yine 403 ve
+  POST ile birleşmez. Ayrı DAV sunucusu, vekilde Basic→çerez çevirisi,
+  Digest ve genel başlık API'si reddedildi.
+- Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
+  depo içi DAV reproducer'ı katman açılmadan önce ürünün işi. K-364 açık kalır.
