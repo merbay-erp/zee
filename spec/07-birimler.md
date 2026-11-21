@@ -113,7 +113,9 @@ içerik, mtime ve izin yazımı YASAKTIR. Varsayılan `biçimle` yazma kipi sür
   komut bildirimi değiştirdiyse hiçbir dosya yazılmaz ve komut "başka bir
   süreç tarafından değiştirildi … yeniden çalıştır" iletisiyle exit 2 verir;
   eşzamanlı iki komut birbirinin bağımlılığını ezemez. Kilit yazılamazsa iki
-  dosya aynı kilit altında önceki byte'larına döner.
+  dosya aynı kilit altında önceki byte'larına döner. Proje kaynak toplayıcısı
+  `proje.dil` dahil kaynakları yalnız değiştirme penceresini bekleyen
+  okuyucuyla açar; eşzamanlı yazım okuyan komutu düşürmez.
 
 ## Exact registry paketi ve kilit (TANIMLI — K-136)
 

@@ -139,6 +139,16 @@ döner. Okuma yolu (`kaynak_dosyasi_oku`) byte'ları dönüştürmeden UTF-8 ç�
 karşılaştırma bu yüzden kesindir. Windows'ta ikinci dosyanın yarım
 değiştirmesi de aynı kilit altında kurtarılır.
 
+**Windows kaynak toplama.** PR CI'ında Windows koşularından birinde bir
+eşzamanlı `dil ekle` karşılaştırma kaybı dışında bir hatayla düştü; yeniden
+koşuda üretilemedi ve stderr kaydedilmemişti (harness artık yazar). En olası
+neden incelemeyle bulundu: proje kaynak toplayıcısı her `.dil` dosyasını,
+`proje.dil` dahil, okumadan önce `canonicalize` ediyordu; Windows'ta bu dosyayı
+açar ve başka komutun `ReplaceFileW` penceresinde düşebilir, oysa ardından
+gelen okuma pencereyi bekler. Klasör zaten kanonik ve sembolik bağlar
+atlandığından çağrı kaldırıldı. `proje_testi::kaynak_toplama_proje_dil_degistirilirken_dusmez`
+bu yarışı sürekli yeniden yazılan `proje.dil` üstünde 300 çözümle zorlar.
+
 **Reddedilen: komutu kilit altında yeniden çözmek.** K-353
 `kilit_altinda_guncelle` tek dosyalık oku-değiştir-yaz için uygundur; burada
 dönüşüm paket grafiğini (ağ dahil registry zinciri) yeniden çözmek demektir

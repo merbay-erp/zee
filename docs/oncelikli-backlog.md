@@ -2718,7 +2718,10 @@ paket grafiğini (registry zinciri dahil) yeniden çözmek demektir. Kanıt:
 regression `eszamanli-tasima-geri-alma` (`native-eszamanli-tasima`, düzeltme
 öncesi `b 840–996`, sonrası `b 1000`) ve `eszamanli-paket-ekle`
 (`native-eszamanli-paket-ekle`, öncesi `bağımlılık 4 / kayıp 20`, sonrası
-`bağımlılık 24 / kayıp 0`); birim testleri ADR-075 ekinde. Açık sınır: zee
+`bağımlılık 24 / kayıp 0`); birim testleri ADR-075 ekinde. Windows CI'da bir kez görülen, yeniden
+üretilemeyen `dil ekle` düşüşünün en olası nedeni de kapatıldı: kaynak
+toplayıcı `proje.dil`i okumadan önce pencereyi beklemeyen `canonicalize` ile
+açıyordu (`kaynak_toplama_proje_dil_degistirilirken_dusmez`). Açık sınır: zee
 dışı yazarlar kilide katılmaz; kullanıcı programının kendi oku → hesapla →
 `yaz` dizisi dil düzeyinde atomik değildir (spec/08).
 ## K-345 — Sağlık bağlantısının işçiye mirası (macOS)

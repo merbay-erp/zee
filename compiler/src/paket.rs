@@ -734,9 +734,13 @@ fn kaynaklari_oku(kok: &Path) -> Result<BTreeMap<PathBuf, String>, String> {
             } else if tur.is_file()
                 && yol.extension().and_then(|uzanti| uzanti.to_str()) == Some("dil")
             {
-                let kanonik = std::fs::canonicalize(&yol).map_err(|hata| hata.to_string())?;
+                // K-347: klasör kanoniktir ve sembolik bağ atlandı; yol zaten
+                // kanoniktir. Dosyayı ayrıca `canonicalize` etmek Windows'ta onu
+                // açar ve eşzamanlı `dil ekle`nin `proje.dil` ReplaceFileW
+                // penceresine düşer; okuma pencereyi bekleyen yoldan yapılır.
+                let kanonik = yol;
                 let kaynak = crate::kaynak_sinirlari::kaynak_dosyasi_oku(&kanonik)
-                    .map_err(|hata| format!("\"{}\" okunamadı: {}", yol.display(), hata))?;
+                    .map_err(|hata| format!("\"{}\" okunamadı: {}", kanonik.display(), hata))?;
                 let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
                 if sonuc.len() >= sinirlar.kaynak_dosyasi() {
                     return Err(format!(

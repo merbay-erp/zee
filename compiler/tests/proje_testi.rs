@@ -1322,3 +1322,47 @@ fn bildirim_yazimi_araya_giren_komutun_bagimliligini_ezmez() {
         b_kilidi
     );
 }
+
+/// K-347: proje kaynakları toplanırken `proje.dil` başka bir sürecin atomik
+/// değiştirmesinin ortasında olabilir (eşzamanlı `dil ekle`). Kaynak toplayıcı
+/// dosyayı değiştirme penceresini bekleyen okuyucudan başka bir yolla
+/// açmamalıdır; Windows'ta `canonicalize` açılışı ReplaceFileW arasında
+/// düşüyordu.
+#[test]
+fn kaynak_toplama_proje_dil_degistirilirken_dusmez() {
+    let gecici = GeciciKlasor::yeni();
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&uygulama).expect("uygulama");
+    let bildirim = uygulama.join("proje.dil");
+    let ilk = "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    std::fs::write(&bildirim, ilk).expect("bildirim");
+    std::fs::write(uygulama.join("ana.dil"), "\"tamam\" yaz\n").expect("ana");
+    let bitti = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let yazar = {
+        let (bildirim, bitti) = (bildirim.clone(), std::sync::Arc::clone(&bitti));
+        std::thread::spawn(move || {
+            let mut sira = 0u32;
+            while !bitti.load(std::sync::atomic::Ordering::Acquire) {
+                sira += 1;
+                let icerik = format!("{ilk}# yazım {sira}\n");
+                dil::kalici_dosya::atomik_yaz(&bildirim, icerik.as_bytes()).expect("yazım");
+            }
+            sira
+        })
+    };
+    let mut hatalar = Vec::new();
+    for _ in 0..300 {
+        if let Err(hata) = dil::paket::ProjeGrafigi::cozumle_bildirimle(&uygulama, ilk) {
+            hatalar.push(format!("{hata:?}"));
+        }
+    }
+    bitti.store(true, std::sync::atomic::Ordering::Release);
+    let yazim = yazar.join().expect("yazar");
+    assert!(yazim > 0);
+    assert!(
+        hatalar.is_empty(),
+        "{} çözüm düştü: {:?}",
+        hatalar.len(),
+        hatalar.first()
+    );
+}
