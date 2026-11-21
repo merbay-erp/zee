@@ -268,9 +268,10 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
   (NXDOMAIN, NODATA) olarak sınıflandırılmış; SMTP 4xx/5xx kararı buna
   bağlıdır.
 - Çözücü: `hickory-resolver` ya da sistem çözücüsüne (`res_query`) dar bağ;
-  seçim alt RFC'de. Varsayılan hedef yerel çözücüdür (ZeeOS tarafı yerel
-  doğrulayıcı çözücü sağlayabilir); DNSSEC doğrulaması bu RFC'de
-  vaat edilmez.
+  seçim alt RFC'de. Varsayılan hedef yerel çözücüdür; ZeeOS imajı
+  systemd-resolved loopback stub çözücüsünü sağlar (21 Kasım 2026 yanıtı),
+  doğrulayıcı çözücü yoktur. Loopback çözücü adresi bildirimle izinli
+  tek DNS hedefidir; DNSSEC doğrulaması bu RFC'de vaat edilmez.
 - Sınırlar: sorgu son tarihi, yanıt boyutu, kayıt sayısı, TXT parça birleştirme
   kuralı (RFC 7208/6376'ya uygun), CNAME zinciri derinliği.
 - Yetkinlik: yeni `dns` yetkinliği; spec/23 `ağ` origin listesinin yerine
@@ -303,9 +304,13 @@ Eksikler (açılacak işler, bu RFC kapatmaz):
   enjeksiyon matrisi gereklidir.
 - Disk dolu (`ENOSPC`) ve inode tükenmesi C013 ailesi içinde ayrı
   sınıflandırılmış sonuç olmalıdır; Zee bunu geçici `4xx`'e çevirir.
-- Kalıcı dosya proje kökü sınırındadır; posta deposu bildirilmiş bir veri
-  köküne (systemd `StateDirectory` karşılığı) yazmalıdır. Proje kökü dışı
-  veri kökü bildirimi yeni yetkinlik kararıdır.
+- Kalıcı dosya proje kökü sınırındadır. ZeeOS yanıtı (21 Kasım 2026): servis
+  modeli yazılabilir veri bağlamasını proje kökü görünümünün içine kurar
+  (kod salt okunur, veri alt ağaçları aynı bağlamada, rename `EXDEV`'siz).
+  Bu yüzden ilk öneri posta deposunun proje kökü içinde bir alt ağaç
+  (ör. `veri/posta`) olmasıdır; spec/08 proje kökü kuralı korunur ve yeni
+  "kök dışı veri kökü" yetkinliği gerekmez. Ayrı bir bağlama seçilirse
+  aynı dosya sistemi (EXDEV) denetimi kabul testinde tekrarlanır.
 - Blob dosyası ile PostgreSQL kaydı birlikte atomik değildir; niyet kaydı +
   açılışta uzlaştırma (RFC-0038 açılış birincilliğindeki gibi) ürün
   protokolüdür, çalışma zamanı yalnız primitive'leri ve dizin listeleme /
@@ -364,8 +369,10 @@ Bu çatı RFC ancak şunlar kanıtlandığında "geçici kabul"e aday olur:
 
 ## FD devri sözleşmesi (ZeeOS'un uygulayacağı)
 
-Bu sözleşme systemd `sd_listen_fds` uyumludur; ZeeOS'un servis yöneticisi
-systemd ise ek iş gerekmez, değilse aynı ortamı kurar. ZeeOS tarafındaki
+Bu sözleşme systemd `sd_listen_fds` uyumludur. ZeeOS'un servis yöneticisi
+systemd'dir (21 Kasım 2026 yanıtı); ek yönetici gerekmez, ZeeOS soket
+birimlerini `Accept=no`, `FileDescriptorName=` ve IPv6 için
+`BindIPv6Only=ipv6-only` + ayrı IPv4 soketiyle sağlar. ZeeOS tarafındaki
 karar kayıtları ZeeOS deposunda tutulur.
 
 **Yönetici (ZeeOS/systemd) sağlar:**
@@ -424,6 +431,29 @@ RFC'nin hiçbir katmanı şu zincir kurulmadan uygulanmaz:
 5. Grammar değişikliği ayrıca RFC-0028 ve syntax freeze kurallarına tabidir;
    V1 syntax freeze penceresi içinde açılmaz.
 
+### Faz-0 ürün girdisi (21 Kasım 2026)
+
+ZeeOS e-posta ürünü kapı öncesi şu durumu bildirdi; kayıt bilgi amaçlıdır ve
+yukarıdaki 1. adımı karşılamaz:
+
+- Zee'de saf SMTP komut durum makinesi (soket yok, stdio deneme aracı) ve
+  19 `dil dene` testi; üç reproducer. Ürün henüz sürüm denetiminde ve uzak
+  depoda değildir, bu yüzden exact provenance ve dogfood kaydı açıktır.
+- Bildirilen sürtünmeler (K-164 kataloğuyla karşılaştırma alt RFC işidir):
+  - **ASCII harf katlama yok:** yerleşik büyük/küçük harf dönüşümü Türkçe
+    yerel ayarlıdır (`mail` → `MAİL`); SMTP/IMAP fiilleri ve DNS adları
+    ASCII harf duyarsızdır (RFC 5321 §2.4). Katman A/D'ye ASCII katlama
+    yüzeyi adayı olarak eklenir.
+  - **Metin kaçışında `\r` yok** (S040): çıplak CR denetimi Zee'de
+    yazılamıyor; Katman A'nın "çıplak LF/CR reddi çalışma zamanı
+    değişmezidir" kararını destekler.
+  - **`... dinleyicisinde bağlantı geldiğinde` → S036:** bugün yalnız HTTP
+    rota kalıbı var; Katman A yüzeyinin doğrudan reproducer'ı.
+  - **İstemsiz satır okuma yok:** stdio protokol araçlarında her okuma boş
+    istem satırı basar.
+  - Listede `içermeli` T022; olumsuz içerme yalnız
+    `X Y içeriyorsa olmamalı` biçimiyle.
+
 V1 kapı listesine (`docs/v1-surum-kapilari.md`) bu RFC eklenmez: ağ sunucusu
 yetkinliği V1 sözü değildir.
 
@@ -478,7 +508,8 @@ değişmez.
   ölçümü)?
 - Tek kripto sağlayıcısı: `ring` mi `aws-lc-rs` mi; mevcut `native-tls`
   istemci yollarının geleceği.
-- Proje kökü dışı veri kökü bildirimi ve izin modeli.
+- Posta deposu proje kökü içinde mi kalır (ZeeOS önerisi), yoksa ayrı
+  bağlama + EXDEV kanıtı mı gerekir?
 - Sertifika yenilemede süreç içi yeniden yükleme.
 - Uzun oturumlu sunucularda yorumlayıcı başarımı Stage 0'da yeterli mi;
   değilse self-hosting/backend aşamalarıyla (ADR-008) ilişkisi.
