@@ -5465,3 +5465,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   Digest ve genel başlık API'si reddedildi.
 - Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
   depo içi DAV reproducer'ı katman açılmadan önce ürünün işi. K-364 açık kalır.
+
+## K-367 — Şapkalı ünlüler: zee-tr-1'de düzeltilmez, zee-tr-2 adayı (21 Kasım 2026)
+
+- K-363 sırasında gözlendi: `Kâr` kökü için kanonik belirtme `Kâri` üretiliyor.
+  Kök neden: morfoloji ünlü işlevleri `â/î/û`'yu ünlü saymıyor; üretimde uyum
+  ve yumuşama, çözücüde ünlü-türemesi adayları sapıyor.
+- Etki geçici yamayla ölçüldü: uyumluluk kaydı değişir, 53.248 üretimin
+  10.306'sı ve 2.865 çözüm kümesi farklılaşır; yerel 120 projede `dil denetle`
+  farkı yok. Pratik etkinin sıfır olması kuralı gevşetmez; spec/13 ve
+  RFC-0018 sözleşmesi kayda bağlıdır.
+- Karar: `zee-tr-1`e dokunulmaz; spec/13'e AÇIK bilinen sınır maddesi,
+  K-367 backlog'a `zee-tr-2` adayı olarak girer. Naif "â→a" düzeltmesi
+  reddedildi (`hâli`yi `hâlı`ya bozar); doğru kural k/g/l inceltmesini ayrıca
+  modeller. Kod, test, tanı, fixture ve dil yüzeyi değişikliği yok.

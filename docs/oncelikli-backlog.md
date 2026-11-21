@@ -2557,6 +2557,24 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-367 — Şapkalı ünlülü köklerde kanonik üretim (zee-tr-2 adayı)
+
+**Durum: AÇIK (zee-tr-2 adayı, V1 sonrası).** `compiler/src/morfoloji.rs`
+içindeki `unludur`, `dar_unlu`, `genis_unlu` ve `kok_bicimleri` ünlü denetimi
+`â/î/û` harflerini ünlü saymaz: son ünlü yoksa varsayılan `e` (`kâr` → `kâri`),
+şapkalı ünlü atlanınca önceki ünlü (`rüzgâr` → `rüzgârü`), eksik hece sayısıyla
+yumuşama yok (`kâğıt` → `kâğıtı`) ve çözücüde sahte ünlü-türemesi adayı
+(`rüzgârı` → `rüzgâür`). Çözücü doğru yazımı (`kârı`) zaten aynı köke çözer.
+Ölçülen etki (geçici yama, commit yok): uyumluluk kaydı `e6034e73…` →
+`ede9b18a…`, 53.248 kanonik üretimin 10.306'sı ve ortak yüzeylerin 2.865
+çözüm kümesi değişir, bağımsız conformance korpusu kırılır; yerel 120 Zee
+projesinde `dil denetle` farkı yok. spec/13 ve RFC-0018 bunu `zee-tr-1`
+içinde YASAK kırıcı değişiklik sayar; sınır spec/13'te AÇIK maddedir.
+Basit "â→a sınıfı" düzeltmesi de yanlıştır (`hâl` → `hâlı`); doğru kural
+şapkanın k/g/l inceltme işlevini ayrıca ele almalıdır (`kârı` ama `hâli`,
+`usulü`). Bağımlılık: RFC + `zee-tr-2` gerçeklemesi + yeni uyumluluk kaydı +
+proje/kilit geçişi + edition kararı. V1 kapısı değildir.
+
 ## K-364 — WebDAV/CalDAV/CardDAV web adaptörü RFC taslağı
 
 **Durum: AÇIK (taslak).** [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
