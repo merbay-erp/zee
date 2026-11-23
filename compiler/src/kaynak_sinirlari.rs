@@ -1,8 +1,7 @@
 //! Derleyici, runtime ve araçlar için tek değişmez kaynak politikası.
 //!
-//! Değerler kullanıcı girdisinden değiştirilemez. Daha geniş bir profil ancak
-//! ayrı, açık ve sürümlü bir ürün kararıyla eklenebilir; sessiz sınırsız geri
-//! dönüş yoktur.
+//! Değerler kullanıcı girdisinden değiştirilemez. Daha geniş bir profil ancak ayrı,
+//! açık ve sürümlü bir ürün kararıyla eklenebilir; sessiz sınırsız geri dönüş yoktur.
 
 mod baglanti;
 pub(crate) mod degistirme_penceresi;

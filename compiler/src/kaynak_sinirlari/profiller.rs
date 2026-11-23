@@ -60,9 +60,7 @@ impl HttpSinirlari {
         self.istek_alani
     }
 
-    /// K-372: yanıt yazımının ilk `istek_okuma_saniyesi` sonrasında
-    /// düşemeyeceği ortalama hız (bayt/sn). Mutlak yazım bütçesi
-    /// `istek_okuma_saniyesi + yanıt baytı / bu hız` olur.
+    /// K-372: yanıt yazım bütçesi `istek_okuma_saniyesi + bayt / bu hız` (bayt/sn).
     pub const fn yanit_yazim_alt_hizi(self) -> u64 {
         self.yanit_yazim_alt_hizi
     }
