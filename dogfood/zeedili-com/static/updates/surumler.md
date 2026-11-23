@@ -31,6 +31,51 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Rotadan dosya indirme (K-378):** Bir rota proje içindeki bir dosyayı
+  tarayıcıya indirme olarak gönderebilir:
+  `sonuç yol dosyasını "application/pdf" türünde "fatura.pdf" adıyla ek olarak göndermeyi dene olsun`.
+  Tür kapalı bir listeden seçilir (PDF, PNG, JPEG, WebP, düz metin, CSV,
+  takvim, ZIP, Word/Excel/PowerPoint, ikili); HTML, SVG ve betik türleri
+  yoktur. Dosya adını çalışma zamanı güvenle kodlar (Türkçe adlar korunur);
+  satır sonu, tırnak ya da yön karakteri taşıyan ad reddedilir. Yanıt
+  tarayıcıda sayfa olarak açılamaz (yalnız indirme), önbelleğe alınmaz, en
+  çok 16 MiB'dır ve belleğe alınmadan akıtılır. Bulunamayan dosya, izinsiz
+  yol ya da geçersiz tür/ad `C013` başarısız sonucudur; rota kendi hata
+  sayfasını verebilir. `dosya-okuma` yetkinliği gerekir.
+
+  **Göç:** Gerekmez; kalıbı kullanmayan rotaların yanıtı değişmez.
+
+- **E-postada Office, ZIP ve metin ekleri (K-378):** `proje.dil` içinde
+  `e_posta_ek_türleri "pdf", "docx", "xlsx", "csv" listesi olsun` yazan
+  proje, ekli iletide bu türleri gönderebilir. Seçilebilen türler: pdf, png,
+  jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip. Liste kümenin tamamıdır
+  (yazılmayan tür kapalıdır). Makro taşıyan Office dosyaları, eski Office
+  biçimleri, yürütülebilir ve betik dosyaları hiçbir koşulda açılamaz
+  (yeni tanı P019). Word/Excel/PowerPoint/ZIP eklerinin gerçekten ZIP
+  biçiminde, metin eklerinin geçerli UTF-8 olduğu denetlenir; bu bir virüs
+  taraması değildir. Ayrıca ek reddedildiğinde hata artık
+  `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` biçiminde nedeni
+  gösterir ve SMTP'ye hiç bağlanılmadığını söyler; sunucu/parola hataları
+  eskisi gibi gizlidir.
+
+  **Göç:** Gerekmez; bildirimsiz projeler yine yalnız PDF/PNG/JPEG/WebP
+  gönderir. Yalnız reddedilen ekin hata metni değişti (kod yine C029).
+
+- **JavaScript'siz form ile dosya yükleme (K-378):** `proje.dil` içinde
+  `çok_parçalı_yükleme doğru olsun` yazan proje (`web-oturumu` gerekir),
+  sıradan HTML formuyla (`enctype="multipart/form-data"`) tek dosya kabul
+  eder. Formdaki gizli `_csrf` alanı dosya alanından **önce** yer almalıdır;
+  belirteç doğrulanmadan dosyanın tek baytı bile diske yazılmaz. Dosya,
+  bugünkü ikili yüklemeyle aynı geçici dosyaya akar; rota
+  `yukleme_gecici_yolu`, `yukleme_sha256`, `yukleme_bayti` alanlarına ek
+  olarak `yukleme_dosya_adi` ve `yukleme_bildirilen_tur` (tarayıcının
+  beyanı; güvenilmez) ile diğer form alanlarını görür. En çok 8 alan, tek
+  dosya, 16 MiB; bozuk ya da sınırı aşan gövde 400/413 alır.
+
+  **Göç:** Gerekmez. Bildirimi olmayan projelerde multipart istekler eskisi
+  gibi davranır; `application/octet-stream` + `X-Zee-CSRF` yüklemesi aynen
+  çalışır.
+
 - **systemd'den adla devralınan dinleyiciler ve hazır bildirimi (K-376):**
   Bir proje, systemd'nin kendisi adına açtığı soketleri `proje.dil` içinde
   adla bildirebilir:

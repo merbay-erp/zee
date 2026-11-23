@@ -44,6 +44,44 @@ kökü paylaşan başka worker'ın canlı yüklemesi kilit olmadan korunur ve
 eşzamanlı süpürmeler birbirini bozmaz. Başka adlı dosyaya, alt dizine, bağa ve
 gelecek tarihli dosyaya dokunmak YASAKTIR; tek tur en çok 10 000 girdi inceler.
 
+## Multipart form yüklemesi — K-378
+
+Normatif kaynak: [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md) katman B,
+[ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md). JavaScript'siz
+HTML formu (`enctype="multipart/form-data"`, gizli `_csrf` alanı dosya
+alanından önce) tek dosya yükleyebilir.
+
+- Yol yalnız proje bildirimiyle açılır: `çok_parçalı_yükleme doğru olsun`
+  (`web-oturumu` yetkinliği ZORUNLU, aksi P015; mantıksal olmayan değer P001).
+  Bildirimsiz projede ve `GET`/`HEAD` isteğinde multipart gövde bugünkü gibi
+  64 KiB metin/form yolunda kalır. `application/octet-stream` + `X-Zee-CSRF`
+  yolu her iki durumda da değişmez. Bu seçim TANIMLIDIR.
+- `Content-Type` tek ve `multipart/form-data` olmak; tek `boundary`
+  parametresi (RFC 2046 karakterleri, 1–70) taşımak ZORUNDADIR; başka ya da
+  yinelenen parametre 400'dür. `Content-Length` 16 MiB + 64 KiB'ı aşarsa gövde
+  okunmadan 413 döner. Oturum çerezi yoksa gövde okunmadan 403 döner.
+- Gövde tek geçişte, belleğe alınmadan ayrıştırılır. En çok 8 parça, tam bir
+  dosya parçası; parça başlık bloğu ≤ 8 KiB ve ≤ 8 satır; yalnız
+  `Content-Disposition: form-data; name=…[; filename=…|filename*=UTF-8''…]` ve
+  isteğe bağlı `Content-Type` tanınır. `Content-Transfer-Encoding`, bilinmeyen
+  başlık ya da parametre, başlık katlaması, yinelenen alan adı, `yukleme_` ile
+  başlayan alan adı, 8 KiB'ı aşan ya da UTF-8 olmayan metin alanı, 1 KiB'ı aşan
+  önsöz/sonsöz, sınırdan sonra CRLF/`--` dışı bayt, sıfır ya da iki dosya ve
+  kapanış sınırı olmadan biten gövde YASAKTIR (400). 16 MiB'ı aşan dosya 413.
+- `_csrf` metin alanı dosya parçasından önce gelmek ve oturumun belirteciyle
+  sabit zamanlı eşleşmek ZORUNDADIR; aksi hâlde dosya baytı diske hiç
+  yazılmadan 403 döner (oturum gövdeden önce yüklenir; başarısız deneme CSRF
+  oran sınırına sayılır). Bu yolda `X-Zee-CSRF` başlığı yok sayılır.
+- Dosya parçası yukarıdaki binary gövdeyle aynı yükleyiciye akar (`.parca`,
+  `0600`, SHA-256, istek sonu silme, yaş süpürmesi); red yanıtından önce kısmi
+  dosya silinir. Rota bugünkü üç alana ek olarak `yukleme_dosya_adi`
+  (doğrulanmış basename; geçersizse boş — CR/LF, tırnak, yön karakteri, `..`)
+  ve `yukleme_bildirilen_tur` (beyan edilen tür; güvenilmez, ASCII ≤ 127 bayt
+  ya da boş) alanlarını ve diğer metin alanlarını `istek` sözlüğünde görür.
+  Dosya adı hiçbir koşulda disk yoluna girmez. Bu sözleşme ZORUNLUDUR.
+- Okuma 10 sn mutlak istek son tarihine (spec/11 §5) tabidir; orantılı okuma
+  bütçesi bu sürümde AÇIK sınırdır.
+
 ## Beklenen dosya işlemleri
 
 ```text
@@ -91,6 +129,6 @@ korur. Aynı eylem içinde PostgreSQL ve dosya yazımı yine YASAKTIR.
 
 Dosya sistemi ile PostgreSQL arasında dağıtık ACID sözü yoktur. Ürün
 `hazırlanıyor → hazır/hatalı` ile `siliniyor` durumlarını, iş anahtarını ve
-restart uzlaştırmasını kurmak zorundadır. Multipart/form-data, antivirüs/içerik
-türü doğrulaması, production TLS/proxy yük limiti ve nesne deposu bu bölümün
+restart uzlaştırmasını kurmak zorundadır. Birden çok dosya alanı, iç içe
+`multipart/mixed`, antivirüs/içerik türü doğrulaması, production TLS/proxy yük limiti ve nesne deposu bu bölümün
 sözü değildir.

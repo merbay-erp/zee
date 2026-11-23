@@ -165,7 +165,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C010 | Sözlükte anahtar yok | Önce `sözlükte <anahtar> varsa` |
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
 | C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
-| C013 | Dosyaya yazılamadı | Yol/izin, var olan no-clobber hedef ve owner/group/ACL/xattr desteğini kontrol et. `... dene` yaşam döngüsü yüzeyleri de bu kararlı dosya hata ailesini yapılandırılmış Hata olarak döndürür; doğrudan yazma arızasında web adaptörü ayrıntı sızdırmayan 503 ile worker'ı yaşatır. Ayrı bağlama noktaları arasındaki taşıma (EXDEV) hata değildir; runtime kopya + atomik adlandırmayla tamamlar (K-329). İmza okumasında (`ilk N baytını onaltılık okumayı dene`, K-333) 1–64 dışı bayt sayısı, normal dosya olmayan hedef ve proje sınırı reddi de C013'tür. Atomik yazım arızasının iletisi düştüğü adımı (ör. `yazma kilidi`, `ReplaceFileW`) taşır (K-351) |
+| C013 | Dosyaya yazılamadı | Yol/izin, var olan no-clobber hedef ve owner/group/ACL/xattr desteğini kontrol et. `... dene` yaşam döngüsü yüzeyleri de bu kararlı dosya hata ailesini yapılandırılmış Hata olarak döndürür; doğrudan yazma arızasında web adaptörü ayrıntı sızdırmayan 503 ile worker'ı yaşatır. Ayrı bağlama noktaları arasındaki taşıma (EXDEV) hata değildir; runtime kopya + atomik adlandırmayla tamamlar (K-329). İmza okumasında (`ilk N baytını onaltılık okumayı dene`, K-333) 1–64 dışı bayt sayısı, normal dosya olmayan hedef ve proje sınırı reddi de C013'tür. Dosya yanıtında (`… adıyla ek olarak göndermeyi dene`, K-378) kayıtsız içerik türü, geçersiz ad (CR/LF, tırnak, yön karakteri, yol), proje sınırı, sembolik bağ/dizin, 16 MiB aşımı ve yanıtı zaten belirlenmiş istek yanıt yazılmadan C013 başarısız Sonuç'tur. Atomik yazım arızasının iletisi düştüğü adımı (ör. `yazma kilidi`, `ReplaceFileW`) taşır (K-351) |
 | C014 | **ayrılmış** — eski çalışma zamanı yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | C015 | CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı) | Başlık satırı + eşit hücreli veri satırları (K-062: hücreler Metin okunur) |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
@@ -211,6 +211,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P016 | Registry HTTPS taşıması, içerik-adresli cache veya atomik kalıcı durum işlemi başarısız | Origin/root pin/cache yolunu denetle; bozuk nesneyi kullanma ve güvenilir aynadan yeniden doğrula |
 | P017 | Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz | Exact sürüm, HTTPS origin, pozitif root sürümü ve ağ dışı `sha256:` root özetini birlikte bildir |
 | P018 | `dinleyiciler` bildirimi `<ad> <adres>:<kapı>` değil; ad/adres yinelenmiş, kapı 0, IPv6 kapsamlı ya da IPv4 eşlemeli, 64'ten fazla öğe | Her dinleyiciyi `"smtp_v4 0.0.0.0:25"` biçiminde, systemd `FileDescriptorName=` ile aynı tekil adla yaz; çift yığında aileye ayrı ad ver |
+| P019 | `e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür | Listeyi kanonik adlarla yaz (pdf, png, jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip); liste kümeyi tam belirler, varsayılanları da yaz; makro taşıyan ve yürütülebilir türler açılamaz |
 
 ## Ç — İç akış
 
@@ -232,6 +233,17 @@ Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
 K-330: `oturum_ömrü_saniye` 300–2592000 sn aralığı dışında ya da `web-oturumu` yetkinliği olmadan `oturum_ömrü_saniye`/`oturum_kayar` kullanımı P015, Sayı olmayan ömür ve Mantıksal olmayan `oturum_kayar` P001 verir; yeni tanı kodu yoktur. [Karar](../adr/158-proje-basina-oturum-omru-ve-kayar-yenileme.md).
 
 K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç değeridir; adaptör ayrıntısı gizlenir. T034 argüman türü, T048 eylemde geri alınamaz istek ve P015 proje ortam listesi tanıları mevcut kodları korur. Üst program deadline C020 kalır. [Sözleşme](../adr/091-http-post-baslik-ve-gizli-ortam.md).
+
+K-378: `çok_parçalı_yükleme` bildirimi mantıksal değilse P001, `web-oturumu`
+yetkinliği olmadan açılırsa P015'tir. Multipart istek reddi (400 bozuk gövde,
+403 CSRF/oturum, 413 tavan) tanı kodu üretmeyen ham HTTP yanıtıdır; rota
+çalışmaz. [Karar](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md).
+
+K-378: `e_posta_ek_türleri` bildirim hataları P019'dur (`ağ` yetkinliği
+yoksa P015). Bildirime uymayan, imzası/UTF-8'i türüyle uyuşmayan ya da sınırı
+aşan ek çalışma zamanında yine C029'dur, ama ağa çıkmadan verilen bu yerel
+ret `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` sabit metniyle
+SMTP/ağ hatasının maskesinden ayrılır (K-236 maskesi diğer hatalar için aynen).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

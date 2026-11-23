@@ -1,6 +1,13 @@
-//! K-210 kimlik/iletişim/görsel kapıları; trait yöntemlerini aynı politika ile açar.
+//! K-210 kimlik/iletişim/görsel ve K-378 dosya yanıtı (ek indirme) kapıları;
+//! trait yöntemlerini aynı politika ile açar.
 macro_rules! yontemler {
     () => {
+        fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
+            self.web_gerektir()?;
+            self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+            self.ic.dosya_yaniti_gonder(yol, tur, ad)
+        }
+
         fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
             self.politika.gerektir(Yetkinlik::Kriptografi)?;
             self.ic.parola_ozeti_uret(parola)

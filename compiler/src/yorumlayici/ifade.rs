@@ -79,7 +79,7 @@ pub(super) fn degerlendir_async<'a>(
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, true)
                     }
                     DOSYA_ATOMIK_TASI | DOSYA_SIL | DOSYALARI_LISTELE | DOSYA_SHA256
-                    | DOSYA_ILK_BAYTLAR => {
+                    | DOSYA_ILK_BAYTLAR | WEB_DOSYA_YANITI => {
                         dosya::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
                     PAROLA_OZETI

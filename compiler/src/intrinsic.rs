@@ -33,6 +33,10 @@ pub const DOSYA_SHA256: &str = "dosya.sha256";
 pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
 /// K-331: imza okumasının sabit üst sınırı (bayt).
 pub const DOSYA_ILK_BAYT_SINIRI: i64 = 64;
+/// K-378: `<yol> dosyasını <tür> türünde <ad> adıyla ek olarak göndermeyi dene`
+/// — rota yanıtını kayıtlı içerik türüyle `Content-Disposition: attachment`
+/// dosya yanıtı yapar → TamSayı Sonucu (bayt).
+pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -253,6 +257,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::TamSayiSonucu,
         etki: IntrinsicEtkisi::DisYazma,
         tur_hatasi: "Kaynak ve hedef dosya yolları Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_DOSYA_YANITI,
+        yetkinlik: Yetkinlik::DosyaOkuma,
+        arguman_turleri: UC_METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "Dosya yolu, içerik türü ve dosya adı Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: DOSYA_SIL,

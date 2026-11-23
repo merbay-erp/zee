@@ -27,6 +27,10 @@ pub(super) fn intrinsic_degerlendir(
                 ))
             }
         }
+        // K-378: rota dosya yanıtı; ret yanıt yazılmadan C013 Sonuç'tur.
+        (WEB_DOSYA_YANITI, [Deger::Metin(yol), Deger::Metin(tur), Deger::Metin(ad)]) => {
+            io.dosya_yaniti_gonder(yol, tur, ad).map(Deger::TamSayi)
+        }
         _ => return Err(ic_hata(satir)),
     };
     Ok(match sonuc {
