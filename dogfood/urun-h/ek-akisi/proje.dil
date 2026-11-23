@@ -1,0 +1,7 @@
+# K-378: ürün H web arayüzünün (ZeeMail) ek akışı anonim kesiti.
+proje "ek-akisi" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma" listesi olsun
+ağ_hedefleri boş liste olsun

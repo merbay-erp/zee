@@ -185,13 +185,13 @@ içinde kalır, yeni dinleyici istemez. K-364/[RFC-0040](../rfcs/0040-webdav-cal
 taslağı katmanları ve kabul ölçütlerini bağlar; core freeze altında
 uygulanmaz, V1 sözü değildir.
 
-Web arayüzünde ek indirme ve JS'siz yükleme ile genişletilmiş SMTP ek türleri
-(dosyadan akışlı ikili yanıt + kapalı içerik türü/`Content-Disposition`
-kaydı, spec/26 parça modeline akan sınırlı `multipart/form-data` ve form
-alanından CSRF, varsayılanı değişmeyen proje bildirimli ek türü kaydı)
-**açık iştir**. K-373/[RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
-taslağı yanıt kaydını RFC-0040 katman C ile tek model olarak bağlar; core
-freeze altında uygulanmaz, V1 sözü değildir.
+Web arayüzünde ek indirme, JS'siz yükleme ve genişletilmiş SMTP ek türleri
+K-378 ile `dogfood-change` olarak açılıyor ([RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
+kabul, ADR-163). **Gerçekleşen:** katman A — rotadan kayıtlı türle
+`attachment` dosya yanıtı (kapalı `icerik_turu` kaydı RFC-0040 katman C ile
+tek model; sandbox CSP, 16 MiB, K-372 bütçesi). **Açık:** multipart yükleme
+(B) ve proje bildirimli SMTP ek türleri (C) bu işin sonraki dilimleri;
+`inline`/Range/ETag sonrası. V1 sözü değildir.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

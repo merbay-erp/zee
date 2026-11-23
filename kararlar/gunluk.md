@@ -5646,3 +5646,20 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   SIGSYS; aynı sahipte çağrı kaldırıldı (GB-152). Linux belirli IPv6
   adresinde V6ONLY'yi kendisi açar; çift yığın olumsuz testi joker `[::]` ile.
 
+## K-378 — İkili dosya yanıtı, multipart yükleme, SMTP ek türleri; RFC-0041 kabul (23 Kasım 2026)
+
+- Merkez kararı (23 Kasım 2026, “Sırayla aç”): ZeeMail (`urun-h`, ZM-F022)
+  yüzeyleri `dogfood-change` istisnasıyla sırayla açılıyor; bu iş adım 1.
+  RFC-0041 kabul edildi, alt RFC açılmadı; karar ADR-163. Üç katman ayrı
+  kaynak commit'lerinde; ortak kapalı içerik türü kaydı `dil::icerik_turu`
+  (RFC-0040 katman C metin sınıfı ileride satır ekler).
+- Katman A: tek contextual Sonuç kalıbı `… dosyasını <tür> türünde <ad>
+  adıyla ek olarak göndermeyi dene` (`türünde`, `adıyla`), yalnız
+  `attachment`, sandbox CSP + CORP + nosniff, 16 MiB, K-372 bütçesi, C013.
+  Reddedilen: genel başlık builder'ı; `inline`/ETag/Range (ölçümsüz açılmaz);
+  ayrı dosya yazım bütçesi (K-372 formülü yeterli); C022 hata kodu (ürün tek
+  `başarısızsa` dalıyla C013 ailesini yakalar).
+- Ürün politikası (`dogfood/urun-h/proje.dil`) web arayüzünün kullandığı
+  `ağ-sunucusu`, `web-oturumu`, `dosya-okuma` yetkinlikleriyle genişletildi;
+  önceki korpus vakaları etkilenmez.
+

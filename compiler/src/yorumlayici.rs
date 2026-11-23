@@ -56,7 +56,7 @@ use crate::intrinsic::{
     DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI,
     EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR, ISTEMCI_ADRESI,
     PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
-    TOTP_ANAHTARI, TOTP_DOGRULA, WEB_BIRINCIL_SUREC, WEB_OTURUMLARINI_LISTELE,
+    TOTP_ANAHTARI, TOTP_DOGRULA, WEB_BIRINCIL_SUREC, WEB_DOSYA_YANITI, WEB_OTURUMLARINI_LISTELE,
     WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
@@ -437,6 +437,12 @@ pub trait GirdiCikti {
     fn istek_islemini_geri_al(&mut self) {}
     /// Son isteğe yanıt gönderir.
     fn yanit_gonder(&mut self, yanit: &str);
+    /// K-378: son isteğe proje içindeki dosyayı kayıtlı `tur` (web dosya
+    /// sınıfı) ve doğrulanmış `ad` ile `attachment` yanıtı olarak gönderir;
+    /// başarıda gönderilecek bayt sayısı. Ret yanıt yazılmadan döner.
+    fn dosya_yaniti_gonder(&mut self, _yol: &str, _tur: &str, _ad: &str) -> Result<i64, String> {
+        Err("IO adaptörü dosya yanıtını desteklemiyor".into())
+    }
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
     /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.
     fn durum_yaniti_gonder(&mut self, _durum: u16, yanit: &str) {
@@ -673,6 +679,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         self.ic.borrow_mut().durum_yaniti_gonder(durum, yanit);
+    }
+    fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
+        self.ic.borrow_mut().dosya_yaniti_gonder(yol, tur, ad)
     }
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         self.ic.borrow_mut().yonlendir_gonder(adres)

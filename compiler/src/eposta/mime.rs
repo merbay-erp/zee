@@ -145,16 +145,9 @@ pub fn ek_adini_denetle(ad: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// RFC 8187 kodlaması web `Content-Disposition` ile ortaktır (K-378).
 fn yuzde_kodla(ad: &str) -> String {
-    let mut sonuc = String::new();
-    for bayt in ad.bytes() {
-        if bayt.is_ascii_alphanumeric() || matches!(bayt, b'.' | b'_' | b'-') {
-            sonuc.push(char::from(bayt));
-        } else {
-            sonuc.push_str(&format!("%{bayt:02X}"));
-        }
-    }
-    sonuc
+    crate::icerik_turu::rfc8187_kodla(ad)
 }
 
 fn bayt_govdesi(baytlar: &[u8]) -> String {

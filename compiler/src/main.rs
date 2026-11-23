@@ -1973,6 +1973,17 @@ enum WebYanitTaslagi {
     Govde(String),
     Durum(u16, String),
     Yonlendirme(String),
+    /// K-378: rotanın kayıtlı türle `attachment` olarak verdiği dosya.
+    Dosya(DosyaYaniti),
+}
+
+/// K-378: doğrulanmış, açık dosya tanıtıcısı ve çağrı anındaki uzunluğu.
+/// Başlık değerlerini yalnız çalışma zamanı kurar (`icerik_turu`).
+struct DosyaYaniti {
+    dosya: std::fs::File,
+    uzunluk: u64,
+    icerik_turu: String,
+    disposition: String,
 }
 
 /// Yanıt yazımının istek kapsamlı sonucu (W1). Socket kopması hata değil,
@@ -2329,8 +2340,10 @@ impl GercekIo {
             WebYanitTaslagi::Govde(_) => 200,
             WebYanitTaslagi::Durum(status, _) => *status,
             WebYanitTaslagi::Yonlendirme(_) => 303,
+            WebYanitTaslagi::Dosya(_) => 200,
         };
         let (baslik, govde) = match taslak {
+            WebYanitTaslagi::Dosya(yanit) => return Ok(self.dosya_taslagini_yaz(akis, head, yanit)),
             WebYanitTaslagi::Govde(govde) => {
                 let tur = if govde.trim_start().starts_with('<') {
                     "text/html"
@@ -2394,6 +2407,27 @@ impl GercekIo {
         match result {
             Ok(()) => Ok(YanitTeslimi::Yazildi),
             Err(hata) => Ok(self.istemci_kopmasini_gunlukle(status, &hata)),
+        }
+    }
+    /// K-378: dosya yanıtını yazar; çerezler 200 yanıtıyla aynı, güvenlik
+    /// başlıkları dosya sınıfına özgüdür.
+    fn dosya_taslagini_yaz(
+        &mut self,
+        mut akis: web_metrikleri::Akis,
+        head: bool,
+        yanit: DosyaYaniti,
+    ) -> YanitTeslimi {
+        let guvenlik = dosya_guvenlik_basliklari(self.guvenli_proxy_origin().is_some());
+        let cerezler = self.cerez_basliklarini_al();
+        let baslik = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nContent-Disposition: {}\r\n{}{}Connection: close\r\n\r\n",
+            yanit.icerik_turu, yanit.uzunluk, yanit.disposition, cerezler, guvenlik
+        );
+        let result = dosya_yanitini_akit(&mut akis, baslik.as_bytes(), yanit, head);
+        akis.metrik_yanit(200, result.is_ok());
+        match result {
+            Ok(()) => YanitTeslimi::Yazildi,
+            Err(hata) => self.istemci_kopmasini_gunlukle(200, &hata),
         }
     }
     /// W1/K-327: socket yazım hatası istek kapsamlıdır; operatöre tek satır.
@@ -2784,6 +2818,67 @@ fn son_tarihli_yaz(
             }
             Err(e) => return Err(e),
         }
+    }
+    Ok(())
+}
+
+/// K-378: dosya yanıtının güvenlik başlıkları. Kullanıcı kaynaklı dosya
+/// origin'de belge/betik olarak yorumlanamaz: CSP `default-src 'none';
+/// sandbox`, `Cross-Origin-Resource-Policy: same-origin`; `nosniff` ve
+/// `no-store` ortak başlıklardan gelir.
+fn dosya_guvenlik_basliklari(https: bool) -> String {
+    let ortak = guvenlik_basliklari(https);
+    let mut sonuc = String::with_capacity(ortak.len());
+    for satir in ortak.split_inclusive("\r\n") {
+        if satir.starts_with("Content-Security-Policy:") {
+            sonuc.push_str("Content-Security-Policy: default-src 'none'; sandbox\r\n");
+            sonuc.push_str("Cross-Origin-Resource-Policy: same-origin\r\n");
+        } else {
+            sonuc.push_str(satir);
+        }
+    }
+    sonuc
+}
+
+/// K-378: başlığı ve dosyayı tek mutlak K-372 bütçesiyle (`10 sn + bayt /
+/// 128 KiB/s`) 16 KiB parçalarla akıtır; gövde belleğe alınmaz. Dosya akış
+/// sırasında kısalır ya da son parçada uzunluğu değişmiş görünürse yazım
+/// kesilir: istemci eksik `Content-Length` görür, başarı sayılmaz.
+fn dosya_yanitini_akit(
+    akis: &mut impl WebTasima,
+    baslik: &[u8],
+    yanit: DosyaYaniti,
+    head: bool,
+) -> std::io::Result<()> {
+    use std::io::Read;
+
+    let govde = if head { 0 } else { yanit.uzunluk };
+    let toplam = (baslik.len() as u64).saturating_add(govde);
+    let son_tarih = std::time::Instant::now()
+        + yanit_yazim_butcesi(usize::try_from(toplam).unwrap_or(usize::MAX));
+    son_tarihli_yaz(akis, baslik, son_tarih, HTTP_ISTEK_OKUMA_SURESI)?;
+    let DosyaYaniti { mut dosya, .. } = yanit;
+    let mut kalan = govde;
+    let mut tampon = vec![0u8; 16 * 1024];
+    while kalan > 0 {
+        let istenen = usize::try_from(kalan.min(tampon.len() as u64)).unwrap_or(tampon.len());
+        let okunan = loop {
+            match dosya.read(&mut tampon[..istenen]) {
+                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
+                sonuc => break sonuc?,
+            }
+        };
+        if okunan == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                "dosya yanıt sırasında kısaldı",
+            ));
+        }
+        kalan -= okunan as u64;
+        if kalan == 0 && dosya.metadata()?.len() != govde {
+            return Err(std::io::Error::other("dosya yanıt sırasında değişti"));
+        }
+        son_tarihli_yaz(akis, &tampon[..okunan], son_tarih, HTTP_ISTEK_OKUMA_SURESI)?;
     }
     Ok(())
 }
@@ -3875,6 +3970,41 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         let _ = self.web_yanit_taslagini_yaz(WebYanitTaslagi::Govde(yanit.to_string()));
     }
+    fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::AgSunucusu)?;
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+        if self.web_istek_yedegi.is_none() {
+            return Err("dosya yanıtı yalnız web isteği içinde gönderilebilir".into());
+        }
+        if self.bekleyen_web_yaniti.is_some() {
+            return Err("bu isteğin yanıtı zaten belirlendi".into());
+        }
+        let kayit = dil::icerik_turu::web_dosya_turu(tur)
+            .ok_or_else(|| format!("\"{tur}\" dosya yanıtı için kayıtlı içerik türü değil"))?;
+        let disposition = dil::icerik_turu::ek_disposition(ad).map_err(str::to_string)?;
+        let gercek_yol = self.dosya_yolu(yol, false)?;
+        let dosya = dil::eposta::mime::dosyayi_guvenle_ac(&gercek_yol)
+            .map_err(|_| format!("\"{yol}\" normal dosya olarak güvenle açılamadı"))?;
+        let uzunluk = dosya
+            .metadata()
+            .map_err(|hata| format!("\"{yol}\" dosyası okunamadı: {hata}"))?
+            .len();
+        if uzunluk > dil::icerik_turu::WEB_DOSYA_YANITI_BAYTI {
+            return Err(format!(
+                "\"{yol}\" dosya yanıtı {} MiB sınırını aşıyor",
+                dil::icerik_turu::WEB_DOSYA_YANITI_BAYTI / (1024 * 1024)
+            ));
+        }
+        self.bekleyen_web_yaniti = Some(WebYanitTaslagi::Dosya(DosyaYaniti {
+            dosya,
+            uzunluk,
+            icerik_turu: dil::icerik_turu::baslik_degeri(kayit),
+            disposition,
+        }));
+        i64::try_from(uzunluk).map_err(|_| "dosya uzunluğu taştı".into())
+    }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.web_istek_yedegi.is_some() {
             if self.bekleyen_web_yaniti.is_none() {
@@ -4905,6 +5035,89 @@ mod web_profili_testleri {
         assert_eq!(base64_kodla(b"f"), "Zg==");
         assert_eq!(base64_kodla(b"fo"), "Zm8=");
         assert_eq!(base64_kodla(b"foo"), "Zm9v");
+    }
+
+    /// K-378: dosya yanıtı belleğe alınmadan parçalarla akar; başlık + gövde
+    /// bayt bayt yazılır, HEAD gövdesizdir ve akış sırasında kısalan dosya
+    /// eksik `Content-Length` ile hata olur (istemci başarı görmez).
+    #[test]
+    fn dosya_yaniti_parcali_akar_head_govdesiz_kisalan_dosya_kesilir() {
+        struct Yazici(Vec<u8>);
+        impl Read for Yazici {
+            fn read(&mut self, _: &mut [u8]) -> std::io::Result<usize> {
+                Ok(0)
+            }
+        }
+        impl Write for Yazici {
+            fn write(&mut self, baytlar: &[u8]) -> std::io::Result<usize> {
+                // Kısmi yazım: döngünün ilerleme yolunu da sınar.
+                let n = baytlar.len().min(7_001);
+                self.0.extend_from_slice(&baytlar[..n]);
+                Ok(n)
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        impl WebTasima for Yazici {
+            fn set_read_timeout(&self, _: Option<std::time::Duration>) -> std::io::Result<()> {
+                Ok(())
+            }
+            fn set_nonblocking(&self, _: bool) -> std::io::Result<()> {
+                Ok(())
+            }
+            fn yazmayi_kapat(&self) -> std::io::Result<()> {
+                Ok(())
+            }
+            fn yazilabilir_bekle(&self, _: std::time::Duration) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        let klasor = std::env::temp_dir().join(format!("zee-k378-akis-{}", std::process::id()));
+        std::fs::create_dir_all(&klasor).expect("klasör");
+        let yol = klasor.join("ikili.bin");
+        let icerik: Vec<u8> = (0..70_000u32).map(|i| (i % 251) as u8).collect();
+        std::fs::write(&yol, &icerik).expect("dosya");
+        let yanit = |uzunluk| DosyaYaniti {
+            dosya: std::fs::File::open(&yol).expect("aç"),
+            uzunluk,
+            icerik_turu: "application/zip".into(),
+            disposition: "attachment".into(),
+        };
+        let mut akis = Yazici(Vec::new());
+        dosya_yanitini_akit(
+            &mut akis,
+            b"BASLIK\r\n\r\n",
+            yanit(icerik.len() as u64),
+            false,
+        )
+        .expect("tam akış");
+        assert_eq!(&akis.0[..10], b"BASLIK\r\n\r\n");
+        assert_eq!(&akis.0[10..], &icerik[..]);
+
+        let mut akis = Yazici(Vec::new());
+        dosya_yanitini_akit(&mut akis, b"H", yanit(icerik.len() as u64), true).expect("HEAD");
+        assert_eq!(akis.0, b"H");
+
+        let mut akis = Yazici(Vec::new());
+        let hata = dosya_yanitini_akit(&mut akis, b"H", yanit(icerik.len() as u64 + 5), false)
+            .expect_err("kısalan dosya başarı sayılmaz");
+        assert_eq!(hata.kind(), std::io::ErrorKind::UnexpectedEof);
+        assert_eq!(akis.0.len(), 1 + icerik.len(), "gövde eksik kalır");
+
+        let mut akis = Yazici(Vec::new());
+        let hata = dosya_yanitini_akit(&mut akis, b"H", yanit(icerik.len() as u64 - 5), false)
+            .expect_err("son parçada uzunluk değişimi başarı sayılmaz");
+        assert!(hata.to_string().contains("değişti"), "{hata}");
+        assert!(akis.0.len() < 1 + icerik.len());
+
+        let basliklar = dosya_guvenlik_basliklari(true);
+        assert!(basliklar.contains("Content-Security-Policy: default-src 'none'; sandbox\r\n"));
+        assert!(basliklar.contains("Cross-Origin-Resource-Policy: same-origin\r\n"));
+        assert!(basliklar.contains("X-Content-Type-Options: nosniff\r\n"));
+        assert!(basliklar.contains("Cache-Control: no-store\r\n"));
+        assert_eq!(basliklar.matches("Content-Security-Policy:").count(), 1);
+        let _ = std::fs::remove_dir_all(&klasor);
     }
 
     #[test]

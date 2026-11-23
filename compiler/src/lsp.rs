@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 115] = [
+const KALIP_KELIMELERI: [&str; 117] = [
     "yaz",
     "olsun",
     "ise",
@@ -149,12 +149,14 @@ const KALIP_KELIMELERI: [&str; 115] = [
     "piksele",
     "küçültmeyi",
     "onaltılık",
+    "türünde",
+    "adıyla",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 64] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 66] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -217,6 +219,8 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 64] = [
     ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
     ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
+    ("türünde", "Dosya yanıtının kayıtlı içerik türü (application/pdf, image/png, text/csv, application/zip, OOXML, application/octet-stream …); kayıtta olmayan tür C013 Sonucu.\n\n`sonuç yol dosyasını \"application/pdf\" türünde \"fatura.pdf\" adıyla ek olarak göndermeyi dene olsun`"),
+    ("adıyla", "Dosya yanıtında tarayıcıya önerilen ad; çalışma zamanı `Content-Disposition: attachment` + RFC 6266 `filename*` kurar, CR/LF, tırnak, yol ve yön karakterli ad C013.\n\n`sonuç yol dosyasını \"text/csv\" türünde \"kişiler.csv\" adıyla ek olarak göndermeyi dene olsun`"),
     ("onaltılık", "Dosyanın ilk 1–64 baytını küçük harf onaltılık Metin Sonucu olarak okur (dosya-okuma); içerik imzası denetimi içindir, dosya daha kısaysa olan kadar.\n\n`imza yol dosyasının ilk 8 baytını onaltılık okumayı dene olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];

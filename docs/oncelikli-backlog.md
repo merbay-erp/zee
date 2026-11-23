@@ -2557,6 +2557,24 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-378 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türleri (RFC-0041)
+
+**Durum: SÜRÜYOR (katman A kapalı).** Kaynak: etkin dogfood ürünü `urun-h`
+web arayüzü (ZeeMail, ZM-F022); 23 Kasım 2026 merkez kararı “Sırayla aç”,
+adım 1. RFC-0041 kabul, karar ADR-163, freeze sınıfı `dogfood-change`.
+
+Katman A (kapalı): `<yol> dosyasını <tür> türünde <ad> adıyla ek olarak
+göndermeyi dene` → `TamSayı sonucu`; ortak kapalı `icerik_turu` kaydı (12
+satır; HTML/SVG/betik/makro yok), yalnız `attachment` + RFC 6266/8187 ad
+kodlaması, nosniff + no-store + sandbox CSP + CORP, 16 MiB, K-372 bütçesi,
+16 KiB akış, kısalan dosyada kesme, C013 Sonuç, IO izi ve hermetik adaptör.
+Kanıt: `compiler/tests/dosya_yaniti_testi.rs`, `icerik_turu::tests`,
+`web_profili_testleri::dosya_yaniti_parcali_akar_head_govdesiz_kisalan_dosya_kesilir`,
+`dogfood/urun-h/ek-akisi/`. spec/11 §4 “Dosya yanıtı”, GB-153.
+
+Açık (bu iş): katman B multipart yükleme, katman C SMTP ek türleri.
+Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi.
+
 ## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) işletim
@@ -2884,7 +2902,8 @@ ayrı takip.
 
 ## K-373 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türü RFC taslağı
 
-**Durum: AÇIK (taslak).** [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md):
+**Durum: KAPALI (taslak tamamlandı; RFC-0041 K-378 ile kabul ve
+uygulamada).** [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md):
 `urun-h` (ZM-F022) web arayüzünde ek indirme, JS'siz form yüklemesi ve
 PDF/görsel dışı SMTP eki istiyor. Üç eksik e63a439 kaynağıyla doğrulandı:
 yanıt taslağı yalnız `Metin` gövdeli üç biçim, tür ilk karakterden,

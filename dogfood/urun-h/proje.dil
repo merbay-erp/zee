@@ -1,12 +1,14 @@
 # Ürün H — zee ile yazılmış e-posta sunucusu (K-355). Gerçek ürün özel
 # depodadır; bu klasör RFC-0039 ağ sunucusu yetkinliğinin depo içi kanıt
 # aynasıdır. Bugünkü ürün kodu saf SMTP durum makinesi ve stdio deneme
-# aracıdır; reproducer'lar ağ ve metin yüzeyi eksiklerini taşır.
+# aracıdır; reproducer'lar ağ ve metin yüzeyi eksiklerini taşır. K-378: ürünün
+# web arayüzü (ZeeMail) oturumlu web sunucusu ve dosya okuma kullanır; ek akışı
+# kesiti bu politikayla derlenir.
 
 proje "urun-h" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "korpus/f001-ascii-katlama-elle.dil" olsun
-yetkinlikler boş liste olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma" listesi olsun
 ağ_hedefleri boş liste olsun
 yerel_bağımlılıklar boş liste olsun

@@ -12,6 +12,20 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Rotadan dosya indirme (K-378):** Bir rota proje içindeki bir dosyayı
+  tarayıcıya indirme olarak gönderebilir:
+  `sonuç yol dosyasını "application/pdf" türünde "fatura.pdf" adıyla ek olarak göndermeyi dene olsun`.
+  Tür kapalı bir listeden seçilir (PDF, PNG, JPEG, WebP, düz metin, CSV,
+  takvim, ZIP, Word/Excel/PowerPoint, ikili); HTML, SVG ve betik türleri
+  yoktur. Dosya adını çalışma zamanı güvenle kodlar (Türkçe adlar korunur);
+  satır sonu, tırnak ya da yön karakteri taşıyan ad reddedilir. Yanıt
+  tarayıcıda sayfa olarak açılamaz (yalnız indirme), önbelleğe alınmaz, en
+  çok 16 MiB'dır ve belleğe alınmadan akıtılır. Bulunamayan dosya, izinsiz
+  yol ya da geçersiz tür/ad `C013` başarısız sonucudur; rota kendi hata
+  sayfasını verebilir. `dosya-okuma` yetkinliği gerekir.
+
+  **Göç:** Gerekmez; kalıbı kullanmayan rotaların yanıtı değişmez.
+
 - **systemd'den adla devralınan dinleyiciler ve hazır bildirimi (K-376):**
   Bir proje, systemd'nin kendisi adına açtığı soketleri `proje.dil` içinde
   adla bildirebilir:

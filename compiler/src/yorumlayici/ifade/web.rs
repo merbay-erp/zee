@@ -56,3 +56,31 @@ pub(in crate::yorumlayici) fn web_oturumu_tanisi(baslik: &str, hata: &str, satir
         None => Tani::yeni("C022", format!("{baslik}: {hata}."), satir, 1, 1),
     }
 }
+
+/// K-378: rota dosya yanıtı. Beklenen dosya/tür/ad hatası C013 `Sonuç`'tur;
+/// başarıda yanıt taslağı kurulur ve gönderilecek bayt sayısı döner.
+pub(super) fn dosya_yanitini_degerlendir(
+    degerler: &[Deger],
+    io: &mut dyn GirdiCikti,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    let [Deger::Metin(yol), Deger::Metin(tur), Deger::Metin(ad)] = degerler else {
+        return Err(ic_hata(satir));
+    };
+    son_tarihi_denetle(io, satir)?;
+    Ok(match io.dosya_yaniti_gonder(yol, tur, ad) {
+        Ok(bayt) => Deger::Sonuc {
+            basarili: true,
+            icerik: Box::new(Deger::TamSayi(bayt)),
+        },
+        Err(mesaj) => Deger::Sonuc {
+            basarili: false,
+            icerik: Box::new(Deger::Hata(Box::new(HataDegeri {
+                kod: "C013".into(),
+                mesaj,
+                neden: None,
+                veri: Vec::new(),
+            }))),
+        },
+    })
+}

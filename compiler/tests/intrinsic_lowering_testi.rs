@@ -26,7 +26,11 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 27);
+    assert_eq!(kimlikler.len(), 28);
+    let dosya_yaniti = intrinsic::tanim(intrinsic::WEB_DOSYA_YANITI).expect("K-378 kaydı");
+    assert_eq!(dosya_yaniti.yetkinlik, Yetkinlik::DosyaOkuma);
+    assert_eq!(dosya_yaniti.etki, IntrinsicEtkisi::WebAdaptoru);
+    assert_eq!(dosya_yaniti.arguman_turleri.len(), 3);
     let imza = intrinsic::tanim(intrinsic::DOSYA_ILK_BAYTLAR).expect("K-333 imza kaydı");
     assert_eq!(imza.yetkinlik, Yetkinlik::DosyaOkuma);
     assert_eq!(imza.etki, IntrinsicEtkisi::DisOkuma);

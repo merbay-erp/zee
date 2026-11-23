@@ -1,9 +1,11 @@
 # RFC-0041 — Web adaptöründe ikili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı
 
-- **Durum:** taslak — 23 Kasım 2026. Core freeze (K-160A/ADR-059) altında
-  uygulanmaz; her katman ayrı alt RFC ve dogfood kanıt kapısıyla açılır.
+- **Durum:** kabul — 23 Kasım 2026, K-378 (`dogfood-change`, `urun-h`
+  ZM-F022). Katman A **uygulandı** (spec/11 §4 “Dosya yanıtı”); katman B ve C
+  aynı işin sonraki dilimleridir. Karar [ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md);
+  açık soruların kapanışı aşağıda “K-378 kararları”nda.
 - **Tarih:** 23 Kasım 2026
-- **İş:** K-373
+- **İş:** K-373 (taslak), K-378 (uygulama)
 - **İlgili belgeler:** [spec/11](../spec/11-uygulama-eylemleri-ve-web-adaptoru.md),
   [spec/12](../spec/12-web-guvenlik-profili.md),
   [spec/21](../spec/21-deterministik-io-izi.md),
@@ -546,7 +548,38 @@ Taslağın kendisi golden, regression, dogfood korpusu ve dil yüzeyi
 fixture'ını değiştirmez. Her katman açıldığında `urun-h` reproducer'ları
 ret/çözüm çiftine dönüşür.
 
-## Açık sorular
+## K-378 kararları (açık soruların kapanışı)
+
+23 Kasım 2026 merkez kararıyla (ZeeMail yüzeyleri sırayla, adım 1) RFC kabul
+edildi; alt RFC açılmadı, karar ADR-163'te. Yanıtlar:
+
+- **Yazma/okuma bütçesi:** dosya yanıtı ayrı formül almaz; K-372 mutlak
+  bütçesi `10 sn + bayt / 128 KiB/s` başlık + gövdeye tek son tarih olarak
+  uygulanır (16 MiB ≈ 138 sn). Okuma tarafında spec/11 §5'in 10 sn mutlak
+  istek bütçesi multipart yüklemede de değişmez; orantılı okuma bütçesi
+  ayrı karar ve K-işi adayıdır (yavaş bağlantıda büyük yükleme 408 alır).
+- **Dosya yanıtı tavanı:** 16 MiB sabit (`yukleme_bayti`); proje bildirimiyle
+  yükseltme açılmadı.
+- **`Range`/206:** ilk sürümde yok; `inline`, `ETag` ve koşullu GET de yok.
+  Yalnız `attachment` açıldı.
+- **Politikasız rotaya multipart:** multipart yolu rota politikası değil
+  proje bildirimiyle (`çok_parçalı_yükleme doğru olsun`) açılır; bildirimsiz
+  projede multipart istek bugünkü gibi davranır (64 KiB + form çözümü, çoğu
+  zaman 403). 415 davranış değişikliği olduğundan açılmadı (katman B dilimi).
+- **`_csrf` sırası:** ZORUNLU; dosya parçasından önce gelmeyen ya da
+  oturumla eşleşmeyen belirteçte dosya baytı diske yazılmadan 403.
+- **SMTP profil etiketi:** `zee-smtp-mime-1` değişmez; tel biçimi aynıdır,
+  genişletme proje bildirimidir (`e_posta_ek_türleri`).
+- **Çağrı başına dar tür listesi:** dil yüzeyi açılmadı; ürün göndermeden
+  önce kendi denetimini yapar, proje tavanı bildirimde tek yerde kalır.
+- **Antivirüs:** seçenek (a) — ürün/operatör; dil çekirdeğine tarayıcı
+  protokolü girmez.
+- **CORP/sandbox CSP ve PDF önizleme:** yalnız `attachment` açıldığından
+  önizleme etkisi bu sürümde yok; `inline` açılırken ölçülür.
+- **Ortak kayıt ve DAV türleri:** `dil::icerik_turu` tek tablodur; DAV
+  türleri RFC-0040 işinde satır olarak eklenir.
+
+## Açık sorular (taslak dönemi, tarihsel)
 
 - Dosya yanıtı ve multipart yükleme için yazma/okuma bütçesi: bayt orantılı
   formül mü, proje bildirimli sabit üst sınır mı? 10 sn spec/11 §5 sözü bu

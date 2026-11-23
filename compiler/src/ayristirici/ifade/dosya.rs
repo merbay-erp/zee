@@ -87,3 +87,32 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
 
     Ok(None)
 }
+
+/// K-378: `YOL dosyasını TÜR türünde AD adıyla ek olarak göndermeyi dene`.
+pub(super) fn dosya_yaniti_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
+    let kelime = |i: usize| -> Option<&str> {
+        match &tokenlar[i].tur {
+            TokenTur::Kelime(k) => Some(k.as_str()),
+            _ => None,
+        }
+    };
+    if tokenlar.len() == 10
+        && kelime(1) == Some("dosyasını")
+        && kelime(3) == Some("türünde")
+        && kelime(5) == Some("adıyla")
+        && kelime(6) == Some("ek")
+        && kelime(7) == Some("olarak")
+        && kelime(8) == Some("göndermeyi")
+        && kelime(9) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: WEB_DOSYA_YANITI.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[2].clone())?,
+                tekil_ifade(tokenlar[4].clone())?,
+            ],
+        }));
+    }
+    Ok(None)
+}

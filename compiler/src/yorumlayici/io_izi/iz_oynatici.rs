@@ -162,6 +162,14 @@ impl GirdiCikti for IzYenidenOynatici {
         self.bos_sonuc("durum_yaniti_gonder", sonuc);
     }
 
+    fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
+        let sonuc = self.siradaki(
+            "dosya_yaniti_gonder",
+            vec![yol.into(), tur.into(), ad.into()],
+        );
+        self.tamsayi_sonuc("dosya_yaniti_gonder", sonuc)
+    }
+
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         let sonuc = self.siradaki("yonlendir_gonder", vec![adres.into()]);
         self.birim_sonuc("yonlendir_gonder", sonuc)

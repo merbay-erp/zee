@@ -59,6 +59,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosyalari_listele"
             | "dosya_sha256"
             | "dosya_ilk_baytlari"
+            | "dosya_yaniti_gonder"
             | "postgresql_oku"
             | "postgresql_degistir"
             | "simdi"
@@ -191,6 +192,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         }
         "dosya_atomik_tasi" => tamsayi_sonuc_semasi(olay, 2),
         "dosya_sil" => tamsayi_sonuc_semasi(olay, 1),
+        "dosya_yaniti_gonder" => tamsayi_sonuc_semasi(olay, 3),
         "dosyalari_listele" => metin_listesi_sonuc_semasi(olay, 1),
         "dosya_sha256" => metin_sonuc_semasi(olay, 1),
         "dosya_ilk_baytlari" => {
@@ -572,6 +574,16 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
             vec![durum.to_string(), yanit.into()],
             Vec::new(),
         );
+    }
+
+    fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
+        let sonuc = self.ic.dosya_yaniti_gonder(yol, tur, ad);
+        self.kaydet(
+            "dosya_yaniti_gonder",
+            vec![yol.into(), tur.into(), ad.into()],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
+        sonuc
     }
 
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
