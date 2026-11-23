@@ -31,6 +31,40 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Zee ile TCP sunucusu: adlı dinleyiciden bağlantı (K-381):** systemd'den
+  adla devralınan dinleyicilerde (K-376) artık Zee kodu bağlantı kabul eder:
+  `"smtp_v4" dinleyicisinde bağlantı geldiğinde` bloğu her bağlantı için
+  ayrı çalışır, `komut bağlantıdan satır okumayı dene olsun` ile satır okur,
+  `bağlantıya "250 tamam" satırını yaz` ile yanıt verir, `bağlantıyı kapat`
+  ile bitirir. Bağlantılar aynı anda ilerler; yavaş ya da susan bir istemci
+  diğerlerini bekletmez. Satır yalnız CRLF ile biter: çıplak CR/LF (SMTP
+  smuggling), sınırı aşan satır ve geçersiz karakter kırpılıp kabul
+  edilmez, Hata verisinde `tür` ile ayrılır (`satır_sonu`, `satır_uzun`,
+  `kodlama`, `zaman_aşımı`, `kapandı`, `kapanıyor`, `yazılamadı`; yeni tanı
+  C030). Okuma süresi mutlaktır (damla damla bayt süreyi uzatmaz), giden
+  tampon bağlantı başına 64 KiB'tır. `proje.dil` ile eşzamanlı ve uzak adres
+  başına bağlantı sınırı, satır sınırı, boşta süresi, ömür ve sınır
+  dolunca yazılacak ret satırı ayarlanır (yeni tanı P020). SIGTERM'de
+  okumalar `kapanıyor` döner ve program `421` yazabilir. `ağ-dinleyici`
+  yetkinliği gerekir; yalnız Unix/systemd.
+
+  **TLS (465/993 ve STARTTLS):** `proje.dil` içinde
+  `tls_sertifika_değişkeni` ve `tls_anahtar_değişkeni` (PEM zincir ve
+  anahtarı taşıyan systemd credential ya da ortam değişkeninin adı; yeni
+  tanı P021) yazılırsa `tls_dinleyicileri` listesindeki dinleyiciler
+  bağlantıyı TLS ile karşılar, diğerlerinde
+  `sonuç bağlantıda TLS başlatmayı dene olsun` STARTTLS yapar (başarıda
+  anlaşılan sürüm/takım metni). STARTTLS komutuyla aynı pakette gelen
+  şifresiz veri varsa yükseltme yapılmaz ve bağlantı kapanır (komut
+  enjeksiyonu koruması). Yalnız TLS 1.2/1.3 ve ileri gizlilikli AEAD şifre
+  takımları; anahtar hiçbir iletide görünmez, okunamazsa program
+  başlamaz (çıkış 2).
+
+  **Göç:** Gerekmez; bağlantı bloğu olmayan programlar ve web sunucusu
+  değişmez. Bağlantı bloğu web sunucusuyla aynı programda çalışmaz; iki
+  ayrı hizmet kullanın. Kurulum ve birim şablonu:
+  `docs/adli-dinleyici-devri.md`.
+
 - **Rotadan dosya indirme (K-378):** Bir rota proje içindeki bir dosyayı
   tarayıcıya indirme olarak gönderebilir:
   `sonuç yol dosyasını "application/pdf" türünde "fatura.pdf" adıyla ek olarak göndermeyi dene olsun`.
