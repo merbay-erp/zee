@@ -21,6 +21,8 @@ pub mod api;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod ag_istemcisi;
 #[doc(hidden)]
+pub mod ag_satiri;
+#[doc(hidden)]
 pub mod agac;
 #[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]

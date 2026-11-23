@@ -182,6 +182,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
 | C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş kovası aşımı C028 değil 429/503 yanıtıdır (spec/12 §5, K-365); "gizli değeri okunamadı" nedeninde systemd credential dosyasını/dizinini spec/23 §K-339'a göre düzelt |
 | C029 | E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir | `e_posta_bağlantı_değişkeni`, exact `ağ_hedefleri`, alıcı ve ekli iletide readonly dosya/başlık sınırlarını denetle; başarısız `dene` sonucu teslim edilmedi garantisi değildir, otomatik tekrar yapma |
+| C030 | Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında | Okuma/yazma ret Sonuç'unda Hata verisinin `tür` değerine bak: `kapandı`, `zaman_aşımı`, `satır_uzun`, `satır_sonu` (çıplak CR/LF), `kodlama`, `kapanıyor` (SIGTERM), `yazılamadı`, `tls` (STARTTLS reddi: aynı pakette gelen düz metin — bağlantı kapanır —, zaten TLS, kimlik yok, el sıkışma başarısız); protokolün uygun yanıtını yaz. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantıyı kapatır. Kayıtsız dinleyici, ikinci blok, web sunucusuyla birlikte kullanım ve blok dışı kullanım yürütmeyi durdurur (K-381) |
 
 ## D — Doğrulama
 
@@ -212,6 +213,8 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P017 | Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz | Exact sürüm, HTTPS origin, pozitif root sürümü ve ağ dışı `sha256:` root özetini birlikte bildir |
 | P018 | `dinleyiciler` bildirimi `<ad> <adres>:<kapı>` değil; ad/adres yinelenmiş, kapı 0, IPv6 kapsamlı ya da IPv4 eşlemeli, 64'ten fazla öğe | Her dinleyiciyi `"smtp_v4 0.0.0.0:25"` biçiminde, systemd `FileDescriptorName=` ile aynı tekil adla yaz; çift yığında aileye ayrı ad ver |
 | P019 | `e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür | Listeyi kanonik adlarla yaz (pdf, png, jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip); liste kümeyi tam belirler, varsayılanları da yaz; makro taşıyan ve yürütülebilir türler açılamaz |
+| P020 | Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok | Aralıkları tanıdaki gibi yaz; uzak adres sınırı genel sınırı aşamaz; ret satırını en çok 512 baytlık yazdırılabilir ASCII yaz |
+| P021 | TLS bildirimi bozuk: `tls_sertifika_değişkeni` / `tls_anahtar_değişkeni` eksik, aynı ya da A-Z/0-9/_ dışı ad; `tls_dinleyicileri` kimliksiz, `dinleyiciler`de olmayan ya da yinelenen ad | Zincir ve anahtar için iki ayrı credential/ortam adı yaz (değerin kendisini değil); implicit TLS dinleyicilerini `dinleyiciler`deki adlarla yaz |
 
 ## Ç — İç akış
 
@@ -244,6 +247,12 @@ yoksa P015). Bildirime uymayan, imzası/UTF-8'i türüyle uyuşmayan ya da sın�
 aşan ek çalışma zamanında yine C029'dur, ama ağa çıkmadan verilen bu yerel
 ret `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` sabit metniyle
 SMTP/ağ hatasının maskesinden ayrılır (K-236 maskesi diğer hatalar için aynen).
+
+K-381: bağlantı ayarı hataları P020, TLS bildirimi hataları P021'dir (RFC-0039 A2a/A2b); TLS kimliği okunamaz ya da çözülemezse süreç kaynak yürütülmeden `bağlantı TLS'i:` iletisiyle çıkış 2 verir, ileti anahtar içeriği taşımaz. Çalışma zamanı
+bağlantı hataları C030'dur: beklenen okuma/yazma reddi yakalanabilir `Sonuç`,
+`tür` Hata verisiyle; görev hatası yalnız o bağlantıyı kapatır ve nedeni
+operatör günlüğüne `Zee bağlantı #N … kapandı:` satırıyla düşer.
+[Karar](../adr/165-ag-dinleyici-baglanti-yuzeyi.md).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

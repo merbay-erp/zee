@@ -41,6 +41,8 @@ pub struct ToplayanIo {
     pub eylem_baslat_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     pub eylem_tamamla_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     pub dosya_yaz_sonuclari: VecDeque<Result<(), String>>,
+    /// K-381: betiklenmiş bağlantılar ve sunucunun yazdıkları.
+    pub baglanti: super::toplayan_baglanti::ToplayanBaglanti,
     /// K-210: sahte SMTP giden kutusu — (alıcı, konu, gövde).
     pub eposta_kutusu: Vec<(String, String, String)>,
     an_son_degeri: i64,
@@ -115,6 +117,7 @@ impl ToplayanIo {
             eylem_tamamla_sonuclari: VecDeque::new(),
             dosya_yaz_sonuclari: VecDeque::new(),
             eposta_kutusu: Vec::new(),
+            baglanti: Default::default(),
             an_son_degeri: 0,
             cikti: Vec::new(),
             eylem_yedekleri: Vec::new(),
@@ -712,6 +715,27 @@ impl GirdiCikti for ToplayanIo {
             ad,
             if yansin { "yandı" } else { "söndü" }
         ));
+    }
+    fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
+        self.baglanti.kaydet(ad)
+    }
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        bekleyenler: &[u64],
+        uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<BaglantiOlayi>, String> {
+        let (olaylar, an, ekle) = self.baglanti.bekle(bekleyenler, uyanma_an_ms);
+        if let Some(an) = an {
+            self.an_son_degeri = self.an_son_degeri.max(an);
+        }
+        self.an_son_degeri = self.an_son_degeri.saturating_add(ekle);
+        Ok(olaylar)
+    }
+    fn baglanti_islemi(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
+        self.baglanti.islem(kimlik, islem)
+    }
+    fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
+        self.baglanti.gunluk.push((kimlik, neden.to_string()));
     }
     fn bekle_ms(&mut self, milisaniye: i64) {
         self.an_son_degeri = self.an_son_degeri.saturating_add(milisaniye.max(0));

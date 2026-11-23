@@ -15,7 +15,7 @@ dilimleridir.
 
 | Vaka | Ürün kaynağı | Bugünkü sonuç |
 |---|---|---|
-| `korpus/f009-dinleyici-yok.dil` | ürün reproducer'ı (dinleyici) | S036 |
+| `korpus/f009-dinleyici-yok.dil` | ürün reproducer'ı (dinleyici) | S036; K-381 sonrası temiz derlenir |
 | `korpus/f004-cr-kacisi-yok.dil` | ürün reproducer'ı (çıplak CR) | S040 |
 | `korpus/f001-yerel-ayarli-buyuk-harf.dil` | ürün reproducer'ı (harf katlama) | `MAİL FROM:<A@B.TEST>` |
 | `korpus/f001-ascii-katlama-elle.dil` | ürünün ASCII metin yardımcısı | `MAIL FROM:<A@B.TEST>` |

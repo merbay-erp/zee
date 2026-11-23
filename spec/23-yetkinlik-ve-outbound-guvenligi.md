@@ -13,6 +13,7 @@ Kararlı proje yazımları şunlardır:
 | `ağ` | Bildirilmiş origin'e outbound HTTP(S) |
 | `yerel-ağ` | Private/loopback hedef ve explicit düz HTTP |
 | `ağ-sunucusu` | Native loopback web sunucusu/adaptörü |
+| `ağ-dinleyici` | Devralınan adlı dinleyicilerden bağlantı kabulü ve satır okuma/yazma (K-381, spec/12 §9) |
 | `donanım` | Sensör ve ışık adaptörü |
 | `web-oturumu` | Oturum, rol, çerez ve CSRF adaptörü |
 | `kriptografi` | Parola/kriptografi adaptörü; K-210 eki 3 ile gizli değer şifreleme (`gizli_anahtar_değişkeni` ortam değişkeni, `zee1:` XChaCha20-Poly1305) |

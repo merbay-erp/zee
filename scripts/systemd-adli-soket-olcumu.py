@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """K-376: adlı çoklu dinleyici devrini ve sd_notify'ı gerçek systemd ile ölçer.
 
-Birim şablonları docs/adli-dinleyici-devri.md içindeki iki ```ini bloğundan
-okunur (belgelenen şablon = ölçülen şablon). Dört adlı soket (iki IPv4, iki
+Birim şablonları docs/adli-dinleyici-devri.md içindeki üç ```ini bloğundan
+(soket, web hizmeti, K-381 bağlantı hizmeti) okunur (belgelenen şablon =
+ölçülen şablon). K-381 bağlantı koşusu dogfood/urun-h/baglanti-yankisi
+programını iki adlı soketle çalıştırır ve gerçek SMTP benzeri oturum ile
+SIGTERM boşaltmasını ölçer. Dört adlı soket (iki IPv4, iki
 V6ONLY IPv6) kurulur; hizmet Type=notify, ayrıcalıksız kullanıcı, boş
 capability kümesi ve MemoryDenyWriteExecute altında başlar. Ardından iki
 olumsuz koşu: bildirimde fazladan ad ve V6ONLY kapalı IPv6 soketi.
@@ -47,8 +50,8 @@ def sudo(*komut, kontrol=True):
 def sablonlar():
     metin = (KOK / "docs/adli-dinleyici-devri.md").read_text(encoding="utf-8")
     bloklar = re.findall(r"```ini\n(.*?)```", metin, flags=re.S)
-    if len(bloklar) != 2:
-        raise SystemExit("belgede tam iki ini bloğu (socket, service) bekleniyor")
+    if len(bloklar) != 3:
+        raise SystemExit("belgede tam üç ini bloğu (socket, web service, bağlantı service) bekleniyor")
     return bloklar
 
 
@@ -163,13 +166,14 @@ def proje_yaz(kok, dinleyiciler):
 class Kurulum:
     """Bir koşunun birimlerini yazar, başlatır ve her durumda temizler."""
 
-    def __init__(self, dil, proje, kapi, soketler, ipv6_kipi="ipv6-only"):
+    def __init__(self, dil, proje, kapi, soketler, ipv6_kipi="ipv6-only", baglanti=False):
         self.soketler = soketler  # [(ad, ListenStream)]
         # Koşu başına benzersiz birim adı: durdurulmakta olan önceki birimle
         # ya da daemon-reload sırasında eski tanımla karışmaz.
         SIRA[0] += 1
         self.onek = onek = f"{ONEK}-{os.getpid()}-{SIRA[0]}"
-        soket_sablonu, hizmet_sablonu = sablonlar()
+        soket_sablonu, web_sablonu, baglanti_sablonu = sablonlar()
+        hizmet_sablonu = baglanti_sablonu if baglanti else web_sablonu
         birim_adlari = " ".join(f"{onek}-{ad}.socket" for ad, _ in soketler)
         ortak = {"@KAPI@": str(kapi), "@DIL@": str(dil), "@PROJE_KOKU@": str(proje),
                  "@KULLANICI@": getpass.getuser(), "@ORIGIN@": ORIGIN,
@@ -290,6 +294,181 @@ def olumlu(dil, kok, rapor):
     return gecti
 
 
+def smtp_oturumu(aile, adres, kapi):
+    """Karşılama, NOOP, çıplak LF reddi ve QUIT; dönen satırlar."""
+    satirlar = []
+    with socket.socket(aile, socket.SOCK_STREAM) as s:
+        s.settimeout(20)
+        s.connect((adres, kapi))
+        dosya = s.makefile("rb")
+        oku = lambda: dosya.readline().decode("utf-8", "replace").rstrip("\r\n")
+        satirlar.append(oku())
+        s.sendall(b"NOOP\r\n")
+        satirlar.append(oku())
+        s.sendall(b"MAIL FROM:<a@b>\n")
+        satirlar.append(oku())
+        s.sendall(b"QUIT\r\n")
+        satirlar.append(oku())
+        satirlar.append("EOF" if dosya.read(1) == b"" else "acik")
+    return satirlar
+
+
+def tls_kimligi(kok):
+    """K-381 A2b: bu koşuya özel test CA + localhost yaprak (openssl)."""
+    d = Path(tempfile.mkdtemp(prefix="zee-k381-tls-", dir=kok))
+    ec = ["-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes"]
+    def ossl(*a):
+        subprocess.run(["openssl", *a], cwd=d, check=True, capture_output=True)
+    ossl("req", "-x509", *ec, "-keyout", "ca.key", "-out", "ca.pem", "-days", "2",
+         "-subj", "/CN=Zee K381 systemd CA", "-addext", "basicConstraints=critical,CA:TRUE",
+         "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+         "-addext", "subjectKeyIdentifier=hash")
+    ossl("req", *ec, "-keyout", "anahtar.pem", "-out", "y.csr", "-subj", "/CN=localhost")
+    # Python 3.13 VERIFY_X509_STRICT: CA'da kritik keyUsage, yaprakta EKU/SAN/AKI.
+    (d / "ek.cnf").write_text(
+        "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\n"
+        "extendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n"
+        "subjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n")
+    ossl("x509", "-req", "-in", "y.csr", "-CA", "ca.pem", "-CAkey", "ca.key", "-CAcreateserial",
+         "-out", "yaprak.pem", "-days", "2", "-extfile", "ek.cnf")
+    (d / "zincir.pem").write_bytes((d / "yaprak.pem").read_bytes() + (d / "ca.pem").read_bytes())
+    return d
+
+
+def credential_destegi():
+    """Bu systemd credential dizinini hizmete bağlayabiliyor mu?"""
+    yol = Path(tempfile.mkdtemp(prefix="zee-k381-cred-")) / "x"
+    yol.write_text("x")
+    r = sudo("systemd-run", "--wait", "--pipe", "-p", f"LoadCredential=X:{yol}",
+             "sh", "-c", 'test -r "$CREDENTIALS_DIRECTORY/X"', kontrol=False)
+    return r.returncode == 0
+
+
+def tls_istemcisi(ca):
+    import ssl
+    baglam = ssl.create_default_context(cafile=str(ca))
+    baglam.minimum_version = ssl.TLSVersion.TLSv1_2
+    return baglam
+
+
+def tls_oturumu(baglam, smtp, smtps):
+    """Implicit TLS karşılama + STARTTLS + STARTTLS enjeksiyonu."""
+    sonuc = {}
+    with socket.create_connection(("127.0.0.1", smtps), timeout=20) as ham:
+        with baglam.wrap_socket(ham, server_hostname="localhost") as s:
+            f = s.makefile("rb")
+            sonuc["implicit"] = [f.readline().decode().rstrip("\r\n"), s.version()]
+            s.sendall(b"QUIT\r\n")
+            sonuc["implicit"].append(f.readline().decode().rstrip("\r\n"))
+    with socket.create_connection(("127.0.0.1", smtp), timeout=20) as ham:
+        f = ham.makefile("rb")
+        f.readline()
+        ham.sendall(b"STARTTLS\r\n")
+        hazir = f.readline().decode().rstrip("\r\n")
+        with baglam.wrap_socket(ham, server_hostname="localhost") as s:
+            g = s.makefile("rb")
+            s.sendall(b"NOOP\r\n")
+            sonuc["starttls"] = [hazir, s.version(), g.readline().decode().rstrip("\r\n")]
+    with socket.create_connection(("127.0.0.1", smtp), timeout=20) as ham:
+        f = ham.makefile("rb")
+        f.readline()
+        ham.sendall(b"STARTTLS\r\nNOOP\r\n")
+        sonuc["enjeksiyon"] = [f.readline().decode().rstrip("\r\n"), f.read().decode()]
+    return sonuc
+
+
+def baglanti_kosusu(dil, kok, rapor):
+    """K-381: dogfood bağlantı programı gerçek systemd altında (A2a + A2b TLS)."""
+    smtp = bos_kapi()
+    smtps = bos_kapi()
+    soketler = [("smtp_v4", f"127.0.0.1:{smtp}"), ("smtp_v6", f"[::1]:{smtp}"),
+                ("smtps_v4", f"127.0.0.1:{smtps}"), ("smtps_v6", f"[::1]:{smtps}")]
+    kimlik = tls_kimligi(kok)
+    sonuc = {"soketler": soketler}
+    proje = Path(tempfile.mkdtemp(prefix="zee-k381-", dir=kok))
+    proje.chmod(0o755)
+    kaynak = KOK / "dogfood/urun-h/baglanti-yankisi"
+    pd = (kaynak / "proje.dil").read_text(encoding="utf-8")
+    liste = ", ".join(f'"{ad} {adres}"' for ad, adres in soketler)
+    pd = re.sub(r"^dinleyiciler .*$", f"dinleyiciler {liste} listesi olsun", pd, flags=re.M)
+    (proje / "proje.dil").write_text(pd, encoding="utf-8")
+    shutil.copy(kaynak / "ana.dil", proje / "ana.dil")
+    kurulum = Kurulum(dil, proje, 0, soketler, baglanti=True)
+    hizmet = BIRIM_KOKU / f"{kurulum.onek}.service"
+    birim = kurulum.birimler[hizmet]
+    zincir, anahtar = kimlik / "zincir.pem", kimlik / "anahtar.pem"
+    if credential_destegi():
+        sonuc["kimlik_kaynagi"] = "LoadCredential"
+        birim = birim.replace(
+            "[Service]\n",
+            "[Service]\n"
+            f"LoadCredential=POSTA_TLS_ZINCIRI:{zincir}\n"
+            f"LoadCredential=POSTA_TLS_ANAHTARI:{anahtar}\n", 1)
+    else:
+        # Konteyner systemd'si credential bağlaması kuramıyor: aynı PID'le
+        # (exec) ortam değişkeni kaynağına düşülür (K-339 ikinci kaynak).
+        sonuc["kimlik_kaynagi"] = "ortam (credential desteklenmiyor)"
+        satir = next(x for x in birim.splitlines() if x.startswith("ExecStart="))
+        komut = satir.split("=", 1)[1]
+        dolar = "$" + "$"
+        sarmal = ("ExecStart=/bin/sh -c 'POSTA_TLS_ZINCIRI=\"" + dolar + f"(cat {zincir})\" "
+                  "POSTA_TLS_ANAHTARI=\"" + dolar + f"(cat {anahtar})\" exec {komut}'")
+        birim = birim.replace(satir, sarmal, 1)
+    kurulum.birimler[hizmet] = birim
+    with kurulum as k:
+        r = k.baslat()
+        sonuc["start_rc"] = r.returncode
+        durum = k.goster("ActiveState", "MainPID", "Type")
+        sonuc["durum"] = durum
+        pid = durum.get("MainPID", "0")
+        status = sudo("cat", f"/proc/{pid}/status", kontrol=False).stdout
+        alan = {x.split(":", 1)[0]: x.split(":", 1)[1].split() for x in status.splitlines() if ":" in x}
+        sonuc["uid"] = alan.get("Uid", ["?"])[0]
+        sonuc["cap_eff"] = (alan.get("CapEff") or ["?"])[0]
+        try:
+            sonuc["v4"] = smtp_oturumu(socket.AF_INET, "127.0.0.1", smtp)
+            sonuc["v6"] = smtp_oturumu(socket.AF_INET6, "::1", smtp)
+            sonuc["tls"] = tls_oturumu(tls_istemcisi(kimlik / "ca.pem"), smtp, smtps)
+        except OSError as hata:
+            sonuc["oturum_hatasi"] = str(hata)
+        # Açık bağlantı varken durdurma: bekleyen okuma `kapanıyor` alır.
+        try:
+            with socket.create_connection(("127.0.0.1", smtp), timeout=20) as s:
+                dosya = s.makefile("rb")
+                sonuc["bosaltma_karsilama"] = dosya.readline().decode().rstrip("\r\n")
+                dur = subprocess.Popen(["sudo", "systemctl", "stop", f"{k.onek}.service"])
+                sonuc["bosaltma_satiri"] = dosya.readline().decode().rstrip("\r\n")
+                dur.wait(timeout=60)
+                sonuc["stop_rc"] = dur.returncode
+        except (OSError, subprocess.TimeoutExpired) as hata:
+            sonuc["bosaltma_hatasi"] = str(hata)
+        sonuc["sonrasi"] = k.goster("Result", "ExecMainStatus", "ActiveState")
+        sonuc["gunluk"] = k.gunluk()[-4000:]
+    beklenen = ["220 mx.ornek.test ESMTP", "250 2.0.0 tamam", "500 5.5.2 sözdizimi hatası",
+                "221 2.0.0 hoşça kal", "EOF"]
+    sonuc["gecti"] = (
+        sonuc["start_rc"] == 0
+        and sonuc["durum"].get("ActiveState") == "active"
+        and sonuc["durum"].get("Type") == "notify"
+        and sonuc["uid"] not in ("0", "?")
+        and sonuc["cap_eff"] == "0000000000000000"
+        and sonuc.get("v4") == beklenen
+        and sonuc.get("v6") == beklenen
+        and sonuc.get("bosaltma_satiri") == "421 4.3.2 hizmet kapanıyor"
+        and sonuc.get("stop_rc") == 0
+        and sonuc["sonrasi"].get("Result") == "success"
+        and sonuc["sonrasi"].get("ExecMainStatus") == "0"
+        and "bağlantı kabul ediliyor" in sonuc["gunluk"]
+        and sonuc.get("tls", {}).get("implicit", [None])[0] == "220 mx.ornek.test ESMTP"
+        and sonuc["tls"]["implicit"][1] in ("TLSv1.2", "TLSv1.3")
+        and sonuc["tls"]["implicit"][2] == "221 2.0.0 hoşça kal"
+        and sonuc["tls"]["starttls"] == ["220 2.0.0 TLS için hazır", "TLSv1.3", "250 2.0.0 tamam"]
+        and sonuc["tls"]["enjeksiyon"] == ["220 2.0.0 TLS için hazır", ""]
+    )
+    rapor["baglanti"] = sonuc
+    return sonuc["gecti"]
+
+
 def olumsuz(dil, kok, rapor, ad, soketler, bildirim, ipv6_kipi, ifade):
     kapi = bos_kapi()
     proje = Path(tempfile.mkdtemp(prefix="zee-k376-", dir=kok))
@@ -359,6 +538,7 @@ def main():
         sonuclar.append(denemeli(rapor, "olumlu", lambda: olumlu(dil, kok, rapor)))
         sonuclar.append(denemeli(rapor, "fazla_bildirim", fazla))
         sonuclar.append(denemeli(rapor, "v6only_kapali", v6only))
+        sonuclar.append(denemeli(rapor, "baglanti", lambda: baglanti_kosusu(dil, kok, rapor)))
         rapor["durum"] = "gecti" if all(sonuclar) else "kaldi"
     except BaseException as hata:
         rapor["hata"] = str(hata)
@@ -369,10 +549,10 @@ def main():
             json.dumps(rapor, ensure_ascii=False, indent=2) + "\n")
         subprocess.run(["rm", "-rf", str(kok)], check=False)
     ozet = {k: (v.get("gecti") if isinstance(v, dict) else v) for k, v in rapor.items()
-            if k in ("systemd", "olumlu", "fazla_bildirim", "v6only_kapali", "durum")}
+            if k in ("systemd", "olumlu", "fazla_bildirim", "v6only_kapali", "baglanti", "durum")}
     print(json.dumps(ozet, ensure_ascii=False))
     if rapor["durum"] != "gecti":
-        for anahtar in ("olumlu", "fazla_bildirim", "v6only_kapali"):
+        for anahtar in ("olumlu", "fazla_bildirim", "v6only_kapali", "baglanti"):
             if isinstance(rapor.get(anahtar), dict) and not rapor[anahtar].get("gecti"):
                 print(f"--- {anahtar}\n{json.dumps(rapor[anahtar], ensure_ascii=False, indent=2)}",
                       file=sys.stderr)

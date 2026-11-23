@@ -1,0 +1,59 @@
+# K-381 (RFC-0039 A2a): ürün H SMTP alıcısının bağlantı tarafı. Durum
+# makinesi ürünün saf SMTP komut çözümleyicisinin küçültülmüş hâlidir; satır
+# kuralı (CRLF, çıplak CR/LF reddi, uzunluk) ve zaman aşımı çalışma zamanı
+# değişmezidir, protokol yanıtı Zee'nin kararıdır. STARTTLS'te tamponda
+# bekleyen düz metin varsa çalışma zamanı yükseltmeyi reddedip bağlantıyı
+# kapatır (A2b); başarıda EHLO durumu sıfırlanır (ürün durum makinesinin işi).
+
+işlem oturumu sür
+    bağlantıya "220 mx.ornek.test ESMTP" satırını yaz
+    açık doğru olsun
+    açık olduğu sürece
+        komut bağlantıdan satır okumayı dene olsun
+        komut başarılıysa
+            metin komutun değeri olsun
+            metin "QUIT" e eşitse
+                bağlantıya "221 2.0.0 hoşça kal" satırını yaz
+                açık yanlış olsun
+            değilse metin "STARTTLS" e eşitse
+                bağlantıya "220 2.0.0 TLS için hazır" satırını yaz
+                tls bağlantıda TLS başlatmayı dene olsun
+                tls başarısızsa
+                    açık yanlış olsun
+            değilse
+                metin "NOOP" e eşitse
+                    bağlantıya "250 2.0.0 tamam" satırını yaz
+                değilse
+                    bağlantıya "502 5.5.2 komut tanınmadı" satırını yaz
+        değilse
+            hata komutun hatası olsun
+            veri hatanın verisi olsun
+            tür verinin "tür" değeri olsun
+            tür "kapandı" e eşitse
+                açık yanlış olsun
+            değilse
+                tür "zaman_aşımı" e eşitse
+                    bağlantıya "421 4.4.2 zaman aşımı" satırını yaz
+                    açık yanlış olsun
+                değilse
+                    tür "kapanıyor" e eşitse
+                        bağlantıya "421 4.3.2 hizmet kapanıyor" satırını yaz
+                        açık yanlış olsun
+                    değilse
+                        tür "satır_uzun" e eşitse
+                            bağlantıya "500 5.5.6 satır çok uzun" satırını yaz
+                        değilse
+                            bağlantıya "500 5.5.2 sözdizimi hatası" satırını yaz
+    bağlantıyı kapat
+
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+
+"smtp_v6" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+
+"smtps_v4" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+
+"smtps_v6" dinleyicisinde bağlantı geldiğinde
+    oturumu sür

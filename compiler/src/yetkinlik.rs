@@ -13,6 +13,8 @@ pub enum Yetkinlik {
     Ag,
     YerelAg,
     AgSunucusu,
+    /// K-381: devralınan adlı dinleyicilerden bağlantı kabulü (RFC-0039 A2).
+    AgDinleyici,
     Donanim,
     WebOturumu,
     Kriptografi,
@@ -20,12 +22,13 @@ pub enum Yetkinlik {
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 9] = [
+    pub const TUMU: [Self; 10] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
         Self::YerelAg,
         Self::AgSunucusu,
+        Self::AgDinleyici,
         Self::Donanim,
         Self::WebOturumu,
         Self::Kriptografi,
@@ -39,6 +42,7 @@ impl Yetkinlik {
             Self::Ag => "ağ",
             Self::YerelAg => "yerel-ağ",
             Self::AgSunucusu => "ağ-sunucusu",
+            Self::AgDinleyici => "ağ-dinleyici",
             Self::Donanim => "donanım",
             Self::WebOturumu => "web-oturumu",
             Self::Kriptografi => "kriptografi",

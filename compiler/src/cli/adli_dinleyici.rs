@@ -88,13 +88,26 @@ pub(crate) fn eslestir(
 }
 
 #[cfg(unix)]
+pub(crate) use unix::al;
+
+#[cfg(unix)]
 mod unix {
     use super::*;
     use std::net::{SocketAddr, TcpListener};
     use std::sync::Mutex;
 
-    /// Süreç ömrü boyunca tutulan adlı dinleyiciler (bağlantı kabulü A2'de).
+    /// Süreç ömrü boyunca tutulan adlı dinleyiciler; bağlantı bloğu olan
+    /// adlar K-381 reaktörüne `al` ile devredilir.
     static TUTULAN: Mutex<Vec<(String, TcpListener)>> = Mutex::new(Vec::new());
+
+    /// K-381: doğrulanmış adlı dinleyiciyi bağlantı reaktörüne verir (bir kez).
+    pub(crate) fn al(ad: &str) -> Option<TcpListener> {
+        let mut tutulan = TUTULAN
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let sira = tutulan.iter().position(|(a, _)| a == ad)?;
+        Some(tutulan.remove(sira).1)
+    }
 
     fn int_secenek(fd: i32, seviye: i32, ad: i32) -> Option<i32> {
         let mut deger = 0i32;

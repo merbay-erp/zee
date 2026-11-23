@@ -3,24 +3,9 @@ use crate::agac::{Cumle, Ifade, Program, RotaErisimi};
 use crate::intrinsic::{self, HTTP_GETIR};
 use crate::tani::Tani;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
-use std::collections::BTreeMap;
 type Konum = (usize, usize, usize);
-#[derive(Default)]
-struct Bilgi {
-    yetkinlikler: BTreeMap<Yetkinlik, Konum>,
-    ag_istekleri: Vec<(String, Konum)>,
-}
-impl Bilgi {
-    fn ekle(&mut self, yetkinlik: Yetkinlik, konum: Konum) {
-        if yetkinlik == Yetkinlik::WebOturumu {
-            self.ekle(Yetkinlik::AgSunucusu, konum);
-        }
-        self.yetkinlikler
-            .entry(yetkinlik)
-            .and_modify(|onceki| *onceki = (*onceki).min(konum))
-            .or_insert(konum);
-    }
-}
+mod bilgi;
+use bilgi::Bilgi;
 pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Result<(), Tani> {
     let mut bilgi = Bilgi::default();
     blok_bilgisi(&program.cumleler, &mut bilgi);
@@ -174,6 +159,9 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             ifade_bilgisi(yol, bilgi);
             blok_bilgisi(govde, bilgi);
         }
+        Cumle::BaglantiGeldiginde { .. }
+        | Cumle::BaglantiyaYaz { .. }
+        | Cumle::BaglantiyiKapat { .. } => bilgi.baglanti(cumle),
         Cumle::YanitGonder { deger, satir, .. } => {
             bilgi.ekle(Yetkinlik::AgSunucusu, (*satir, 1, 1));
             ifade_bilgisi(deger, bilgi);

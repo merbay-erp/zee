@@ -4,7 +4,10 @@
   uygulanmaz; her katman ayrı alt RFC ve dogfood kanıt kapısıyla açılır.
   **Aşama A1 (adlı dinleyici devri + hizmet bildirimi) kabul edildi ve
   uygulandı — 23 Kasım 2026, K-376, [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md);**
-  katmanın geri kalanı (bağlantı yüzeyi, A2) taslaktır.
+  **Aşama A2 tasarımı tamamlandı; A2a (bağlantı yüzeyi) ve A2b (sunucu
+  TLS'i, STARTTLS) uygulandı — 23–24 Kasım 2026, K-381,
+  [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md);** A2c (blok okuma)
+  ve katmanların geri kalanı taslaktır.
 - **Tarih:** 21 Kasım 2026
 - **İş:** K-354
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
@@ -61,8 +64,8 @@ yetkinliği olarak tasarlanır.
 |---|---|---|
 | Port dinleme | Zee kodu port açamaz. Native adaptör yalnız `--deneysel-web` ile loopback'e bağlanır ya da devralınan dinleyiciyi kullanır; devralınan soket tam `AF_INET`/`127.0.0.1`/bildirilen kapı olarak doğrulanır | `compiler/src/web_listener.rs` (`endpoint`, `adopt_group`), spec/11 K-259 |
 | systemd soket devri | Var ama dar: yalnız çok işçi grubu yöneticisi, `LISTEN_FDS=1`, fd 3, `127.0.0.1:worker-port`; bind'e geri dönüş yok. **K-376 (A1) sonrası:** `proje.dil` `dinleyiciler` bildirimiyle adla çoklu devir ve sd_notify | `compiler/src/cli/web_isci_grubu.rs` (`systemd_soketini_al`), K-343, ADR-161 eki; `compiler/src/cli/adli_dinleyici.rs`, ADR-162 |
-| IPv6, ayrıcalıklı kapı, birden çok dinleyici | Yok. **K-376 sonrası:** devralınır, doğrulanır ve tutulur; Zee'den bağlantı kabulü yok (A2) | aynı |
-| Bağlantı/akış değeri | Yok. Tek ağ sunucusu yüzeyi HTTP rota modelidir; Zee bağlantıya ya da bayt akışına dokunamaz | spec/11 |
+| IPv6, ayrıcalıklı kapı, birden çok dinleyici | Yok. **K-376 sonrası:** devralınır, doğrulanır ve tutulur. **K-381 (A2a) sonrası:** bağlantı bloğu kabul eder, satır okur/yazar | aynı; `compiler/src/cli/ag_baglantisi.rs`, ADR-165 |
+| Bağlantı/akış değeri | Yok. Tek ağ sunucusu yüzeyi HTTP rota modelidir; Zee bağlantıya ya da bayt akışına dokunamaz. **K-381 sonrası:** satır akışı (bayt/blok akışı A2c) | spec/11; spec/12 §9 |
 | Bayt değeri | Yok. Tür envanteri `TamSayı · Ondalık · Metin · Mantıksal · Liste · Sözlük · Seçenek ...`; binary yalnız diske akıtılan yükleme dosyası (yol + SHA-256 + bayt sayısı) olarak görünür | spec/04, spec/26 |
 | Sunucu TLS'i | Yok. TLS yalnız istemci yollarında: SMTP istemcisi `native-tls` (465 implicit, 587 STARTTLS, TLS 1.2 alt sınır), HTTP istemcisi `ureq`+`rustls` | `compiler/src/eposta.rs` (K-210/K-232), `compiler/src/ag_istemcisi.rs` |
 | Eşzamanlılık | Tek OS iş parçacığında işbirlikli, deterministik scheduler (`zee-esz-1`). Adaptör çağrısı önleyici olmayan atomik dilimdir; dinamik görev sayısı ve akış "bu sürümün sözü değildir"; çok çekirdek söz verilmez | spec/14 §2/§4, spec/09 |
@@ -477,8 +480,190 @@ dinleyicilerle kabul ölçütü yaptı. Katman A bu yüzden iki adıma bölünd�
   işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
   Yukarıdaki FD devri sözleşmesinin "Zee çalışma zamanı garanti eder"
   maddelerinden boşaltma (Katman C) ve çok işçiye adla aktarım A1'de yoktur.
-- **A2 (taslak):** bağlantı kabulü, satır/blok okuma, yazma, geri basınç,
-  `ağ-dinleyici` yetkinliği; Katman C ile birlikte.
+- **A2 (tasarım tamam, 23 Kasım 2026, K-381):** bağlantı kabulü, satır
+  okuma/yazma, sınırlar, uzun oturum ve sunucu TLS'i; Katman A'nın geri
+  kalanı Katman C'nin dar bir alt kümesiyle (yalnız bağlantı görevleri)
+  birlikte açılır. Ayrıntı aşağıdaki "Aşama A2" bölümündedir.
+
+## Aşama A2 — bağlantı yüzeyi (K-381)
+
+A2 üç dilime bölünür; her dilim ayrı commit, ayrı güvenlik kaydı ve ayrı
+kabul kanıtı taşır. Dilimler sırayla birleşir; sonraki dilim öncekinin
+değişmezlerini gevşetemez.
+
+| Dilim | Kapsam | Durum |
+|---|---|---|
+| **A2a** | Düz TCP: bağlantı olayı, satır okuma/yazma, kapatma, satır/boşta/ömür/bağlantı sınırları, kibar ret, bağlantı görevi scheduler'ı, `ağ-dinleyici`, SIGTERM boşaltma | uygulanır (K-381) |
+| **A2b** | Sunucu TLS'i: implicit TLS dinleyicisi (465/993), STARTTLS (25/587/143), sertifika/anahtar yükleme, TLS 1.2+ AEAD politikası | uygulandı (K-381, ayrı commit) |
+| **A2c** | Blok okuma: SMTP `DATA` nokta bloğu ve IMAP literal'i `0600` geçici dosyaya, SHA-256 aynı akışta; dosyadan bağlantıya akıtma | taslak (sonraki iş) |
+
+### A2a — Zee yüzeyi
+
+Yüzey mevcut kalıp aileleriyle kurulur; yeni anahtar kelime ya da grammar
+kuralı yoktur (rota kalıbının bağlantı karşılığı, `dene` ailesi):
+
+```text
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    bağlantıya "220 mx.ornek.test ESMTP" satırını yaz
+    açık doğru olsun
+    açık olduğu sürece
+        komut bağlantıdan satır okumayı dene olsun
+        komut başarılıysa
+            ...
+            bağlantıya "250 tamam" satırını yaz
+        değilse
+            açık yanlış olsun
+    bağlantıyı kapat
+```
+
+- `"<ad>" dinleyicisinde bağlantı geldiğinde` + blok: üst düzey olay
+  kaydıdır (`... adresine istek geldiğinde` gibi). Ad `proje.dil`
+  `dinleyiciler` bildiriminde olmalıdır; değilse yürütme C030 ile durur.
+  Aynı ada iki blok, web sunucusuyla (`sunucu başlat`) aynı programda
+  bağlantı bloğu ve adlı devri olmayan süreçte bağlantı bloğu C030'dur.
+  Blok her kabul edilen bağlantı için taze ortamda koşar ve yalnız
+  `bağlantı` adlı Sözlük'ü görür: `dinleyici`, `uzak_adres` (IPv4 noktalı,
+  IPv6 köşeli parantezsiz kanonik), `uzak_kapı`, `yerel_kapı` (Metin).
+- `<ad> bağlantıdan satır okumayı dene olsun` → `Sonuç<Metin>`. Satır CRLF
+  ile biter ve CRLF'siz verilir.
+- `bağlantıya <Metin> satırını yaz` cümlesi ve
+  `<ad> bağlantıya <Metin> satırını yazmayı dene olsun` → `Sonuç<TamSayı>`
+  (CRLF dahil kuyruğa alınan bayt). Cümle biçiminin hatası bağlantı
+  görevini C030 ile bitirir (yalnız o bağlantı kapanır).
+- `bağlantıyı kapat`: giden tampon boşaltılıp bağlantı kapanır; sonraki
+  okuma/yazma `kapandı` sonucudur. Blok bitince bağlantı kendiliğinden
+  kapanır.
+- Bağlantı kalıpları bağlantı bloğu dışında (ve onun çağırdığı işlemler
+  dışında) çalışma zamanında C030'dur; işlemler içinden kullanılabilir,
+  bağlantı değer olarak taşınmaz (o anki bağlantı görevinin bağlantısıdır).
+
+### A2a — çalışma zamanı değişmezleri
+
+- **Hata sınıfları.** Bütün beklenen bağlantı hataları C030 `Sonuç`'udur ve
+  Hata verisinde `tür` taşır: `kapandı` (karşı taraf kapattı ya da
+  bağlantı kapatıldı), `zaman_aşımı` (boşta süresi), `satır_uzun`,
+  `satır_sonu` (çıplak CR ya da çıplak LF), `kodlama` (geçersiz UTF-8, NUL
+  ya da TAB dışı denetim karakteri), `kapanıyor` (SIGTERM boşaltması),
+  `yazılamadı` (CR/LF/NUL içeren ya da sınırı aşan Metin, giden tampon
+  süresinde boşalmadı, karşı taraf okuma ucunu kapattı). Son tarih
+  (`içinde`) dolarsa okuma noktasında Ç001 iptali olur ve yalnız
+  `yetişmezse` kolu çalışır (spec/09; K-375 modeli).
+- **Satır kuralı.** Tek satır sonu CRLF'dir. Çıplak LF, çıplak CR ve
+  `CR CR LF` gibi karışık diziler satır sonu sayılmaz ve normalleştirilmez:
+  bozuk satır sonuna kadar tüketilir ve `satır_sonu` döner (SMTP smuggling
+  sınıfı). Sınırı (`bağlantı_satır_sınırı`, CRLF dahil) aşan satır kırpılıp
+  kabul edilmez: `satır_uzun` döner, satırın kalanı sonraki CRLF'ye kadar
+  atılır. Zee'ye geçersiz UTF-8 Metin sızmaz.
+- **Zaman.** Bir okuma çağrısı tam satır gelene kadar en çok
+  `bağlantı_boşta_süresi` bekler; süre çağrının başından **mutlaktır**,
+  damla damla gelen bayt süreyi uzatmaz (slowloris; K-372 ilkesi). Yazma
+  giden tampona sığmazsa aynı süre içinde boşalmalıdır. Bağlantı
+  görevinin bütün ömrü `bağlantı_ömrü` mutlak son tarihine bağlıdır;
+  dolunca görev iptal edilir ve bağlantı kapanır.
+- **Bütçe.** Her bağlantı görevi kendi çalışma adımı/heap bütçesiyle başlar
+  ve her başarılı satır okuması bütçeyi yeniler (komut başına bütçe); C023/
+  C024 yalnız o bağlantıyı bitirir.
+- **Bellek.** Bağlantı başına gelen tampon ≤ satır sınırı + 4 KiB, giden
+  tampon ≤ 64 KiB; sınırsız kuyruk yoktur (geri basınç: yazma görevi
+  askıya alır).
+- **Eşzamanlılık.** Bağlantı başına bir görev; görevler tek iş parçacıklı
+  bağlantı scheduler'ında `poll(2)` ile ilerler, bekleyen okuma/yazma ve
+  `bekle` scheduler noktasıdır (Katman C'nin yalnız bağlantı görevleri için
+  dar alt kümesi). Görev hatası yalnız kendi bağlantısını kapatır,
+  kardeşleri iptal etmez: **yalıtılmış bağlantı kapsamı**, spec/14 §3 "ilk
+  hata kardeşleri iptal eder" kuralından bilinçli ayrılış. `zee-esz-1`
+  sözü korunur: tek iş parçacığı, data race yok; ağ olaylarının sırası dış
+  girdidir ve IO izine yazılır. Bağlantı içindeki PostgreSQL/dosya/HTTP
+  çağrıları bugünkü gibi senkron dilimdir (açık; Katman C).
+- **Sınırlar ve kibar ret.** `bağlantı_sınırı` (süreç geneli eşzamanlı) ve
+  `uzak_adres_bağlantı_sınırı` (aynı uzak IP) dolduğunda çalışma zamanı
+  bağlantıyı kabul eder, `bağlantı_dolu_yanıtı` bildirilmişse onu tek
+  engellemeyen yazımla gönderir ve kapatır; Zee görevi kurulmaz. Ret
+  sayılır ve günlüğe oran sınırlı yazılır.
+- **Boşaltma.** SIGTERM'de yeni kabul durur, `STOPPING=1` gönderilir,
+  bekleyen ve sonraki okumalar `kapanıyor` döner (Zee protokolün `421`
+  satırını yazabilir); en çok 10 saniye sonra kalan görevler iptal edilir.
+  Bağlantı scheduler'ı başlayınca `READY=1` gönderilir.
+- **Yetkinlik.** Yeni `ağ-dinleyici` yetkinliği (spec/23); bildirimli
+  projede `yetkinlikler` içinde olmalıdır, `--güvenli` çocuk modunda yoktur.
+  `ağ-sunucusu` (loopback web) anlamı değişmez.
+- **IO izi.** Bağlantı olayı bekleme ve her bağlantı işlemi (oku/yaz/kapat/
+  TLS) ize girer; replay aynı sırayı ve çıktıyı üretir. Hermetik adaptör
+  betiklenmiş bağlantıları parça parça teslim ederek eşzamanlı oturum
+  sırasını deterministik sınar.
+- **Platform.** Unix. Windows'ta bağlantı bloğu C030'dur (adlı devir de
+  Windows'ta yoktur, ADR-162).
+
+`proje.dil` alanları (P020; hepsi isteğe bağlı, bildirimsiz varsayılan):
+
+| Alan | Aralık | Varsayılan |
+|---|---|---|
+| `bağlantı_sınırı` | 1–4096 | 64 |
+| `uzak_adres_bağlantı_sınırı` | 1–`bağlantı_sınırı` | 8 |
+| `bağlantı_satır_sınırı` (bayt, CRLF dahil) | 64–65536 | 1000 (RFC 5321 metin satırı) |
+| `bağlantı_boşta_süresi` (saniye) | 1–3600 | 300 (RFC 5321 §4.5.3.2 komut süresi) |
+| `bağlantı_ömrü` (saniye) | 1–86400 | 3600 |
+| `bağlantı_dolu_yanıtı` | ≤ 512 bayt yazdırılabilir ASCII, CR/LF yok | yok (yalnız kapatılır) |
+
+### A2b — sunucu TLS'i
+
+- **Bildirim (P021).** `tls_sertifika_değişkeni "POSTA_TLS_ZINCIRI" olsun`
+  ve `tls_anahtar_değişkeni "POSTA_TLS_ANAHTARI" olsun`: PEM zincir ve özel
+  anahtar K-339 modeliyle önce systemd `CREDENTIALS_DIRECTORY` dosyasından
+  (nofollow, düzenli dosya, sahibi süreç kullanıcısı/root, grup/diğer
+  okuyamaz), yoksa ortamdan okunur; bildirim yalnız adları taşır.
+  `tls_dinleyicileri "smtps_v4", "imaps_v4" listesi olsun` implicit TLS
+  dinleyicileridir. Kimlik açılışta, kaynak yürütülmeden yüklenir; hata
+  çıkış 2'dir. Anahtar baytı hiçbir zaman Zee değeri, IO izi içeriği,
+  günlük ya da tanı metni olmaz. (Tasarım taslağındaki proje köküne göreli
+  dosya yolu, sırrın proje ağacında durmasını özendirdiği için
+  reddedildi.)
+- **Politika.** `rustls` 0.23 + `ring` (ağaçtaki `ureq` yığını; doğrudan
+  bağımlılık yapıldı, yeni crate yok, ADR-038), TLS 1.3 ve TLS 1.2, yalnız
+  ileri gizlilikli AEAD takımları (TLS 1.3 üç takım; TLS 1.2
+  ECDHE-ECDSA/RSA AES-GCM ve CHACHA20-POLY1305), yeniden müzakere ve
+  sıkıştırma yok, istemci sertifikası yok. Politika bildirimle gevşetilemez.
+- **Implicit TLS.** El sıkışma, Zee görevi kurulmadan reaktörde
+  `bağlantı_boşta_süresi` içinde tamamlanır; başarısızlıkta görev hiç
+  kurulmaz. `bağlantı` Sözlüğü `tls` = `evet`/`hayır` taşır.
+- **STARTTLS.** `<ad> bağlantıda TLS başlatmayı dene olsun` →
+  `Sonuç<Metin>` (ör. `TLSv1_3 TLS13_AES_128_GCM_SHA256`; `Received`
+  başlığı için). Zee önce protokolün hazır satırını yazar. Değişmezler:
+  - yükseltme anında okunmuş ama Zee'nin tüketmediği düz metin tampon
+    **boş olmak zorundadır**; değilse yükseltme yapılmaz, tampon atılır,
+    bağlantı kapanır ve C030 `tür=tls` döner (CVE-2011-0411 sınıfı);
+    çekirdek tamponunda henüz okunmamış düz metin TLS kaydı olarak
+    işlenir ve el sıkışmayı bozar, hiçbir zaman komut olarak görünmez;
+  - düz giden tampon yükseltmeden önce boşaltılır; yükseltmeden sonra
+    önceki düz metinden hiçbir bayt TLS akışına taşınmaz, satır okuyucu
+    sıfırlanır;
+  - TLS bağlantısında ikinci yükseltme ve kimliksiz süreçte yükseltme
+    `tür=tls`'dir (bağlantı açık kalır); süresinde bitmeyen ya da başarısız
+    el sıkışma bağlantıyı kapatır.
+  - Protokol durumunun sıfırlanması (EHLO'nun yeniden istenmesi, AUTH'un
+    yalnız TLS sonrası ilanı) Zee kodunun işidir; başarı Sonuç'u Zee'nin
+    kendi durumunu güncellemesi içindir (ayrı bir sorgu kalıbı açılmadı).
+
+### A2 açık soruları — kapandı
+
+- Engellemeyen IO katmanı: **`libc` `poll(2)` üzerinden dar reaktör**
+  (yeni bağımlılık yok; bağlantı sayısı `bağlantı_sınırı` ≤ 4096 ile
+  sınırlı olduğundan `poll` yeterli); Windows'ta yetkinlik reddi.
+- Bağlantı görevinde hata yalıtımı kipinin adı: **yalıtılmış bağlantı
+  kapsamı** (yukarıda).
+- Tek kripto sağlayıcısı: sunucu TLS'i için **`ring`** (ağaçta, `ureq`
+  ile aynı `rustls`); istemci `native-tls` yollarının taşınması ayrı iş.
+- Sertifika yenilemede süreç içi yeniden yükleme: **yok**; yenileme süreç
+  yeniden başlatmasıyla (`Accept=no` dinleyici kuyrukta bekletir, K-343
+  ölçümü).
+
+### A2 açık kalanlar
+
+- A2c blok okuma/akıtma; Katman C'nin genel hali (PostgreSQL/dosya/DNS'in
+  engellemeyen yürütülmesi); çok işçi grubuna adla aktarım; `dil dene`
+  içinden betiklenmiş bağlantı cümlesi (bugün hermetik adaptör yalnız Rust
+  testlerinden beslenir); binlerce boşta oturum ölçümü (H4); geliştirme
+  için açık bayraklı loopback bind (bugün `systemd-socket-activate`).
 
 ## Freeze ve kanıt kapısı
 
@@ -513,7 +698,8 @@ karşılar; 3. adım her alt RFC'nin kendi işidir.
   günlüğünde):
   - **F009 — `... dinleyicisinde bağlantı geldiğinde` → S036:** bugün yalnız
     HTTP rota kalıbı var; Katman A yüzeyinin doğrudan reproducer'ı
-    (`korpus/f009-dinleyici-yok.dil`).
+    (`korpus/f009-dinleyici-yok.dil`). **K-381 ile çözüldü:** dosya artık
+    temiz derlenen en küçük karşılayıcıdır.
   - **F004 — metin kaçışında `\r` yok** (S040): çıplak CR denetimi Zee'de
     yazılamıyor; Katman A'nın "çıplak LF/CR reddi çalışma zamanı
     değişmezidir" kararını destekler. Kaçış eksikliği K-164/F011 sınıfının
@@ -524,7 +710,8 @@ karşılar; 3. adım her alt RFC'nin kendi işidir.
     değil eksik yüzeydir; Katman D'ye ASCII katlama adayı. Ürün çözümü
     26 değiştirmeyle elle katlamadır (`korpus/f001-*.dil`).
   - **F010 — istemsiz satır okuma yok:** `"" diye sor` her okumada boş
-    istem satırı basar; ağ yüzeyinde Katman A satır okuyucusu karşılar.
+    istem satırı basar; ağ yüzeyinde Katman A satır okuyucusu karşılar
+    (K-381: `bağlantıdan satır okumayı dene`).
 - Diğer tekrarlar (sıra erişimi K-180, listede `içermeli` K-357, boş
   koleksiyon türü K-358, örtük çoğul döngü kaynağı K-359) ağ yetkinliğinden
   bağımsızdır ve bu RFC'nin kapsamında değildir.

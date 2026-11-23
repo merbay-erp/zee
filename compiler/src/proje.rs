@@ -23,6 +23,8 @@
 //! e_posta_ek_türleri "pdf", "docx", "csv" listesi olsun
 //! ```
 
+mod baglanti;
+mod baglanti_tls;
 mod dinleyici;
 mod eposta_ek;
 mod form_yukleme;
@@ -30,6 +32,8 @@ mod http_istek;
 mod kimlik_iletisim;
 mod web_oturumu;
 
+pub use crate::ag_satiri::TlsBildirimi;
+pub use baglanti::BaglantiAyari;
 pub use dinleyici::{gecerli_dinleyici_adi, DinleyiciBildirimi, DINLEYICI_AZAMI};
 pub use web_oturumu::{
     WebOturumuBildirimi, OTURUM_OMRU_ALT_SANIYE, OTURUM_OMRU_UST_SANIYE,
@@ -74,6 +78,8 @@ pub struct ProjeBildirimi {
     pub web_oturumu: Option<WebOturumuBildirimi>,
     /// K-376: dış yöneticiden (systemd) adla devralınacak dinleyiciler.
     pub dinleyiciler: Vec<DinleyiciBildirimi>,
+    /// K-381: adlı dinleyici bağlantılarının kaynak sınırları (RFC-0039 A2a).
+    pub baglanti: BaglantiAyari,
     /// K-378: `çok_parçalı_yükleme doğru olsun` — multipart form yüklemesi.
     pub cok_parcali_yukleme: bool,
     /// K-378: `e_posta_ek_türleri` — SMTP ek türü kümesi; `None` dört varsayılan.
@@ -159,37 +165,12 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 "Örnek: giriş \"program.dil\" olsun",
             ));
         };
-        if !matches!(
-            ad.as_str(),
-            "proje"
-                | "sürüm"
-                | "morfoloji"
-                | "giriş"
-                | "yetkinlikler"
-                | "ağ_hedefleri"
-                | "yerel_bağımlılıklar"
-                | "registry"
-                | "registry_kök_sürümü"
-                | "registry_kök_özeti"
-                | "uzak_bağımlılıklar"
-                | "veritabanı_hedefi"
-                | "veritabanı_bağlantı_değişkeni"
-                | "veritabanı_göçleri"
-                | "veritabanı_istek_bağlamı"
-                | "e_posta_bağlantı_değişkeni"
-                | "gizli_anahtar_değişkeni"
-                | "http_gizli_değişkenleri"
-                | "oturum_ömrü_saniye"
-                | "oturum_kayar"
-                | "dinleyiciler"
-                | "çok_parçalı_yükleme"
-                | "e_posta_ek_türleri"
-        ) {
+        if !bilinen_alan(&ad) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, çok_parçalı_yükleme, e_posta_ek_türleri.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -223,6 +204,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let http_gizli_degiskenleri = http_istek::gizli_adlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let web_oturumu = web_oturumu::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let dinleyiciler = dinleyici::alanlari_al(&mut alanlar)?;
+    let adlar: Vec<&str> = dinleyiciler.iter().map(|d| d.ad.as_str()).collect();
+    let baglanti = baglanti::alanlari_al(&mut alanlar, &adlar)?;
     let cok_parcali_yukleme = form_yukleme::alani_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
@@ -367,6 +350,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         http_gizli_degiskenleri,
         web_oturumu,
         dinleyiciler,
+        baglanti,
         cok_parcali_yukleme,
         eposta_ek_turleri,
     })
@@ -1023,6 +1007,36 @@ fn bagimlilik_yolunu_dogrula(yol: &str) -> Result<(), &'static str> {
     Ok(())
 }
 
+/// `proje.dil` alan adları (K-381 bağlantı ayarları `baglanti::ALANLAR`'da).
+fn bilinen_alan(ad: &str) -> bool {
+    matches!(
+        ad,
+        "proje"
+            | "sürüm"
+            | "morfoloji"
+            | "giriş"
+            | "yetkinlikler"
+            | "ağ_hedefleri"
+            | "yerel_bağımlılıklar"
+            | "registry"
+            | "registry_kök_sürümü"
+            | "registry_kök_özeti"
+            | "uzak_bağımlılıklar"
+            | "veritabanı_hedefi"
+            | "veritabanı_bağlantı_değişkeni"
+            | "veritabanı_göçleri"
+            | "veritabanı_istek_bağlamı"
+            | "e_posta_bağlantı_değişkeni"
+            | "gizli_anahtar_değişkeni"
+            | "http_gizli_değişkenleri"
+            | "oturum_ömrü_saniye"
+            | "oturum_kayar"
+            | "dinleyiciler"
+            | "çok_parçalı_yükleme"
+            | "e_posta_ek_türleri"
+    ) || baglanti::ALANLAR.contains(&ad)
+}
+
 fn metni_kacir(metin: &str) -> String {
     metin.replace('\\', "\\\\").replace('"', "\\\"")
 }
@@ -1053,6 +1067,9 @@ fn cumle_satiri(cumle: &Cumle) -> usize {
         | Cumle::ProgramiBitir { satir, .. }
         | Cumle::SunucuBaslat { satir, .. }
         | Cumle::IstekGeldiginde { satir, .. }
+        | Cumle::BaglantiGeldiginde { satir, .. }
+        | Cumle::BaglantiyaYaz { satir, .. }
+        | Cumle::BaglantiyiKapat { satir }
         | Cumle::YanitGonder { satir, .. }
         | Cumle::Yonlendir { satir, .. }
         | Cumle::CerezYaz { satir, .. }

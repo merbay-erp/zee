@@ -169,3 +169,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-162 | [Adlı dinleyici devri ve systemd hizmet bildirimi](162-adli-dinleyici-devri-ve-hizmet-bildirimi.md) | **kabul** (K-376/GB-152) |
 | ADR-163 | [İkili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı](163-ikili-yanit-multipart-ve-ek-turu-kaydi.md) | **kabul** (K-378/GB-154–156) |
 | ADR-164 | [Satır içi betik CSP özeti yalnız kaynak değişmezinden](164-satir-ici-betik-csp-ozeti.md) | **kabul** (K-379/GB-153) |
+| ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158) |

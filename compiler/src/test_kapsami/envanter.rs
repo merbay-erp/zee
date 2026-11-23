@@ -279,6 +279,15 @@ impl Gezici {
                 self.blok(govde, d + 1)?;
                 self.sahip(&onceki.0, &onceki.1, &onceki.2)?;
             }
+            Cumle::BaglantiGeldiginde {
+                dinleyici,
+                govde,
+                satir,
+            } => {
+                self.ifade(dinleyici, *satir, d + 1)?;
+                self.blok(govde, d + 1)?;
+            }
+            Cumle::BaglantiyiKapat { .. } => {}
             Cumle::Gorunum { dugumler, .. } => self.gorunum(dugumler, d + 1)?,
             Cumle::Yaz { deger: i, satir }
             | Cumle::Olsun {
@@ -290,6 +299,7 @@ impl Gezici {
             }
             | Cumle::CagriCumlesi { cagri: i, satir }
             | Cumle::SunucuBaslat { kapi: i, satir }
+            | Cumle::BaglantiyaYaz { deger: i, satir }
             | Cumle::YanitGonder {
                 deger: i, satir, ..
             }

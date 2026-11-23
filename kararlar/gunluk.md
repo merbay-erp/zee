@@ -5711,8 +5711,60 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
   değişmez ya da statik dosya).
 
-## K-382 — Göreli dosya IO kökü giriş klasörüdür; yokluk iletisi düzeltildi (23 Kasım 2026)
+## K-381 — Adlı dinleyici bağlantı yüzeyi; RFC-0039 A2 tasarımı ve A2a (23 Kasım 2026)
 
+- Merkez kararı (23 Kasım 2026, “Sırayla aç”, “hiç durmadan geliştir”):
+  ZeeMail (`urun-h`) adım 2 = RFC-0039 Aşama A2. Tasarım RFC içinde
+  tamamlandı ve üç dilime bölündü: A2a düz TCP satır akışı + sınırlar +
+  bağlantı scheduler'ı (bu kayıt), A2b sunucu TLS'i/STARTTLS (ayrı dilim),
+  A2c blok okuma. Karar ADR-165, freeze sınıfı `dogfood-change`.
+- Yüzey: rota kalıbının bağlantı karşılığı (`"<ad>" dinleyicisinde bağlantı
+  geldiğinde`), `dene` Sonuç ailesinde okuma/yazma, ergonomi için yazma
+  cümlesi ve `bağlantıyı kapat`. Yeni anahtar kelime, değer türü, koşul
+  grameri yok; beş kalıp kelimesi syntax freeze kaydına işlendi. Bağlantı
+  değer olarak taşınmaz (o anki görevin bağlantısı), işlemlere bölünmüş
+  protokol kodu çalışır.
+- Reddedilenler: bağlantı başına süreç (üst düzey kod her bağlantıda yeniden
+  koşar, bellek), bağlantı başına OS iş parçacığı + ayrı yorumlayıcı (fcntl
+  kilitleri süreç başınadır, `zee-esz-1` determinizmi kaybolur), `mio`
+  (yeni bağımlılık; ≤ 4096 bağlantıda `poll` yeterli), yalnız `dene` biçimli
+  yazma (protokol kodunu şişirir), LF'yi satır sonu kabul etmek (SMTP
+  smuggling), bağlantı ayarlarını `dinleyiciler` öğesine gömmek (P018
+  biçimini kırar).
+- Scheduler: yorumlayıcının future modeli `eşzamanlı` görevleriyle aynı;
+  host `Bekle` dönünce görev askıya alınır, reaktör `poll(2)` ile hazır
+  görevleri bildirir. Görev başına son tarih yığını ve çalışma bütçesi;
+  her başarılı satır bütçeyi yeniler (komut başına bütçe). Görev hatası
+  yalnız kendi bağlantısını kapatır — spec/14 §3'ten bilinçli ayrılış
+  (“yalıtılmış bağlantı kapsamı”). İç içe `eşzamanlı` görev ağ beklemesini
+  engelleyerek ve son tarihe bağlı yapar.
+- Ölçümler: hermetik 12 vaka, gerçek süreç/TCP 7 vaka (slowloris: 300 ms'de
+  bir bayt gönderen istemci 3 sn'lik mutlak sürede `421`; 3000 satırlık
+  yanıt okumayan istemciye 64 KiB'ta askıya alınıp kayıpsız teslim; hiç
+  okumayan istemci süre sonunda C030 ile kesilir, kardeş hizmet alır),
+  gerçek systemd 255 Docker koşusu (bağlantı hizmeti `Type=notify`, UID
+  1000, CapEff 0, `~@privileged @resources` + MemoryDenyWriteExecute,
+  IPv4/IPv6 SMTP oturumu, `systemctl stop` ile `421 … kapanıyor`, çıkış 0).
+- Test altyapısı bulgusu: süreç testinde dinleyici fd'si zaten 3 olunca
+  `dup2(3, 3)` FD_CLOEXEC'i temizlemiyor ve soket exec'te kapanıyordu
+  (yalnız tek test koşusunda görülür); önce yüksek fd'ye kopyalanıyor.
+
+## K-381 A2b — Sunucu TLS'i ve STARTTLS (24 Kasım 2026)
+
+- TLS kimliği proje dosyasında yol olarak değil, K-339 credential/ortam
+  adı olarak bildirilir (P021); sır proje ağacında durmaz, systemd
+  `LoadCredential=` ile verilir. Taslaktaki `credential:<ad>`/yol ikiliği
+  tek modele indirildi.
+- `rustls` zaten `ureq` üzerinden ağaçtaydı (ring, tls12, std); doğrudan
+  bağımlılık yapıldı, Cargo.lock'ta yalnız dil'in bağımlılık listesi
+  değişti. Politika sağlayıcı takım listesiyle sabitlendi.
+- STARTTLS reddinde Zee'ye bağlantıyı açık bırakma seçeneği verilmedi;
+  ikinci yükseltme ve kimliksiz süreç ise bağlantıyı kapatmaz (Zee 454
+  yazabilir). Implicit TLS'te görev el sıkışmadan sonra kurulur.
+- Test kimliği depoya PEM özel anahtar konmasın diye test anında `openssl`
+  ile üretilir (CA + localhost yaprak, 2 gün). macOS `/tmp` sembolik bağı
+  credential dizini kuralına takılır; testte kanonik yol kullanıldı.
+## K-382 — Göreli dosya IO kökü giriş klasörüdür; yokluk iletisi düzeltildi (23 Kasım 2026)
 - Etkin dogfood ürünü `urun-h` sürtünmesi (ZM-F029): girişi `kaynak/ana.dil`
   olan projede dosya taşıma/okuma ve `yukleme_gecici_yolu` proje kökünden
   değil `kaynak/`ten çözülüyor, eksik hedef klasörü

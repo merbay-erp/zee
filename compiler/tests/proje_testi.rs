@@ -225,6 +225,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             http_gizli_degiskenleri: Vec::new(),
             web_oturumu: None,
             dinleyiciler: Vec::new(),
+            baglanti: dil::proje::BaglantiAyari::default(),
             cok_parcali_yukleme: false,
             eposta_ek_turleri: None,
         }
@@ -1698,4 +1699,99 @@ fn eposta_ek_turleri_bildirimi_aday_kayittan_ve_ag_ister() {
         "{taban}yetkinlikler boş liste olsun\nağ_hedefleri boş liste olsun\ne_posta_ek_türleri \"pdf\" listesi olsun\n"
     );
     assert_eq!(bildirimi_oku(&agsiz).unwrap_err().kod, "P015");
+}
+
+/// K-381: bağlantı sınırları isteğe bağlıdır; varsayılanlar sıkıdır, aralık
+/// dışı değer, ASCII olmayan ya da CR/LF'li kibar ret satırı ve dinleyicisiz
+/// ayar P020 ile reddedilir.
+#[test]
+fn baglanti_ayarlari_aralikli_okunur_ve_p020_ile_reddedilir() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\ndinleyiciler \"smtp_v4 0.0.0.0:25\" listesi olsun\n";
+    let varsayilan = bildirimi_oku(taban).expect("varsayılan").baglanti;
+    assert_eq!(varsayilan, dil::proje::BaglantiAyari::default());
+    assert_eq!(
+        (
+            varsayilan.sinir,
+            varsayilan.uzak_adres_siniri,
+            varsayilan.satir_siniri
+        ),
+        (64, 8, 1000)
+    );
+    let ayar = bildirimi_oku(&format!(
+        "{taban}bağlantı_sınırı 256 olsun\nuzak_adres_bağlantı_sınırı 16 olsun\nbağlantı_satır_sınırı 512 olsun\nbağlantı_boşta_süresi 60 olsun\nbağlantı_ömrü 900 olsun\nbağlantı_dolu_yanıtı \"421 4.3.2 Hizmet mesgul\" olsun\n"
+    ))
+    .expect("ayarlar")
+    .baglanti;
+    assert_eq!(
+        ayar,
+        dil::proje::BaglantiAyari {
+            sinir: 256,
+            uzak_adres_siniri: 16,
+            satir_siniri: 512,
+            bosta_suresi_ms: 60_000,
+            omur_ms: 900_000,
+            dolu_yaniti: Some("421 4.3.2 Hizmet mesgul".into()),
+            tls: None,
+        }
+    );
+    // Küçük sınırda uzak adres varsayılanı sınıra çekilir.
+    let kucuk = bildirimi_oku(&format!("{taban}bağlantı_sınırı 2 olsun\n"))
+        .unwrap()
+        .baglanti;
+    assert_eq!(kucuk.uzak_adres_siniri, 2);
+    for (satir, ifade) in [
+        ("bağlantı_sınırı 0 olsun", "1 ile 4096"),
+        ("bağlantı_sınırı 5000 olsun", "1 ile 4096"),
+        ("bağlantı_sınırı \"64\" olsun", "sabit Sayı"),
+        ("bağlantı_satır_sınırı 63 olsun", "64 ile 65536"),
+        ("bağlantı_boşta_süresi 0 olsun", "1 ile 3600"),
+        ("bağlantı_ömrü 86401 olsun", "1 ile 86400"),
+        ("bağlantı_dolu_yanıtı \"421 meşgul\" olsun", "ASCII"),
+        ("bağlantı_dolu_yanıtı \"\" olsun", "ASCII"),
+        (
+            "bağlantı_sınırı 4 olsun\nuzak_adres_bağlantı_sınırı 5 olsun",
+            "aşamaz",
+        ),
+    ] {
+        let tani = bildirimi_oku(&format!("{taban}{satir}\n")).unwrap_err();
+        assert_eq!(tani.kod, "P020", "{satir}");
+        assert!(tani.mesaj.contains(ifade), "{satir}: {}", tani.mesaj);
+    }
+    let dinleyicisiz = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nbağlantı_sınırı 8 olsun\n";
+    let tani = bildirimi_oku(dinleyicisiz).unwrap_err();
+    assert_eq!(tani.kod, "P020");
+    assert!(tani.mesaj.contains("dinleyiciler"), "{}", tani.mesaj);
+}
+
+/// K-381 A2b: TLS kimliği değişken adlarıyla bildirilir; implicit TLS
+/// dinleyicileri `dinleyiciler`de olmalı; bozuk bildirim P021.
+#[test]
+fn tls_bildirimi_okunur_ve_p021_ile_reddedilir() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\ndinleyiciler \"smtp_v4 0.0.0.0:25\", \"smtps_v4 0.0.0.0:465\" listesi olsun\n";
+    let kimlik = "tls_sertifika_değişkeni \"POSTA_ZINCIR\" olsun\ntls_anahtar_değişkeni \"POSTA_ANAHTAR\" olsun\n";
+    let tls = bildirimi_oku(&format!(
+        "{taban}{kimlik}tls_dinleyicileri \"smtps_v4\" listesi olsun\n"
+    ))
+    .unwrap()
+    .baglanti
+    .tls
+    .expect("tls");
+    assert_eq!(tls.dinleyiciler, vec!["smtps_v4"]);
+    assert_eq!(tls.sertifika_degiskeni, "POSTA_ZINCIR");
+    assert_eq!(tls.anahtar_degiskeni, "POSTA_ANAHTAR");
+    // Yalnız STARTTLS: implicit dinleyici yok.
+    let yalniz = bildirimi_oku(&format!("{taban}{kimlik}")).unwrap();
+    assert!(yalniz.baglanti.tls.unwrap().dinleyiciler.is_empty());
+    assert!(bildirimi_oku(taban).unwrap().baglanti.tls.is_none());
+    for satir in [
+        "tls_sertifika_değişkeni \"A\" olsun",
+        "tls_dinleyicileri \"smtps_v4\" listesi olsun",
+        "tls_sertifika_değişkeni \"A\" olsun\ntls_anahtar_değişkeni \"A\" olsun",
+        "tls_sertifika_değişkeni \"a/b\" olsun\ntls_anahtar_değişkeni \"B\" olsun",
+        "tls_sertifika_değişkeni \"A\" olsun\ntls_anahtar_değişkeni \"B\" olsun\ntls_dinleyicileri \"imaps_v4\" listesi olsun",
+        "tls_sertifika_değişkeni \"A\" olsun\ntls_anahtar_değişkeni \"B\" olsun\ntls_dinleyicileri \"smtps_v4\", \"smtps_v4\" listesi olsun",
+    ] {
+        let tani = bildirimi_oku(&format!("{taban}{satir}\n")).unwrap_err();
+        assert_eq!(tani.kod, "P021", "{satir}: {}", tani.mesaj);
+    }
 }

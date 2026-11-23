@@ -3,6 +3,7 @@
 //! Tür denetiminden geçmiş programı çalıştırır. Çıktı satır listesi olarak
 //! döner; CLI bunu ekrana basar, testler doğrudan karşılaştırır.
 
+mod baglanti;
 mod cumle;
 mod dosya;
 mod eylem_hatasi;
@@ -19,12 +20,16 @@ mod kendine_ekleme;
 mod kimlik_iletisim;
 mod metin;
 mod siralama;
+mod toplayan_baglanti;
 mod toplayan_io;
 mod veritabani;
 mod web_istek;
 mod yetkinlik;
 mod yetkinlik_hatasi;
 
+pub use self::baglanti::{
+    BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti, BOSALTMA_SURESI_MS,
+};
 use self::cumle::blok_calistir_async;
 use self::eylem_hatasi::tani as transaction_hatasi;
 pub use self::eylem_hatasi::{EylemHataSinifi, EylemHatasi};
@@ -40,6 +45,7 @@ use self::kaynak::*;
 use self::kendine_ekleme::kendine_metin_ekle;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
 use self::siralama::deger_sirasi;
+pub use self::toplayan_baglanti::{SahteBaglanti, ToplayanBaglanti};
 pub use self::toplayan_io::{GuvenliCerezKaydi, ToplayanIo};
 pub use self::veritabani::ToplayanVeritabani;
 pub use self::web_istek::istek_hatasi_yaniti;
@@ -443,6 +449,26 @@ pub trait GirdiCikti {
     fn dosya_yaniti_gonder(&mut self, _yol: &str, _tur: &str, _ad: &str) -> Result<i64, String> {
         Err("IO adaptörü dosya yanıtını desteklemiyor".into())
     }
+    /// K-381: `"<ad>" dinleyicisinde bağlantı geldiğinde` kaydı. Ad devralınan
+    /// dinleyicilerden biri olmalıdır; başarıda bağlantı ömrü (ms) döner.
+    fn baglanti_dinleyicisi_kaydet(&mut self, _ad: &str) -> Result<i64, String> {
+        Err("bu çalıştırma adlı dinleyici bağlantısı desteklemiyor (proje.dil `dinleyiciler` + systemd soket devri gerekir)".into())
+    }
+    /// K-381: yeni bağlantı, bekleyen bağlantıların hazırlığı, SIGTERM ya da
+    /// `uyanma_an_ms` anı gelene kadar bekler.
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        _bekleyenler: &[u64],
+        _uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<BaglantiOlayi>, String> {
+        Err("IO adaptörü bağlantı beklemesini desteklemiyor".into())
+    }
+    /// K-381: o anki bağlantı üzerinde engellemeyen işlem.
+    fn baglanti_islemi(&mut self, _kimlik: u64, _islem: &BaglantiIslemi) -> BaglantiSonucu {
+        BaglantiSonucu::hata("kapandı", "IO adaptörü bağlantı işlemini desteklemiyor")
+    }
+    /// K-381: bağlantı görevi tanıyla bitti; neden yalnız operatör günlüğüne.
+    fn baglanti_tanisini_gunlukle(&mut self, _kimlik: u64, _neden: &str) {}
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
     /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.
     fn durum_yaniti_gonder(&mut self, _durum: u16, yanit: &str) {
@@ -682,6 +708,26 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
         self.ic.borrow_mut().dosya_yaniti_gonder(yol, tur, ad)
+    }
+    fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
+        self.ic.borrow_mut().baglanti_dinleyicisi_kaydet(ad)
+    }
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        bekleyenler: &[u64],
+        uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<BaglantiOlayi>, String> {
+        self.ic
+            .borrow_mut()
+            .baglanti_olaylarini_bekle(bekleyenler, uyanma_an_ms)
+    }
+    fn baglanti_islemi(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
+        self.ic.borrow_mut().baglanti_islemi(kimlik, islem)
+    }
+    fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
+        self.ic
+            .borrow_mut()
+            .baglanti_tanisini_gunlukle(kimlik, neden)
     }
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         self.ic.borrow_mut().yonlendir_gonder(adres)
@@ -959,6 +1005,10 @@ fn calistir_program_kodla(
         Ok(_) => {}
     }
 
+    // K-381: bağlantı blokları kaydedildiyse bağlantı scheduler'ına geç.
+    if ortam.contains_key("(bağlantı)") {
+        return baglanti::baglantilari_sun(program, &ortam, io);
+    }
     // Sunucu kurulduysa dinlemeye geç (golden 25): kayıtlı "geldiğinde"
     // gövdeleri istek başına taze ortamda koşulur.
     if ortam.contains_key("(sunucu)") {
@@ -1395,10 +1445,13 @@ async fn gorevleri_calistir<'a>(
                 GOREV_BEKLEME_SINYALI.with(|yuva| {
                     *yuva.borrow_mut() = Some(Rc::clone(&calismalar[sira].sinyal));
                 });
+                // K-381: iç görevler bağlantı scheduler noktası değildir.
+                let baglanti_io = baglanti::io_sinyalini_al();
                 let poll = match calismalar[sira].gelecek.as_mut() {
                     Some(gelecek) => gelecek.as_mut().poll(&mut poll_baglami),
                     None => return Err(ic_hata(calismalar[sira].satir)),
                 };
+                baglanti::io_sinyalini_geri_koy(baglanti_io);
                 GOREV_BEKLEME_SINYALI.with(|yuva| {
                     *yuva.borrow_mut() = ana_sinyal.clone();
                 });

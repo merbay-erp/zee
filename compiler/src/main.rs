@@ -28,6 +28,12 @@ mod dil_web_test;
 
 #[path = "cli/adli_dinleyici.rs"]
 mod adli_dinleyici;
+#[cfg(unix)]
+#[path = "cli/ag_baglantisi.rs"]
+mod ag_baglantisi;
+#[cfg(unix)]
+#[path = "cli/ag_tls.rs"]
+mod ag_tls;
 #[path = "cli/registry.rs"]
 mod dil_registry;
 #[path = "cli/systemd_bildirim.rs"]
@@ -1761,6 +1767,16 @@ impl KaynakGirdisi {
         if let Some(ayar) = self.oturum_ayari() {
             io.web_guvenligi.oturum_ayarini_belirle(ayar);
         }
+        // K-381: adlı dinleyici bildirimi olan projede bağlantı reaktörü.
+        #[cfg(unix)]
+        if let Some(proje) = self.proje.as_ref() {
+            if !proje.ana_bildirim().dinleyiciler.is_empty() {
+                io.ag_baglanti = Some(ag_baglantisi::Reaktor::yeni(
+                    proje.ana_bildirim().baglanti.clone(),
+                    io.baslangic,
+                ));
+            }
+        }
         io
     }
 
@@ -1969,6 +1985,9 @@ struct GercekIo {
     http_gizli_degiskenleri: Vec<String>,
     /// K-378: proje `çok_parçalı_yükleme doğru olsun` bildirimi.
     cok_parcali_yukleme: bool,
+    /// K-381: adlı dinleyici bağlantı reaktörü (yalnız `dinleyiciler` bildirimli projede).
+    #[cfg(unix)]
+    ag_baglanti: Option<ag_baglantisi::Reaktor>,
     /// K-378: proje `e_posta_ek_türleri` kümesi; yoksa dört varsayılan.
     eposta_ek_izni: dil::eposta::mime::EkIzni,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
@@ -2125,6 +2144,8 @@ impl GercekIo {
             gizli_anahtar_degiskeni,
             http_gizli_degiskenleri: Vec::new(),
             cok_parcali_yukleme: false,
+            #[cfg(unix)]
+            ag_baglanti: None,
             eposta_ek_izni: Default::default(),
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
@@ -4026,6 +4047,60 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         db.metrik_ozetini_yayinla();
         result
     }
+    fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::AgDinleyici)?;
+        #[cfg(unix)]
+        {
+            self.ag_baglanti
+                .as_mut()
+                .ok_or_else(|| "proje.dil `dinleyiciler` bildirimi yok".to_string())?
+                .kaydet(ad)
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = ad;
+            Err("bağlantı dinleyicisi Unix (systemd) ister".into())
+        }
+    }
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        bekleyenler: &[u64],
+        uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<dil::yorumlayici::BaglantiOlayi>, String> {
+        #[cfg(unix)]
+        {
+            self.ag_baglanti
+                .as_mut()
+                .ok_or_else(|| "bağlantı reaktörü yok".to_string())?
+                .bekle(bekleyenler, uyanma_an_ms)
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = (bekleyenler, uyanma_an_ms);
+            Err("bağlantı reaktörü yok".into())
+        }
+    }
+    fn baglanti_islemi(
+        &mut self,
+        kimlik: u64,
+        islem: &dil::yorumlayici::BaglantiIslemi,
+    ) -> dil::yorumlayici::BaglantiSonucu {
+        #[cfg(unix)]
+        if let Some(reaktor) = self.ag_baglanti.as_mut() {
+            return reaktor.islem(kimlik, islem);
+        }
+        let _ = (kimlik, islem);
+        dil::yorumlayici::BaglantiSonucu::hata("kapandı", "bağlantı reaktörü yok")
+    }
+    fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
+        #[cfg(unix)]
+        if let Some(reaktor) = self.ag_baglanti.as_ref() {
+            reaktor.gunlukle(kimlik, neden);
+            return;
+        }
+        eprintln!("Zee bağlantı #{kimlik} kapandı: {neden}");
+    }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::AgSunucusu)?;
@@ -4992,6 +5067,18 @@ fn calistir_gercek_io_ile(
     if let Err(hata) = adli_dinleyici::hazirla(girdi.dinleyiciler(), web_isci_grubu::isci_mi()) {
         eprintln!("{hata}");
         return ExitCode::from(2);
+    }
+    // K-381 A2b: TLS kimliği yürütmeden önce yüklenir; hata çıkış 2 (anahtar içeriği yazılmaz).
+    #[cfg(unix)]
+    if let Some(tls) = girdi
+        .proje
+        .as_ref()
+        .and_then(|p| p.ana_bildirim().baglanti.tls.as_ref())
+    {
+        if let Err(hata) = ag_tls::hazirla(tls) {
+            eprintln!("bağlantı TLS'i: {hata}");
+            return ExitCode::from(2);
+        }
     }
     let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
     taban.metrik = metrik;

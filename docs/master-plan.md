@@ -170,12 +170,19 @@ sunucu TLS'i, binlerce uzun oturum için engellemeyen IO, DNS MX/TXT, imza
 intrinsic'leri) **açık iştir**: bugün Zee yalnız devralınmış loopback HTTP
 dinleyicisi arkasında rota yazar. K-354/[RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md)
 taslağı katmanları, FD devri sözleşmesini ve kabul ölçütlerini bağlar; core
-freeze altında uygulanmaz, V1 sözü değildir. **Gerçekleşen tek dilim Aşama
-A1'dir (K-376, ADR-162):** `proje.dil` `dinleyiciler` bildirimiyle systemd
-soketleri adla (sıra varsayımsız) devralınır, aile/adres/kapı/V6ONLY
-doğrulanır ve tutulur; `NOTIFY_SOCKET` varsa `READY=1`/`STOPPING=1`;
-ayrıcalıksız `~@privileged` sandbox'ta çalışır (gerçek systemd 255 ölçümü,
-CI adımı). Zee'den bağlantı kabulü (A2) ve diğer katmanlar açıktır.
+freeze altında uygulanmaz, V1 sözü değildir. **Gerçekleşen dilimler Aşama
+A1 (K-376, ADR-162) ve A2a'dır (K-381, ADR-165):** `proje.dil` `dinleyiciler`
+bildirimiyle systemd soketleri adla (sıra varsayımsız) devralınır,
+aile/adres/kapı/V6ONLY doğrulanır; `"<ad>" dinleyicisinde bağlantı
+geldiğinde` bloğu bağlantı kabul eder, CRLF satırı okur/yazar (çıplak CR/LF,
+uzun satır, kodlama reddi), eşzamanlı oturumlar tek iş parçacıklı bağlantı
+scheduler'ında `poll(2)` ile ilerler; bağlantı/uzak adres sınırı ve kibar
+ret, mutlak boşta süresi, 64 KiB geri basınç, SIGTERM boşaltması;
+`NOTIFY_SOCKET` varsa `READY=1`/`STOPPING=1`; ayrıcalıksız `~@privileged`
+sandbox'ta çalışır (gerçek systemd 255 ölçümü, CI adımı). A2b ile sunucu
+TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
+1.2/1.3 AEAD, kimlik credential'dan). Blok okuma (A2c) ve diğer katmanlar
+açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV
 yöntemleri, kapalı istek başlığı okuma listesi, XML/iCalendar/vCard yanıt

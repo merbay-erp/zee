@@ -162,6 +162,30 @@ impl GirdiCikti for IzYenidenOynatici {
         self.bos_sonuc("durum_yaniti_gonder", sonuc);
     }
 
+    fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
+        super::baglanti::kaydet_oynat(self, ad)
+    }
+
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        bekleyenler: &[u64],
+        uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<crate::yorumlayici::BaglantiOlayi>, String> {
+        super::baglanti::bekle_oynat(self, bekleyenler, uyanma_an_ms)
+    }
+
+    fn baglanti_islemi(
+        &mut self,
+        kimlik: u64,
+        islem: &crate::yorumlayici::BaglantiIslemi,
+    ) -> crate::yorumlayici::BaglantiSonucu {
+        super::baglanti::islem_oynat(self, kimlik, islem)
+    }
+
+    fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
+        super::baglanti::gunluk_oynat(self, kimlik, neden)
+    }
+
     fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
         let sonuc = self.siradaki(
             "dosya_yaniti_gonder",

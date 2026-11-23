@@ -319,6 +319,7 @@ dependencies = [
  "r2d2",
  "r2d2_postgres",
  "rpassword",
+ "rustls",
  "serde",
  "serde_json",
  "sha2",

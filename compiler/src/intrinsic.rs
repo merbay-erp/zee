@@ -37,6 +37,15 @@ pub const DOSYA_ILK_BAYT_SINIRI: i64 = 64;
 /// — rota yanıtını kayıtlı içerik türüyle `Content-Disposition: attachment`
 /// dosya yanıtı yapar → TamSayı Sonucu (bayt).
 pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
+/// K-381: `bağlantıdan satır okumayı dene` — o anki bağlantı görevinden tek
+/// CRLF satırı → Metin Sonucu (C030 `tür` verili ret).
+pub const BAGLANTI_SATIR_OKU: &str = "ag.baglanti_satir_oku";
+/// K-381: `bağlantıya <metin> satırını yazmayı dene` → TamSayı Sonucu
+/// (CRLF dahil kuyruğa alınan bayt).
+pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
+/// K-381 A2b: `bağlantıda TLS başlatmayı dene` — STARTTLS yükseltmesi →
+/// Metin Sonucu (anlaşılan sürüm ve şifre takımı).
+pub const BAGLANTI_TLS_BASLAT: &str = "ag.baglanti_tls_baslat";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -117,6 +126,30 @@ const IKI_METIN_BIR_SAYI: &[IntrinsicTuru] = &[
 ];
 
 pub const TANIMLAR: &[IntrinsicTanimi] = &[
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_SATIR_OKU,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıdan satır okuma argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_SATIR_YAZ,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıya yazılacak satır Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_TLS_BASLAT,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıda TLS başlatma argüman almaz.",
+    },
     IntrinsicTanimi {
         kimlik: EPOSTA_MIME_GONDER,
         yetkinlik: Yetkinlik::Ag,

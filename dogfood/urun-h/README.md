@@ -7,10 +7,11 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 
 | Sürtünme | Kanıt | RFC-0039 katmanı |
 |---|---|---|
-| TCP dinleyicisi yok, tek bağlantı yüzeyi HTTP rotası (S036) | `korpus/f009-dinleyici-yok.dil` | A |
+| TCP dinleyicisi yok, tek bağlantı yüzeyi HTTP rotası (S036; K-381 ile çözüldü) | `korpus/f009-dinleyici-yok.dil` | A |
 | Metin kaçışında `\r` yok, çıplak CR denetimi yazılamaz (S040) | `korpus/f004-cr-kacisi-yok.dil` | A (çalışma zamanı değişmezi) |
 | Yerleşik büyük harf Türkçe yerel ayarlı (`MAİL`), ASCII katlama yok | `korpus/f001-yerel-ayarli-buyuk-harf.dil`, çözüm `korpus/f001-ascii-katlama-elle.dil` | D adayı |
 | Adlı systemd soketi ve `Type=notify` yok; on soket sırasız geliyor (K-376, çözüldü: A1) | `dinleyici-devri/` | A1 (uygulandı) |
+| Zee kodu adlı dinleyiciden bağlantı kabul edemiyor, satır okuma istem basıyor (F009/F010; K-381, çözüldü: A2a) | `baglanti-yankisi/`, `korpus/f009-dinleyici-yok.dil` | A2a (uygulandı) |
 | Web arayüzü ek indiremiyor, JS'siz dosya yükleyemiyor, PDF/görsel dışı ek gönderemiyor (ZM-F022; K-378, çözüldü: RFC-0041 A, B, C) | `ek-akisi/` | RFC-0041 A, B, C (uygulandı) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355

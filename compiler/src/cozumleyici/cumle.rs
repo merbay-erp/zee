@@ -1,4 +1,5 @@
 use super::*;
+mod baglanti;
 mod gorunum;
 fn sembol_yazimi_kaydet(
     baglam: &mut Baglam,
@@ -420,6 +421,9 @@ pub(super) fn blok_denetle(
                     istek_ortami.insert("oturum".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                     blok_denetle(govde, &mut istek_ortami, baglam)?;
                 }
+                Cumle::BaglantiGeldiginde { .. }
+                | Cumle::BaglantiyaYaz { .. }
+                | Cumle::BaglantiyiKapat { .. } => baglanti::denetle(cumle, ortam, baglam)?,
                 Cumle::YanitGonder { deger, satir, .. } => {
                     let satir = *satir;
                     ifade_denetle(deger, ortam, baglam, satir)?;

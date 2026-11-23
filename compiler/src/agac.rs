@@ -703,6 +703,17 @@ pub enum Cumle {
         govde: Vec<Cumle>,
         satir: usize,
     },
+    /// K-381: `"smtp_v4" dinleyicisinde bağlantı geldiğinde` + gövde — adlı
+    /// dinleyiciden kabul edilen her bağlantı için taze ortamda koşar.
+    BaglantiGeldiginde {
+        dinleyici: Ifade,
+        govde: Vec<Cumle>,
+        satir: usize,
+    },
+    /// K-381: `bağlantıya "220 hazır" satırını yaz` (CRLF'yi runtime ekler).
+    BaglantiyaYaz { deger: Ifade, satir: usize },
+    /// K-381: `bağlantıyı kapat`.
+    BaglantiyiKapat { satir: usize },
     /// `"çalışıyor" yanıtını gönder` veya sabit `503 durumuyla gönder`.
     YanitGonder {
         deger: Ifade,

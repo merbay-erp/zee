@@ -2557,6 +2557,55 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-381 — Adlı dinleyici bağlantı yüzeyi (RFC-0039 A2a)
+
+**Durum: KAPALI (A2a, A2b).** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail);
+23 Kasım 2026 merkez kararı “Sırayla aç”, adım 2. Ürün SMTP durum
+makinesini yalnız stdio aracıyla sınayabiliyordu (F010) ve dinleyici
+kalıbı S036 veriyordu (F009); K-376 soketleri devralıp tutuyor ama Zee
+koduna vermiyordu. Freeze sınıfı `dogfood-change`, karar ADR-165.
+
+Tasarım: RFC-0039 Aşama A2 tamamlandı ve A2a (düz TCP satır akışı +
+sınırlar + bağlantı scheduler'ı), A2b (sunucu TLS'i/STARTTLS), A2c (blok
+okuma) dilimlerine bölündü; açık sorular (poll reaktörü, yalıtılmış bağlantı
+kapsamı, `ring`, yeniden yüklemesiz sertifika yenileme) kapandı.
+
+A2a (kapalı): `"<ad>" dinleyicisinde bağlantı geldiğinde` bloğu,
+`bağlantıdan satır okumayı dene` (Sonuç<Metin>), `bağlantıya X satırını
+yaz` / `… yazmayı dene` (Sonuç<TamSayı>), `bağlantıyı kapat`; C030 `tür`
+verisi; `ağ-dinleyici` yetkinliği; P020 bağlantı ayarları; saf
+`dil::ag_satiri` (CRLF, çıplak CR/LF, uzunluk, kodlama), `libc` `poll(2)`
+reaktörü (`cli/ag_baglantisi.rs`: sınırlar, kibar ret, 64 KiB geri basınç,
+mutlak boşta süresi, SIGTERM boşaltması, READY/STOPPING), yorumlayıcıda
+bağlantı scheduler'ı (görev başına son tarih/bütçe, yalıtılmış hata), IO
+izi ve hermetik adaptör. Web sunucusu ve bildirimsiz projeler değişmez.
+
+Kanıt: `compiler/tests/ag_baglantisi_testi.rs` (12 hermetik vaka),
+`compiler/tests/ag_baglantisi_surec_testi.rs` (7 gerçek süreç/TCP vakası:
+uçtan uca + pipelining, eşzamanlılık ve kibar ret, slowloris, SIGTERM,
+geri basınç, okumayan istemci, T054/çıkış 2), `ag_satiri` birim testleri,
+`proje_testi` P020, io izi kodlama testi; gerçek systemd 255
+(`scripts/systemd-adli-soket-olcumu.py` bağlantı koşusu: `Type=notify`,
+UID 1000, CapEff 0, `~@privileged @resources` + MemoryDenyWriteExecute,
+IPv4/IPv6 SMTP oturumu, `systemctl stop` ile `421 … kapanıyor`, çıkış 0).
+spec/12 §9, spec/23, ADR-165, GB-157, `dogfood/urun-h/baglanti-yankisi/`,
+[docs/adli-dinleyici-devri.md](adli-dinleyici-devri.md).
+
+A2b (kapalı): P021 TLS kimliği (`tls_sertifika_değişkeni`,
+`tls_anahtar_değişkeni`, `tls_dinleyicileri`; K-339 credential modeli,
+açılışta doğrulama, çıkış 2), `rustls`+`ring` sabit politika (TLS 1.3/1.2,
+ECDHE + AEAD), implicit TLS el sıkışması görev öncesi, `bağlantıda TLS
+başlatmayı dene` → Sonuç<Metin>; STARTTLS anında tamponda düz metin varsa
+yükseltme yok + kapanış (CVE-2011-0411). Kanıt:
+`compiler/tests/ag_baglantisi_tls_testi.rs` (implicit TLS 1.3, STARTTLS
+1.3/1.2, enjeksiyon, TLS 1.1/CBC reddi, kimlik/credential), hermetik
+STARTTLS vakaları, `proje_testi` P021; GB-158.
+
+Açık: A2c blok okuma/akıtma,
+çok işçi grubuna adla aktarım, `dil dene` içinden betiklenmiş bağlantı,
+binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
+çağrıları (Katman C).
+
 ## K-378 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türleri (RFC-0041)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h`

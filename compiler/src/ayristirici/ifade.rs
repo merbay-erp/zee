@@ -1,6 +1,7 @@
 use super::*;
 mod http;
 
+mod baglanti;
 mod dosya;
 mod web;
 pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
@@ -825,12 +826,12 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
             ],
         }));
     }
-
     if let Some(ifade) = web::oturum_yonetimi_kalibi(tokenlar)? {
         return Ok(Some(ifade));
     }
-
-    if let Some(ifade) = dosya::dosya_yaniti_kalibi(tokenlar)? {
+    if let Some(ifade) =
+        baglanti::baglanti_kalibi(tokenlar, islemler)?.or(dosya::dosya_yaniti_kalibi(tokenlar)?)
+    {
         return Ok(Some(ifade));
     }
     if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)? {

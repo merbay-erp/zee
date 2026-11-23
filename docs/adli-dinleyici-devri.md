@@ -1,8 +1,9 @@
 # Adlı dinleyici devri ve systemd hizmet bildirimi
 
 K-376 / [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md) /
-[RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md) Aşama A1. Normatif
-maddeler [spec/12 §8](../spec/12-web-guvenlik-profili.md).
+[RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md) Aşama A1; bağlantı yüzeyi
+K-381 / [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md) Aşama A2a.
+Normatif maddeler [spec/12 §8–§9](../spec/12-web-guvenlik-profili.md).
 
 Bir proje, dış yöneticinin (systemd) kendisi adına açtığı dinleyicileri
 `proje.dil` içinde **adla** bildirir. `dil çalıştır` kaynağı derleyip
@@ -62,8 +63,9 @@ dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25", "gonderim_v4 0.0.0.0:587",
 
 ## Birim şablonları
 
-Aşağıdaki iki blok depo CI'ında gerçek systemd ile ölçülür
-(`scripts/systemd-adli-soket-olcumu.py` blokları bu dosyadan okur). Her
+Aşağıdaki iki blok ve bağlantı bölümündeki hizmet bloğu depo CI'ında gerçek
+systemd ile ölçülür (`scripts/systemd-adli-soket-olcumu.py` blokları bu
+dosyadan okur). Her
 adlı dinleyici için soket şablonundan bir birim üretilir; `@AD@` adı,
 `@ADRES@` `ListenStream` değeridir (IPv6 köşeli parantezle). `@SOKETLER@`
 bütün soket birimlerinin boşlukla ayrılmış listesidir. `@KAPI@`, `@DIL@`,
@@ -144,6 +146,97 @@ WantedBy=multi-user.target
 Etkinleştirme: her soket için `systemctl enable --now zee-uygulama-<ad>.socket`,
 ardından `systemctl start zee-uygulama.service`.
 
+## Bağlantı yüzeyi (K-381, RFC-0039 A2a)
+
+Bağlantı bloğu olan program web sunucusu açmaz; hizmet `--web-proxy`
+bayrakları olmadan çalışır ve `READY=1`'i bağlantı scheduler'ı başlayınca
+gönderir. Normatif maddeler [spec/12 §9](../spec/12-web-guvenlik-profili.md),
+karar [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md).
+
+```text
+# proje.dil
+yetkinlikler "ağ-dinleyici" listesi olsun
+dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun
+bağlantı_sınırı 256 olsun
+uzak_adres_bağlantı_sınırı 16 olsun
+bağlantı_boşta_süresi 300 olsun
+bağlantı_dolu_yanıtı "421 4.3.2 Hizmet mesgul" olsun
+
+# ana.dil — her aile ayrı ad taşıdığı için iki blok aynı işlemi çağırır
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+"smtp_v6" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+```
+
+Bağlantı hizmetinin birimi (soket birimi yukarıdaki şablonun aynısıdır):
+
+`zee-uygulama.service` (bağlantı):
+
+```ini
+[Unit]
+Description=Zee uygulaması (adlı dinleyici bağlantıları)
+Requires=@SOKETLER@
+After=@SOKETLER@ network.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+Sockets=@SOKETLER@
+User=@KULLANICI@
+WorkingDirectory=@PROJE_KOKU@
+ExecStart=@DIL@ çalıştır @PROJE_KOKU@
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ReadWritePaths=@PROJE_KOKU@
+UMask=0077
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- SIGTERM (`systemctl stop`/`restart`): yeni kabul durur, `STOPPING=1`,
+  bekleyen okumalar `kapanıyor` döner ve Zee protokolün `421` satırını
+  yazar; en çok 10 saniye sonra kalan bağlantılar kapatılır.
+  `TimeoutStopSec` bu süreden uzun olmalıdır. `Accept=no` dinleyici
+  yeniden başlatma aralığında yeni bağlantıları çekirdek kuyruğunda tutar.
+- Sınır dolunca bağlantı kabul edilir, `bağlantı_dolu_yanıtı` yazılıp
+  kapatılır; ret sayısı günlüğe en çok beş saniyede bir düşer. Bağlantı
+  görevinin tanıyla bitmesi `Zee bağlantı #N (<ad>, <uzak>) kapandı: …`
+  satırıdır; satır içeriği günlüğe yazılmaz.
+- TLS: zincir ve anahtar `LoadCredential=` ile verilir; `proje.dil`
+  yalnız adları taşır:
+
+  ```text
+  tls_sertifika_değişkeni "POSTA_TLS_ZINCIRI" olsun
+  tls_anahtar_değişkeni "POSTA_TLS_ANAHTARI" olsun
+  tls_dinleyicileri "smtps_v4", "smtps_v6" listesi olsun
+  ```
+
+  Birimde: `LoadCredential=POSTA_TLS_ZINCIRI:/etc/posta/zincir.pem` ve
+  `LoadCredential=POSTA_TLS_ANAHTARI:/etc/posta/anahtar.pem`. Sertifika
+  yenilemesi `systemctl restart` ile alınır (dinleyiciler `Accept=no`
+  ile açık kalır).
+- Geliştirme makinesinde systemd birimi kurmadan:
+  `systemd-socket-activate -l 127.0.0.1:2525 --fdname=smtp_v4 dil çalıştır .`
+  (Linux). Bind'e geri dönüş yoktur; devirsiz `dil çalıştır` çıkış 2 verir.
+
 ## Ölçüm
 
 `python3 scripts/systemd-adli-soket-olcumu.py --dil <dil> --cikti <klasör>`
@@ -153,7 +246,15 @@ V6ONLY IPv6) ve hizmeti yukarıdaki şablonlardan kurar ve şunları denetler:
 adresle eşlediğini yazar; dört soket ve HTTP kapısı bağlantı kabul eder;
 ana sürecin UID'i 0 değildir ve `CapEff` sıfırdır; `systemctl stop` temiz
 biter. Olumsuz iki koşu: bildirimde fazladan ad (devredilmeyen ad, çıkış 2)
-ve `BindIPv6Only=both` (V6ONLY kapalı, çıkış 2). Sonuç
+ve `BindIPv6Only=both` (V6ONLY kapalı, çıkış 2). K-381 bağlantı koşusu iki
+adlı soketle (IPv4 + V6ONLY IPv6) bağlantı hizmetini kurar: `READY=1` ile
+başlar, iki aileden SMTP benzeri oturum (karşılama, yankı, çıplak LF reddi,
+QUIT) geçer, ayrıcalıksız ve capability'siz çalışır; açık bir bağlantı
+varken `systemctl stop` istemciye `421 … kapanıyor` yazdırır ve hizmet 0 ile
+temiz biter. A2b: aynı koşu `smtps_v4/v6` implicit TLS soketlerini ve
+test CA'lı kimliği (`LoadCredential=`; desteklenmeyen konteynerde ortam)
+ekler, implicit TLS ve STARTTLS oturumunu ve STARTTLS enjeksiyonunun
+`220` sonrası kapanışını denetler. Sonuç
 `<klasör>/systemd-adli-soket-olcumu.json`.
 
 Kapılar çekirdeğin geçici (ephemeral) aralığının dışından seçilir, her
