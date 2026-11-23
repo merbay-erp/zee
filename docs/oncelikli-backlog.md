@@ -2715,6 +2715,66 @@ Morfoloji takibi: `Kâr` adı için belirtme eki `Kârı` yerine `Kâri` üretil
 (şapkalı ünlü uyumu; güvenlik dışı). GB-109 dosya yetkinliği alanı nedeniyle
 `acik` kalır.
 
+## K-369 — Sahipli süreç ve yük testlerinde dört aralıklı hata
+
+**Durum: KAPALI.** Test sağlamlaştırması; ürün davranışı, betikler ve
+`compiler/src` değişmedi. 21.11.2026'da ilgisiz PR'larda aynı aileden dört
+aralıklı hata görüldü; hepsi tek başına geçiyordu. Her biri yük altında
+yeniden üretildi ve kök nedeni ürün/test diye kanıtla ayrıldı:
+
+- `http_service_hazirlik` (ubuntu CI, `service refused`): CI izi
+  `configuration` içindeki iki farklı worker portu şartında düşüyordu.
+  setUp iki portu sırayla `bind(0)`+kapatma ile seçiyordu; bırakılan geçici
+  port yeniden verilebilir. Linux VM'de eski desen 200 000 denemede 10 kez
+  aynı portu verdi, yeni desen (iki soket portlar okunana dek bağlı) 0.
+- `native_listener_nesil_admission_kota_ve_metrik_kompozisyonu`
+  (`owned group cleaned before wait foreign survived`): yabancı süreç
+  `sleep(60)` idi, test tek başına 34 sn, 6× CPU yükünde ~72 sn sürüyor; 3/3
+  düştü ve yabancı süreç `exit=0` ile (öldürülmeden) kendiliğinden bitmişti.
+  Ürün tarafı ayrıca ölçüldü: test artık temizliği anlık denetimle değil,
+  yerli torunun miras aldığı borunun son tarihli EOF'u ile doğrular (grubun
+  bütün yazarları gitti); yabancı süreç 1 saat uyur ve çıkış kodu raporlanır.
+  Darwin dahil yükte EOF geldi; sahipli grup temizliği doğru.
+- `isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez`
+  (`yetersiz yük`): paralel test ikilileri yükünde 9/10 düştü, hepsinde
+  0 başarısız istek (38–49 istek); 1 sn sabit ısınma + toplam > 50
+  varsayımıydı. Yük ön koşulu artık son tarihli yoklamadır: 20 istek, her
+  yeniden başlatmadan önce +12 yeni istek; sıfır kayıp sözü aynen kalır.
+  Aynı testte ikinci arıza `AddrInUse` (kapı bağlama satırı): kapı
+  `bos_kapi` ile sınanıp bırakılıyor, sonra yeniden bağlanıyordu
+  (seç-bırak-bağla). Paralel testlerin fork→exec penceresi bırakılan sınama
+  soketini kısa süre tutabilir. Eski kodla `isci_grubu` filtresi yükte 10
+  koşuda 1 kez aynı satırda düştü. systemd soket devri testleri dinleyiciyi
+  kilitli aralıktan seçip bırakmadan bağlar; bağlama `AddrInUse` ile düşerse
+  yeni kapıyla sınırlı kez dener (40 yük koşusunda 0 AddrInUse).
+- Aynı sınıf, kapıyı ürünün bağladığı yolda:
+  `isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir`
+  yükte "sağlık portu açılmadı" ile düşüyordu; eklenen tanı yöneticinin
+  `web işçi grubu …:<kapı> dinleyemedi: Address already in use` ile çıktığını
+  gösterdi. Test yalnız bu bağlama reddinde taze kapılarla en çok 8 kez
+  yeniden başlatır; diğer erken çıkışlar günlükle düşer. Ürün davranışı
+  doğru (bağlanamayan kapıda çıkış 1 ve açık ileti).
+- `native_web_kopma_regresyonu_gercek_worker_ile_korunur` (tam yükte sonraki
+  istek 25 sn yanıtsız; worker `os error 35` = EAGAIN yazdı): kopan istemci
+  soketi ham `libc::socket` ile CLOEXEC'siz açılıyordu. Paralel testlerin
+  başlattığı çocuklar fd'yi miras alınca `drop` gerçek kapanış olmuyor, RST
+  gitmiyor, worker yazımda socket zaman aşımını bekliyordu. Deney: fd bir
+  `sleep 40` çocuğuna sızınca sonraki istek 40,27 sn (sızıntısız 0,26 sn).
+  Soket artık exec'te kapanır (Linux `SOCK_CLOEXEC`, diğer Unix'te oluşturma
+  anında `FD_CLOEXEC`) ve helper bunu değişmez olarak denetler; bayrağı
+  kaldıran mutasyon testi hemen kırar.
+
+Önce/sonra (aynı makine, paralel test ikilileri + 28 CPU süreci; native-listener
+için 84 CPU süreci): native-listener 4/4 düştü → 3/3 geçti (28 CPU + ikililer
+3/3); systemd soket yükü 9/10 düştü → 5/5 geçti (87–93 istek, 0 kayıp);
+`isci_grubu` filtresi AddrInUse 1/10 → 0/46 (port 0 ara sürümü 40, son sürüm 6 koşu; sağlık testi bağlama reddi yeniden başlatmayla 0); kopma ve http-service tek
+başına yükte yeniden üretilemedi (kopma 55/55, mekanizma deneyle kanıtlı;
+http-service port tekrarı Linux'ta 1/20 000) → 10/10 ve 10/10.
+Açık sınır (ürün, bilinçli): okumayan bir istemci tek işçiyi ~25 sn tutar;
+ADR-017/spec/12 yanıt yazımında mutlak bütçe değil syscall başına 10 sn
+socket zaman aşımı tanımlar, kısmi ilerleme süreyi yeniler. Slowloris
+koruması reverse proxy buffering'dedir (`docs/web-production-profili.md`).
+
 ## K-362 — P33 kanıt dilimi: bağımsız HTTP kâhini ve oturum çökme kesitleri
 
 **Durum: KAPALI (dilim; GB-109 açık kalır).** K-293/P33'ün beş kanıt alanından

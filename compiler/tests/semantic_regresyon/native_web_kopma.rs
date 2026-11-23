@@ -158,13 +158,30 @@ pub fn dinlemeyi_bekle(kapi: u16) {
 
 /// Küçük alma tamponlu (SO_RCVBUF) bağlantı: büyük yanıt çekirdek
 /// tamponlarına sığmaz, worker yazımın ortasında kalır.
+///
+/// K-369: tanımlayıcı exec'te kapanır (CLOEXEC). Test ikilisi paralel
+/// testlerde sürekli süreç başlatır; miras kalabilen soket o çocuklara
+/// sızıyor, `drop` gerçek kapanış olmadığından RST gitmiyor ve worker yazımda
+/// socket zaman aşımını bekliyordu (tam yükte sonraki istek 25 sn yanıtsız).
+/// Linux'ta bayrak atomiktir; diğer Unix'lerde std soketleri gibi oluşturma
+/// anında kurulur.
 #[cfg(unix)]
 fn kucuk_tamponlu_baglan(kapi: u16) -> TcpStream {
     use std::os::fd::FromRawFd;
     // SAFETY: yeni soket tanımlayıcısı yalnız bu blokta sahiplenilir; bağlantı
     // başarılıysa sahiplik TcpStream'e devredilir, değilse kapatılır.
     unsafe {
-        let fd = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
+        #[cfg(any(target_os = "linux", target_os = "android"))]
+        let fd = libc::socket(libc::AF_INET, libc::SOCK_STREAM | libc::SOCK_CLOEXEC, 0);
+        #[cfg(not(any(target_os = "linux", target_os = "android")))]
+        let fd = {
+            let fd = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
+            if fd >= 0 && libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) != 0 {
+                libc::close(fd);
+                panic!("soket CLOEXEC kurulamadı");
+            }
+            fd
+        };
         assert!(fd >= 0, "soket açılmalı");
         let tampon: libc::c_int = 4096;
         libc::setsockopt(
@@ -198,6 +215,14 @@ fn kucuk_tamponlu_baglan(kapi: u16) -> TcpStream {
 pub fn yazim_ortasinda_kopar(kapi: u16, yontem_hedef: &str, kimlik: &str) -> Vec<u8> {
     use std::os::fd::AsRawFd;
     let mut akis = kucuk_tamponlu_baglan(kapi);
+    // K-369: kopuşun RST'si yalnız tanımlayıcı hiçbir çocuğa miras kalmadıysa
+    // `drop` anında gider; bu değişmez bozulursa test zamanlamaya bırakılmaz.
+    // SAFETY: geçerli, sahiplenilmiş soket üzerinde salt okuma fcntl.
+    let bayraklar = unsafe { libc::fcntl(akis.as_raw_fd(), libc::F_GETFD) };
+    assert!(
+        bayraklar >= 0 && bayraklar & libc::FD_CLOEXEC != 0,
+        "kopan istemci soketi exec'te kapanmalı (FD_CLOEXEC)"
+    );
     akis.set_read_timeout(Some(Duration::from_secs(10)))
         .expect("okuma timeout");
     akis.write_all(ham_istek(yontem_hedef, kimlik).as_bytes())
