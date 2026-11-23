@@ -175,6 +175,8 @@ korur (ADR-099/100/110).
 
 ZORUNLU: Native düz metin SMTP gönderimi tek mutlak süre bütçesini bağlantı, SMTP ve TLS okuma/yazmaları boyunca korur; yavaş kısmi yanıt veya yazma süreyi yenileyemez. Sıfır ve taşan süre ağdan önce reddedilir; son tarih dolunca yeni ağ işlemi başlamaz. Sistem DNS çözümlemesi iptal edilemez; sert toplam çağrı wall-time garantisi verilmez. C029 maskelemesi ve otomatik tekrar yasağı korunur.
 
+ZORUNLU: Düz metin `ileti göndermeyi dene` ve `… üzerinden ileti göndermeyi dene` ekli iletiyle aynı bütçeyi kullanır: 20 saniyelik tavan ile varsa dış `içinde` ya da web isteği son tarihinin kalanının küçüğü; ortam/sır hazırlığı bu bütçeden düşülür ve çağrıdan sonra son tarih yeniden denetlenir. Süre içinde dolan dış son tarih sonucu değere çeviremez; iptal `yetişmezse` koluna, web'de 504'e gider. Son tarihsiz çağrıda 20 saniyelik tavan aynen kalır; C029 maskesi, teslim belirsizliği ve otomatik tekrar yasağı değişmez (K-371).
+
 ## systemd credential gizli değer kaynağı — K-339
 
 TANIMLI: Native CLI ana projenin gizli değer bağlarını (`gizli_anahtar_değişkeni`, `e_posta_bağlantı_değişkeni`, PostgreSQL bağlantı değişkeni ve onun `_TLS_CA_PEM` eki, `http_gizli_değişkenleri`) `CREDENTIALS_DIRECTORY` ayarlıysa aynı adlı systemd credential dosyasından da okur; ad credential kimliğidir. Değişken ayarlı değilse davranış ortamdan okumayla birebir aynıdır. Yetki, izin listesi ve ağ hedefi denetimi kaynaktan bağımsız olarak önce uygulanır.

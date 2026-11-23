@@ -1,4 +1,4 @@
-//! K-236/K-237: manifest fixture'ı gerçek SMTP adaptörü üzerinden loopback'te yürütür.
+//! K-236/K-237/K-252/K-371: manifest fixture'ı gerçek SMTP adaptörü üzerinden loopback'te yürütür.
 use dil::faz::BaglanmisProgram;
 use dil::tani::Tani;
 use dil::yorumlayici::{calistir_baglanmis_io_kodla, GirdiCikti, ToplayanIo};
@@ -14,6 +14,8 @@ enum SmtpVaka {
     YanitSiniri,
     AuthEcho,
     YavasYanit,
+    /// K-371: düz metin gönderim dış `içinde` son tarihinin kalanını alır.
+    SonTarih,
 }
 
 pub(super) fn calistir(
@@ -28,7 +30,10 @@ pub(super) fn calistir(
         ["yanit-siniri"] => SmtpVaka::YanitSiniri,
         ["auth-echo"] => SmtpVaka::AuthEcho,
         ["yavas-yanit"] => SmtpVaka::YavasYanit,
-        _ => panic!("SMTP fixture tek exact yanit-siniri/auth-echo/yavas-yanit başlığı taşımalı"),
+        ["son-tarih"] => SmtpVaka::SonTarih,
+        _ => panic!(
+            "SMTP fixture tek exact yanit-siniri/auth-echo/yavas-yanit/son-tarih başlığı taşımalı"
+        ),
     };
     let dinleyici = TcpListener::bind("127.0.0.1:0").unwrap();
     let adres = dinleyici.local_addr().unwrap();
@@ -55,7 +60,7 @@ pub(super) fn calistir(
         akis.set_write_timeout(Some(Duration::from_secs(2)))
             .unwrap();
         match vaka {
-            SmtpVaka::YavasYanit => {
+            SmtpVaka::YavasYanit | SmtpVaka::SonTarih => {
                 akis.write_all(b"220 ").unwrap();
                 let son = Instant::now() + Duration::from_secs(3);
                 while Instant::now() < son {
@@ -128,6 +133,7 @@ pub(super) fn calistir(
         .unwrap(),
         vaka,
         gonderim: 0,
+        baslangic: Instant::now(),
     };
     let sonuc = calistir_baglanmis_io_kodla(program, &mut io);
     bitir.send(()).ok();
@@ -144,6 +150,7 @@ struct SmtpIo {
     ayar: dil::eposta::EpostaAyari,
     vaka: SmtpVaka,
     gonderim: usize,
+    baslangic: Instant,
 }
 
 impl GirdiCikti for SmtpIo {
@@ -153,6 +160,7 @@ impl GirdiCikti for SmtpIo {
         alici: &str,
         konu: &str,
         govde: &str,
+        zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
         assert!(baglanti.is_none(), "fixture dış SMTP URL'sini çalıştıramaz");
         self.gonderim += 1;
@@ -167,10 +175,20 @@ impl GirdiCikti for SmtpIo {
                 kimlik: "fixture",
                 tarih: "Tue, 14 Oct 2026 12:00:00 +0000",
             },
-            if matches!(self.vaka, SmtpVaka::YavasYanit) {
-                Duration::from_millis(200)
-            } else {
-                Duration::from_secs(2)
+            match self.vaka {
+                SmtpVaka::YavasYanit => Duration::from_millis(200),
+                SmtpVaka::SonTarih => {
+                    // Dış `yarım saniye içinde` kalanı 20 sn tavanının yerine geçer.
+                    assert!(
+                        (1..=500).contains(&zaman_asimi_ms),
+                        "düz SMTP dış son tarihin kalanını almalı: {zaman_asimi_ms}"
+                    );
+                    Duration::from_millis(zaman_asimi_ms as u64)
+                }
+                _ => {
+                    assert_eq!(zaman_asimi_ms, 20_000, "son tarihsiz SMTP tavanı 20 sn");
+                    Duration::from_secs(2)
+                }
             },
             &|ip| {
                 if ip.is_loopback() {
@@ -181,6 +199,14 @@ impl GirdiCikti for SmtpIo {
             },
         );
         match self.vaka {
+            SmtpVaka::SonTarih => {
+                assert!(
+                    baslangic.elapsed() < Duration::from_millis(1500),
+                    "düz SMTP dış son tarihi aşmamalı: {:?}",
+                    baslangic.elapsed()
+                );
+                assert_eq!(sonuc.as_ref().unwrap_err(), GIZLI_HATA);
+            }
             SmtpVaka::YavasYanit => {
                 assert!(
                     baslangic.elapsed() < Duration::from_secs(1),
@@ -255,6 +281,11 @@ impl GirdiCikti for SmtpIo {
         self.ic.bekle_ms(ms);
     }
     fn an_ms(&mut self) -> i64 {
-        self.ic.an_ms()
+        // K-371: son tarih vakası gerçek monoton saatle iptali gözler.
+        if matches!(self.vaka, SmtpVaka::SonTarih) {
+            self.baslangic.elapsed().as_millis() as i64
+        } else {
+            self.ic.an_ms()
+        }
     }
 }

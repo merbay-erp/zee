@@ -12,6 +12,19 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
+  dene` artık ekli iletide olduğu gibi çevreleyen `… içinde` bloğunun ya da
+  web isteğinin kalan süresini kullanır. Önceden yanıt vermeyen bir SMTP
+  sunucusu `1 saniye içinde` bloğunu 20 saniye bekletebiliyor, web isteğinin
+  504 yanıtını da geciktirebiliyordu; şimdi süre dolunca `yetişmezse` kolu
+  zamanında çalışır, web'de 504 zamanında gönderilir. Süre bloğu olmayan
+  gönderimde 20 saniyelik üst sınır aynıdır; hata metni ve "otomatik tekrar
+  yok" kuralı değişmez. Ayrıca dış hataların (SMTP, HTTP, PostgreSQL) Zee
+  kodunda nasıl yakalandığı denetlendi; PostgreSQL sorgularının süre sınırına
+  bağlanması ayrı taslak olarak açık kaldı (RFC-0042).
+
+  **Göç:** Gerekmez.
+
 - **Dolu oturum deposu 500 yerine 503 döner (K-370):** Sunucunun oturum
   deposu 4096 girişli oturumla dolduğunda, oturumu olmayan bir ziyaretçinin
   form sayfası (`csrf belirteci`) artık "sunucu hatası" 500 vermez; depo

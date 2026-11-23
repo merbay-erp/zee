@@ -16,6 +16,7 @@ rfcs/0029-liste-sira-erisimi.md	taslak	-	K-180: freeze sonrası tasarım taslağ
 rfcs/0039-ag-sunucusu-yetkinligi.md	taslak	-	K-354: ağ sunucusu çatı taslağı; core freeze altında uygulama, spec ve test yok
 rfcs/0040-webdav-caldav-carddav-adaptoru.md	taslak	-	K-364: CalDAV/CardDAV web adaptörü taslağı; core freeze altında uygulama, spec ve test yok
 rfcs/0041-ikili-yanit-ve-ek-akisi.md	taslak	-	K-373: ikili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı taslağı; core freeze altında uygulama, spec ve test yok
+rfcs/0042-postgresql-sorgu-son-tarihi.md	taslak	-	K-371: PostgreSQL sorgu son tarihi taslağı; spec/25 AÇIK maddesi, uygulama ve test yok
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
 rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi metadata koruması ve rollback
