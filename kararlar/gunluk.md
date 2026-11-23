@@ -5533,3 +5533,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   IO izi şeması değişir). Eski GET'in yakalanamaz C018'i spec/11 §5 gereği
   500 kalır; C025/C029 zaten yakalanabilir `Sonuç`tur. Denetim tablosu `docs/k370-web-oran-500-denetimi.md`.
 
+## K-372 — Mutlak yanıt yazım bütçesi (23 Kasım 2026)
+
+- K-369 test incelemesinin bıraktığı açık sınır ölçüldü: okuma tarafı
+  bağlantı kabulünden mutlak 10 sn taşırken yazım tarafı yalnız syscall
+  başına 10 sn socket zaman aşımı taşıyordu; kısmi ilerleme süreyi
+  yeniliyordu, Darwin'de tek `send` ilerledikçe 28 sn sürdü. Tek işçide
+  2 MiB yanıtı okumayan 3 istemci işçiyi 75 sn, ~32 KiB/s okuyan istemci
+  41,5 sn tuttu; bekleyen istekler 503 değil backlog gecikmesi gördü.
+  Spec/12 ve ADR-017 mutlak yazım bütçesini ne istiyor ne yasaklıyordu,
+  ADR-113 "write10s hard wall-clock değil" diye açık bırakmıştı. Karar:
+  nonblocking yazım, mutlak `10 sn + bayt/128 KiB/s`, ayrıca 10 sn
+  ilerlemesizlik kesmesi; aşımda bağlantı kapanır, mevcut yazım hatası
+  metriği sayar (GB-148).
+- Reddedilen: socket zaman aşımını kalan süreye kırpmak (Darwin'de tek çağrı
+  süresini aşıyor); sabit 10 sn mutlak bütçe (büyük yanıtı dürüst ama yavaş
+  istemciye tamponsuz proxy üzerinden kesiyor); yeni metrik alanı (K-257
+  şeması değişir; yazım hatası sayacı yeterli); `poll(2)` (Windows'ta ayrı
+  yol ister, uyku döngüsü tek işçide aynı sonucu verir).
+

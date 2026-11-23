@@ -313,3 +313,91 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         (cikis, cikti)
     }
 }
+
+/// K-372 korpus kipi `native-web-yazim-butcesi`: `# web-istegi:` yanıtını
+/// sürekli ama yavaş okuyan (4 KiB / 100 ms ≈ 40 KiB/s; her pencerede
+/// ilerler, syscall zaman aşımına düşmez) bir istemci bağlanır, ardından
+/// `# web-sonraki:` isteği gönderilir. Tek işçi yavaş okuyucuyu yalnız
+/// mutlak yanıt yazım bütçesi kadar (2 MiB yanıt için 10 + 16 sn) tutabilir.
+/// Çıktı: sonraki isteğin `durum gövde` satırı ve işçinin bütçe içinde
+/// serbest kalıp kalmadığı. Düzeltme öncesi işçi yanıtın tamamı aktarılana
+/// dek (Linux ~52 sn; Darwin ~40 sn) tutulur.
+pub fn butce_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
+    #[cfg(not(unix))]
+    {
+        let _ = kaynak_yolu;
+        panic!("actual Unix owned socket capability unavailable; no synthetic pass");
+    }
+    #[cfg(unix)]
+    {
+        const SINIR: Duration = Duration::from_secs(30);
+        let kaynak = std::fs::read_to_string(kaynak_yolu).expect("fixture kaynağı");
+        let yavas = baslik_degeri(&kaynak, "# web-istegi: ");
+        let sonraki = baslik_degeri(&kaynak, "# web-sonraki: ");
+        let kapi = bos_kapi();
+        let mut worker = worker_baslat(kaynak_yolu, kapi, Stdio::piped);
+        dinlemeyi_bekle(kapi);
+        let mut akis = kucuk_tamponlu_baglan(kapi);
+        akis.write_all(ham_istek(yavas, "198.51.100.3").as_bytes())
+            .expect("HTTP isteği");
+        akis.set_read_timeout(Some(Duration::from_secs(15)))
+            .expect("okuma timeout");
+        let dur = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let durdur = dur.clone();
+        let okuyucu = std::thread::spawn(move || {
+            let mut toplam = 0usize;
+            let mut parca = [0u8; 4096];
+            while !durdur.load(std::sync::atomic::Ordering::Relaxed) {
+                std::thread::sleep(Duration::from_millis(100));
+                match akis.read(&mut parca) {
+                    Ok(0) | Err(_) => break,
+                    Ok(n) => toplam += n,
+                }
+            }
+            toplam
+        });
+        std::thread::sleep(Duration::from_millis(500));
+        let baslangic = Instant::now();
+        let yanit = (|| {
+            let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+            let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(2)).ok()?;
+            akis.set_read_timeout(Some(Duration::from_secs(90))).ok()?;
+            akis.write_all(ham_istek(sonraki, "198.51.100.4").as_bytes())
+                .ok()?;
+            let mut yanit = Vec::new();
+            akis.read_to_end(&mut yanit).ok()?;
+            String::from_utf8(yanit).ok()
+        })();
+        let sure = baslangic.elapsed();
+        dur.store(true, std::sync::atomic::Ordering::Relaxed);
+        let okunan = okuyucu.join().expect("yavaş okuyucu");
+        let cikis = match worker.try_wait().expect("worker durumu") {
+            Some(durum) => i64::from(durum.code().unwrap_or(-1)),
+            None => 0,
+        };
+        let _ = worker.kill();
+        let _ = worker.wait();
+        let mut hata = String::new();
+        if let Some(mut boru) = worker.stderr.take() {
+            let _ = boru.read_to_string(&mut hata);
+        }
+        eprintln!(
+            "native-web-yazim-butcesi: sonraki istek {sure:?}, yavaş okuyucu {okunan} bayt; worker stderr:\n{hata}"
+        );
+        let mut cikti = yanit
+            .map(|yanit| {
+                let durum = yanit.split_whitespace().nth(1).unwrap_or("").to_string();
+                let govde = yanit.split("\r\n\r\n").nth(1).unwrap_or("");
+                vec![format!("{durum} {govde}")]
+            })
+            .unwrap_or_default();
+        cikti.push(
+            if sure <= SINIR && hata.contains("yanıt yazım bütçesi doldu") {
+                "bütçede serbest".to_string()
+            } else {
+                format!("işçi {} sn tutuldu", sure.as_secs())
+            },
+        );
+        (cikis, cikti)
+    }
+}

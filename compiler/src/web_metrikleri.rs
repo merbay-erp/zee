@@ -272,11 +272,15 @@ impl Sink {
 
 pub(super) trait WebTasima: Read + Write {
     fn set_read_timeout(&self, duration: Option<std::time::Duration>) -> std::io::Result<()>;
+    fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()>;
     fn metrik_yanit(&mut self, _status: u16, _success: bool) {}
 }
 impl WebTasima for TcpStream {
     fn set_read_timeout(&self, duration: Option<std::time::Duration>) -> std::io::Result<()> {
         TcpStream::set_read_timeout(self, duration)
+    }
+    fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
+        TcpStream::set_nonblocking(self, nonblocking)
     }
 }
 pub(super) struct Akis {
@@ -331,6 +335,9 @@ impl Write for Akis {
 impl WebTasima for Akis {
     fn set_read_timeout(&self, duration: Option<std::time::Duration>) -> std::io::Result<()> {
         self.inner.set_read_timeout(duration)
+    }
+    fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
+        self.inner.set_nonblocking(nonblocking)
     }
     fn metrik_yanit(&mut self, status: u16, success: bool) {
         self.outcome = Some((status, success));

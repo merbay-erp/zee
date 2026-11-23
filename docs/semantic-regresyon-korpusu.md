@@ -213,6 +213,19 @@ isteğin `durum gövde` satırıdır. Düzeltme öncesi kaynakta worker C022 ile
 için toplu replay bu kipi atlar; ayrı native libtest vakası boş listeyi
 reddeder ve Unix dışında görünür ignored durumundadır.
 
+
+## Native web yazım bütçesi kipi (K-372)
+
+`security` fazındaki `native-web-yazim-butcesi` kipi gerçek native `dil`
+worker'ını `--web-proxy` profiliyle başlatır. Fixture'ın `# web-istegi:`
+yanıtını küçük alma tamponlu bir istemci 100 ms'de 4 KiB (~40 KiB/s) okur:
+her pencerede ilerler, eski syscall başına zaman aşımına düşmez. Ardından
+`# web-sonraki:` isteği gönderilir. Çıktı sonraki isteğin `durum gövde`
+satırı ve işçi 30 sn içinde serbest kalıp worker günlüğünde `yanıt yazım
+bütçesi doldu` göründüyse `bütçede serbest`, değilse `işçi N sn tutuldu`
+satırıdır. Düzeltme öncesi kaynakta Darwin'de `işçi 34 sn tutuldu` (Linux'ta
+yanıt aktarılana dek). Toplu replay bu kipi atlar; Unix dışında görünür
+ignored durumundadır.
 ## Native dosya EXDEV kipi (K-329)
 
 `runtime` fazındaki `native-dosya-exdev` kipi gerçek native `dil` sürecini

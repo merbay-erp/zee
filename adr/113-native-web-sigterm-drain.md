@@ -33,7 +33,8 @@ sabit hata bildirir. Kapanmış sinyal state'i yeni guard kurulurken sıfırlan�
 CLI web adaptörü dışında global handler kurulmaz; Rust v1 facade değişmez.
 
 Mevcut okuma10s/handler30s/write10s bütçeleri genel hard wall-clock garantisi
-değildir. Supervisor default grace5s kalır; üst sınır60s ve explicit55s
+değildir (K-372 sonrası yanıt yazımı mutlak `10 sn + bayt/128 KiB/s` bütçe
+taşır; ADR-017 eki). Supervisor default grace5s kalır; üst sınır60s ve explicit55s
 örneği bounded current işi bitirme fırsatı verir. Dış grace sonunda KILL
 escalation ve cleanup korunur; kesilemeyen kernel/disk/DB IO için tam drain
 sözü verilmez. SIGINT hâlâ önceki native disposition'ıdır; supervisor'ın
