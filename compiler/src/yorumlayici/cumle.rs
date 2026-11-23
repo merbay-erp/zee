@@ -381,8 +381,11 @@ pub(super) fn blok_calistir_async<'a>(
                     // Dinleme, program gövdesi bitince başlar (calistir_io).
                     ortam.insert("(sunucu)".to_string(), Deger::TamSayi(kapi));
                 }
-                Cumle::IstekGeldiginde { .. } => {
-                    // Yalnız kayıt: gövde, sunucu döngüsünde istek gelince koşulur.
+                Cumle::IstekGeldiginde { .. }
+                | Cumle::BaglantiGeldiginde { .. }
+                | Cumle::BaglantiyaYaz { .. }
+                | Cumle::BaglantiyiKapat { .. } => {
+                    baglanti::cumle_yurut(cumle, ortam, program, cikti, derinlik).await?
                 }
                 Cumle::YanitGonder {
                     deger,
@@ -440,9 +443,8 @@ pub(super) fn blok_calistir_async<'a>(
                         Tani::yeni("C022", format!("Çerez yazılamadı: {}.", hata), *satir, 1, 1)
                     })?;
                 }
-                Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => {
-                    // Rota döngüsü gövde çalışmadan önce uygular.
-                }
+                // Rota döngüsü gövde çalışmadan önce uygular.
+                Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => {}
                 Cumle::OturumAc {
                     kullanici,
                     rol,

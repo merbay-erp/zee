@@ -26,7 +26,13 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 28);
+    assert_eq!(kimlikler.len(), 30);
+    for kimlik in [intrinsic::BAGLANTI_SATIR_OKU, intrinsic::BAGLANTI_SATIR_YAZ] {
+        let kayit = intrinsic::tanim(kimlik).expect("K-381 bağlantı kaydı");
+        assert_eq!(kayit.yetkinlik, Yetkinlik::AgDinleyici);
+        // Ağ beklemesi transaction tutamaz: eylem içinde T048.
+        assert_eq!(kayit.etki, IntrinsicEtkisi::GeriAlinamaz);
+    }
     let dosya_yaniti = intrinsic::tanim(intrinsic::WEB_DOSYA_YANITI).expect("K-378 kaydı");
     assert_eq!(dosya_yaniti.yetkinlik, Yetkinlik::DosyaOkuma);
     assert_eq!(dosya_yaniti.etki, IntrinsicEtkisi::WebAdaptoru);

@@ -5,7 +5,7 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	2982a0db1a98f55812a82116be9edb9646223f7c138c2cfe38a710c1156e4076
+dondurulmus_sha256	3903181c5ccd69f24504404ee64f4c329b1ecf73fa5cd97cc97686feb5d24d2c
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
@@ -22,3 +22,5 @@ dondurulmus_sha256	2982a0db1a98f55812a82116be9edb9646223f7c138c2cfe38a710c1156e4
 # K-335/ADR-160/RFC-0037: 18 Kasım zee-cekirdek abaca3a W3 talebiyle mevcut `herkese açık` politikasının tek contextual biçimi (`herkese açık önbelleklenebilir N saniye`; yeni kalıp kelimesi `önbelleklenebilir`) pencere SONRASI eklendi; pencere tarihleri tarihsel kayıt olarak korunur, yeni pencere açma kararı merkezdedir.
 
 # K-378/ADR-163/RFC-0041: ZeeMail (urun-h, ZM-F022) ek indirme ihtiyacıyla tek contextual Sonuç kalıbı (`<yol> dosyasını <tür> türünde <ad> adıyla ek olarak göndermeyi dene`; yeni kalıp kelimeleri `türünde`, `adıyla`) pencere SONRASI eklendi. Yeni AST/değer türü, koşul grameri ve eski kalıp kaldırması yoktur; multipart yükleme ve SMTP ek türleri grammar değil proje bildirimidir.
+
+# K-381/ADR-165/RFC-0039 A2a: ZeeMail (urun-h) SMTP/IMAP bağlantı motoru ihtiyacıyla rota kalıbının bağlantı karşılığı (`"<ad>" dinleyicisinde bağlantı geldiğinde`), `bağlantıdan satır okumayı dene`, `bağlantıya <metin> satırını yaz` / `… yazmayı dene` ve `bağlantıyı kapat` pencere SONRASI eklendi (yeni kalıp kelimeleri `dinleyicisinde`, `bağlantıdan`, `bağlantıya`, `bağlantıyı`, `satırını`). Yeni anahtar kelime, değer türü ve koşul grameri yoktur; olay bloğu var olan `geldiğinde` ailesindedir, okuma/yazma `dene` Sonuç ailesindedir. Sınırlar proje bildirimidir (P020).

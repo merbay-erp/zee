@@ -1,6 +1,7 @@
 # zee-katman-mimarisi-1
 # modul	katman	dogrudan_bagimliliklar	sorumluluk
 ag_istemcisi	altyapi	kaynak_sinirlari,yetkinlik	Sinirli native HTTP tasimasi
+ag_satiri	altyapi	-	Baglanti satir akisi: CRLF okuyucu, cıplak CR/LF ve uzunluk reddi, giden satir denetimi ve baglanti sinirlari (K-381)
 agac	model	kimlik	Kaynak AST veri modeli
 api	adapter	agac,bicimleyici,faz,lib,proje,tani,yorumlayici	Desteklenen surumlu Rust gomme facade'i
 artefakt_dogrulama	proje	guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,zaman	ZEP arsiv imza SBOM ve provenance guven siniri
@@ -15,7 +16,7 @@ bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani kalitesi kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,icerik_turu,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,sozcukleyici,surum,tani,test_kapsami,web_cok_parcali,web_guvenligi,web_kapanis,web_listener,web_metrikleri,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,ag_satiri,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,icerik_turu,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,sozcukleyici,surum,tani,test_kapsami,web_cok_parcali,web_guvenligi,web_kapanis,web_listener,web_metrikleri,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 eposta	altyapi	icerik_turu,kaynak_sinirlari,zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
@@ -36,7 +37,7 @@ ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,artefakt_dogrulama,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,registry,sozcukleyici,tani	Paket grafigi ve kilit cozumu
 paket_modeli	model	-	Paket yayin ve registry icin davranissiz ortak veri sozlesmesi
 postgresql	altyapi	guvenlik,kaynak_sinirlari,veritabani_modeli	Sinirli PostgreSQL tasimasi ve migration uygulayicisi
-proje	proje	agac,bicimleyici,faz,icerik_turu,morfoloji,sozcukleyici,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
+proje	proje	ag_satiri,agac,bicimleyici,faz,icerik_turu,morfoloji,sozcukleyici,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
 registry	proje	ag_istemcisi,artefakt_dogrulama,guvenlik,kalici_dosya,kaynak_sinirlari,morfoloji,paket_modeli,yetkinlik	Registry metadata ve cache zinciri
 semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma
@@ -53,6 +54,6 @@ web_metrikleri	adapter	-	K-257 private CLI bounded metadata counters/FIFO; Postg
 web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi
-yorumlayici	runtime	agac,eposta,faz,guvenlik,hir,icerik_turu,intrinsic,kaynak_sinirlari,ondalik,tani,test_kapsami,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
+yorumlayici	runtime	ag_satiri,agac,eposta,faz,guvenlik,hir,icerik_turu,intrinsic,kaynak_sinirlari,ondalik,tani,test_kapsami,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
 zaman	temel	-	Gregoryen takvim donusumleri
 test_kapsami	runtime	agac,tani	Opt-in threadlocal kaynak karar envanteri ve sonucu; yorumlayıcıya ters bağımlılık yok

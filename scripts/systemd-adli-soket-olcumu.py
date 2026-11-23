@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """K-376: adlı çoklu dinleyici devrini ve sd_notify'ı gerçek systemd ile ölçer.
 
-Birim şablonları docs/adli-dinleyici-devri.md içindeki iki ```ini bloğundan
-okunur (belgelenen şablon = ölçülen şablon). Dört adlı soket (iki IPv4, iki
+Birim şablonları docs/adli-dinleyici-devri.md içindeki üç ```ini bloğundan
+(soket, web hizmeti, K-381 bağlantı hizmeti) okunur (belgelenen şablon =
+ölçülen şablon). K-381 bağlantı koşusu dogfood/urun-h/baglanti-yankisi
+programını iki adlı soketle çalıştırır ve gerçek SMTP benzeri oturum ile
+SIGTERM boşaltmasını ölçer. Dört adlı soket (iki IPv4, iki
 V6ONLY IPv6) kurulur; hizmet Type=notify, ayrıcalıksız kullanıcı, boş
 capability kümesi ve MemoryDenyWriteExecute altında başlar. Ardından iki
 olumsuz koşu: bildirimde fazladan ad ve V6ONLY kapalı IPv6 soketi.
@@ -47,8 +50,8 @@ def sudo(*komut, kontrol=True):
 def sablonlar():
     metin = (KOK / "docs/adli-dinleyici-devri.md").read_text(encoding="utf-8")
     bloklar = re.findall(r"```ini\n(.*?)```", metin, flags=re.S)
-    if len(bloklar) != 2:
-        raise SystemExit("belgede tam iki ini bloğu (socket, service) bekleniyor")
+    if len(bloklar) != 3:
+        raise SystemExit("belgede tam üç ini bloğu (socket, web service, bağlantı service) bekleniyor")
     return bloklar
 
 
@@ -163,13 +166,14 @@ def proje_yaz(kok, dinleyiciler):
 class Kurulum:
     """Bir koşunun birimlerini yazar, başlatır ve her durumda temizler."""
 
-    def __init__(self, dil, proje, kapi, soketler, ipv6_kipi="ipv6-only"):
+    def __init__(self, dil, proje, kapi, soketler, ipv6_kipi="ipv6-only", baglanti=False):
         self.soketler = soketler  # [(ad, ListenStream)]
         # Koşu başına benzersiz birim adı: durdurulmakta olan önceki birimle
         # ya da daemon-reload sırasında eski tanımla karışmaz.
         SIRA[0] += 1
         self.onek = onek = f"{ONEK}-{os.getpid()}-{SIRA[0]}"
-        soket_sablonu, hizmet_sablonu = sablonlar()
+        soket_sablonu, web_sablonu, baglanti_sablonu = sablonlar()
+        hizmet_sablonu = baglanti_sablonu if baglanti else web_sablonu
         birim_adlari = " ".join(f"{onek}-{ad}.socket" for ad, _ in soketler)
         ortak = {"@KAPI@": str(kapi), "@DIL@": str(dil), "@PROJE_KOKU@": str(proje),
                  "@KULLANICI@": getpass.getuser(), "@ORIGIN@": ORIGIN,
@@ -290,6 +294,86 @@ def olumlu(dil, kok, rapor):
     return gecti
 
 
+def smtp_oturumu(aile, adres, kapi):
+    """Karşılama, NOOP, çıplak LF reddi ve QUIT; dönen satırlar."""
+    satirlar = []
+    with socket.socket(aile, socket.SOCK_STREAM) as s:
+        s.settimeout(20)
+        s.connect((adres, kapi))
+        dosya = s.makefile("rb")
+        oku = lambda: dosya.readline().decode("utf-8", "replace").rstrip("\r\n")
+        satirlar.append(oku())
+        s.sendall(b"NOOP\r\n")
+        satirlar.append(oku())
+        s.sendall(b"MAIL FROM:<a@b>\n")
+        satirlar.append(oku())
+        s.sendall(b"QUIT\r\n")
+        satirlar.append(oku())
+        satirlar.append("EOF" if dosya.read(1) == b"" else "acik")
+    return satirlar
+
+
+def baglanti_kosusu(dil, kok, rapor):
+    """K-381: dogfood bağlantı programı gerçek systemd altında."""
+    smtp = bos_kapi()
+    soketler = [("smtp_v4", f"127.0.0.1:{smtp}"), ("smtp_v6", f"[::1]:{smtp}")]
+    proje = Path(tempfile.mkdtemp(prefix="zee-k381-", dir=kok))
+    proje.chmod(0o755)
+    kaynak = KOK / "dogfood/urun-h/baglanti-yankisi"
+    pd = (kaynak / "proje.dil").read_text(encoding="utf-8")
+    liste = ", ".join(f'"{ad} {adres}"' for ad, adres in soketler)
+    pd = re.sub(r"^dinleyiciler .*$", f"dinleyiciler {liste} listesi olsun", pd, flags=re.M)
+    (proje / "proje.dil").write_text(pd, encoding="utf-8")
+    shutil.copy(kaynak / "ana.dil", proje / "ana.dil")
+    sonuc = {"soketler": soketler}
+    with Kurulum(dil, proje, 0, soketler, baglanti=True) as k:
+        r = k.baslat()
+        sonuc["start_rc"] = r.returncode
+        durum = k.goster("ActiveState", "MainPID", "Type")
+        sonuc["durum"] = durum
+        pid = durum.get("MainPID", "0")
+        status = sudo("cat", f"/proc/{pid}/status", kontrol=False).stdout
+        alan = {x.split(":", 1)[0]: x.split(":", 1)[1].split() for x in status.splitlines() if ":" in x}
+        sonuc["uid"] = alan.get("Uid", ["?"])[0]
+        sonuc["cap_eff"] = (alan.get("CapEff") or ["?"])[0]
+        try:
+            sonuc["v4"] = smtp_oturumu(socket.AF_INET, "127.0.0.1", smtp)
+            sonuc["v6"] = smtp_oturumu(socket.AF_INET6, "::1", smtp)
+        except OSError as hata:
+            sonuc["oturum_hatasi"] = str(hata)
+        # Açık bağlantı varken durdurma: bekleyen okuma `kapanıyor` alır.
+        try:
+            with socket.create_connection(("127.0.0.1", smtp), timeout=20) as s:
+                dosya = s.makefile("rb")
+                sonuc["bosaltma_karsilama"] = dosya.readline().decode().rstrip("\r\n")
+                dur = subprocess.Popen(["sudo", "systemctl", "stop", f"{k.onek}.service"])
+                sonuc["bosaltma_satiri"] = dosya.readline().decode().rstrip("\r\n")
+                dur.wait(timeout=60)
+                sonuc["stop_rc"] = dur.returncode
+        except (OSError, subprocess.TimeoutExpired) as hata:
+            sonuc["bosaltma_hatasi"] = str(hata)
+        sonuc["sonrasi"] = k.goster("Result", "ExecMainStatus", "ActiveState")
+        sonuc["gunluk"] = k.gunluk()[-4000:]
+    beklenen = ["220 mx.ornek.test ESMTP", "250 2.0.0 tamam", "500 5.5.2 sözdizimi hatası",
+                "221 2.0.0 hoşça kal", "EOF"]
+    sonuc["gecti"] = (
+        sonuc["start_rc"] == 0
+        and sonuc["durum"].get("ActiveState") == "active"
+        and sonuc["durum"].get("Type") == "notify"
+        and sonuc["uid"] not in ("0", "?")
+        and sonuc["cap_eff"] == "0000000000000000"
+        and sonuc.get("v4") == beklenen
+        and sonuc.get("v6") == beklenen
+        and sonuc.get("bosaltma_satiri") == "421 4.3.2 hizmet kapanıyor"
+        and sonuc.get("stop_rc") == 0
+        and sonuc["sonrasi"].get("Result") == "success"
+        and sonuc["sonrasi"].get("ExecMainStatus") == "0"
+        and "bağlantı kabul ediliyor" in sonuc["gunluk"]
+    )
+    rapor["baglanti"] = sonuc
+    return sonuc["gecti"]
+
+
 def olumsuz(dil, kok, rapor, ad, soketler, bildirim, ipv6_kipi, ifade):
     kapi = bos_kapi()
     proje = Path(tempfile.mkdtemp(prefix="zee-k376-", dir=kok))
@@ -359,6 +443,7 @@ def main():
         sonuclar.append(denemeli(rapor, "olumlu", lambda: olumlu(dil, kok, rapor)))
         sonuclar.append(denemeli(rapor, "fazla_bildirim", fazla))
         sonuclar.append(denemeli(rapor, "v6only_kapali", v6only))
+        sonuclar.append(denemeli(rapor, "baglanti", lambda: baglanti_kosusu(dil, kok, rapor)))
         rapor["durum"] = "gecti" if all(sonuclar) else "kaldi"
     except BaseException as hata:
         rapor["hata"] = str(hata)
@@ -369,10 +454,10 @@ def main():
             json.dumps(rapor, ensure_ascii=False, indent=2) + "\n")
         subprocess.run(["rm", "-rf", str(kok)], check=False)
     ozet = {k: (v.get("gecti") if isinstance(v, dict) else v) for k, v in rapor.items()
-            if k in ("systemd", "olumlu", "fazla_bildirim", "v6only_kapali", "durum")}
+            if k in ("systemd", "olumlu", "fazla_bildirim", "v6only_kapali", "baglanti", "durum")}
     print(json.dumps(ozet, ensure_ascii=False))
     if rapor["durum"] != "gecti":
-        for anahtar in ("olumlu", "fazla_bildirim", "v6only_kapali"):
+        for anahtar in ("olumlu", "fazla_bildirim", "v6only_kapali", "baglanti"):
             if isinstance(rapor.get(anahtar), dict) and not rapor[anahtar].get("gecti"):
                 print(f"--- {anahtar}\n{json.dumps(rapor[anahtar], ensure_ascii=False, indent=2)}",
                       file=sys.stderr)

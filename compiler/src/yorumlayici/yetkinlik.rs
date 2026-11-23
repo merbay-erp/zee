@@ -2,6 +2,7 @@
 mod dosya;
 mod http;
 mod kimlik_iletisim;
+mod kurulum;
 mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
@@ -17,51 +18,6 @@ pub struct PolitikaliIo<T: GirdiCikti> {
 }
 
 pub type GuvenliIo<T> = PolitikaliIo<T>;
-impl<T: GirdiCikti> PolitikaliIo<T> {
-    pub fn yeni(ic: T) -> Self {
-        Self {
-            ic,
-            politika: YetkinlikPolitikasi::cocuk(),
-            cocuk_modu: true,
-        }
-    }
-
-    pub fn politikali(ic: T, politika: YetkinlikPolitikasi) -> Self {
-        Self {
-            ic,
-            politika,
-            cocuk_modu: false,
-        }
-    }
-
-    pub fn politikasi(&self) -> &YetkinlikPolitikasi {
-        &self.politika
-    }
-
-    fn dosya_yolunu_denetle(&self, yol: &str, yetkinlik: Yetkinlik) -> Result<(), String> {
-        dosya::yolu_denetle(&self.politika, self.cocuk_modu, yol, yetkinlik)
-    }
-
-    fn web_gerektir(&self) -> Result<(), String> {
-        self.gerektir(Yetkinlik::AgSunucusu)
-    }
-
-    fn web_oturumu_gerektir(&self) -> Result<(), String> {
-        self.web_gerektir()?;
-        self.gerektir(Yetkinlik::WebOturumu)
-    }
-
-    fn veritabani_gerektir(&self) -> Result<(), VeritabaniHatasi> {
-        self.gerektir(Yetkinlik::Veritabani)
-            .map_err(super::yetkinlik_hatasi::veritabani)
-    }
-
-    fn gerektir(&self, yetkinlik: Yetkinlik) -> Result<(), String> {
-        self.politika
-            .gerektir(yetkinlik)
-            .map_err(|hata| super::yetkinlik_hatasi::mesaj(hata, self.cocuk_modu, yetkinlik))
-    }
-}
 
 impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn yazdir(&mut self, satir: String) {
@@ -152,6 +108,31 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         }
     }
 
+    fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
+        self.gerektir(Yetkinlik::AgDinleyici)?;
+        self.ic.baglanti_dinleyicisi_kaydet(ad)
+    }
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        bekleyenler: &[u64],
+        uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<super::BaglantiOlayi>, String> {
+        self.gerektir(Yetkinlik::AgDinleyici)?;
+        self.ic.baglanti_olaylarini_bekle(bekleyenler, uyanma_an_ms)
+    }
+    fn baglanti_islemi(
+        &mut self,
+        kimlik: u64,
+        islem: &super::BaglantiIslemi,
+    ) -> super::BaglantiSonucu {
+        if let Err(hata) = self.gerektir(Yetkinlik::AgDinleyici) {
+            return super::BaglantiSonucu::hata("kapandı", hata);
+        }
+        self.ic.baglanti_islemi(kimlik, islem)
+    }
+    fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
+        self.ic.baglanti_tanisini_gunlukle(kimlik, neden)
+    }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
             self.ic.durum_yaniti_gonder(durum, yanit);

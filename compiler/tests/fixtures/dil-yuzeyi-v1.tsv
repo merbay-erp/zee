@@ -1,6 +1,8 @@
 # zee-dil-yuzeyi-1
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
+api	ag.baglanti_satir_oku	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_OKU: &str = "ag.baglanti_satir_oku";
+api	ag.baglanti_satir_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
 api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
 api	dosya.ilk_baytlar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
 api	gorsel.kucult	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GORSEL_KUCULT: &str = "gorsel.kucult";
@@ -12,6 +14,10 @@ api	guvenlik.totp_dogrula	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const TO
 api	iletisim.eposta_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 api	iletisim.eposta_gonder_baglantili	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
 api	iletisim.eposta_mime_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_MIME_GONDER: &str = "iletisim.eposta_mime_gonder";
+api	io-izi.baglanti_bekle	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_bekle"
+api	io-izi.baglanti_gunluk	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_gunluk"
+api	io-izi.baglanti_islemi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_islemi"
+api	io-izi.baglanti_kaydet	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_kaydet"
 api	io-izi.birincil_surec	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"birincil_surec"
 api	io-izi.dosya_ilk_baytlari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_ilk_baytlari"
 api	io-izi.dosya_yaniti_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_yaniti_gonder"
@@ -125,6 +131,9 @@ kalip	argon2	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	artır	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	azalt	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	açık	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	bağlantıdan	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	bağlantıya	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	bağlantıyı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	başarılıysa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	başarısızsa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	belirteci	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -137,6 +146,7 @@ kalip	dakika	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	dene	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	değilse	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	değişmişi	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	dinleyicisinde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	diye	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	doğru	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	doğrulanıyorsa	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -192,6 +202,7 @@ kalip	piksele	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	satırını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sözlüğünü	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -264,6 +275,7 @@ kosul	tekse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
+profil	baglanti-ayarlari-v1	aktif	1.0.0-dev	compiler/src/proje/baglanti.rs	"bağlantı_sınırı",
 profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
 profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
@@ -323,6 +335,7 @@ profil	web-oran-doluluk.reddet	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-
 profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapasitesi"
 profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
+profil	yetkinlik-ag-dinleyici	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::AgDinleyici => "ağ-dinleyici",
 profil	zee-ayar.isci-sayisi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"isci-sayisi"
 profil	zee-ayar.saglik-port	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"saglik-port"
 profil	zee-ayar.systemd-soketi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"systemd-soketi"

@@ -2,6 +2,7 @@ use super::ifade::{kelime_mi, tekil_ifade};
 use super::*;
 use crate::agac::GorunumDugumu;
 
+mod baglanti;
 mod gorunum;
 mod onbellek;
 mod web;
@@ -44,6 +45,9 @@ impl Ayristirici {
 
         if let Some(politika) = onbellek::onbellekli_politika(&satir_tokenlari, satir_no) {
             return politika;
+        }
+        if let Some(cumle) = self.baglanti_cumlesi(&satir_tokenlari, satir_no) {
+            return cumle;
         }
 
         match son_kelime.as_deref() {

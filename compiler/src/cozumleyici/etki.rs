@@ -9,6 +9,7 @@ use crate::intrinsic::{self, IntrinsicEtkisi};
 use crate::tani::Tani;
 use std::collections::{HashMap, HashSet};
 
+mod baglanti;
 mod onbellek;
 use onbellek::{onbellekli_rotayi_denetle, OnbellekIzi};
 
@@ -436,6 +437,9 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             ifade_bilgisi(yol, bilgi);
             bilgi.birlestir(&blok_bilgisi(govde));
         }
+        Cumle::BaglantiGeldiginde { .. }
+        | Cumle::BaglantiyaYaz { .. }
+        | Cumle::BaglantiyiKapat { .. } => baglanti::etkisi(cumle, bilgi),
         Cumle::YanitGonder { deger, .. } | Cumle::Yonlendir { adres: deger, .. } => {
             bilgi.web = true;
             ifade_bilgisi(deger, bilgi);

@@ -56,6 +56,7 @@ impl HirProgram {
                 }
             }
         }
+        self.baglanti_bloklari(&mut kapsamlar, &mut sonuc);
         blok(&self.program.cumleler, &mut sonuc);
         let okunanlar: HashSet<_> = self
             .ifadeler
@@ -81,6 +82,23 @@ impl HirProgram {
     }
 }
 
+impl HirProgram {
+    /// K-381: bağlantı blokları rota gibi kendi kapsamında denetlenir.
+    fn baglanti_bloklari(&self, kapsamlar: &mut HashSet<usize>, sonuc: &mut Vec<Tani>) {
+        for c in &self.program.cumleler {
+            if let Cumle::BaglantiGeldiginde {
+                dinleyici, govde, ..
+            } = c
+            {
+                if let Some(bilgi) = self.ifade_bilgisi(dinleyici) {
+                    kapsamlar.insert((1usize << 31) + bilgi.kimlik().sirasi());
+                }
+                blok(govde, sonuc);
+            }
+        }
+    }
+}
+
 fn yerel(sahibi: Option<&str>, ana: Option<&str>) -> bool {
     sahibi.is_none() || sahibi == ana
 }
@@ -95,6 +113,7 @@ fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
                 | Cumle::YapiTanimi(_)
                 | Cumle::TestBlogu(_)
                 | Cumle::IstekGeldiginde { .. }
+                | Cumle::BaglantiGeldiginde { .. }
         ) {
             continue;
         }
@@ -286,6 +305,9 @@ fn satir(c: &Cumle) -> usize {
         | Cumle::ProgramiBitir { satir, .. }
         | Cumle::SunucuBaslat { satir, .. }
         | Cumle::IstekGeldiginde { satir, .. }
+        | Cumle::BaglantiGeldiginde { satir, .. }
+        | Cumle::BaglantiyaYaz { satir, .. }
+        | Cumle::BaglantiyiKapat { satir }
         | Cumle::YanitGonder { satir, .. }
         | Cumle::Yonlendir { satir, .. }
         | Cumle::CerezYaz { satir, .. }

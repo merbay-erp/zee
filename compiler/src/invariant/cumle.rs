@@ -80,6 +80,7 @@ impl Denetleyici<'_> {
                 satir,
             }
             | Cumle::SunucuBaslat { kapi: deger, satir }
+            | Cumle::BaglantiyaYaz { deger, satir }
             | Cumle::CerezSil { ad: deger, satir }
             | Cumle::Bekle { sure: deger, satir } => {
                 self.ifadeyi_dogrula(deger, &format!("{yol}.ifade"), *satir, false)?;
@@ -272,6 +273,15 @@ impl Denetleyici<'_> {
                 self.ifadeyi_dogrula(adres, &format!("{yol}.yol"), *satir, false)?;
                 self.cumleleri_dogrula(govde, &format!("{yol}.gövde"), hoist_sonrasi)?;
             }
+            Cumle::BaglantiGeldiginde {
+                dinleyici,
+                govde,
+                satir,
+            } => {
+                self.ifadeyi_dogrula(dinleyici, &format!("{yol}.dinleyici"), *satir, false)?;
+                self.cumleleri_dogrula(govde, &format!("{yol}.gövde"), hoist_sonrasi)?;
+            }
+            Cumle::BaglantiyiKapat { .. } => {}
             Cumle::CerezYaz { ad, deger, satir }
             | Cumle::OturumAc {
                 kullanici: ad,

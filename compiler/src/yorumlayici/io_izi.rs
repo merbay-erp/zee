@@ -1,6 +1,7 @@
 //! Sürümlü, kanonik ve sıralı IO trace/replay katmanı (K-115, ADR-026).
 //! İz özel veridir; parola doğrulama argümanları yalnız SHA-256 parmak iziyle kaydedilir.
 
+mod baglanti;
 mod codec;
 mod eylem;
 mod http;
@@ -60,6 +61,10 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosya_sha256"
             | "dosya_ilk_baytlari"
             | "dosya_yaniti_gonder"
+            | "baglanti_kaydet"
+            | "baglanti_bekle"
+            | "baglanti_islemi"
+            | "baglanti_gunluk"
             | "postgresql_oku"
             | "postgresql_degistir"
             | "simdi"
@@ -193,6 +198,9 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         "dosya_atomik_tasi" => tamsayi_sonuc_semasi(olay, 2),
         "dosya_sil" => tamsayi_sonuc_semasi(olay, 1),
         "dosya_yaniti_gonder" => tamsayi_sonuc_semasi(olay, 3),
+        "baglanti_kaydet" | "baglanti_bekle" | "baglanti_islemi" | "baglanti_gunluk" => {
+            baglanti::semayi_denetle(olay)
+        }
         "dosyalari_listele" => metin_listesi_sonuc_semasi(olay, 1),
         "dosya_sha256" => metin_sonuc_semasi(olay, 1),
         "dosya_ilk_baytlari" => {
@@ -572,6 +580,53 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         self.kaydet(
             "durum_yaniti_gonder",
             vec![durum.to_string(), yanit.into()],
+            Vec::new(),
+        );
+    }
+
+    fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
+        let sonuc = self.ic.baglanti_dinleyicisi_kaydet(ad);
+        self.kaydet(
+            "baglanti_kaydet",
+            vec![ad.into()],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn baglanti_olaylarini_bekle(
+        &mut self,
+        bekleyenler: &[u64],
+        uyanma_an_ms: Option<i64>,
+    ) -> Result<Vec<super::BaglantiOlayi>, String> {
+        let sonuc = self.ic.baglanti_olaylarini_bekle(bekleyenler, uyanma_an_ms);
+        self.kaydet(
+            "baglanti_bekle",
+            baglanti::bekle_argumanlari(bekleyenler, uyanma_an_ms),
+            baglanti::olaylari_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn baglanti_islemi(
+        &mut self,
+        kimlik: u64,
+        islem: &super::BaglantiIslemi,
+    ) -> super::BaglantiSonucu {
+        let sonuc = self.ic.baglanti_islemi(kimlik, islem);
+        self.kaydet(
+            "baglanti_islemi",
+            baglanti::islem_argumanlari(kimlik, islem),
+            baglanti::sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
+        self.ic.baglanti_tanisini_gunlukle(kimlik, neden);
+        self.kaydet(
+            "baglanti_gunluk",
+            vec![kimlik.to_string(), neden.into()],
             Vec::new(),
         );
     }

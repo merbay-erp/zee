@@ -364,11 +364,35 @@ ZORUNLU: Her devralınan fd dinleyen TCP akış soketidir ve yerel adresi adın�
 
 YASAK: Devir yoksa ya da herhangi bir koşul tutmazsa (eksik/fazla/yinelenen/geçersiz ad, sayı/ad uyuşmazlığı, başka PID, yanlış tür/aile/adres/kapı, V6ONLY kapalı IPv6) süreç bind'e geri dönemez ve kaynak yürütülemez: çıkış 2'dir, ileti ilgili adı ve `.socket` düzeltme önerisini taşır. Çok işçi grubu işçisi, `--güvenli` çocuk modu ve Unix dışı platform adlı devri çıkış 2 ile reddeder.
 
-AÇIK: Zee kodu adlı dinleyicilerden bağlantı kabul edemez; bağlantı yüzeyi, `ağ-dinleyici` yetkinliği ve çok işçi grubuna adla aktarım RFC-0039 A2'dedir. HTTP dinleyicisi bugünkü `--web-worker-port`/K-343 yolundan açılır.
+AÇIK: Adlı dinleyicilerden bağlantı kabulü yalnız §9'daki bağlantı bloğuyla yapılır; bloğu olmayan adlı dinleyici tutulur ama kabul edilmez. Çok işçi grubuna adla aktarım ve HTTP dinleyicisinin adlı devirden alınması açıktır; HTTP dinleyicisi bugünkü `--web-worker-port`/K-343 yolundan açılır.
 
 TANIMLI: `NOTIFY_SOCKET` her `dil` sürecinin başında okunur ve ortamdan silinir; mutlak yol ve Linux soyut ad (`@`) desteklenir. Değişken yoksa hiçbir bildirim gönderilmez. Gönderim hatası günlüklenir, süreci durdurmaz.
 
 ZORUNLU: `NOTIFY_SOCKET` verilmişse tek süreç web çalışma zamanı `sunucu başlat` dinleyiciyi açtıktan sonra, çok işçi yöneticisi birincil işçi açılışı bitip işçiler başlatıldıktan sonra bir kez `READY=1` gönderir; SIGTERM ile yeni kabul durduğunda (yöneticide kapanışın başında) bir kez `STOPPING=1` gönderir. İşçi süreçleri bildirim göndermez (`NotifyAccess=main`).
+
+## 9. Adlı dinleyici bağlantı yüzeyi (K-381)
+
+RFC-0039 Aşama A2a; karar [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md), işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
+
+TANIMLI: Üst düzey `"<ad>" dinleyicisinde bağlantı geldiğinde` bloğu, §8 ile devralınan `<ad>` dinleyicisinden kabul edilen her bağlantı için taze ortamda koşar; blok yalnız `bağlantı` adlı Metin sözlüğünü görür (`dinleyici`, `uzak_adres`, `uzak_kapı`, `yerel_kapı`). Bağlantı kalıpları `<ad> bağlantıdan satır okumayı dene olsun` (`Sonuç<Metin>`), `bağlantıya <Metin> satırını yaz`, `<ad> bağlantıya <Metin> satırını yazmayı dene olsun` (`Sonuç<TamSayı>`, CRLF dahil bayt) ve `bağlantıyı kapat`'tır ve o anki bağlantı görevinin bağlantısına uygulanır. Bildirimde olmayan dinleyici adı, aynı ada ikinci blok, aynı programda `sunucu başlat` ile bağlantı bloğu ve bağlantı görevi dışında bağlantı kalıbı C030'dur.
+
+ZORUNLU: Okunan satır yalnız CRLF ile biter ve CRLF'siz verilir. Çıplak LF, çıplak CR ve karışık diziler satır sonu sayılmaz ve normalleştirilmez: bozuk satır tümüyle tüketilir ve okuma `tür=satır_sonu` döner. CRLF dahil `bağlantı_satır_sınırı`nı aşan satır kırpılıp kabul edilmez: `tür=satır_uzun` döner, kalanı sonraki LF'ye kadar atılır ve gelen tampon büyümez. Geçersiz UTF-8, NUL ya da TAB dışı denetim karakteri taşıyan satır `tür=kodlama`dır.
+
+ZORUNLU: Bir okuma çağrısı tam satırı en çok `bağlantı_boşta_süresi` bekler; süre çağrının başından mutlaktır ve aralıklı bayt gelişi onu uzatmaz (`tür=zaman_aşımı`). Etkin Zee son tarihi (`içinde`) okuma ve yazma beklemesinde de denetlenir; dolarsa bekleme noktasında Ç001 iptali olur ve yalnız o son tarihin `yetişmezse` kolu çalışır. Bağlantı görevinin tamamı `bağlantı_ömrü` mutlak son tarihine bağlıdır.
+
+ZORUNLU: Yazılan satıra CRLF'yi çalışma zamanı ekler; CR, LF, NUL ya da TAB dışı denetim karakteri içeren ya da CRLF dahil satır sınırını aşan Metin yazılmaz (`tür=yazılamadı`). Giden tampon bağlantı başına 64 KiB'tır; dolunca yazma görevi askıya alınır (geri basınç) ve tampon `bağlantı_boşta_süresi` içinde boşalmazsa yazma `tür=yazılamadı` olur. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantı görevini C030 ile bitirir.
+
+ZORUNLU: Açık bağlantı sayısı `bağlantı_sınırı`na ya da aynı uzak IP'den açık bağlantı sayısı `uzak_adres_bağlantı_sınırı`na ulaştığında yeni bağlantı kabul edilir, bildirilmişse `bağlantı_dolu_yanıtı` satırı tek engellemeyen yazımla gönderilir ve bağlantı kapatılır; Zee görevi kurulmaz. Ret sayısı günlüğe en çok beş saniyede bir yazılır.
+
+ZORUNLU: Bağlantı görevleri tek iş parçacıklı bağlantı scheduler'ında ilerler; bekleyen okuma/yazma ve `bekle` scheduler noktasıdır, bir bağlantının beklemesi diğerini durdurmaz. Görev hatası (C023/C024 dahil) yalnız kendi bağlantısını kapatır ve kardeşleri iptal etmez (yalıtılmış bağlantı kapsamı; spec/14 §3'ten bilinçli ayrılış); neden yalnız operatör günlüğüne yazılır. Her görev kendi çalışma bütçesiyle başlar ve her başarılı satır okuması bütçeyi yeniler. Görev içindeki `programı bitir` bütün bağlantıları kapatıp süreci o kodla bitirir.
+
+ZORUNLU: Bağlantı scheduler'ı başlayınca `NOTIFY_SOCKET` varsa `READY=1` gönderilir. SIGTERM'de yeni kabul durur, `STOPPING=1` gönderilir, bekleyen ve sonraki okumalar `tür=kapanıyor` döner, yazma sürer; görevler en çok 10 saniyede bitmezse iptal edilip bağlantıları kapatılır ve süreç 0 ile çıkar.
+
+ZORUNLU: Bağlantı bloğu `ağ-dinleyici` yetkinliği ister (spec/23); bildirimli projede yetkinlik yoksa T054, `--güvenli` çocuk modunda C030'dur. Bağlantı olay beklemesi ve her bağlantı işlemi (oku, yaz, kapat, engelleyici bekleme, günlük) IO izine girer; aynı izle yeniden oynatma aynı sırayı ve çıktıyı üretir.
+
+TANIMLI: `proje.dil` bağlantı ayarları isteğe bağlı sabit değerlerdir: `bağlantı_sınırı` 1–4096 (varsayılan 64), `uzak_adres_bağlantı_sınırı` 1–`bağlantı_sınırı` (varsayılan 8, genel sınırdan büyükse ona çekilir), `bağlantı_satır_sınırı` 64–65536 bayt (varsayılan 1000), `bağlantı_boşta_süresi` 1–3600 saniye (varsayılan 300), `bağlantı_ömrü` 1–86400 saniye (varsayılan 3600), `bağlantı_dolu_yanıtı` en çok 512 baytlık yazdırılabilir ASCII. Aralık dışı ya da sabit olmayan değer, kuralı bozan ret satırı, genel sınırı aşan uzak adres sınırı ve `dinleyiciler` bildirimi olmadan bağlantı ayarı P020'dir.
+
+AÇIK: Blok okuma (SMTP `DATA` nokta bloğu, IMAP literal'i) ve dosyadan bağlantıya akıtma RFC-0039 A2c'dedir. Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları senkron dilimdir ve kardeş bağlantıları o süre bekletir. Unix dışı platformda bağlantı bloğu C030'dur. Binlerce boşta oturumun bellek ölçümü yapılmamıştır.
 
 ## K-335 — Önbelleklenebilir herkese açık rota
 

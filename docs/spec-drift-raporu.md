@@ -17,7 +17,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
 | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 23 | 23 | 0 | 0 |
-| `spec/12-web-guvenlik-profili.md` | 54 | 49 | 0 | 5 |
+| `spec/12-web-guvenlik-profili.md` | 64 | 58 | 0 | 6 |
 | `spec/13-surumlu-morfoloji-profili.md` | 9 | 8 | 0 | 1 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
@@ -36,7 +36,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **314** | **299** | **4** | **11** |
+| **Toplam** | **324** | **308** | **4** | **12** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -49,7 +49,8 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.
 - `spec/12-web-guvenlik-profili.md#5d930da7687a2f1e` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım, ağ dosya sistemi ve çok hostlu birincillik açık (K-340 `zee.ayar` alanını, K-341 tek makinede elle kurulumda tek birincili bu maddeden çıkardı); Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.
-- `spec/12-web-guvenlik-profili.md#e2499f058abb0fd9` — AÇIK: Zee kodu adlı dinleyicilerden bağlantı kabul edemez; bağlantı yüze… — RFC-0039 A2: bağlantı yüzeyi, ağ-dinleyici yetkinliği ve çok işçiye adla aktarım açık.
+- `spec/12-web-guvenlik-profili.md#c0c4aaba019b2440` — AÇIK: Adlı dinleyicilerden bağlantı kabulü yalnız §9'daki bağlantı bloğu… — K-381: çok işçi grubuna adla aktarım ve HTTP dinleyicisinin adlı devirden alınması açık; bloksuz dinleyici K-376 gibi tutulur.
+- `spec/12-web-guvenlik-profili.md#0d1f48e4ff2272e9` — AÇIK: Blok okuma (SMTP `DATA` nokta bloğu, IMAP literal'i) ve dosyadan b… — RFC-0039 A2c ve Katman C açık; Unix dışı ret ve RSS ölçümü açık.
 - `spec/12-web-guvenlik-profili.md#d0c68c44c7c98c4b` — AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek t… — K-335 kapsamı dışı; Vary/ETag/purge ve sorgu anahtarı ön kapının sorumluluğundadır.
 - `spec/12-web-guvenlik-profili.md#a969792eb3d50575` — AÇIK: Kaynak değişmezindeki bir betiği gövdeye yansıtan istemci o betiği… — K-379 kapsamı dışı: özet CSP'nin genel sınırı (yalnız geliştirici betikleri); öznitelikli script özetlenmez; durum yanıtı satır içi betik izni taşımaz.
 - `spec/13-surumlu-morfoloji-profili.md#8a414db8b5ca5b82` — AÇIK: `zee-tr-1` `â`, `î`, `û` harflerini ünlü saymaz. Bu harfleri taşıy… — K-367: düzeltme uyumluluk kaydını değiştirir (53.248 üretimin 10.306'sı, 2.865 çözüm kümesi); zee-tr-1 içinde yapılamaz, zee-tr-2 adayı (RFC + yeni kayıt + kilit geçişi + edition). Çözücü doğru yazımı kabul eder.

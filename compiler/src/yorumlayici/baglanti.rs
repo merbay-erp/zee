@@ -1,0 +1,611 @@
+//! K-381 (RFC-0039 A2a): adlı dinleyici bağlantı görevleri.
+//!
+//! Her kabul edilen bağlantı, `"<ad>" dinleyicisinde bağlantı geldiğinde`
+//! bloğunu taze ortamda koşan bir görevdir. Görevler tek iş parçacıklı
+//! bağlantı scheduler'ında ilerler: host okuma/yazma ilerleyemeyince
+//! `Bekle` döner, görev askıya alınır, scheduler hostun `poll(2)` tabanlı
+//! olay beklemesine hazır görevleri sorar. Görev hatası yalnız kendi
+//! bağlantısını kapatır (yalıtılmış bağlantı kapsamı); kardeşler iptal
+//! edilmez. Tek iş parçacığı olduğu için data race yoktur; ağ olaylarının
+//! sırası dış girdidir ve IO izine yazılır.
+
+use super::*;
+
+/// Hostun bir bağlantı işlemine verdiği sonuç.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BaglantiSonucu {
+    /// CRLF'siz tam satır.
+    Satir(String),
+    /// Yazmada kuyruğa alınan bayt; kapatma ve beklemede 0.
+    Tamam(i64),
+    /// İşlem henüz ilerleyemez (veri yok ya da giden tampon dolu).
+    Bekle,
+    /// Sınıflandırılmış ret: (`tür`, ileti).
+    Hata(String, String),
+}
+
+impl BaglantiSonucu {
+    pub fn hata(tur: &str, mesaj: impl Into<String>) -> Self {
+        Self::Hata(tur.into(), mesaj.into())
+    }
+}
+
+/// Zee'nin o anki bağlantı üzerinde istediği işlem.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BaglantiIslemi {
+    SatirOku,
+    SatirYaz(String),
+    Kapat,
+    /// Scheduler dışından (iç içe eşzamanlı görev) engelleyerek hazırlık
+    /// bekler; argüman Zee son tarihinin mutlak anıdır.
+    Engelle(Option<i64>),
+}
+
+/// Hostun kabul ettiği yeni bağlantı.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct YeniBaglanti {
+    pub kimlik: u64,
+    pub dinleyici: String,
+    pub uzak_adres: String,
+    pub uzak_kapi: u16,
+    pub yerel_kapi: u16,
+}
+
+/// Bağlantı olay beklemesinin sonucu.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BaglantiOlayi {
+    Yeni(YeniBaglanti),
+    /// Bekleyen görevin işlemi artık ilerleyebilir (ya da zaman aşımıyla
+    /// sınıflandırılmış sonuca hazırdır).
+    Hazir(u64),
+    /// SIGTERM: yeni kabul durdu; okumalar `kapanıyor` döner.
+    Kapanis,
+}
+
+/// SIGTERM'den sonra kalan görevlere verilen en uzun boşaltma süresi.
+pub const BOSALTMA_SURESI_MS: i64 = 10_000;
+
+thread_local! {
+    /// Scheduler bir bağlantı görevini poll ederken o görevin bağlantısı.
+    static GECERLI_BAGLANTI: Cell<Option<u64>> = const { Cell::new(None) };
+    /// Yalnız bağlantı görevinin kendi poll'u sırasında dolu: IO beklemesi
+    /// bu kanala işaret bırakıp Pending döner.
+    static BAGLANTI_IO_SINYALI: RefCell<Option<Rc<Cell<bool>>>> =
+        const { RefCell::new(None) };
+}
+
+/// İç içe görev scheduler'ı girerken IO sinyalini saklar (iç görevler
+/// scheduler noktası olmadan engelleyerek bekler).
+pub(super) fn io_sinyalini_al() -> Option<Rc<Cell<bool>>> {
+    BAGLANTI_IO_SINYALI.with(|yuva| yuva.borrow_mut().take())
+}
+
+pub(super) fn io_sinyalini_geri_koy(sinyal: Option<Rc<Cell<bool>>>) {
+    BAGLANTI_IO_SINYALI.with(|yuva| *yuva.borrow_mut() = sinyal);
+}
+
+fn baglanti_tanisi(mesaj: String, satir: usize) -> Tani {
+    Tani::yeni("C030", mesaj, satir, 1, 1)
+}
+
+fn gecerli_baglanti(satir: usize) -> Result<u64, Tani> {
+    GECERLI_BAGLANTI.with(Cell::get).ok_or_else(|| {
+        baglanti_tanisi(
+            "Bağlantı kalıbı yalnız `\"<ad>\" dinleyicisinde bağlantı geldiğinde` bloğunda (ya da onun çağırdığı işlemde) kullanılabilir.".into(),
+            satir,
+        )
+    })
+}
+
+struct IoBeklemeNoktasi {
+    sinyal: Rc<Cell<bool>>,
+    verildi: bool,
+}
+
+impl Future for IoBeklemeNoktasi {
+    type Output = ();
+
+    fn poll(mut self: Pin<&mut Self>, _baglam: &mut Context<'_>) -> Poll<()> {
+        if self.verildi {
+            return Poll::Ready(());
+        }
+        self.sinyal.set(true);
+        self.verildi = true;
+        Poll::Pending
+    }
+}
+
+/// Host `Bekle` dedi: scheduler noktası ya da (iç içe görevde) engelleyici bekleme.
+async fn hazirligi_bekle(io: &mut dyn GirdiCikti, kimlik: u64) {
+    let sinyal = BAGLANTI_IO_SINYALI.with(|yuva| yuva.borrow().clone());
+    match sinyal {
+        Some(sinyal) => {
+            IoBeklemeNoktasi {
+                sinyal,
+                verildi: false,
+            }
+            .await
+        }
+        None => {
+            let son = etkin_son_tarih().map(|son| son.an_ms);
+            let _ = io.baglanti_islemi(kimlik, &BaglantiIslemi::Engelle(son));
+        }
+    }
+}
+
+/// Bir işlemi `Bekle` bitene kadar tekrarlar; her turda son tarih denetlenir.
+async fn islemi_yurut(
+    io: &mut dyn GirdiCikti,
+    islem: BaglantiIslemi,
+    satir: usize,
+) -> Result<BaglantiSonucu, Tani> {
+    let kimlik = gecerli_baglanti(satir)?;
+    loop {
+        son_tarihi_denetle(io, satir)?;
+        match io.baglanti_islemi(kimlik, &islem) {
+            BaglantiSonucu::Bekle => hazirligi_bekle(io, kimlik).await,
+            sonuc => return Ok(sonuc),
+        }
+    }
+}
+
+fn hata_sonucu(tur: String, mesaj: String) -> Deger {
+    Deger::Sonuc {
+        basarili: false,
+        icerik: Box::new(Deger::Hata(Box::new(HataDegeri {
+            kod: "C030".into(),
+            mesaj,
+            neden: None,
+            veri: vec![("tür".into(), Deger::Metin(tur))],
+        }))),
+    }
+}
+
+/// `bağlantıdan satır okumayı dene` → `Sonuç<Metin>`.
+pub(super) async fn satir_oku(io: &mut dyn GirdiCikti, satir: usize) -> Result<Deger, Tani> {
+    Ok(
+        match islemi_yurut(io, BaglantiIslemi::SatirOku, satir).await? {
+            BaglantiSonucu::Satir(metin) => {
+                // Komut başına bütçe: her tam satır yeni bir adım/heap bütçesi açar.
+                calistirma_butcesini_yenile();
+                Deger::Sonuc {
+                    basarili: true,
+                    icerik: Box::new(Deger::Metin(metin)),
+                }
+            }
+            BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+            BaglantiSonucu::Tamam(_) | BaglantiSonucu::Bekle => return Err(ic_hata(satir)),
+        },
+    )
+}
+
+/// `bağlantıya X satırını yazmayı dene` → `Sonuç<TamSayı>`.
+pub(super) async fn satir_yaz(
+    io: &mut dyn GirdiCikti,
+    metin: String,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    Ok(
+        match islemi_yurut(io, BaglantiIslemi::SatirYaz(metin), satir).await? {
+            BaglantiSonucu::Tamam(bayt) => Deger::Sonuc {
+                basarili: true,
+                icerik: Box::new(Deger::TamSayi(bayt)),
+            },
+            BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+            BaglantiSonucu::Satir(_) | BaglantiSonucu::Bekle => return Err(ic_hata(satir)),
+        },
+    )
+}
+
+/// `bağlantıya X satırını yaz` cümlesi: hata bağlantı görevini C030 ile bitirir.
+pub(super) async fn satir_yaz_cumlesi(
+    io: &mut dyn GirdiCikti,
+    metin: String,
+    satir: usize,
+) -> Result<(), Tani> {
+    match islemi_yurut(io, BaglantiIslemi::SatirYaz(metin), satir).await? {
+        BaglantiSonucu::Tamam(_) => Ok(()),
+        BaglantiSonucu::Hata(tur, mesaj) => Err(baglanti_tanisi(
+            format!("Bağlantıya yazılamadı ({tur}): {mesaj}."),
+            satir,
+        )),
+        _ => Err(ic_hata(satir)),
+    }
+}
+
+/// `bağlantıyı kapat`.
+pub(super) async fn kapat(io: &mut dyn GirdiCikti, satir: usize) -> Result<(), Tani> {
+    match islemi_yurut(io, BaglantiIslemi::Kapat, satir).await? {
+        BaglantiSonucu::Tamam(_) | BaglantiSonucu::Hata(..) => Ok(()),
+        _ => Err(ic_hata(satir)),
+    }
+}
+
+/// K-381 cümlelerinin yürütülmesi (bağlantı bloğu kaydı, yazma, kapatma).
+pub(super) async fn cumle_yurut(
+    cumle: &Cumle,
+    ortam: &mut HashMap<String, Deger>,
+    program: CalistirmaProgrami<'_>,
+    cikti: &mut dyn GirdiCikti,
+    derinlik: usize,
+) -> Result<(), Tani> {
+    match cumle {
+        Cumle::BaglantiGeldiginde {
+            dinleyici, satir, ..
+        } => {
+            let deger =
+                degerlendir_async(dinleyici, ortam, program, cikti, derinlik, *satir).await?;
+            let ad = metne_sinirli(&deger, *satir)?;
+            son_tarihi_denetle(cikti, *satir)?;
+            kaydet(&ad, ortam, cikti, *satir)
+        }
+        Cumle::BaglantiyaYaz { deger, satir } => {
+            let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
+            let metin = metne_sinirli(&deger, *satir)?;
+            satir_yaz_cumlesi(cikti, metin, *satir).await
+        }
+        Cumle::BaglantiyiKapat { satir } => kapat(cikti, *satir).await,
+        // Yalnız kayıt: rota gövdesi sunucu döngüsünde istek gelince koşulur.
+        Cumle::IstekGeldiginde { .. } => Ok(()),
+        _ => Err(ic_hata(1)),
+    }
+}
+
+/// Üst düzey kayıt: `"<ad>" dinleyicisinde bağlantı geldiğinde` cümlesinin
+/// yürütülmesi. Gövde scheduler'da bağlantı başına koşar.
+fn kaydet(
+    ad: &str,
+    ortam: &mut HashMap<String, Deger>,
+    io: &mut dyn GirdiCikti,
+    satir: usize,
+) -> Result<(), Tani> {
+    let anahtar = format!("(bağlantı:{ad})");
+    if ortam.contains_key(&anahtar) {
+        return Err(baglanti_tanisi(
+            format!("\"{ad}\" dinleyicisine ikinci bağlantı bloğu yazıldı; her dinleyicinin tek bloğu olur."),
+            satir,
+        ));
+    }
+    let omur = io.baglanti_dinleyicisi_kaydet(ad).map_err(|hata| {
+        baglanti_tanisi(
+            format!("\"{ad}\" dinleyicisi kullanılamıyor: {hata}."),
+            satir,
+        )
+    })?;
+    ortam.insert(anahtar, Deger::TamSayi(omur));
+    ortam.insert("(bağlantı)".into(), Deger::Mantiksal(true));
+    Ok(())
+}
+
+struct BaglantiGorevi<'a> {
+    kimlik: u64,
+    gelecek: Option<GorevGelecegi<'a>>,
+    zaman_sinyali: Rc<Cell<Option<i64>>>,
+    io_sinyali: Rc<Cell<bool>>,
+    /// `bekle` ile uyanma anı.
+    uyanma_ani: Option<i64>,
+    io_bekliyor: bool,
+    son_tarihler: Vec<SonTarih>,
+    butce: Option<CalistirmaButcesi>,
+}
+
+impl BaglantiGorevi<'_> {
+    fn hazir(&self, simdi: i64) -> bool {
+        if self.gelecek.is_none() {
+            return false;
+        }
+        if self.io_bekliyor {
+            // Zee son tarihi dolduysa okuma noktasında Ç001 için uyanır.
+            return self.son_tarih().is_some_and(|an| an <= simdi);
+        }
+        self.uyanma_ani.is_none_or(|an| an <= simdi)
+    }
+
+    fn son_tarih(&self) -> Option<i64> {
+        self.son_tarihler.iter().map(|son| son.an_ms).min()
+    }
+
+    /// Scheduler'ın bu görev için uyanması gereken en erken an.
+    fn uyanma(&self) -> Option<i64> {
+        let zaman = if self.io_bekliyor {
+            None
+        } else {
+            self.uyanma_ani
+        };
+        [zaman, self.son_tarih()].into_iter().flatten().min()
+    }
+}
+
+fn baglanti_sozlugu(yeni: &YeniBaglanti) -> Deger {
+    Deger::Sozluk(vec![
+        ("dinleyici".into(), Deger::Metin(yeni.dinleyici.clone())),
+        ("uzak_adres".into(), Deger::Metin(yeni.uzak_adres.clone())),
+        ("uzak_kapı".into(), Deger::Metin(yeni.uzak_kapi.to_string())),
+        (
+            "yerel_kapı".into(),
+            Deger::Metin(yeni.yerel_kapi.to_string()),
+        ),
+    ])
+}
+
+/// Kayıtlı dinleyici adı → (gövde, ömür ms).
+type Isleyiciler<'a> = Vec<(String, &'a [Cumle], i64)>;
+
+fn isleyicileri_topla<'a>(
+    program: CalistirmaProgrami<'a>,
+    ortam: &HashMap<String, Deger>,
+    io: &mut dyn GirdiCikti,
+) -> Result<Isleyiciler<'a>, Tani> {
+    let mut isleyiciler = Vec::new();
+    for cumle in &program.program().cumleler {
+        let Cumle::BaglantiGeldiginde {
+            dinleyici,
+            govde,
+            satir,
+        } = cumle
+        else {
+            continue;
+        };
+        let ad = metne_sinirli(
+            &degerlendir(dinleyici, &HashMap::new(), program, io, 0, *satir)?,
+            *satir,
+        )?;
+        let Some(Deger::TamSayi(omur)) = ortam.get(&format!("(bağlantı:{ad})")) else {
+            return Err(baglanti_tanisi(
+                format!("\"{ad}\" bağlantı bloğu üst düzeyde kaydedilmedi."),
+                *satir,
+            ));
+        };
+        isleyiciler.push((ad, govde.as_slice(), *omur));
+    }
+    Ok(isleyiciler)
+}
+
+/// Görevi kendi bağlam yuvalarıyla bir kez poll eder.
+fn gorevi_poll_et(
+    gorev: &mut BaglantiGorevi<'_>,
+    baglam: &mut Context<'_>,
+) -> Poll<Result<Deger, Tani>> {
+    SON_TARIHLER.with(|yuva| *yuva.borrow_mut() = std::mem::take(&mut gorev.son_tarihler));
+    CALISTIRMA_BUTCESI.with(|yuva| *yuva.borrow_mut() = gorev.butce.take());
+    GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = Some(Rc::clone(&gorev.zaman_sinyali)));
+    BAGLANTI_IO_SINYALI.with(|yuva| *yuva.borrow_mut() = Some(Rc::clone(&gorev.io_sinyali)));
+    GECERLI_BAGLANTI.with(|yuva| yuva.set(Some(gorev.kimlik)));
+    let poll = match gorev.gelecek.as_mut() {
+        Some(gelecek) => gelecek.as_mut().poll(baglam),
+        None => Poll::Ready(Err(ic_hata(1))),
+    };
+    GECERLI_BAGLANTI.with(|yuva| yuva.set(None));
+    BAGLANTI_IO_SINYALI.with(|yuva| *yuva.borrow_mut() = None);
+    GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = None);
+    gorev.butce = CALISTIRMA_BUTCESI.with(|yuva| yuva.borrow_mut().take());
+    gorev.son_tarihler = SON_TARIHLER.with(|yuva| std::mem::take(&mut *yuva.borrow_mut()));
+    poll
+}
+
+/// Görev sonucu: bağlantı kapatılır; hata yalnız günlüğe düşer.
+fn gorev_bitti(io: &mut dyn GirdiCikti, kimlik: u64, sonuc: Result<Deger, Tani>) -> Option<i64> {
+    let mut cikis = None;
+    match sonuc {
+        Ok(_) => {}
+        Err(tani) if tani.kod == "Ç000" => cikis = Some(tani.mesaj.parse::<i64>().unwrap_or(0)),
+        Err(tani) => {
+            let neden = if tani.kod == "Ç001" {
+                "bağlantı ömrü ya da son tarih doldu".to_string()
+            } else {
+                format!("{} satır {}: {}", tani.kod, tani.satir, tani.mesaj)
+            };
+            io.baglanti_tanisini_gunlukle(kimlik, &neden);
+        }
+    }
+    let _ = io.baglanti_islemi(kimlik, &BaglantiIslemi::Kapat);
+    cikis
+}
+
+type OrtakIo<'a> = Rc<RefCell<&'a mut dyn GirdiCikti>>;
+
+/// Tek iş parçacıklı bağlantı scheduler'ının durumu.
+struct BaglantiSunucusu<'a> {
+    program: CalistirmaProgrami<'a>,
+    isleyiciler: Isleyiciler<'a>,
+    ortak: OrtakIo<'a>,
+    gorevler: Vec<BaglantiGorevi<'a>>,
+    bosaltma_sonu: Option<i64>,
+}
+
+impl<'a> BaglantiSunucusu<'a> {
+    fn simdi(&self) -> i64 {
+        self.ortak.borrow_mut().an_ms()
+    }
+
+    fn kapat(&self, kimlik: u64) {
+        let _ = self
+            .ortak
+            .borrow_mut()
+            .baglanti_islemi(kimlik, &BaglantiIslemi::Kapat);
+    }
+
+    fn hepsini_kapat(&mut self, neden: Option<&str>) {
+        for kalan in std::mem::take(&mut self.gorevler) {
+            if let Some(neden) = neden {
+                self.ortak
+                    .borrow_mut()
+                    .baglanti_tanisini_gunlukle(kalan.kimlik, neden);
+            }
+            self.kapat(kalan.kimlik);
+        }
+    }
+
+    /// Hazır görevleri kabul sırasıyla birer kez ilerletir; `Some` çıkış kodudur.
+    fn hazirlari_ilerlet(&mut self, baglam: &mut Context<'_>) -> Result<Option<i64>, Tani> {
+        let mut sira = 0;
+        while sira < self.gorevler.len() {
+            let simdi = self.simdi();
+            if !self.gorevler[sira].hazir(simdi) {
+                sira += 1;
+                continue;
+            }
+            let gorev = &mut self.gorevler[sira];
+            gorev.uyanma_ani = None;
+            gorev.io_bekliyor = false;
+            gorev.zaman_sinyali.set(None);
+            gorev.io_sinyali.set(false);
+            match gorevi_poll_et(gorev, baglam) {
+                Poll::Ready(sonuc) => {
+                    let kimlik = gorev.kimlik;
+                    self.gorevler.remove(sira);
+                    let cikis = gorev_bitti(&mut **self.ortak.borrow_mut(), kimlik, sonuc);
+                    if let Some(kod) = cikis {
+                        self.hepsini_kapat(None);
+                        return Ok(Some(kod));
+                    }
+                }
+                Poll::Pending if gorev.io_sinyali.get() => {
+                    gorev.io_bekliyor = true;
+                    sira += 1;
+                }
+                Poll::Pending => {
+                    let sure = gorev.zaman_sinyali.take().ok_or_else(|| ic_hata(1))?;
+                    let simdi = self.ortak.borrow_mut().an_ms();
+                    self.gorevler[sira].uyanma_ani = Some(simdi.saturating_add(sure));
+                    sira += 1;
+                }
+            }
+        }
+        Ok(None)
+    }
+
+    fn gorev_kur(&mut self, yeni: YeniBaglanti) {
+        let Some((_, govde, omur)) = self
+            .isleyiciler
+            .iter()
+            .find(|(ad, _, _)| *ad == yeni.dinleyici)
+        else {
+            self.kapat(yeni.kimlik);
+            return;
+        };
+        let govde: &'a [Cumle] = govde;
+        let program = self.program;
+        let mut gorev_io = PaylasilanIo {
+            ic: Rc::clone(&self.ortak),
+        };
+        let mut gorev_ortami = HashMap::new();
+        gorev_ortami.insert("bağlantı".to_string(), baglanti_sozlugu(&yeni));
+        let bitis = self.simdi().saturating_add(*omur);
+        let gelecek: GorevGelecegi<'a> = Box::pin(async move {
+            let _omur = SonTarihNobetcisi::yeni(bitis);
+            gorev_ortami_butcesini_tuket(&gorev_ortami, 0, 1)?;
+            blok_calistir_async(govde, &mut gorev_ortami, program, &mut gorev_io, 0)
+                .await
+                .map(|_| Deger::Mantiksal(true))
+        });
+        self.gorevler.push(BaglantiGorevi {
+            kimlik: yeni.kimlik,
+            gelecek: Some(gelecek),
+            zaman_sinyali: Rc::new(Cell::new(None)),
+            io_sinyali: Rc::new(Cell::new(false)),
+            uyanma_ani: None,
+            io_bekliyor: false,
+            son_tarihler: Vec::new(),
+            butce: Some(CalistirmaButcesi::yeni()),
+        });
+    }
+
+    fn olayi_isle(&mut self, olay: BaglantiOlayi) {
+        match olay {
+            BaglantiOlayi::Hazir(kimlik) => {
+                if let Some(gorev) = self.gorevler.iter_mut().find(|g| g.kimlik == kimlik) {
+                    gorev.io_bekliyor = false;
+                }
+            }
+            BaglantiOlayi::Kapanis if self.bosaltma_sonu.is_none() => {
+                self.bosaltma_sonu = Some(self.simdi().saturating_add(BOSALTMA_SURESI_MS));
+                for gorev in &mut self.gorevler {
+                    gorev.io_bekliyor = false;
+                }
+            }
+            BaglantiOlayi::Kapanis => {}
+            BaglantiOlayi::Yeni(yeni) => self.gorev_kur(yeni),
+        }
+    }
+
+    /// Hazır görev yoksa host olaylarını bekler ve işler.
+    fn bekle(&mut self) -> Result<(), Tani> {
+        let bekleyenler: Vec<u64> = self
+            .gorevler
+            .iter()
+            .filter(|g| g.io_bekliyor)
+            .map(|g| g.kimlik)
+            .collect();
+        let uyanma = self
+            .gorevler
+            .iter()
+            .filter_map(BaglantiGorevi::uyanma)
+            .chain(self.bosaltma_sonu)
+            .min();
+        let olaylar = self
+            .ortak
+            .borrow_mut()
+            .baglanti_olaylarini_bekle(&bekleyenler, uyanma)
+            .map_err(|hata| baglanti_tanisi(format!("Bağlantı beklemesi başarısız: {hata}."), 1))?;
+        olaylar.into_iter().for_each(|olay| self.olayi_isle(olay));
+        Ok(())
+    }
+
+    fn calistir(&mut self) -> Result<i64, Tani> {
+        let uyandirici = bos_uyandirici();
+        let mut baglam = Context::from_waker(&uyandirici);
+        loop {
+            if let Some(kod) = self.hazirlari_ilerlet(&mut baglam)? {
+                return Ok(kod);
+            }
+            let simdi = self.simdi();
+            if let Some(son) = self.bosaltma_sonu {
+                if self.gorevler.is_empty() {
+                    return Ok(0);
+                }
+                if simdi >= son {
+                    self.hepsini_kapat(Some("boşaltma süresi doldu, bağlantı iptal edildi"));
+                    return Ok(0);
+                }
+            }
+            if !self.gorevler.iter().any(|g| g.hazir(simdi)) {
+                self.bekle()?;
+            }
+        }
+    }
+}
+
+/// Program gövdesi bittikten sonra kayıtlı bağlantı bloklarını sunar.
+/// SIGTERM ve boşaltmadan sonra (ya da hermetik adaptör bağlantı tükenince)
+/// 0, bağlantı içindeki `programı bitir` ile o kod döner.
+pub(super) fn baglantilari_sun(
+    program: CalistirmaProgrami<'_>,
+    ortam: &HashMap<String, Deger>,
+    io: &mut dyn GirdiCikti,
+) -> Result<i64, Tani> {
+    if ortam.contains_key("(sunucu)") {
+        return Err(baglanti_tanisi(
+            "Aynı programda web sunucusu (`sunucu başlat`) ve bağlantı bloğu birlikte çalışmaz (RFC-0039 A2a sınırı); ikisini ayrı hizmetlere böl.".into(),
+            1,
+        ));
+    }
+    let isleyiciler = isleyicileri_topla(program, ortam, io)?;
+    let ust_sinyal = GOREV_BEKLEME_SINYALI.with(|yuva| yuva.borrow_mut().take());
+    let ust_son_tarihler = SON_TARIHLER.with(|yuva| std::mem::take(&mut *yuva.borrow_mut()));
+    let ust_butce = CALISTIRMA_BUTCESI.with(|yuva| yuva.borrow_mut().take());
+    let mut sunucu = BaglantiSunucusu {
+        program,
+        isleyiciler,
+        ortak: Rc::new(RefCell::new(io)),
+        gorevler: Vec::new(),
+        bosaltma_sonu: None,
+    };
+    let sonuc = sunucu.calistir();
+    // Kalan görev future'ları `ortak`ı ödünç tutar; önce düşürülür.
+    drop(sunucu);
+    GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = ust_sinyal);
+    SON_TARIHLER.with(|yuva| *yuva.borrow_mut() = ust_son_tarihler);
+    CALISTIRMA_BUTCESI.with(|yuva| *yuva.borrow_mut() = ust_butce);
+    sonuc
+}

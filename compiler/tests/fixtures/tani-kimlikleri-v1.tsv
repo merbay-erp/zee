@@ -144,6 +144,7 @@ aktif	C026	calisma.postgresql_migration	PostgreSQL migration veya bağlantı iş
 aktif	C027	calisma.postgresql_commit_belirsiz	COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil
 aktif	C028	calisma.kriptografi_uretim_basarisiz	Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi
 aktif	C029	calisma.eposta_gonderim_basarisiz	E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir
+aktif	C030	calisma.ag_baglantisi	Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik
@@ -164,6 +165,7 @@ aktif	P016	proje.registry_tasima_cache	Registry HTTPS taşıması, içerik-adres
 aktif	P017	proje.uzak_bagimlilik_bildirimi	Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz
 aktif	P018	proje.dinleyici_bildirimi	`dinleyiciler` bildirimi `<ad> <adres>:<kapı>` değil; ad/adres yinelenmiş, kapı 0, IPv6 kapsamlı ya da IPv4 eşlemeli, 64'ten fazla öğe
 aktif	P019	proje.eposta_ek_turleri	`e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür
+aktif	P020	proje.baglanti_ayarlari	Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok
 aktif	Ç000	ic.program_sonlandirma_nobetcisi	`programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez
 aktif	Ç001	ic.son_tarih_iptal_nobetcisi	Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz
 aktif	Ç002	ic.giris_orani_reddi_nobetcisi	Web isteğinde parola özeti giriş oran reddi nöbetçisi; istek döngüsü 429/503 sabit yanıtına çevirir, kullanıcıya sızmaz
