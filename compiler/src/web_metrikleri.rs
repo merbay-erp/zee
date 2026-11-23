@@ -273,6 +273,9 @@ impl Sink {
 pub(super) trait WebTasima: Read + Write {
     fn set_read_timeout(&self, duration: Option<std::time::Duration>) -> std::io::Result<()>;
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()>;
+    /// K-372: nonblocking yazım `WouldBlock` sonrası soket yazılabilir olana
+    /// ya da `en_cok` dolana dek bekler; erken dönüş hata değildir.
+    fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()>;
     fn metrik_yanit(&mut self, _status: u16, _success: bool) {}
 }
 impl WebTasima for TcpStream {
@@ -282,6 +285,35 @@ impl WebTasima for TcpStream {
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
         TcpStream::set_nonblocking(self, nonblocking)
     }
+    fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()> {
+        yazilabilir_bekle(self, en_cok)
+    }
+}
+
+/// Unix: `poll(POLLOUT)` çekirdek yer açınca hemen uyanır; uyku çözünürlüğü
+/// verimi sınırlamaz. Diğer platformlarda kısa uyku.
+#[cfg(unix)]
+fn yazilabilir_bekle(akis: &TcpStream, en_cok: std::time::Duration) -> std::io::Result<()> {
+    use std::os::fd::AsRawFd;
+    let ms = en_cok.as_micros().div_ceil(1000).clamp(1, i32::MAX as u128) as libc::c_int;
+    let mut izlenen = libc::pollfd {
+        fd: akis.as_raw_fd(),
+        events: libc::POLLOUT,
+        revents: 0,
+    };
+    // SAFETY: tek, canlı pollfd yapısı ve sahip olunan geçerli soket fd'si.
+    if unsafe { libc::poll(&mut izlenen, 1, ms) } < 0 {
+        let hata = std::io::Error::last_os_error();
+        if hata.kind() != std::io::ErrorKind::Interrupted {
+            return Err(hata);
+        }
+    }
+    Ok(())
+}
+#[cfg(not(unix))]
+fn yazilabilir_bekle(_: &TcpStream, en_cok: std::time::Duration) -> std::io::Result<()> {
+    std::thread::sleep(en_cok.min(std::time::Duration::from_millis(2)));
+    Ok(())
 }
 pub(super) struct Akis {
     inner: TcpStream,
@@ -338,6 +370,9 @@ impl WebTasima for Akis {
     }
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
         self.inner.set_nonblocking(nonblocking)
+    }
+    fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()> {
+        yazilabilir_bekle(&self.inner, en_cok)
     }
     fn metrik_yanit(&mut self, status: u16, success: bool) {
         self.outcome = Some((status, success));

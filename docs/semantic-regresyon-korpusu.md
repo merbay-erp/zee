@@ -230,10 +230,14 @@ worker'ını `--web-proxy` profiliyle başlatır. Fixture'ın `# web-istegi:`
 yanıtını küçük alma tamponlu bir istemci 100 ms'de 4 KiB (~40 KiB/s) okur:
 her pencerede ilerler, eski syscall başına zaman aşımına düşmez. Ardından
 `# web-sonraki:` isteği gönderilir. Çıktı sonraki isteğin `durum gövde`
-satırı ve işçi 30 sn içinde serbest kalıp worker günlüğünde `yanıt yazım
-bütçesi doldu` göründüyse `bütçede serbest`, değilse `işçi N sn tutuldu`
-satırıdır. Düzeltme öncesi kaynakta Darwin'de `işçi 34 sn tutuldu` (Linux'ta
-yanıt aktarılana dek). Toplu replay bu kipi atlar; Unix dışında görünür
+satırı ve işçi bütçe formülünden (yanıtın Content-Length'i, `HttpSinirlari`
+taban ve alt hızı) türetilen sınır + 8 sn içinde serbest kalıp worker
+günlüğündeki her kopma nedeni `yanıt yazım bütçesi doldu` ya da `sn
+ilerlemedi` ise `bütçede serbest`, değilse `işçi N sn tutuldu` satırıdır.
+Linux'ta çekirdek 2 MiB'ı tamponlayıp yazımı bitirebilir (kopma satırı yok);
+macOS'ta 4 KiB pencere TCP'yi duraklatıp ilerlemesizlik kesmesini
+tetikleyebilir. Düzeltme öncesi kaynakta Darwin'de kopma nedeni `os error 35`
+ve `işçi 34 sn tutuldu`. Toplu replay bu kipi atlar; Unix dışında görünür
 ignored durumundadır.
 ## Native dosya EXDEV kipi (K-329)
 

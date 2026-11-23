@@ -5588,6 +5588,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Reddedilen: socket zaman aşımını kalan süreye kırpmak (Darwin'de tek çağrı
   süresini aşıyor); sabit 10 sn mutlak bütçe (büyük yanıtı dürüst ama yavaş
   istemciye tamponsuz proxy üzerinden kesiyor); yeni metrik alanı (K-257
-  şeması değişir; yazım hatası sayacı yeterli); `poll(2)` (Windows'ta ayrı
-  yol ister, uyku döngüsü tek işçide aynı sonucu verir).
+  şeması değişir; yazım hatası sayacı yeterli). İlk sürümdeki 1–10 ms uyku
+  döngüsü CI'da kaba zamanlayıcıda yavaşladığı için Unix'te `poll(POLLOUT)`'a
+  geçildi (Windows ≤2 ms uyku).
 

@@ -72,8 +72,10 @@ Yanıtını okumayan ya da her pencerede biraz okuyan istemci, okuma tarafındak
 mutlak bütçenin karşılığı olmadığından tek işçiyi uzun tutabiliyordu. Yerel
 ölçüm (Darwin, tek işçi, 2 MiB yanıt): okumayan bir istemci işçiyi 25 sn,
 üç istemci art arda 75 sn kilitledi; ~32 KiB/s okuyan istemci 41,5 sn tuttu;
-Linux'ta çağrı başına süre azaldıkça döndüğünden tutma süresi yanıt/okuma
-hızıyla sınırsız büyür. Bekleyen istekler 503 almaz, backlog'da gecikir; çok
+Linux'ta (docker arm64, 8 MiB yanıt, ~40 KiB/s okuyan istemci) eski kod işçiyi
+90 sn sonra hâlâ tutuyordu; tutma süresi yanıt/okuma hızıyla sınırsız büyür.
+Linux çekirdeği gönderim tamponunu MiB'larca büyüttüğünden 2 MiB yanıt orada
+~9 sn'de tamamen tamponlanır; sınır büyük yanıtta görünür. Bekleyen istekler 503 almaz, backlog'da gecikir; çok
 işçide okumayan istemci sayısı işçi sayısına ulaşınca aynı tablo oluşur.
 Kısa yanıtlar (çekirdek tamponuna sığan) etkilenmez.
 
@@ -81,7 +83,9 @@ Karar: yanıt yazımı yazım başlangıcından itibaren mutlak
 `istek_okuma_saniyesi (10 sn) + yanıt baytı / yanit_yazim_alt_hizi
 (128 KiB/s)` bütçesi taşır; ek olarak 10 sn ilerlemesiz kalan yazım kesilir
 (eski davranışın sıkı hâli). Yazım nonblocking yapılır, `WouldBlock`
-beklemesi 1–10 ms'lik uyku ile son tarihe kırpılır; socket zaman aşımına
+beklemesi Unix'te `poll(POLLOUT)` (çekirdek yer açınca hemen uyanır, uyku
+çözünürlüğü verimi sınırlamaz), diğer platformlarda ≤2 ms uykuyla son tarihe
+kırpılır; socket zaman aşımına
 güvenilmez. Aşımda bağlantı kapanır, mevcut "yanıt teslim edilemedi"
 metriği artar (yeni metrik alanı yok), günlükte K-327 kopma satırı
 `yanıt yazım bütçesi doldu` nedeniyle görünür ve işçi serbest kalır.
@@ -101,4 +105,4 @@ sınırındaki koruma proxy tamponlaması ve proxy zaman aşımlarıdır
 (`docs/web-production-profili.md`). Kanıt:
 `regression/security/yanit-yazim-butcesi.dil` (kip
 `native-web-yazim-butcesi`; düzeltme öncesi Darwin'de işçi 34 sn tutuldu,
-sonrası 25,5 sn), `web_profili_testleri` yazım birim vakaları, GB-150.
+sonrası 25,5 sn; Linux 8 MiB: önce >90 sn, sonra 73,7 sn / bütçe 74 sn), `web_profili_testleri` yazım birim vakaları, GB-150.

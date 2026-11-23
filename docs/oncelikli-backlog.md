@@ -2609,6 +2609,7 @@ işçiyi ~25 sn tutar" açık sınırı. Ölçüm (yerel Darwin, debug ikili, 2 
 | Tek işçi, 2 MiB okumayan 3 istemci | 74,9 sn | 29,8 sn |
 | Tek işçi, ~32 KiB/s okuyan 1 istemci | 41,5 sn | 25,8 sn (bütçe 26) |
 | 2 işçi, okumayan 1 / 2 istemci | etkisiz / 24,8 sn | — / 14,9 sn |
+| Linux (docker arm64), tek işçi, 8 MiB, ~40 KiB/s okuyan | >90 sn | 73,7 sn (bütçe 74) |
 
 Bekleyen istekler 503 almadı; kabul backlog'unda gecikti (bağlantı izni
 kabulde alınır, işçi yazımdayken kabul yapılmaz). Neden kodda: okuma
@@ -2617,12 +2618,14 @@ kabulde alınır, işçi yazımdayken kabul yapılmaz). Neden kodda: okuma
 `write_all` idi: süre her syscall'da yeniden başlar, kısmi ilerleme döngüyü
 sürdürür, Darwin'de tek çağrı ilerledikçe süresini aşar (sonda: 10 sn zaman
 aşımıyla 28 sn süren tek `send`). Linux'ta çağrı başına süre kısmi sayıyla
-döndüğünden tutma süresi yanıt/okuma hızıyla sınırsızdır. Spec/12 ve
+döndüğünden tutma süresi yanıt/okuma hızıyla sınırsızdır (8 MiB'da >90 sn
+ölçüldü); 2 MiB yanıt Linux'ta büyüyen gönderim tamponuna ~9 sn'de sığar. Spec/12 ve
 ADR-017 yalnız "10 saniye socket zaman aşımı" diyordu; ADR-113 bunun hard
 wall-clock olmadığını açıkça not etmişti. Mutlak bütçe yasak değil, açıktı.
 
 Düzeltme: `son_tarihli_yaz` yanıtı nonblocking yazar, `WouldBlock`
-beklemesini 1–10 ms uykuyla son tarihe kırpar; mutlak bütçe `10 sn +
+beklemesini Unix'te `poll(POLLOUT)`, diğer platformlarda ≤2 ms uykuyla son
+tarihe kırpar (`WebTasima::yazilabilir_bekle`); mutlak bütçe `10 sn +
 bayt / 128 KiB/s` (`HttpSinirlari::yanit_yazim_alt_hizi`), ayrıca 10 sn
 ilerlemesiz yazım kesilir. Rota yanıtı ve ham 4xx/5xx yanıtları aynı yoldan
 geçer. Aşımda bağlantı kapanır, mevcut yazım hatası metriği artar, K-327
@@ -2635,8 +2638,13 @@ Kanıt: regression `security/yanit-yazim-butcesi` (kip
 25,5 sn'de `bütçede serbest`), `web_profili_testleri` beş birim vakası
 (bütçe formülü, sürekli ilerleyen okuyucu son tarihte, ilerlemeyen okuyucu
 ilerlemesizlikte, bütçe içi tam yazım, gerçek okunmayan soket), spec/12
-ZORUNLU maddesi, ADR-017 K-372 eki, GB-150. Linux ölçümü yerel VM
-erişilemediği için koşulmadı; CI ubuntu aynı regresyonu koşar.
+ZORUNLU maddesi, ADR-017 K-372 eki, GB-150. İlk CI turunda üç test
+platform varsayımıyla düştü ve düzeltildi: Linux 2 MiB'ı tamponladı (kopma
+yok, 9,5 sn), macOS'ta 4 KiB alma penceresi TCP'yi duraklatıp 10 sn
+ilerlemesizlik kesmesini tetikledi, Windows 64 MiB nonblocking gönderimi
+tamponladı; sahte taşıma testi kaba CI uykusunda 10 sn'yi aştı. Regresyon artık
+bütçe formülünden türetilmiş sınır (+8 sn pay) ve kopma nedeninin yeni
+mekanizmalardan biri olmasını (eski kodun `os error 35/11`'i değil) sınar.
 
 Bilinçli sınır: bütçe bağlantı başınadır; tek işçide art arda K bağlantı
 işçiyi K × bütçe bekletebilir (okuma tarafıyla aynı). İnternet sınırındaki

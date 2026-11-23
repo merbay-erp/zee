@@ -317,8 +317,9 @@ pub fn calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
 /// K-372 korpus kipi `native-web-yazim-butcesi`: `# web-istegi:` yanıtını
 /// sürekli ama yavaş okuyan (4 KiB / 100 ms ≈ 40 KiB/s; her pencerede
 /// ilerler, syscall zaman aşımına düşmez) bir istemci bağlanır, ardından
-/// `# web-sonraki:` isteği gönderilir. Tek işçi yavaş okuyucuyu yalnız
-/// mutlak yanıt yazım bütçesi kadar (2 MiB yanıt için 10 + 16 sn) tutabilir.
+/// `# web-sonraki:` isteği gönderilir. Tek işçi yavaş okuyucuyu en çok
+/// mutlak yanıt yazım bütçesi kadar (2 MiB yanıt için 10 + 16 sn) tutabilir;
+/// kesilirse neden bütçe ya da 10 sn ilerlemesizliktir.
 /// Çıktı: sonraki isteğin `durum gövde` satırı ve işçinin bütçe içinde
 /// serbest kalıp kalmadığı. Düzeltme öncesi işçi yanıtın tamamı aktarılana
 /// dek (Linux ~52 sn; Darwin ~40 sn) tutulur.
@@ -330,7 +331,6 @@ pub fn butce_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
     }
     #[cfg(unix)]
     {
-        const SINIR: Duration = Duration::from_secs(30);
         let kaynak = std::fs::read_to_string(kaynak_yolu).expect("fixture kaynağı");
         let yavas = baslik_degeri(&kaynak, "# web-istegi: ");
         let sonraki = baslik_degeri(&kaynak, "# web-sonraki: ");
@@ -342,10 +342,23 @@ pub fn butce_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
             .expect("HTTP isteği");
         akis.set_read_timeout(Some(Duration::from_secs(15)))
             .expect("okuma timeout");
+        // Üst sınır bütçe formülünden: başlık payıyla yanıt baytı, kaynak
+        // sınırlarındaki taban ve alt hız; CI yavaşlığı için 8 sn pay.
+        let mut ilk = [0u8; 4096];
+        let ilk_okunan = akis.read(&mut ilk).expect("yanıtın ilk baytları");
+        let uzunluk: u64 = String::from_utf8_lossy(&ilk[..ilk_okunan])
+            .lines()
+            .find_map(|satir| satir.strip_prefix("Content-Length: "))
+            .and_then(|deger| deger.trim().parse().ok())
+            .expect("yanıt Content-Length taşımalı");
+        let http = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
+        let butce = Duration::from_secs(http.istek_okuma_saniyesi())
+            + Duration::from_secs_f64((uzunluk + 1024) as f64 / http.yanit_yazim_alt_hizi() as f64);
+        let sinir = butce + Duration::from_secs(8);
         let dur = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
         let durdur = dur.clone();
         let okuyucu = std::thread::spawn(move || {
-            let mut toplam = 0usize;
+            let mut toplam = ilk_okunan;
             let mut parca = [0u8; 4096];
             while !durdur.load(std::sync::atomic::Ordering::Relaxed) {
                 std::thread::sleep(Duration::from_millis(100));
@@ -382,7 +395,7 @@ pub fn butce_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
             let _ = boru.read_to_string(&mut hata);
         }
         eprintln!(
-            "native-web-yazim-butcesi: sonraki istek {sure:?}, yavaş okuyucu {okunan} bayt; worker stderr:\n{hata}"
+            "native-web-yazim-butcesi: sonraki istek {sure:?} (sınır {sinir:?}), yavaş okuyucu {okunan} bayt; worker stderr:\n{hata}"
         );
         let mut cikti = yanit
             .map(|yanit| {
@@ -391,13 +404,21 @@ pub fn butce_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
                 vec![format!("{durum} {govde}")]
             })
             .unwrap_or_default();
-        cikti.push(
-            if sure <= SINIR && hata.contains("yanıt yazım bütçesi doldu") {
-                "bütçede serbest".to_string()
-            } else {
-                format!("işçi {} sn tutuldu", sure.as_secs())
-            },
-        );
+        // Yeni kod işçiyi ya mutlak bütçe ya 10 sn ilerlemesizlik kesmesiyle
+        // bırakır (macOS'ta küçük alma penceresi TCP'yi duraklatabilir) ya da
+        // çekirdek kalan yanıtı tamponlar ve yazım biter (Linux). Eski kodun
+        // kopma nedeni socket zaman aşımıdır (`os error 35/11`).
+        let kopma_nedeni_yeni = hata
+            .lines()
+            .filter(|satir| satir.contains("yanıt sırasında koptu"))
+            .all(|satir| {
+                satir.contains("yanıt yazım bütçesi doldu") || satir.contains("sn ilerlemedi")
+            });
+        cikti.push(if sure <= sinir && kopma_nedeni_yeni {
+            "bütçede serbest".to_string()
+        } else {
+            format!("işçi {} sn tutuldu", sure.as_secs())
+        });
         (cikis, cikti)
     }
 }
