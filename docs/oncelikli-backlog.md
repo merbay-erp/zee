@@ -2573,6 +2573,7 @@ izinli oluyordu. Yeniden üretim (yerel Darwin, release, `--web-proxy` ve
 | Resmî site 12 rota | CSP referansı | birebir aynı |
 | Yerel ERP UI birimleri (23 değişmez betik) | 22 özet | birebir aynı 22 özet |
 | Yalnız değişmezlerden parça parça kurulan betik | izinli | engelli + tek uyarı |
+| `test` bloğunda değişmez `alert(1)` + aynı yansıma | izinli | engelli |
 
 Minimal kapsam (core freeze `security`): güvenilir küme derleme sonrası ana
 kaynak ve yüklenen birimlerin dize değişmezlerinden (gerçek lexer) kurulur;
@@ -2582,7 +2583,8 @@ izi ve parça birleştirme reddedildi (ADR-164).
 
 Kanıt: `main.rs::yansiyan_betik_csp_ozeti_alamaz`,
 `kaynak_betik_ozetleri_yalniz_tek_degismezi_sayar`, regression
-`yansiyan-betik-csp-ozeti` (kip `native-web-csp`), spec/12 K-379 bölümü,
+`yansiyan-betik-csp-ozeti` ve `test-blogu-betik-csp-ozeti` (kip `native-web-csp`),
+`test_blogundaki_betik_degismezi_guvenilmez`, spec/12 K-379 bölümü,
 ADR-164, GB-153. Envanter: 1.926 yerel `.dil` üzerinde gerçek lexer ile
 155 tam değişmez betik; tek değişmezde kapanmayan 55 adayın biri dışında
 hepsi test dizesi.

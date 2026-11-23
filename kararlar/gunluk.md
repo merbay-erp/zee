@@ -5662,6 +5662,10 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   parçalarından kurulabilen betiğe izin (kısa değişmezlerle yeni program
   kurulabilir); satır içi betiği tamamen kapatmak (meşru değişmez betikleri
   kırar).
+- `urun-h` oturumu ilk düzeltmede test bloğu değişmezlerinin (XSS vektörleri,
+  ör. `<script>alert(1)</script>`) de izin aldığını yakaladı; test blokları
+  parser'ın kuralıyla kümeden çıkarıldı. Yalnız rota/görünüm çıktısına akan
+  değişmezleri saymak veri akışı ister; freeze sonrası aday.
 - Tüketici kanıtı: resmî site 12 rota ve yerel ERP UI birimleri önce/sonra
   birebir aynı CSP; tek kırılan kullanım çalışma zamanında parça parça
   kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek

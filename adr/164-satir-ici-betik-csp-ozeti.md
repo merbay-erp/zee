@@ -37,6 +37,11 @@ bilgisi taşımaz.
    (yerel, paket, gömülü) kaynağı derleyicinin kendi lexer'ıyla yeniden
    sözcüklenir; her dize değişmezinin kaçışları çözülmüş değerinde tam duran
    öznitelikiz `<script>` gövdelerinin özetleri güvenilir kümeyi kurar.
+   `test` bloklarındaki değişmezler (parser'ın kuralıyla: derinlik 0'da satır
+   başı `test` ve girintili gövdesi) dışarıda kalır: XSS regresyon testleri
+   tam da saldırganın göndereceği `<script>alert(1)</script>` gibi dizgileri
+   taşır (`urun-h` incelemesi, ilk düzeltme `4b7c962` bunları izinli
+   sayıyordu).
 2. **Yanıtta yalnız güvenilir özet.** Gövde taraması aynı kuralla (ilk
    `</script>` kapanışı) yapılır; kümede olmayan özet eklenmez. İlk
    engellenen betikte süreç başına bir kez içeriksiz stderr uyarısı.
@@ -65,6 +70,8 @@ bilgisi taşımaz.
 - Birim: `main.rs::yansiyan_betik_csp_ozeti_alamaz`,
   `kaynak_betik_ozetleri_yalniz_tek_degismezi_sayar`,
   `html_scriptleri_icerige_bagli_csp_ozetiyle_calisir`.
+- Regression `regression/security/test-blogu-betik-csp-ozeti`: test
+  bloğunda değişmez duran `alert(1)` yansısa da engelli (`4b7c962`'de izinli).
 - Regression `regression/security/yansiyan-betik-csp-ozeti` (kip
   `native-web-csp`, gerçek worker): düzeltme öncesi `izinli alert(1)`,
   sonrası `engelli alert(1)` ve `izinli document.title='zee'`.
@@ -94,6 +101,8 @@ bilgisi taşımaz.
 ## Açık
 
 - Kaynak değişmezindeki betiğin saldırganca yeniden yansıtılması (özet
-  CSP'nin genel sınırı; yalnız geliştirici betikleri).
+  CSP'nin genel sınırı; yalnız geliştirici betikleri). Yalnız rota/görünüm
+  çıktısına akan değişmezleri saymak veri akışı analizi ister; freeze
+  sonrası adaydır.
 - `style-src 'unsafe-inline'` ayrı bir sertleştirme adayıdır.
 - Değer köken izi ileride gerçek dogfood ihtiyacıyla ayrı RFC olabilir.

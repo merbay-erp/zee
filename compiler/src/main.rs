@@ -2580,7 +2580,8 @@ fn betik_ozeti(betik: &str) -> String {
 /// K-379: derlenen her kaynak birimindeki her dize değişmezinin (lexer'ın
 /// kaçışları çözülmüş değeri) içinde tam duran satır içi betiklerin özetleri.
 /// Çalışma zamanı değerleri (istek alanı, dosya, veritabanı, birleştirme
-/// sonucu) bu kümeye giremez; yansıyan betik bu yüzden CSP iznini alamaz.
+/// sonucu) ve `test` bloklarındaki değişmezler bu kümeye giremez; yansıyan
+/// betik bu yüzden CSP iznini alamaz.
 fn kaynak_betik_ozetleri<'a>(
     kaynaklar: impl IntoIterator<Item = &'a str>,
 ) -> std::collections::BTreeSet<String> {
@@ -2590,10 +2591,35 @@ fn kaynak_betik_ozetleri<'a>(
         let Ok(tokenlar) = dil::faz::KaynakMetni::yeni(kaynak).sozcukle() else {
             continue;
         };
+        // `test` blokları (parser'daki gibi: derinlik 0'da satır başı `test`
+        // kelimesi ve girintili gövdesi) yanıt üretmez; içlerindeki XSS
+        // vektörü değişmezleri güvenilir sayılmaz.
+        let mut derinlik = 0usize;
+        let mut satir_basi = true;
+        let mut test_blogu = false;
         for token in tokenlar.tokenlar() {
-            if let dil::sozcukleyici::TokenTur::Metin(metin) = &token.tur {
-                ozetler.extend(satir_ici_betikler(metin).into_iter().map(betik_ozeti));
+            use dil::sozcukleyici::TokenTur;
+            match &token.tur {
+                TokenTur::Girinti => derinlik += 1,
+                TokenTur::Cikinti => derinlik = derinlik.saturating_sub(1),
+                TokenTur::SatirSonu | TokenTur::DosyaSonu => {}
+                tur => {
+                    if satir_basi && derinlik == 0 {
+                        test_blogu = matches!(tur, TokenTur::Kelime(kelime) if kelime == "test");
+                    }
+                    if let TokenTur::Metin(metin) = tur {
+                        if !test_blogu {
+                            ozetler.extend(satir_ici_betikler(metin).into_iter().map(betik_ozeti));
+                        }
+                    }
+                }
             }
+            satir_basi = matches!(
+                token.tur,
+                dil::sozcukleyici::TokenTur::SatirSonu
+                    | dil::sozcukleyici::TokenTur::Girinti
+                    | dil::sozcukleyici::TokenTur::Cikinti
+            );
         }
     }
     ozetler
@@ -5016,6 +5042,18 @@ mod web_profili_testleri {
         assert!(!ozetler.contains(&betik_ozeti("parca()")));
         assert!(!ozetler.contains(&betik_ozeti("yorum()")));
         assert_eq!(ozetler.len(), 2);
+    }
+
+    /// K-379 eki: `test` bloğundaki (iç içe girintili satırlar dahil) betik
+    /// değişmezi güvenilir değildir; bloktan sonraki üst düzey değişmez güvenilir.
+    #[test]
+    fn test_blogundaki_betik_degismezi_guvenilmez() {
+        let kaynak = "test \"xss kaçışı\"\n    girdi \"<script>alert(1)</script>\" olsun\n    eğer doğru ise\n        x \"<script>ic()</script>\" olsun\n\nGET \"/\" adresine istek geldiğinde\n    \"<script>rota()</script>\" yanıtını gönder\n";
+        let ozetler = kaynak_betik_ozetleri([kaynak]);
+        assert!(!ozetler.contains(&betik_ozeti("alert(1)")), "{ozetler:?}");
+        assert!(!ozetler.contains(&betik_ozeti("ic()")));
+        assert!(ozetler.contains(&betik_ozeti("rota()")));
+        assert_eq!(ozetler.len(), 1);
     }
 
     #[test]

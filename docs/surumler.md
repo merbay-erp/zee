@@ -18,7 +18,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   girdisi (ör. `?q=<script>…</script>`) sayfaya yansırsa saldırganın betiği
   de izin alıyor ve tarayıcıda çalışıyordu. Artık yalnız programın kaynak
   dosyalarında **tek bir dize değişmezinin** içinde tam duran betikler izin
-  alır; istekten, dosyadan, veritabanından gelen ya da parçalar birleştirilerek
+  alır (`test` bloklarındaki değişmezler sayılmaz); istekten, dosyadan, veritabanından gelen ya da parçalar birleştirilerek
   kurulan betik çalışmaz ve sunucu bunu bir kez uyarı olarak yazar.
   `<script src="…">` ve JSON-LD veri blokları etkilenmez.
 
