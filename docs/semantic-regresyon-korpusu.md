@@ -73,6 +73,7 @@ hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 | `run` | Invariantı geçmiş typed HIR ile runtime; stdout ve program exit'i korunur |
 | `capability` | Compile sonrası kapalı yetkinlik politikası |
 | `smtp` | Security fazında typed runtime → gerçek native SMTP; yalnız sabit loopback fixture |
+| `postgresql` | Runtime fazında typed runtime → hermetik PostgreSQL; sabit sanal sorgu süresi, adaptöre verilen son tarih bütçesi ve geçen sanal süre çıktıda |
 | `lsp-utf16` | LSP mesaj işleyicisinde BMP dışı önek sonrası hover, definition ve iki imleçten aynı rename aralıkları; süreç/taşıma kabulü değildir |
 | `lsp-uri` | LSP fazında gerçek stdio ikilisi, yüzde UTF-8 dosya URI'si ve hermetik disk birimi |
 
@@ -151,6 +152,20 @@ zincirini aynı stdout/exit ve tam tüketimle doğrular.
 `definition` HIR kipi, kullanıcı sembollerinin definition kaydını
 her okuma/yazım SymbolId için ayrıca ister; görünüm LHS eksikliği yalnız
 ifade invariantıyla yakalanamaz. K-213 vaka kimlikleri silinmez.
+
+## PostgreSQL runtime kipi (K-375)
+
+`postgresql`, `runtime` fazına aittir. Kaynakta tam bir
+`# postgresql-sorgu-suresi-ms: N` yorum satırı bulunur; hermetik `ToplayanIo`
+her okuma/değişiklikte sanal saati `N` ile adaptöre verilen bütçenin küçüğü
+kadar ilerletir, bütçe `N`'den kısaysa gerçek adaptörün `57014` +
+`db.deadline` iptalini döndürür. Gözlem program çıktısına
+`[postgresql] bütçe=<ms|-> geçen=<ms>ms` satırını ekler. [K-375
+reproducer'ı](../regression/runtime/postgresql-sorgu-son-tarihi.dil) eski
+sözleşmede (adaptöre bütçe yok) 4000 ms, düzeltmeyle 1000 ms bütçe ve 1000 ms geçen süre
+görür. Gerçek sunucu iptali, savepoint, COMMIT ve havuz sağlığı ayrı
+[TLS kapısındadır](postgresql-tls-ci.md); bu kip yalnız yorumlayıcı → adaptör
+bütçe sözleşmesini sınar.
 
 ## SMTP security kipi (K-236/K-237/K-252/K-371)
 
