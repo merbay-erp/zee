@@ -5748,3 +5748,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Test altyapısı bulgusu: süreç testinde dinleyici fd'si zaten 3 olunca
   `dup2(3, 3)` FD_CLOEXEC'i temizlemiyor ve soket exec'te kapanıyordu
   (yalnız tek test koşusunda görülür); önce yüksek fd'ye kopyalanıyor.
+
+## K-381 A2b — Sunucu TLS'i ve STARTTLS (24 Kasım 2026)
+
+- TLS kimliği proje dosyasında yol olarak değil, K-339 credential/ortam
+  adı olarak bildirilir (P021); sır proje ağacında durmaz, systemd
+  `LoadCredential=` ile verilir. Taslaktaki `credential:<ad>`/yol ikiliği
+  tek modele indirildi.
+- `rustls` zaten `ureq` üzerinden ağaçtaydı (ring, tls12, std); doğrudan
+  bağımlılık yapıldı, Cargo.lock'ta yalnız dil'in bağımlılık listesi
+  değişti. Politika sağlayıcı takım listesiyle sabitlendi.
+- STARTTLS reddinde Zee'ye bağlantıyı açık bırakma seçeneği verilmedi;
+  ikinci yükseltme ve kimliksiz süreç ise bağlantıyı kapatmaz (Zee 454
+  yazabilir). Implicit TLS'te görev el sıkışmadan sonra kurulur.
+- Test kimliği depoya PEM özel anahtar konmasın diye test anında `openssl`
+  ile üretilir (CA + localhost yaprak, 2 gün). macOS `/tmp` sembolik bağı
+  credential dizini kuralına takılır; testte kanonik yol kullanıldı.

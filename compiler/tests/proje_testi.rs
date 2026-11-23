@@ -1679,6 +1679,7 @@ fn baglanti_ayarlari_aralikli_okunur_ve_p020_ile_reddedilir() {
             bosta_suresi_ms: 60_000,
             omur_ms: 900_000,
             dolu_yaniti: Some("421 4.3.2 Hizmet mesgul".into()),
+            tls: None,
         }
     );
     // Küçük sınırda uzak adres varsayılanı sınıra çekilir.
@@ -1708,4 +1709,37 @@ fn baglanti_ayarlari_aralikli_okunur_ve_p020_ile_reddedilir() {
     let tani = bildirimi_oku(dinleyicisiz).unwrap_err();
     assert_eq!(tani.kod, "P020");
     assert!(tani.mesaj.contains("dinleyiciler"), "{}", tani.mesaj);
+}
+
+/// K-381 A2b: TLS kimliği değişken adlarıyla bildirilir; implicit TLS
+/// dinleyicileri `dinleyiciler`de olmalı; bozuk bildirim P021.
+#[test]
+fn tls_bildirimi_okunur_ve_p021_ile_reddedilir() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\ndinleyiciler \"smtp_v4 0.0.0.0:25\", \"smtps_v4 0.0.0.0:465\" listesi olsun\n";
+    let kimlik = "tls_sertifika_değişkeni \"POSTA_ZINCIR\" olsun\ntls_anahtar_değişkeni \"POSTA_ANAHTAR\" olsun\n";
+    let tls = bildirimi_oku(&format!(
+        "{taban}{kimlik}tls_dinleyicileri \"smtps_v4\" listesi olsun\n"
+    ))
+    .unwrap()
+    .baglanti
+    .tls
+    .expect("tls");
+    assert_eq!(tls.dinleyiciler, vec!["smtps_v4"]);
+    assert_eq!(tls.sertifika_degiskeni, "POSTA_ZINCIR");
+    assert_eq!(tls.anahtar_degiskeni, "POSTA_ANAHTAR");
+    // Yalnız STARTTLS: implicit dinleyici yok.
+    let yalniz = bildirimi_oku(&format!("{taban}{kimlik}")).unwrap();
+    assert!(yalniz.baglanti.tls.unwrap().dinleyiciler.is_empty());
+    assert!(bildirimi_oku(taban).unwrap().baglanti.tls.is_none());
+    for satir in [
+        "tls_sertifika_değişkeni \"A\" olsun",
+        "tls_dinleyicileri \"smtps_v4\" listesi olsun",
+        "tls_sertifika_değişkeni \"A\" olsun\ntls_anahtar_değişkeni \"A\" olsun",
+        "tls_sertifika_değişkeni \"a/b\" olsun\ntls_anahtar_değişkeni \"B\" olsun",
+        "tls_sertifika_değişkeni \"A\" olsun\ntls_anahtar_değişkeni \"B\" olsun\ntls_dinleyicileri \"imaps_v4\" listesi olsun",
+        "tls_sertifika_değişkeni \"A\" olsun\ntls_anahtar_değişkeni \"B\" olsun\ntls_dinleyicileri \"smtps_v4\", \"smtps_v4\" listesi olsun",
+    ] {
+        let tani = bildirimi_oku(&format!("{taban}{satir}\n")).unwrap_err();
+        assert_eq!(tani.kod, "P021", "{satir}: {}", tani.mesaj);
+    }
 }

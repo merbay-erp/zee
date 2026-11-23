@@ -18,6 +18,8 @@ pub struct SahteBaglanti {
     /// Sunucunun yazdığı satırlar (CRLF'siz).
     pub giden: Vec<String>,
     pub kapandi: bool,
+    /// Implicit TLS dinleyicisinden gelir ya da STARTTLS ile yükseltildi.
+    pub tls: bool,
     okuyucu: Option<SatirOkuyucu>,
     sustu: bool,
 }
@@ -31,6 +33,7 @@ impl SahteBaglanti {
             sessiz_kalir: false,
             giden: Vec::new(),
             kapandi: false,
+            tls: false,
             okuyucu: None,
             sustu: false,
         }
@@ -114,6 +117,7 @@ impl ToplayanBaglanti {
                     uzak_adres: yeni.uzak_adres.clone(),
                     uzak_kapi: 40000 + kimlik as u16,
                     yerel_kapi: 2525,
+                    tls: yeni.tls,
                 }));
                 self.baglantilar.push(yeni);
             }
@@ -145,6 +149,7 @@ impl ToplayanBaglanti {
     pub(super) fn islem(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
         let satir_siniri = self.ayar.satir_siniri;
         let kapaniyor = self.kapanis_bildirildi;
+        let tls_var = self.ayar.tls.is_some();
         let Some(b) = self.baglantilar.get_mut((kimlik as usize).wrapping_sub(1)) else {
             return BaglantiSonucu::hata("kapandı", "bağlantı yok");
         };
@@ -188,6 +193,22 @@ impl ToplayanBaglanti {
             BaglantiIslemi::Kapat => {
                 b.kapandi = true;
                 BaglantiSonucu::Tamam(0)
+            }
+            BaglantiIslemi::TlsBaslat => {
+                if b.tls {
+                    return BaglantiSonucu::hata("tls", crate::ag_satiri::ZATEN_TLS);
+                }
+                if !tls_var {
+                    return BaglantiSonucu::hata("tls", crate::ag_satiri::TLS_KIMLIGI_YOK);
+                }
+                let okuyucu = b.okuyucu.as_mut();
+                if okuyucu.as_ref().is_some_and(|o| o.tamponlu_bayt() > 0) {
+                    b.kapandi = true;
+                    return BaglantiSonucu::hata("tls", crate::ag_satiri::STARTTLS_ENJEKSIYONU);
+                }
+                okuyucu.into_iter().for_each(SatirOkuyucu::sifirla);
+                b.tls = true;
+                BaglantiSonucu::Satir("TLSv1_3 TLS13_AES_128_GCM_SHA256".into())
             }
             BaglantiIslemi::Engelle(_) => {
                 b.teslim_et();

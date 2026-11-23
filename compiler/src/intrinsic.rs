@@ -43,6 +43,9 @@ pub const BAGLANTI_SATIR_OKU: &str = "ag.baglanti_satir_oku";
 /// K-381: `bağlantıya <metin> satırını yazmayı dene` → TamSayı Sonucu
 /// (CRLF dahil kuyruğa alınan bayt).
 pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
+/// K-381 A2b: `bağlantıda TLS başlatmayı dene` — STARTTLS yükseltmesi →
+/// Metin Sonucu (anlaşılan sürüm ve şifre takımı).
+pub const BAGLANTI_TLS_BASLAT: &str = "ag.baglanti_tls_baslat";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -138,6 +141,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::TamSayiSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Bağlantıya yazılacak satır Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_TLS_BASLAT,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıda TLS başlatma argüman almaz.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_MIME_GONDER,

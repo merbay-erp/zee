@@ -31,6 +31,7 @@ pub(super) fn olaylari_yaz(sonuc: &Result<Vec<BaglantiOlayi>, String>) -> Vec<St
                         y.uzak_adres.clone(),
                         y.uzak_kapi.to_string(),
                         y.yerel_kapi.to_string(),
+                        bool_yaz(y.tls),
                     ]),
                     BaglantiOlayi::Hazir(kimlik) => {
                         alanlar.extend(["hazir".into(), kimlik.to_string()])
@@ -67,15 +68,16 @@ pub(super) fn olaylari_coz(
     let mut kalan = &alanlar[1..];
     while let Some((etiket, geri)) = kalan.split_first() {
         match etiket.as_str() {
-            "yeni" if geri.len() >= 5 => {
+            "yeni" if geri.len() >= 6 => {
                 olaylar.push(BaglantiOlayi::Yeni(YeniBaglanti {
                     kimlik: sayi(&geri[0])?,
                     dinleyici: geri[1].clone(),
                     uzak_adres: geri[2].clone(),
                     uzak_kapi: kapi(&geri[3])?,
                     yerel_kapi: kapi(&geri[4])?,
+                    tls: bool_coz(&geri[5])?,
                 }));
-                kalan = &geri[5..];
+                kalan = &geri[6..];
             }
             "hazir" if !geri.is_empty() => {
                 olaylar.push(BaglantiOlayi::Hazir(sayi(&geri[0])?));
@@ -97,6 +99,7 @@ pub(super) fn islem_argumanlari(kimlik: u64, islem: &BaglantiIslemi) -> Vec<Stri
         BaglantiIslemi::SatirOku => alanlar.push("oku".into()),
         BaglantiIslemi::SatirYaz(metin) => alanlar.extend(["yaz".into(), metin.clone()]),
         BaglantiIslemi::Kapat => alanlar.push("kapat".into()),
+        BaglantiIslemi::TlsBaslat => alanlar.push("tls".into()),
         BaglantiIslemi::Engelle(son) => alanlar.extend([
             "engelle".into(),
             son.map_or_else(|| "yok".into(), |an| an.to_string()),
@@ -107,7 +110,9 @@ pub(super) fn islem_argumanlari(kimlik: u64, islem: &BaglantiIslemi) -> Vec<Stri
 
 pub(super) fn islem_semasi(argumanlar: &[String]) -> Result<(), String> {
     let gecerli = match argumanlar {
-        [kimlik, islem] => kanonik_tamsayi::<u64>(kimlik) && (islem == "oku" || islem == "kapat"),
+        [kimlik, islem] => {
+            kanonik_tamsayi::<u64>(kimlik) && matches!(islem.as_str(), "oku" | "kapat" | "tls")
+        }
         [kimlik, islem, _] if islem == "yaz" => kanonik_tamsayi::<u64>(kimlik),
         [kimlik, islem, son] if islem == "engelle" => {
             kanonik_tamsayi::<u64>(kimlik) && (son == "yok" || kanonik_tamsayi::<i64>(son))

@@ -2559,7 +2559,7 @@ K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 
 ## K-381 — Adlı dinleyici bağlantı yüzeyi (RFC-0039 A2a)
 
-**Durum: KAPALI (A2a).** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail);
+**Durum: KAPALI (A2a, A2b).** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail);
 23 Kasım 2026 merkez kararı “Sırayla aç”, adım 2. Ürün SMTP durum
 makinesini yalnız stdio aracıyla sınayabiliyordu (F010) ve dinleyici
 kalıbı S036 veriyordu (F009); K-376 soketleri devralıp tutuyor ama Zee
@@ -2591,7 +2591,17 @@ IPv4/IPv6 SMTP oturumu, `systemctl stop` ile `421 … kapanıyor`, çıkış 0).
 spec/12 §9, spec/23, ADR-165, GB-157, `dogfood/urun-h/baglanti-yankisi/`,
 [docs/adli-dinleyici-devri.md](adli-dinleyici-devri.md).
 
-Açık: A2b sunucu TLS'i ve STARTTLS (ayrı dilim), A2c blok okuma/akıtma,
+A2b (kapalı): P021 TLS kimliği (`tls_sertifika_değişkeni`,
+`tls_anahtar_değişkeni`, `tls_dinleyicileri`; K-339 credential modeli,
+açılışta doğrulama, çıkış 2), `rustls`+`ring` sabit politika (TLS 1.3/1.2,
+ECDHE + AEAD), implicit TLS el sıkışması görev öncesi, `bağlantıda TLS
+başlatmayı dene` → Sonuç<Metin>; STARTTLS anında tamponda düz metin varsa
+yükseltme yok + kapanış (CVE-2011-0411). Kanıt:
+`compiler/tests/ag_baglantisi_tls_testi.rs` (implicit TLS 1.3, STARTTLS
+1.3/1.2, enjeksiyon, TLS 1.1/CBC reddi, kimlik/credential), hermetik
+STARTTLS vakaları, `proje_testi` P021; GB-158.
+
+Açık: A2c blok okuma/akıtma,
 çok işçi grubuna adla aktarım, `dil dene` içinden betiklenmiş bağlantı,
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).

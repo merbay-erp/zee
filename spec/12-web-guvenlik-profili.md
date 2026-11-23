@@ -372,7 +372,7 @@ ZORUNLU: `NOTIFY_SOCKET` verilmişse tek süreç web çalışma zamanı `sunucu 
 
 ## 9. Adlı dinleyici bağlantı yüzeyi (K-381)
 
-RFC-0039 Aşama A2a; karar [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md), işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
+RFC-0039 Aşama A2a ve A2b (sunucu TLS'i); karar [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md), işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
 
 TANIMLI: Üst düzey `"<ad>" dinleyicisinde bağlantı geldiğinde` bloğu, §8 ile devralınan `<ad>` dinleyicisinden kabul edilen her bağlantı için taze ortamda koşar; blok yalnız `bağlantı` adlı Metin sözlüğünü görür (`dinleyici`, `uzak_adres`, `uzak_kapı`, `yerel_kapı`). Bağlantı kalıpları `<ad> bağlantıdan satır okumayı dene olsun` (`Sonuç<Metin>`), `bağlantıya <Metin> satırını yaz`, `<ad> bağlantıya <Metin> satırını yazmayı dene olsun` (`Sonuç<TamSayı>`, CRLF dahil bayt) ve `bağlantıyı kapat`'tır ve o anki bağlantı görevinin bağlantısına uygulanır. Bildirimde olmayan dinleyici adı, aynı ada ikinci blok, aynı programda `sunucu başlat` ile bağlantı bloğu ve bağlantı görevi dışında bağlantı kalıbı C030'dur.
 
@@ -391,6 +391,12 @@ ZORUNLU: Bağlantı scheduler'ı başlayınca `NOTIFY_SOCKET` varsa `READY=1` g�
 ZORUNLU: Bağlantı bloğu `ağ-dinleyici` yetkinliği ister (spec/23); bildirimli projede yetkinlik yoksa T054, `--güvenli` çocuk modunda C030'dur. Bağlantı olay beklemesi ve her bağlantı işlemi (oku, yaz, kapat, engelleyici bekleme, günlük) IO izine girer; aynı izle yeniden oynatma aynı sırayı ve çıktıyı üretir.
 
 TANIMLI: `proje.dil` bağlantı ayarları isteğe bağlı sabit değerlerdir: `bağlantı_sınırı` 1–4096 (varsayılan 64), `uzak_adres_bağlantı_sınırı` 1–`bağlantı_sınırı` (varsayılan 8, genel sınırdan büyükse ona çekilir), `bağlantı_satır_sınırı` 64–65536 bayt (varsayılan 1000), `bağlantı_boşta_süresi` 1–3600 saniye (varsayılan 300), `bağlantı_ömrü` 1–86400 saniye (varsayılan 3600), `bağlantı_dolu_yanıtı` en çok 512 baytlık yazdırılabilir ASCII. Aralık dışı ya da sabit olmayan değer, kuralı bozan ret satırı, genel sınırı aşan uzak adres sınırı ve `dinleyiciler` bildirimi olmadan bağlantı ayarı P020'dir.
+
+TANIMLI (A2b): `proje.dil` `tls_sertifika_değişkeni` ve `tls_anahtar_değişkeni` PEM sertifika zincirini ve özel anahtarı taşıyan iki ayrı credential/ortam adıdır (A-Z, 0-9, _; değer değil ad); K-339 modeliyle önce `CREDENTIALS_DIRECTORY` dosyasından, yoksa ortamdan okunur. `tls_dinleyicileri` implicit TLS dinleyicilerinin (`dinleyiciler`deki) adlarıdır ve kimlik ister. Eksik, aynı ya da kurala uymayan ad, kimliksiz, bildirilmemiş ya da yinelenen TLS dinleyicisi P021'dir. Kimlik okunamaz, PEM çözülemez ya da anahtar sertifikayla uyuşmazsa süreç kaynak yürütülmeden çıkış 2 verir; özel anahtar baytı hiçbir zaman Zee değeri, IO izi, günlük ya da tanı metni olmaz.
+
+ZORUNLU (A2b): Sunucu TLS politikası sabittir ve bildirimle gevşetilemez: `rustls` + `ring`, yalnız TLS 1.3 ve TLS 1.2; TLS 1.3'te AES-GCM ve CHACHA20-POLY1305, TLS 1.2'de yalnız ECDHE + AES-GCM/CHACHA20-POLY1305 takımları; yeniden müzakere, sıkıştırma ve istemci sertifikası yok. Implicit TLS dinleyicisinde el sıkışma `bağlantı_boşta_süresi` içinde bitmeden Zee görevi kurulmaz; başarısız el sıkışma görev kurmadan kapanır ve bağlantı sınırlarına sayılır. `bağlantı` sözlüğü `tls` = `evet`/`hayır` taşır.
+
+ZORUNLU (A2b): `<ad> bağlantıda TLS başlatmayı dene olsun` (`Sonuç<Metin>`: anlaşılan sürüm ve şifre takımı) yükseltme anında Zee'nin tüketmediği gelen düz metin tamponu boş değilse yükseltme yapmaz, tamponu atar, bağlantıyı kapatır ve `tür=tls` döner (STARTTLS komut enjeksiyonu, CVE-2011-0411 sınıfı); önceki düz metinden hiçbir bayt TLS akışına taşınmaz ve satır okuyucu sıfırlanır. Düz giden tampon yükseltmeden önce boşaltılır. TLS bağlantısında ikinci yükseltme, kimliksiz süreçte yükseltme `tür=tls`'dir (bağlantı açık kalır); süresinde bitmeyen ya da başarısız el sıkışma bağlantıyı kapatır. Protokol durumunun sıfırlanması (EHLO tekrarı, AUTH ilanı) Zee'nin işidir.
 
 AÇIK: Blok okuma (SMTP `DATA` nokta bloğu, IMAP literal'i) ve dosyadan bağlantıya akıtma RFC-0039 A2c'dedir. Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları senkron dilimdir ve kardeş bağlantıları o süre bekletir. Unix dışı platformda bağlantı bloğu C030'dur. Binlerce boşta oturumun bellek ölçümü yapılmamıştır.
 

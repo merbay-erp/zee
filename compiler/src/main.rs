@@ -31,6 +31,9 @@ mod adli_dinleyici;
 #[cfg(unix)]
 #[path = "cli/ag_baglantisi.rs"]
 mod ag_baglantisi;
+#[cfg(unix)]
+#[path = "cli/ag_tls.rs"]
+mod ag_tls;
 #[path = "cli/registry.rs"]
 mod dil_registry;
 #[path = "cli/systemd_bildirim.rs"]
@@ -5045,6 +5048,18 @@ fn calistir_gercek_io_ile(
     if let Err(hata) = adli_dinleyici::hazirla(girdi.dinleyiciler(), web_isci_grubu::isci_mi()) {
         eprintln!("{hata}");
         return ExitCode::from(2);
+    }
+    // K-381 A2b: TLS kimliği yürütmeden önce yüklenir; hata çıkış 2 (anahtar içeriği yazılmaz).
+    #[cfg(unix)]
+    if let Some(tls) = girdi
+        .proje
+        .as_ref()
+        .and_then(|p| p.ana_bildirim().baglanti.tls.as_ref())
+    {
+        if let Err(hata) = ag_tls::hazirla(tls) {
+            eprintln!("bağlantı TLS'i: {hata}");
+            return ExitCode::from(2);
+        }
     }
     let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
     taban.metrik = metrik;

@@ -9,6 +9,7 @@
 //! tampon. Sınır dolunca bağlantı kabul edilip bildirilen kibar ret satırı tek
 //! engellemeyen yazımla gönderilir ve kapatılır; Zee görevi kurulmaz.
 
+use super::ag_tls::Kanal;
 use dil::ag_satiri::{giden_satir, BaglantiAyari, SatirOkuyucu, GIDEN_TAMPON_BAYTI, OKUMA_PARCASI};
 use dil::yorumlayici::{BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti};
 use std::collections::BTreeMap;
@@ -37,7 +38,7 @@ struct Bekleme {
 }
 
 struct Baglanti {
-    akis: TcpStream,
+    kanal: Kanal,
     dinleyici: String,
     uzak: IpAddr,
     okuyucu: SatirOkuyucu,
@@ -46,10 +47,15 @@ struct Baglanti {
     kirik: bool,
     bekleme: Option<Bekleme>,
     zaman_asti: bool,
+    /// Implicit TLS el sıkışması sürüyor: (son an, uzak kapı, yerel kapı).
+    /// Bitmeden Zee görevi kurulmaz.
+    el_sikisma: Option<(Instant, u16, u16)>,
+    /// STARTTLS el sıkışması sürüyor.
+    yukseltiliyor: bool,
 }
 
 struct Kapanan {
-    akis: TcpStream,
+    kanal: Kanal,
     giden: Vec<u8>,
     son: Instant,
 }
@@ -62,6 +68,8 @@ pub(crate) struct Reaktor {
     kapananlar: Vec<Kapanan>,
     sonraki: u64,
     kapanis: Option<super::web_kapanis::WebKapanis>,
+    /// Implicit TLS dinleyici adları (proje.dil `tls_dinleyicileri`).
+    implicit_tls: Vec<String>,
     kapaniyor: bool,
     hazir_bildirildi: bool,
     ret_sayisi: u64,
@@ -77,10 +85,11 @@ fn uzak_yazimi(ip: IpAddr) -> String {
     }
 }
 
-/// Giden tamponu engellemeden olabildiğince boşaltır; `false`: bağlantı kırık.
-fn bosalt(akis: &mut TcpStream, giden: &mut Vec<u8>) -> bool {
+/// Giden tamponu (ve bekleyen TLS kayıtlarını) engellemeden olabildiğince
+/// boşaltır; `false`: bağlantı kırık.
+fn bosalt(kanal: &mut Kanal, giden: &mut Vec<u8>) -> bool {
     while !giden.is_empty() {
-        match akis.write(giden) {
+        match kanal.write(giden) {
             Ok(0) => return false,
             Ok(n) => {
                 giden.drain(..n);
@@ -90,7 +99,12 @@ fn bosalt(akis: &mut TcpStream, giden: &mut Vec<u8>) -> bool {
             Err(_) => return false,
         }
     }
-    true
+    kanal.tls_bosalt().is_ok()
+}
+
+/// Kapanmamış giden veri (düz tampon ya da TLS kaydı) var mı.
+fn bekleyen_cikti(kanal: &Kanal, giden: &[u8]) -> bool {
+    !giden.is_empty() || kanal.yazma_bekliyor()
 }
 
 fn poll_et(olaylar: &mut [libc::pollfd], zaman_asimi_ms: i64) {
@@ -112,6 +126,11 @@ fn poll_et(olaylar: &mut [libc::pollfd], zaman_asimi_ms: i64) {
 
 impl Reaktor {
     pub(crate) fn yeni(ayar: BaglantiAyari, baslangic: Instant) -> Self {
+        let implicit_tls = ayar
+            .tls
+            .as_ref()
+            .map(|t| t.dinleyiciler.clone())
+            .unwrap_or_default();
         Self {
             ayar,
             baslangic,
@@ -120,6 +139,7 @@ impl Reaktor {
             kapananlar: Vec::new(),
             sonraki: 1,
             kapanis: None,
+            implicit_tls,
             kapaniyor: false,
             hazir_bildirildi: false,
             ret_sayisi: 0,
@@ -193,19 +213,31 @@ impl Reaktor {
                 continue;
             }
             let yerel_kapi = akis.local_addr().map(|a| a.port()).unwrap_or(0);
+            let mut kanal = Kanal::duz(akis);
+            let implicit = self.implicit_tls.contains(&ad);
+            if implicit && kanal.tls_ac().is_err() {
+                continue;
+            }
             let kimlik = self.sonraki;
             self.sonraki += 1;
-            olaylar.push(BaglantiOlayi::Yeni(YeniBaglanti {
-                kimlik,
-                dinleyici: ad.clone(),
-                uzak_adres: uzak_yazimi(uzak),
-                uzak_kapi: es.port(),
-                yerel_kapi,
-            }));
+            let el_sikisma = implicit.then(|| {
+                let son = Instant::now() + Duration::from_millis(self.ayar.bosta_suresi_ms as u64);
+                (son, es.port(), yerel_kapi)
+            });
+            if !implicit {
+                olaylar.push(BaglantiOlayi::Yeni(YeniBaglanti {
+                    kimlik,
+                    dinleyici: ad.clone(),
+                    uzak_adres: uzak_yazimi(uzak),
+                    uzak_kapi: es.port(),
+                    yerel_kapi,
+                    tls: false,
+                }));
+            }
             self.baglantilar.insert(
                 kimlik,
                 Baglanti {
-                    akis,
+                    kanal,
                     dinleyici: ad,
                     uzak,
                     okuyucu: SatirOkuyucu::yeni(self.ayar.satir_siniri),
@@ -214,6 +246,8 @@ impl Reaktor {
                     kirik: false,
                     bekleme: None,
                     zaman_asti: false,
+                    el_sikisma,
+                    yukseltiliyor: false,
                 },
             );
         }
@@ -227,7 +261,7 @@ impl Reaktor {
         }
         let mut tampon = [0u8; OKUMA_PARCASI];
         loop {
-            match b.akis.read(&mut tampon[..alan]) {
+            match b.kanal.read(&mut tampon[..alan]) {
                 Ok(0) => {
                     b.eof = true;
                     return true;
@@ -274,10 +308,12 @@ impl Reaktor {
     /// Giden tamponları boşaltır; süresi dolan ya da kırılan bekleyenleri uyandırır.
     fn suresi_dolanlar(&mut self, bekleyenler: &[u64], simdi: Instant) -> Vec<BaglantiOlayi> {
         self.kapananlar.retain_mut(|k| {
-            bosalt(&mut k.akis, &mut k.giden) && !k.giden.is_empty() && simdi < k.son
+            bosalt(&mut k.kanal, &mut k.giden)
+                && bekleyen_cikti(&k.kanal, &k.giden)
+                && simdi < k.son
         });
         for b in self.baglantilar.values_mut() {
-            if !b.giden.is_empty() && !bosalt(&mut b.akis, &mut b.giden) {
+            if bekleyen_cikti(&b.kanal, &b.giden) && !bosalt(&mut b.kanal, &mut b.giden) {
                 b.kirik = true;
             }
         }
@@ -313,17 +349,60 @@ impl Reaktor {
             let Some(b) = self.baglantilar.get(kimlik) else {
                 continue;
             };
-            let okuma = b.bekleme.as_ref().is_none_or(|w| w.ilgi == Ilgi::Okuma);
-            let ilgi = if okuma { libc::POLLIN } else { libc::POLLOUT };
-            pollfd.push(olay(b.akis.as_raw_fd(), ilgi));
+            pollfd.push(olay(b.kanal.akis.as_raw_fd(), Self::ilgi(b)));
             sahip.push(*kimlik);
+        }
+        for (kimlik, b) in &self.baglantilar {
+            if b.el_sikisma.is_some() {
+                pollfd.push(olay(b.kanal.akis.as_raw_fd(), Self::ilgi(b)));
+                sahip.push(*kimlik);
+            }
         }
         pollfd.extend(
             self.kapananlar
                 .iter()
-                .map(|k| olay(k.akis.as_raw_fd(), libc::POLLOUT)),
+                .map(|k| olay(k.kanal.akis.as_raw_fd(), libc::POLLOUT)),
         );
         (pollfd, sahip)
+    }
+
+    fn ilgi(b: &Baglanti) -> libc::c_short {
+        let okuma = b.bekleme.as_ref().is_none_or(|w| w.ilgi == Ilgi::Okuma);
+        let temel = if okuma { libc::POLLIN } else { libc::POLLOUT };
+        if b.kanal.yazma_bekliyor() {
+            temel | libc::POLLOUT
+        } else {
+            temel
+        }
+    }
+
+    /// Implicit TLS el sıkışmalarını ilerletir; biten `Yeni` olur, süresi
+    /// dolan ya da bozulan Zee görevi kurulmadan kapanır.
+    fn el_sikismalari(&mut self, simdi: Instant, olaylar: &mut Vec<BaglantiOlayi>) {
+        let mut bitenler = Vec::new();
+        for (kimlik, b) in &mut self.baglantilar {
+            let Some((son, uzak_kapi, yerel_kapi)) = b.el_sikisma else {
+                continue;
+            };
+            match b.kanal.el_sikis() {
+                Ok(true) => {
+                    b.el_sikisma = None;
+                    olaylar.push(BaglantiOlayi::Yeni(YeniBaglanti {
+                        kimlik: *kimlik,
+                        dinleyici: b.dinleyici.clone(),
+                        uzak_adres: uzak_yazimi(b.uzak),
+                        uzak_kapi,
+                        yerel_kapi,
+                        tls: true,
+                    }));
+                }
+                Ok(false) if simdi < son => {}
+                _ => bitenler.push(*kimlik),
+            }
+        }
+        for kimlik in bitenler {
+            self.baglantilar.remove(&kimlik);
+        }
     }
 
     fn poll_suresi(&self, bekleyenler: &[u64], uyanma: Option<Instant>, simdi: Instant) -> i64 {
@@ -332,6 +411,11 @@ impl Reaktor {
             .filter_map(|k| self.baglantilar.get(k)?.bekleme.as_ref().map(|w| w.son))
             .chain(uyanma)
             .chain(self.kapananlar.iter().map(|k| k.son))
+            .chain(
+                self.baglantilar
+                    .values()
+                    .filter_map(|b| b.el_sikisma.map(|e| e.0)),
+            )
             .fold(
                 simdi + Duration::from_millis(AZAMI_POLL_MS as u64),
                 Instant::min,
@@ -353,9 +437,12 @@ impl Reaktor {
                 continue;
             }
             if let Some(b) = self.baglantilar.get_mut(kimlik) {
+                if b.el_sikisma.is_some() {
+                    continue;
+                }
                 if b.bekleme.as_ref().is_none_or(|w| w.ilgi == Ilgi::Okuma) {
                     Self::doldur(b);
-                } else if !bosalt(&mut b.akis, &mut b.giden) {
+                } else if !bosalt(&mut b.kanal, &mut b.giden) {
                     b.kirik = true;
                 }
             }
@@ -382,7 +469,8 @@ impl Reaktor {
             }
             let (mut pollfd, sahip) = self.poll_listesi(bekleyenler);
             poll_et(&mut pollfd, self.poll_suresi(bekleyenler, uyanma, simdi));
-            let olaylar = self.poll_sonucu(&pollfd, &sahip);
+            let mut olaylar = self.poll_sonucu(&pollfd, &sahip);
+            self.el_sikismalari(Instant::now(), &mut olaylar);
             if !olaylar.is_empty() {
                 return Ok(olaylar);
             }
@@ -451,7 +539,7 @@ impl Reaktor {
             b.bekleme = None;
             return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
         }
-        if b.giden.len() + bayt.len() > GIDEN_TAMPON_BAYTI && !bosalt(&mut b.akis, &mut b.giden) {
+        if b.giden.len() + bayt.len() > GIDEN_TAMPON_BAYTI && !bosalt(&mut b.kanal, &mut b.giden) {
             b.kirik = true;
             return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
         }
@@ -475,7 +563,7 @@ impl Reaktor {
         b.bekleme = None;
         b.zaman_asti = false;
         b.giden.extend_from_slice(&bayt);
-        if !bosalt(&mut b.akis, &mut b.giden) {
+        if !bosalt(&mut b.kanal, &mut b.giden) {
             b.kirik = true;
             return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
         }
@@ -486,21 +574,85 @@ impl Reaktor {
         let Some(mut b) = self.baglantilar.remove(&kimlik) else {
             return BaglantiSonucu::Tamam(0);
         };
-        if !b.kirik
-            && !b.giden.is_empty()
-            && bosalt(&mut b.akis, &mut b.giden)
-            && !b.giden.is_empty()
-        {
+        b.kanal.kapanis_bildir();
+        if !b.kirik && bosalt(&mut b.kanal, &mut b.giden) && bekleyen_cikti(&b.kanal, &b.giden) {
             let bosta = Duration::from_millis(self.ayar.bosta_suresi_ms as u64);
             self.kapananlar.push(Kapanan {
-                akis: b.akis,
+                kanal: b.kanal,
                 giden: b.giden,
                 son: Instant::now() + bosta.min(KAPANIS_BOSALTMA),
             });
         } else {
-            let _ = b.akis.shutdown(Shutdown::Write);
+            let _ = b.kanal.akis.shutdown(Shutdown::Write);
         }
         BaglantiSonucu::Tamam(0)
+    }
+
+    /// STARTTLS: ara bellek boş olmalı (aksi hâlde bağlantı kapanır), düz
+    /// giden tampon önce boşaltılır, sonra el sıkışma süresi içinde biter.
+    fn tls_baslat(&mut self, kimlik: u64) -> BaglantiSonucu {
+        let bosta = self.ayar.bosta_suresi_ms;
+        let Some(b) = self.baglantilar.get_mut(&kimlik) else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+        };
+        if !b.yukseltiliyor {
+            if b.kanal.tls_mi() {
+                return BaglantiSonucu::hata("tls", dil::ag_satiri::ZATEN_TLS);
+            }
+            if super::ag_tls::yapilandirma().is_none() {
+                return BaglantiSonucu::hata("tls", dil::ag_satiri::TLS_KIMLIGI_YOK);
+            }
+            if b.okuyucu.tamponlu_bayt() > 0 {
+                // CVE-2011-0411 sınıfı: STARTTLS ile aynı pakette gelen komut
+                // TLS sonrasına taşınamaz; tampon atılır, bağlantı kapanır.
+                b.okuyucu.sifirla();
+                b.kirik = true;
+                self.kapat(kimlik);
+                return BaglantiSonucu::hata("tls", dil::ag_satiri::STARTTLS_ENJEKSIYONU);
+            }
+            if !bosalt(&mut b.kanal, &mut b.giden) {
+                b.kirik = true;
+                return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
+            }
+            if !b.giden.is_empty() {
+                b.bekleme.get_or_insert(Bekleme {
+                    ilgi: Ilgi::Yazma,
+                    son: Instant::now() + Duration::from_millis(bosta as u64),
+                });
+                if b.zaman_asti {
+                    b.kirik = true;
+                    self.kapat(kimlik);
+                    return BaglantiSonucu::hata("tls", "STARTTLS öncesi giden tampon boşalmadı");
+                }
+                return BaglantiSonucu::Bekle;
+            }
+            if let Err(neden) = b.kanal.tls_ac() {
+                return BaglantiSonucu::hata("tls", neden);
+            }
+            b.okuyucu.sifirla();
+            b.yukseltiliyor = true;
+            b.bekleme = None;
+            b.zaman_asti = false;
+        }
+        match b.kanal.el_sikis() {
+            Ok(true) => {
+                b.yukseltiliyor = false;
+                b.bekleme = None;
+                BaglantiSonucu::Satir(b.kanal.tls_bilgisi())
+            }
+            Ok(false) if !b.zaman_asti => {
+                b.bekleme.get_or_insert(Bekleme {
+                    ilgi: Ilgi::Okuma,
+                    son: Instant::now() + Duration::from_millis(bosta as u64),
+                });
+                BaglantiSonucu::Bekle
+            }
+            _ => {
+                b.kirik = true;
+                self.kapat(kimlik);
+                BaglantiSonucu::hata("tls", "TLS el sıkışması başarısız ya da süresinde bitmedi")
+            }
+        }
     }
 
     fn engelle(&mut self, kimlik: u64, son_ms: Option<i64>) -> BaglantiSonucu {
@@ -510,7 +662,7 @@ impl Reaktor {
         };
         let ilgi = b.bekleme.as_ref().map_or(Ilgi::Okuma, |w| w.ilgi);
         let bekleme_sonu = b.bekleme.as_ref().map(|w| w.son);
-        let fd = b.akis.as_raw_fd();
+        let fd = b.kanal.akis.as_raw_fd();
         let mut sinir = bekleme_sonu
             .unwrap_or_else(|| Instant::now() + Duration::from_millis(AZAMI_POLL_MS as u64));
         if let Some(son) = son {
@@ -544,7 +696,7 @@ impl Reaktor {
         if hazir {
             if ilgi == Ilgi::Okuma {
                 Self::doldur(b);
-            } else if !bosalt(&mut b.akis, &mut b.giden) {
+            } else if !bosalt(&mut b.kanal, &mut b.giden) {
                 b.kirik = true;
             }
         } else if bekleme_sonu.is_some_and(|an| Instant::now() >= an) {
@@ -558,6 +710,7 @@ impl Reaktor {
             BaglantiIslemi::SatirOku => self.satir_oku(kimlik),
             BaglantiIslemi::SatirYaz(metin) => self.satir_yaz(kimlik, metin),
             BaglantiIslemi::Kapat => self.kapat(kimlik),
+            BaglantiIslemi::TlsBaslat => self.tls_baslat(kimlik),
             BaglantiIslemi::Engelle(son) => self.engelle(kimlik, *son),
         }
     }

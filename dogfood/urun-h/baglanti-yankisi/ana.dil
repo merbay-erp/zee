@@ -1,7 +1,9 @@
 # K-381 (RFC-0039 A2a): ürün H SMTP alıcısının bağlantı tarafı. Durum
 # makinesi ürünün saf SMTP komut çözümleyicisinin küçültülmüş hâlidir; satır
 # kuralı (CRLF, çıplak CR/LF reddi, uzunluk) ve zaman aşımı çalışma zamanı
-# değişmezidir, protokol yanıtı Zee'nin kararıdır.
+# değişmezidir, protokol yanıtı Zee'nin kararıdır. STARTTLS'te tamponda
+# bekleyen düz metin varsa çalışma zamanı yükseltmeyi reddedip bağlantıyı
+# kapatır (A2b); başarıda EHLO durumu sıfırlanır (ürün durum makinesinin işi).
 
 işlem oturumu sür
     bağlantıya "220 mx.ornek.test ESMTP" satırını yaz
@@ -13,6 +15,11 @@ işlem oturumu sür
             metin "QUIT" e eşitse
                 bağlantıya "221 2.0.0 hoşça kal" satırını yaz
                 açık yanlış olsun
+            değilse metin "STARTTLS" e eşitse
+                bağlantıya "220 2.0.0 TLS için hazır" satırını yaz
+                tls bağlantıda TLS başlatmayı dene olsun
+                tls başarısızsa
+                    açık yanlış olsun
             değilse
                 metin "NOOP" e eşitse
                     bağlantıya "250 2.0.0 tamam" satırını yaz
@@ -43,4 +50,10 @@ işlem oturumu sür
     oturumu sür
 
 "smtp_v6" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+
+"smtps_v4" dinleyicisinde bağlantı geldiğinde
+    oturumu sür
+
+"smtps_v6" dinleyicisinde bağlantı geldiğinde
     oturumu sür

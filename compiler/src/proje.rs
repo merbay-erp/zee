@@ -24,6 +24,7 @@
 //! ```
 
 mod baglanti;
+mod baglanti_tls;
 mod dinleyici;
 mod eposta_ek;
 mod form_yukleme;
@@ -31,6 +32,7 @@ mod http_istek;
 mod kimlik_iletisim;
 mod web_oturumu;
 
+pub use crate::ag_satiri::TlsBildirimi;
 pub use baglanti::BaglantiAyari;
 pub use dinleyici::{gecerli_dinleyici_adi, DinleyiciBildirimi, DINLEYICI_AZAMI};
 pub use web_oturumu::{
@@ -202,7 +204,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let http_gizli_degiskenleri = http_istek::gizli_adlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let web_oturumu = web_oturumu::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let dinleyiciler = dinleyici::alanlari_al(&mut alanlar)?;
-    let baglanti = baglanti::alanlari_al(&mut alanlar, !dinleyiciler.is_empty())?;
+    let adlar: Vec<&str> = dinleyiciler.iter().map(|d| d.ad.as_str()).collect();
+    let baglanti = baglanti::alanlari_al(&mut alanlar, &adlar)?;
     let cok_parcali_yukleme = form_yukleme::alani_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {

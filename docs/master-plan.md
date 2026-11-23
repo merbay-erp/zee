@@ -179,8 +179,10 @@ uzun satır, kodlama reddi), eşzamanlı oturumlar tek iş parçacıklı bağlan
 scheduler'ında `poll(2)` ile ilerler; bağlantı/uzak adres sınırı ve kibar
 ret, mutlak boşta süresi, 64 KiB geri basınç, SIGTERM boşaltması;
 `NOTIFY_SOCKET` varsa `READY=1`/`STOPPING=1`; ayrıcalıksız `~@privileged`
-sandbox'ta çalışır (gerçek systemd 255 ölçümü, CI adımı). Sunucu TLS'i
-(A2b), blok okuma (A2c) ve diğer katmanlar açıktır.
+sandbox'ta çalışır (gerçek systemd 255 ölçümü, CI adımı). A2b ile sunucu
+TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
+1.2/1.3 AEAD, kimlik credential'dan). Blok okuma (A2c) ve diğer katmanlar
+açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV
 yöntemleri, kapalı istek başlığı okuma listesi, XML/iCalendar/vCard yanıt

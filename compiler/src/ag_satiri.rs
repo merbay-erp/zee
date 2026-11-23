@@ -30,6 +30,19 @@ pub struct BaglantiAyari {
     pub omur_ms: i64,
     /// Sınır dolunca yazılan tek satır (CRLF'yi çalışma zamanı ekler).
     pub dolu_yaniti: Option<String>,
+    /// K-381 A2b: sunucu TLS'i (implicit dinleyiciler + STARTTLS kimliği).
+    pub tls: Option<TlsBildirimi>,
+}
+
+/// Sunucu TLS kimliği ve implicit TLS dinleyicileri (proje.dil P021).
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct TlsBildirimi {
+    /// El sıkışmanın Zee bloğundan önce yapıldığı dinleyici adları (465/993).
+    pub dinleyiciler: Vec<String>,
+    /// PEM sertifika zincirini taşıyan credential/ortam adı (K-339 modeli).
+    pub sertifika_degiskeni: String,
+    /// PEM özel anahtarı taşıyan credential/ortam adı; değer hiç loglanmaz.
+    pub anahtar_degiskeni: String,
 }
 
 impl Default for BaglantiAyari {
@@ -41,9 +54,19 @@ impl Default for BaglantiAyari {
             bosta_suresi_ms: 300_000,
             omur_ms: 3_600_000,
             dolu_yaniti: None,
+            tls: None,
         }
     }
 }
+
+/// STARTTLS anında Zee'nin tüketmediği düz metin (CVE-2011-0411 sınıfı).
+pub const STARTTLS_ENJEKSIYONU: &str =
+    "STARTTLS'ten sonra el sıkışmadan önce şifresiz veri geldi; bağlantı kapatıldı (komut enjeksiyonu)";
+/// TLS kimliği bildirilmemiş süreçte STARTTLS.
+pub const TLS_KIMLIGI_YOK: &str =
+    "TLS kimliği bildirilmedi (tls_sertifika_değişkeni / tls_anahtar_değişkeni)";
+/// TLS bağlantısında ikinci yükseltme.
+pub const ZATEN_TLS: &str = "bağlantı zaten TLS";
 
 /// Okunan satırın sınıflandırılmış reddi; Zee'ye C030 `tür` olarak çıkar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

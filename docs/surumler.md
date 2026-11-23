@@ -46,7 +46,19 @@ Bu kayıt yeni sürüm etiketi değildir.
   başına bağlantı sınırı, satır sınırı, boşta süresi, ömür ve sınır
   dolunca yazılacak ret satırı ayarlanır (yeni tanı P020). SIGTERM'de
   okumalar `kapanıyor` döner ve program `421` yazabilir. `ağ-dinleyici`
-  yetkinliği gerekir; yalnız Unix/systemd. TLS bu sürümde yoktur.
+  yetkinliği gerekir; yalnız Unix/systemd.
+
+  **TLS (465/993 ve STARTTLS):** `proje.dil` içinde
+  `tls_sertifika_değişkeni` ve `tls_anahtar_değişkeni` (PEM zincir ve
+  anahtarı taşıyan systemd credential ya da ortam değişkeninin adı; yeni
+  tanı P021) yazılırsa `tls_dinleyicileri` listesindeki dinleyiciler
+  bağlantıyı TLS ile karşılar, diğerlerinde
+  `sonuç bağlantıda TLS başlatmayı dene olsun` STARTTLS yapar (başarıda
+  anlaşılan sürüm/takım metni). STARTTLS komutuyla aynı pakette gelen
+  şifresiz veri varsa yükseltme yapılmaz ve bağlantı kapanır (komut
+  enjeksiyonu koruması). Yalnız TLS 1.2/1.3 ve ileri gizlilikli AEAD şifre
+  takımları; anahtar hiçbir iletide görünmez, okunamazsa program
+  başlamaz (çıkış 2).
 
   **Göç:** Gerekmez; bağlantı bloğu olmayan programlar ve web sunucusu
   değişmez. Bağlantı bloğu web sunucusuyla aynı programda çalışmaz; iki

@@ -1,7 +1,7 @@
 //! K-381 (RFC-0039 A2a): o anki bağlantı görevinin satır kalıpları.
 
 use super::*;
-use crate::intrinsic::{BAGLANTI_SATIR_OKU, BAGLANTI_SATIR_YAZ};
+use crate::intrinsic::{BAGLANTI_SATIR_OKU, BAGLANTI_SATIR_YAZ, BAGLANTI_TLS_BASLAT};
 
 pub(super) fn baglanti_kalibi(
     tokenlar: &[Token],
@@ -26,6 +26,18 @@ pub(super) fn baglanti_kalibi(
     {
         return Ok(Some(Ifade::Intrinsic {
             kimlik: BAGLANTI_SATIR_OKU.into(),
+            argumanlar: Vec::new(),
+        }));
+    }
+    // bağlantıda TLS başlatmayı dene (STARTTLS)
+    if n == 4
+        && kelime(0) == Some("bağlantıda")
+        && kelime(1) == Some("TLS")
+        && kelime(2) == Some("başlatmayı")
+        && kelime(3) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: BAGLANTI_TLS_BASLAT.into(),
             argumanlar: Vec::new(),
         }));
     }

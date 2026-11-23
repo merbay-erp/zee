@@ -39,7 +39,12 @@ davranış: `compiler/tests/ag_baglantisi_surec_testi.rs` ve gerçek systemd
 `Type=notify` sandbox'ında çalıştırır (IPv4/IPv6 oturumu, `systemctl stop`
 ile `421 4.3.2 hizmet kapanıyor`).
 
+A2b ile kesit 465 implicit TLS ve 25'te STARTTLS taşır; TLS kimliği
+`LoadCredential=` ile verilir (`proje.dil` yalnız adları taşır). Gerçek
+systemd ölçümü implicit TLS 1.3, STARTTLS ve STARTTLS enjeksiyonunun
+reddini bu programla doğrular.
+
 ## Açık
 
-TLS/STARTTLS (A2b), `DATA` gövdesinin dosyaya akıtılması (A2c), ürünün
-kendi imajında uçtan uca kabul (ürün tarafı).
+`DATA` gövdesinin dosyaya akıtılması (A2c), ürünün kendi imajında uçtan
+uca kabul (ürün tarafı).

@@ -331,3 +331,85 @@ fn bekle_baglanti_gorevinde_kardesi_durdurmaz_ve_iz_replay_ayni_ciktiyi_verir() 
     assert_eq!(oynatici.uyusmazlik(), None);
     assert_eq!(oynatici.cikti, vec!["HIZLI", "YAVAS"]);
 }
+
+const STARTTLS: &str = r#"
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    3 kez tekrarla
+        komut bağlantıdan satır okumayı dene olsun
+        komut başarılıysa
+            metin komutun değeri olsun
+            metin "STARTTLS" e eşitse
+                bağlantıya "220 hazır" satırını yaz
+                sonuç bağlantıda TLS başlatmayı dene olsun
+                sonuç başarılıysa
+                    bağlantıya "250 " ile sonucun değeri satırını yaz
+                değilse
+                    hata sonucun hatası olsun
+                    veri hatanın verisi olsun
+                    tür verinin "tür" değeri olsun
+                    hatanın mesajı yaz
+                    son bağlantıya "454 " ile tür satırını yazmayı dene olsun
+            değilse
+                bağlantıya "250 " ile metin satırını yaz
+"#;
+
+fn tls_ayarli() -> ToplayanIo {
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.baglanti.ayar.tls = Some(dil::proje::TlsBildirimi {
+        dinleyiciler: Vec::new(),
+        sertifika_degiskeni: "ZINCIR".into(),
+        anahtar_degiskeni: "ANAHTAR".into(),
+    });
+    io
+}
+
+#[test]
+fn starttls_ayni_parcadaki_komutu_reddeder_ve_baglantiyi_kapatir() {
+    let mut io = tls_ayarli();
+    io.baglanti.bekleyenler.push_back(SahteBaglanti::yeni(
+        "smtp_v4",
+        "192.0.2.20",
+        &[b"STARTTLS\r\nRCPT TO:<kurban@ornek.test>\r\n"],
+    ));
+    calistir(STARTTLS, &mut io);
+    let b = &io.baglanti.baglantilar[0];
+    assert!(b.kapandi && !b.tls);
+    // Yükseltme reddi kapanmış bağlantıya yazılamaz; RCPT hiç işlenmedi.
+    assert_eq!(b.giden, vec!["220 hazır"]);
+    assert!(io.cikti[0].contains("komut enjeksiyonu"), "{:?}", io.cikti);
+}
+
+#[test]
+fn starttls_bos_tamponda_yukseltir_ikinci_yukseltme_ve_kimliksiz_surec_reddedilir() {
+    let mut io = tls_ayarli();
+    io.baglanti.bekleyenler.push_back(SahteBaglanti::satirlarla(
+        "smtp_v4",
+        "192.0.2.21",
+        &["STARTTLS", "EHLO sifreli", "STARTTLS"],
+    ));
+    calistir(STARTTLS, &mut io);
+    let b = &io.baglanti.baglantilar[0];
+    assert!(b.tls);
+    assert_eq!(
+        b.giden,
+        vec![
+            "220 hazır",
+            "250 TLSv1_3 TLS13_AES_128_GCM_SHA256",
+            "250 EHLO sifreli",
+            "220 hazır",
+            "454 tls"
+        ]
+    );
+    // TLS kimliği bildirilmemiş süreçte bağlantı açık kalır, sonuç `tls`.
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.baglanti.bekleyenler.push_back(SahteBaglanti::satirlarla(
+        "smtp_v4",
+        "192.0.2.22",
+        &["STARTTLS", "NOOP"],
+    ));
+    calistir(STARTTLS, &mut io);
+    assert_eq!(
+        io.baglanti.baglantilar[0].giden,
+        vec!["220 hazır", "454 tls", "250 NOOP"]
+    );
+}

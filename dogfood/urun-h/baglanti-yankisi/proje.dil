@@ -1,15 +1,20 @@
 # K-381: ürün H SMTP alıcısının bağlantı tarafının anonim kesiti. İki aile
-# ayrı adlarla systemd'den devralınır (FileDescriptorName= ile aynı adlar).
+# ayrı adlarla systemd'den devralınır (FileDescriptorName= ile aynı adlar);
+# 465 implicit TLS, 25'te STARTTLS (A2b).
 proje "baglanti-yankisi" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "ana.dil" olsun
 yetkinlikler "ağ-dinleyici" listesi olsun
 ağ_hedefleri boş liste olsun
-dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun
+dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25", "smtps_v4 0.0.0.0:465", "smtps_v6 [::]:465" listesi olsun
 bağlantı_sınırı 256 olsun
 uzak_adres_bağlantı_sınırı 16 olsun
 bağlantı_satır_sınırı 1000 olsun
 bağlantı_boşta_süresi 300 olsun
 bağlantı_ömrü 1800 olsun
 bağlantı_dolu_yanıtı "421 4.3.2 Hizmet mesgul, daha sonra deneyin" olsun
+# K-381 A2b: TLS kimliği systemd LoadCredential= ile verilir; yalnız adlar.
+tls_sertifika_değişkeni "POSTA_TLS_ZINCIRI" olsun
+tls_anahtar_değişkeni "POSTA_TLS_ANAHTARI" olsun
+tls_dinleyicileri "smtps_v4", "smtps_v6" listesi olsun

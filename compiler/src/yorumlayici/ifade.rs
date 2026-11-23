@@ -53,6 +53,9 @@ pub(super) fn degerlendir_async<'a>(
                     crate::intrinsic::BAGLANTI_SATIR_OKU => {
                         super::baglanti::satir_oku(io, satir).await
                     }
+                    crate::intrinsic::BAGLANTI_TLS_BASLAT => {
+                        super::baglanti::tls_baslat(io, satir).await
+                    }
                     crate::intrinsic::BAGLANTI_SATIR_YAZ => {
                         let [metin] = degerler.as_slice() else {
                             return Err(ic_hata(satir));

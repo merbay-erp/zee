@@ -220,6 +220,19 @@ WantedBy=multi-user.target
   kapatılır; ret sayısı günlüğe en çok beş saniyede bir düşer. Bağlantı
   görevinin tanıyla bitmesi `Zee bağlantı #N (<ad>, <uzak>) kapandı: …`
   satırıdır; satır içeriği günlüğe yazılmaz.
+- TLS: zincir ve anahtar `LoadCredential=` ile verilir; `proje.dil`
+  yalnız adları taşır:
+
+  ```text
+  tls_sertifika_değişkeni "POSTA_TLS_ZINCIRI" olsun
+  tls_anahtar_değişkeni "POSTA_TLS_ANAHTARI" olsun
+  tls_dinleyicileri "smtps_v4", "smtps_v6" listesi olsun
+  ```
+
+  Birimde: `LoadCredential=POSTA_TLS_ZINCIRI:/etc/posta/zincir.pem` ve
+  `LoadCredential=POSTA_TLS_ANAHTARI:/etc/posta/anahtar.pem`. Sertifika
+  yenilemesi `systemctl restart` ile alınır (dinleyiciler `Accept=no`
+  ile açık kalır).
 - Geliştirme makinesinde systemd birimi kurmadan:
   `systemd-socket-activate -l 127.0.0.1:2525 --fdname=smtp_v4 dil çalıştır .`
   (Linux). Bind'e geri dönüş yoktur; devirsiz `dil çalıştır` çıkış 2 verir.
@@ -238,7 +251,11 @@ adlı soketle (IPv4 + V6ONLY IPv6) bağlantı hizmetini kurar: `READY=1` ile
 başlar, iki aileden SMTP benzeri oturum (karşılama, yankı, çıplak LF reddi,
 QUIT) geçer, ayrıcalıksız ve capability'siz çalışır; açık bir bağlantı
 varken `systemctl stop` istemciye `421 … kapanıyor` yazdırır ve hizmet 0 ile
-temiz biter. Sonuç `<klasör>/systemd-adli-soket-olcumu.json`.
+temiz biter. A2b: aynı koşu `smtps_v4/v6` implicit TLS soketlerini ve
+test CA'lı kimliği (`LoadCredential=`; desteklenmeyen konteynerde ortam)
+ekler, implicit TLS ve STARTTLS oturumunu ve STARTTLS enjeksiyonunun
+`220` sonrası kapanışını denetler. Sonuç
+`<klasör>/systemd-adli-soket-olcumu.json`.
 
 Kapılar çekirdeğin geçici (ephemeral) aralığının dışından seçilir, her
 ailede (0.0.0.0 ve çift yığın `[::]`) boş olduğu doğrulanır ve aynı koşuda

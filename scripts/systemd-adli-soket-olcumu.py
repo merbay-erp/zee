@@ -313,10 +313,72 @@ def smtp_oturumu(aile, adres, kapi):
     return satirlar
 
 
+def tls_kimligi(kok):
+    """K-381 A2b: bu koşuya özel test CA + localhost yaprak (openssl)."""
+    d = Path(tempfile.mkdtemp(prefix="zee-k381-tls-", dir=kok))
+    ec = ["-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes"]
+    def ossl(*a):
+        subprocess.run(["openssl", *a], cwd=d, check=True, capture_output=True)
+    ossl("req", "-x509", *ec, "-keyout", "ca.key", "-out", "ca.pem", "-days", "2",
+         "-subj", "/CN=Zee K381 systemd CA", "-addext", "basicConstraints=critical,CA:TRUE")
+    ossl("req", *ec, "-keyout", "anahtar.pem", "-out", "y.csr", "-subj", "/CN=localhost")
+    (d / "ek.cnf").write_text("basicConstraints=CA:FALSE\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
+    ossl("x509", "-req", "-in", "y.csr", "-CA", "ca.pem", "-CAkey", "ca.key", "-CAcreateserial",
+         "-out", "yaprak.pem", "-days", "2", "-extfile", "ek.cnf")
+    (d / "zincir.pem").write_bytes((d / "yaprak.pem").read_bytes() + (d / "ca.pem").read_bytes())
+    return d
+
+
+def credential_destegi():
+    """Bu systemd credential dizinini hizmete bağlayabiliyor mu?"""
+    yol = Path(tempfile.mkdtemp(prefix="zee-k381-cred-")) / "x"
+    yol.write_text("x")
+    r = sudo("systemd-run", "--wait", "--pipe", "-p", f"LoadCredential=X:{yol}",
+             "sh", "-c", 'test -r "$CREDENTIALS_DIRECTORY/X"', kontrol=False)
+    return r.returncode == 0
+
+
+def tls_istemcisi(ca):
+    import ssl
+    baglam = ssl.create_default_context(cafile=str(ca))
+    baglam.minimum_version = ssl.TLSVersion.TLSv1_2
+    return baglam
+
+
+def tls_oturumu(baglam, smtp, smtps):
+    """Implicit TLS karşılama + STARTTLS + STARTTLS enjeksiyonu."""
+    sonuc = {}
+    with socket.create_connection(("127.0.0.1", smtps), timeout=20) as ham:
+        with baglam.wrap_socket(ham, server_hostname="localhost") as s:
+            f = s.makefile("rb")
+            sonuc["implicit"] = [f.readline().decode().rstrip("\r\n"), s.version()]
+            s.sendall(b"QUIT\r\n")
+            sonuc["implicit"].append(f.readline().decode().rstrip("\r\n"))
+    with socket.create_connection(("127.0.0.1", smtp), timeout=20) as ham:
+        f = ham.makefile("rb")
+        f.readline()
+        ham.sendall(b"STARTTLS\r\n")
+        hazir = f.readline().decode().rstrip("\r\n")
+        with baglam.wrap_socket(ham, server_hostname="localhost") as s:
+            g = s.makefile("rb")
+            s.sendall(b"NOOP\r\n")
+            sonuc["starttls"] = [hazir, s.version(), g.readline().decode().rstrip("\r\n")]
+    with socket.create_connection(("127.0.0.1", smtp), timeout=20) as ham:
+        f = ham.makefile("rb")
+        f.readline()
+        ham.sendall(b"STARTTLS\r\nNOOP\r\n")
+        sonuc["enjeksiyon"] = [f.readline().decode().rstrip("\r\n"), f.read().decode()]
+    return sonuc
+
+
 def baglanti_kosusu(dil, kok, rapor):
-    """K-381: dogfood bağlantı programı gerçek systemd altında."""
+    """K-381: dogfood bağlantı programı gerçek systemd altında (A2a + A2b TLS)."""
     smtp = bos_kapi()
-    soketler = [("smtp_v4", f"127.0.0.1:{smtp}"), ("smtp_v6", f"[::1]:{smtp}")]
+    smtps = bos_kapi()
+    soketler = [("smtp_v4", f"127.0.0.1:{smtp}"), ("smtp_v6", f"[::1]:{smtp}"),
+                ("smtps_v4", f"127.0.0.1:{smtps}"), ("smtps_v6", f"[::1]:{smtps}")]
+    kimlik = tls_kimligi(kok)
+    sonuc = {"soketler": soketler}
     proje = Path(tempfile.mkdtemp(prefix="zee-k381-", dir=kok))
     proje.chmod(0o755)
     kaynak = KOK / "dogfood/urun-h/baglanti-yankisi"
@@ -325,8 +387,29 @@ def baglanti_kosusu(dil, kok, rapor):
     pd = re.sub(r"^dinleyiciler .*$", f"dinleyiciler {liste} listesi olsun", pd, flags=re.M)
     (proje / "proje.dil").write_text(pd, encoding="utf-8")
     shutil.copy(kaynak / "ana.dil", proje / "ana.dil")
-    sonuc = {"soketler": soketler}
-    with Kurulum(dil, proje, 0, soketler, baglanti=True) as k:
+    kurulum = Kurulum(dil, proje, 0, soketler, baglanti=True)
+    hizmet = BIRIM_KOKU / f"{kurulum.onek}.service"
+    birim = kurulum.birimler[hizmet]
+    zincir, anahtar = kimlik / "zincir.pem", kimlik / "anahtar.pem"
+    if credential_destegi():
+        sonuc["kimlik_kaynagi"] = "LoadCredential"
+        birim = birim.replace(
+            "[Service]\n",
+            "[Service]\n"
+            f"LoadCredential=POSTA_TLS_ZINCIRI:{zincir}\n"
+            f"LoadCredential=POSTA_TLS_ANAHTARI:{anahtar}\n", 1)
+    else:
+        # Konteyner systemd'si credential bağlaması kuramıyor: aynı PID'le
+        # (exec) ortam değişkeni kaynağına düşülür (K-339 ikinci kaynak).
+        sonuc["kimlik_kaynagi"] = "ortam (credential desteklenmiyor)"
+        satir = next(x for x in birim.splitlines() if x.startswith("ExecStart="))
+        komut = satir.split("=", 1)[1]
+        dolar = "$" + "$"
+        sarmal = ("ExecStart=/bin/sh -c 'POSTA_TLS_ZINCIRI=\"" + dolar + f"(cat {zincir})\" "
+                  "POSTA_TLS_ANAHTARI=\"" + dolar + f"(cat {anahtar})\" exec {komut}'")
+        birim = birim.replace(satir, sarmal, 1)
+    kurulum.birimler[hizmet] = birim
+    with kurulum as k:
         r = k.baslat()
         sonuc["start_rc"] = r.returncode
         durum = k.goster("ActiveState", "MainPID", "Type")
@@ -339,6 +422,7 @@ def baglanti_kosusu(dil, kok, rapor):
         try:
             sonuc["v4"] = smtp_oturumu(socket.AF_INET, "127.0.0.1", smtp)
             sonuc["v6"] = smtp_oturumu(socket.AF_INET6, "::1", smtp)
+            sonuc["tls"] = tls_oturumu(tls_istemcisi(kimlik / "ca.pem"), smtp, smtps)
         except OSError as hata:
             sonuc["oturum_hatasi"] = str(hata)
         # Açık bağlantı varken durdurma: bekleyen okuma `kapanıyor` alır.
@@ -369,6 +453,11 @@ def baglanti_kosusu(dil, kok, rapor):
         and sonuc["sonrasi"].get("Result") == "success"
         and sonuc["sonrasi"].get("ExecMainStatus") == "0"
         and "bağlantı kabul ediliyor" in sonuc["gunluk"]
+        and sonuc.get("tls", {}).get("implicit", [None])[0] == "220 mx.ornek.test ESMTP"
+        and sonuc["tls"]["implicit"][1] in ("TLSv1.2", "TLSv1.3")
+        and sonuc["tls"]["implicit"][2] == "221 2.0.0 hoşça kal"
+        and sonuc["tls"]["starttls"] == ["220 2.0.0 TLS için hazır", "TLSv1.3", "250 2.0.0 tamam"]
+        and sonuc["tls"]["enjeksiyon"] == ["220 2.0.0 TLS için hazır", ""]
     )
     rapor["baglanti"] = sonuc
     return sonuc["gecti"]

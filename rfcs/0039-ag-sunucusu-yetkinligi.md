@@ -4,10 +4,10 @@
   uygulanmaz; her katman ayrı alt RFC ve dogfood kanıt kapısıyla açılır.
   **Aşama A1 (adlı dinleyici devri + hizmet bildirimi) kabul edildi ve
   uygulandı — 23 Kasım 2026, K-376, [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md);**
-  **Aşama A2 tasarımı tamamlandı ve A2a (bağlantı yüzeyi) uygulandı — 23
-  Kasım 2026, K-381, [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md);**
-  A2b (sunucu TLS'i) ayrı dilimdir, A2c (blok okuma) ve katmanların geri
-  kalanı taslaktır.
+  **Aşama A2 tasarımı tamamlandı; A2a (bağlantı yüzeyi) ve A2b (sunucu
+  TLS'i, STARTTLS) uygulandı — 23–24 Kasım 2026, K-381,
+  [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md);** A2c (blok okuma)
+  ve katmanların geri kalanı taslaktır.
 - **Tarih:** 21 Kasım 2026
 - **İş:** K-354
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
@@ -494,7 +494,7 @@ değişmezlerini gevşetemez.
 | Dilim | Kapsam | Durum |
 |---|---|---|
 | **A2a** | Düz TCP: bağlantı olayı, satır okuma/yazma, kapatma, satır/boşta/ömür/bağlantı sınırları, kibar ret, bağlantı görevi scheduler'ı, `ağ-dinleyici`, SIGTERM boşaltma | uygulanır (K-381) |
-| **A2b** | Sunucu TLS'i: implicit TLS dinleyicisi (465/993), STARTTLS (25/587/143), sertifika/anahtar yükleme, TLS 1.2+ AEAD politikası | tasarım tamam; ayrı dilim (K-381 devamı) |
+| **A2b** | Sunucu TLS'i: implicit TLS dinleyicisi (465/993), STARTTLS (25/587/143), sertifika/anahtar yükleme, TLS 1.2+ AEAD politikası | uygulandı (K-381, ayrı commit) |
 | **A2c** | Blok okuma: SMTP `DATA` nokta bloğu ve IMAP literal'i `0600` geçici dosyaya, SHA-256 aynı akışta; dosyadan bağlantıya akıtma | taslak (sonraki iş) |
 
 ### A2a — Zee yüzeyi
@@ -607,39 +607,42 @@ kuralı yoktur (rota kalıbının bağlantı karşılığı, `dene` ailesi):
 
 ### A2b — sunucu TLS'i
 
-- **Bildirim.** `tls_dinleyicileri "smtps_v4", "imaps_v4", … listesi olsun`
-  (implicit TLS: el sıkışma Zee bloğu başlamadan çalışma zamanınca
-  yapılır, başarısız el sıkışmada görev kurulmaz) ve
-  `tls_sertifikası "<yol>" olsun` + `tls_anahtarı "<yol>" olsun` (PEM;
-  proje köküne göreli yol ya da `credential:<ad>` biçimiyle systemd
-  `CREDENTIALS_DIRECTORY` altındaki ad, K-339 modeli). Anahtar dosyası
-  sahibi süreç kullanıcısı olan, grup/diğerine izinsiz (`0600`/`0400`)
-  normal dosya olmalıdır; değilse süreç kaynak yürütülmeden çıkış 2 ile
-  durur. Anahtar baytı hiçbir zaman Zee değeri, IO izi içeriği, günlük ya
-  da tanı metni olmaz.
-- **Politika.** `rustls` (ağaçtaki 0.23 + `ring`; yeni crate yok, ADR-038
-  tedarik kuralı), TLS 1.2 ve 1.3, yalnız AEAD + ileri gizlilikli takımlar
-  (TLS 1.3 üç takım; TLS 1.2 ECDHE-ECDSA/RSA AES-GCM ve CHACHA20-POLY1305),
-  yeniden müzakere ve sıkıştırma yok, istemci sertifikası yok. Politika
-  bildirimle gevşetilemez.
+- **Bildirim (P021).** `tls_sertifika_değişkeni "POSTA_TLS_ZINCIRI" olsun`
+  ve `tls_anahtar_değişkeni "POSTA_TLS_ANAHTARI" olsun`: PEM zincir ve özel
+  anahtar K-339 modeliyle önce systemd `CREDENTIALS_DIRECTORY` dosyasından
+  (nofollow, düzenli dosya, sahibi süreç kullanıcısı/root, grup/diğer
+  okuyamaz), yoksa ortamdan okunur; bildirim yalnız adları taşır.
+  `tls_dinleyicileri "smtps_v4", "imaps_v4" listesi olsun` implicit TLS
+  dinleyicileridir. Kimlik açılışta, kaynak yürütülmeden yüklenir; hata
+  çıkış 2'dir. Anahtar baytı hiçbir zaman Zee değeri, IO izi içeriği,
+  günlük ya da tanı metni olmaz. (Tasarım taslağındaki proje köküne göreli
+  dosya yolu, sırrın proje ağacında durmasını özendirdiği için
+  reddedildi.)
+- **Politika.** `rustls` 0.23 + `ring` (ağaçtaki `ureq` yığını; doğrudan
+  bağımlılık yapıldı, yeni crate yok, ADR-038), TLS 1.3 ve TLS 1.2, yalnız
+  ileri gizlilikli AEAD takımları (TLS 1.3 üç takım; TLS 1.2
+  ECDHE-ECDSA/RSA AES-GCM ve CHACHA20-POLY1305), yeniden müzakere ve
+  sıkıştırma yok, istemci sertifikası yok. Politika bildirimle gevşetilemez.
+- **Implicit TLS.** El sıkışma, Zee görevi kurulmadan reaktörde
+  `bağlantı_boşta_süresi` içinde tamamlanır; başarısızlıkta görev hiç
+  kurulmaz. `bağlantı` Sözlüğü `tls` = `evet`/`hayır` taşır.
 - **STARTTLS.** `<ad> bağlantıda TLS başlatmayı dene olsun` →
-  `Sonuç<Mantıksal>`. Zee önce protokolün hazır satırını (`220 2.0.0 hazır`)
-  yazar, sonra kalıbı çağırır. Değişmezler:
+  `Sonuç<Metin>` (ör. `TLSv1_3 TLS13_AES_128_GCM_SHA256`; `Received`
+  başlığı için). Zee önce protokolün hazır satırını yazar. Değişmezler:
   - yükseltme anında okunmuş ama Zee'nin tüketmediği düz metin tampon
     **boş olmak zorundadır**; değilse yükseltme yapılmaz, tampon atılır,
-    bağlantı kapanır ve C030 `tür=tls` döner (CVE-2011-0411 sınıfı STARTTLS
-    komut enjeksiyonu);
-  - giden tampon yükseltmeden önce boşaltılır; yükseltmeden sonra önceki
-    düz metinden hiçbir bayt TLS akışına taşınmaz, satır okuyucunun durumu
+    bağlantı kapanır ve C030 `tür=tls` döner (CVE-2011-0411 sınıfı);
+    çekirdek tamponunda henüz okunmamış düz metin TLS kaydı olarak
+    işlenir ve el sıkışmayı bozar, hiçbir zaman komut olarak görünmez;
+  - düz giden tampon yükseltmeden önce boşaltılır; yükseltmeden sonra
+    önceki düz metinden hiçbir bayt TLS akışına taşınmaz, satır okuyucu
     sıfırlanır;
-  - TLS bağlantısında ikinci yükseltme, TLS dinleyicisi olmayan sertifikasız
-    süreçte yükseltme C030 `tür=tls`'dir;
-  - el sıkışma `bağlantı_boşta_süresi` içinde bitmezse bağlantı kapanır.
+  - TLS bağlantısında ikinci yükseltme ve kimliksiz süreçte yükseltme
+    `tür=tls`'dir (bağlantı açık kalır); süresinde bitmeyen ya da başarısız
+    el sıkışma bağlantıyı kapatır.
   - Protokol durumunun sıfırlanması (EHLO'nun yeniden istenmesi, AUTH'un
-    yalnız TLS sonrası ilanı) Zee kodunun işidir; `bağlantı` Sözlüğü
-    yükseltmeden sonra `tls` = `evet` taşır (yükseltme kalıbı görevin
-    ortamındaki `bağlantı` değerini günceller), ayrıca
-    `<ad> bağlantının TLS durumu olsun` → Mantıksal.
+    yalnız TLS sonrası ilanı) Zee kodunun işidir; başarı Sonuç'u Zee'nin
+    kendi durumunu güncellemesi içindir (ayrı bir sorgu kalıbı açılmadı).
 
 ### A2 açık soruları — kapandı
 

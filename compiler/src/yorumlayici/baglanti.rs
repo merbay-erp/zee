@@ -36,6 +36,8 @@ pub enum BaglantiIslemi {
     SatirOku,
     SatirYaz(String),
     Kapat,
+    /// STARTTLS: ara bellek boşsa TLS el sıkışması; başarıda sürüm/takım.
+    TlsBaslat,
     /// Scheduler dışından (iç içe eşzamanlı görev) engelleyerek hazırlık
     /// bekler; argüman Zee son tarihinin mutlak anıdır.
     Engelle(Option<i64>),
@@ -49,6 +51,8 @@ pub struct YeniBaglanti {
     pub uzak_adres: String,
     pub uzak_kapi: u16,
     pub yerel_kapi: u16,
+    /// Implicit TLS dinleyicisinden (el sıkışma tamamlanmış) geldi.
+    pub tls: bool,
 }
 
 /// Bağlantı olay beklemesinin sonucu.
@@ -197,6 +201,22 @@ pub(super) async fn satir_yaz(
     )
 }
 
+/// `bağlantıda TLS başlatmayı dene` → `Sonuç<Metin>` (ör. `TLSv1_3 TLS13_AES_128_GCM_SHA256`).
+/// STARTTLS öncesi ara bellekte bekleyen düz metin varsa yükseltme yapılmaz,
+/// bağlantı kapanır ve `tür=tls` döner (CVE-2011-0411 sınıfı).
+pub(super) async fn tls_baslat(io: &mut dyn GirdiCikti, satir: usize) -> Result<Deger, Tani> {
+    Ok(
+        match islemi_yurut(io, BaglantiIslemi::TlsBaslat, satir).await? {
+            BaglantiSonucu::Satir(bilgi) => Deger::Sonuc {
+                basarili: true,
+                icerik: Box::new(Deger::Metin(bilgi)),
+            },
+            BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+            BaglantiSonucu::Tamam(_) | BaglantiSonucu::Bekle => return Err(ic_hata(satir)),
+        },
+    )
+}
+
 /// `bağlantıya X satırını yaz` cümlesi: hata bağlantı görevini C030 ile bitirir.
 pub(super) async fn satir_yaz_cumlesi(
     io: &mut dyn GirdiCikti,
@@ -324,6 +344,10 @@ fn baglanti_sozlugu(yeni: &YeniBaglanti) -> Deger {
         (
             "yerel_kapı".into(),
             Deger::Metin(yeni.yerel_kapi.to_string()),
+        ),
+        (
+            "tls".into(),
+            Deger::Metin(if yeni.tls { "evet" } else { "hayır" }.into()),
         ),
     ])
 }

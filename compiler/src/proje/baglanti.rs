@@ -12,13 +12,16 @@ pub const BAGLANTI_OMRU_UST_SANIYE: i64 = 86_400;
 pub use crate::ag_satiri::BaglantiAyari;
 
 /// Bağlantı ayarı alan adları (dinleyici bildirimi şartı için).
-pub(super) const ALANLAR: [&str; 6] = [
+pub(super) const ALANLAR: [&str; 9] = [
     "bağlantı_sınırı",
     "uzak_adres_bağlantı_sınırı",
     "bağlantı_satır_sınırı",
     "bağlantı_boşta_süresi",
     "bağlantı_ömrü",
     "bağlantı_dolu_yanıtı",
+    "tls_dinleyicileri",
+    "tls_sertifika_değişkeni",
+    "tls_anahtar_değişkeni",
 ];
 
 const ORNEK: &str = "Örnek: bağlantı_sınırı 256 olsun · bağlantı_boşta_süresi 300 olsun · bağlantı_dolu_yanıtı \"421 4.3.2 Hizmet meşgul\" olsun";
@@ -71,8 +74,9 @@ fn dolu_yanitini_al(alanlar: &mut HashMap<String, (Ifade, usize)>) -> Result<Opt
 
 pub(super) fn alanlari_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
-    dinleyici_var: bool,
+    dinleyici_adlari: &[&str],
 ) -> Result<BaglantiAyari, Tani> {
+    let dinleyici_var = !dinleyici_adlari.is_empty();
     let ilk_satir = ALANLAR
         .iter()
         .filter_map(|ad| alanlar.get(*ad).map(|(_, satir)| *satir))
@@ -134,6 +138,7 @@ pub(super) fn alanlari_al(
         varsayilan.omur_ms / 1000,
     )?;
     let dolu_yaniti = dolu_yanitini_al(alanlar)?;
+    let tls = super::baglanti_tls::alanlari_al(alanlar, dinleyici_adlari)?;
     Ok(BaglantiAyari {
         sinir: sinir as usize,
         uzak_adres_siniri: uzak as usize,
@@ -141,5 +146,6 @@ pub(super) fn alanlari_al(
         bosta_suresi_ms: bosta * 1000,
         omur_ms: omur * 1000,
         dolu_yaniti,
+        tls,
     })
 }
