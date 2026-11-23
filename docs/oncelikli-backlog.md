@@ -2557,6 +2557,45 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-371 — Dış etki hata eşlemesi; düz SMTP dış son tarihi
+
+**Durum: KAPALI (düzeltme); PostgreSQL sorgu son tarihi AÇIK.** Kaynak: K-370
+web içi oran/kaynak reddini denetledi; aynı soru dış etki tarafı için
+soruldu. SMTP, native HTTP istemcisi ve PostgreSQL adaptörünün bağlantı,
+DNS, TLS, kimlik, sunucu yanıtı, boyut sınırı, havuz, kilit ve son tarih
+hataları Zee yüzeyi/yakalanabilirlik/C-kodu/web HTTP kodu/CLI çıkışıyla
+tablolandı ([denetim kanıtı](k371-dis-etki-hata-eslemesi.md)). Yeni
+yüzeylerin hepsi yakalanabilir `Sonuç` (C029/C018/C025) döndürüyor; yanlış
+HTTP kodu bulunmadı.
+
+Bulunan hata: düz metin `ileti göndermeyi dene` (ve `… üzerinden` biçimi)
+native adaptöre sabit 20 sn bütçe veriyor, dönüşte son tarihi denetlemiyordu;
+ekli ileti yolu K-232'den beri dış son tarihin kalanıyla sınırlıydı. Gerçek
+loopback'te yanıt vermeyen sunucu ve `1 saniye içinde`: düz yol 20,0 sn, ekli
+yol 1,0 sn. Web'de isteğin son 20 saniyesinde başlayan düz gönderim 504'ü
+50. saniyeye kadar itebiliyordu (site çekirdeği onay akışı rotası bu yolu
+kullanır). Düzeltme: `GirdiCikti::eposta_gonder` yürütme bağlamından
+`zaman_asimi_ms` alır, intrinsic ekli yolla ortak bütçe yardımcısını kullanır
+ve dönüşte son tarihi denetler; native adaptör hazırlık süresini düşer. Sonrası
+1,04 sn; son tarihsiz çağrı 20 sn tavanını korur. IO izi, grammar, tanı, CLI ve
+`dil::api::v1` değişmez.
+
+Kanıt: regression `security/smtp-son-tarih` (kip `smtp`),
+`semantic_regresyon_korpusu_testi::smtp_son_tarih_fixture_dis_kalan_butceyi_kullanir`,
+spec/23 ZORUNLU maddesi, ADR-110 K-371 eki.
+
+Belge düzeltmesi: spec/25 havuz/TLS/bağlantı hatasını C026 sayıyordu; uygulama
+okuma/değişikliğinde bu hata yakalanabilir C025'tir, C026 yalnız `dil göçür`.
+
+Açık kalanlar: (1) PostgreSQL sorgusu son tarihe bağlanmaz — 1 sn son tarihte
+`pg_sleep(4)` 4,1 sn, web'de `pg_sleep(33)` 504'ü 33. saniyede verir; iptalin
+transaction/C027 etkisi tasarım ister → spec/25 AÇIK maddesi ve
+[RFC-0042 taslağı](../rfcs/0042-postgresql-sorgu-son-tarihi.md). (2) Düz SMTP
+yolu K-130 süreç-geneli bağlantı iznini almaz (ekli yol alır); işçi başına tek
+bloklayan çağrı olduğundan ölçülen hata yok, eski yolun "değişmez" kaydı
+spec/23'te sürer. (3) Eski `adresinden gelen yanıt` C018'i spec/11 §5 gereği
+yakalanamaz 500 kalır; ürün yeni `HTTP isteğini dene` kalıbıyla 503'e
+çevirebilir.
 ## K-372 — Mutlak yanıt yazım bütçesi
 
 **Durum: KAPALI.** Kaynak: K-369 test incelemesinin "okumayan istemci tek

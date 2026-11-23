@@ -294,6 +294,7 @@ impl GirdiCikti for IzYenidenOynatici {
         alici: &str,
         konu: &str,
         govde: &str,
+        _zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
         k181::oynat_eposta_gonder(self, b, alici, konu, govde)
     }

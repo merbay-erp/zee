@@ -152,10 +152,10 @@ zincirini aynı stdout/exit ve tam tüketimle doğrular.
 her okuma/yazım SymbolId için ayrıca ister; görünüm LHS eksikliği yalnız
 ifade invariantıyla yakalanamaz. K-213 vaka kimlikleri silinmez.
 
-## SMTP security kipi (K-236/K-237/K-252)
+## SMTP security kipi (K-236/K-237/K-252/K-371)
 
 `smtp`, `security` fazına aittir. Kaynakta tam bir `# smtp-vaka: auth-echo`
-veya `# smtp-vaka: yanit-siniri` veya `# smtp-vaka: yavas-yanit` yorum satırı bulunur; duplicate/unknown
+veya `# smtp-vaka: yanit-siniri` veya `# smtp-vaka: yavas-yanit` veya `# smtp-vaka: son-tarih` yorum satırı bulunur; duplicate/unknown
 başlık reddedilir. [Hermetik adaptör](../compiler/tests/semantic_regresyon/smtp.rs)
 serbest loopback portunda tek gerçek `eposta::gonder` çağrısı yapar; sabit
 sentetik credential kullanır, dış SMTP URL’sini/ortamı çalıştırmaz. Manifest
@@ -178,6 +178,15 @@ LF-siz yanıt verir; bir saniye toleransı, tek gerçek bağlantı ve C029
 maskesini sınar. Eski idle-timeout yolunun gerçek3011ms önce-kaydı ve
 çalışma ağacı201ms sonrası [yerel kanıttadır](incelemeler/urunlesme-20261014/k252-smtp/README.md).
 Üç saniye bounded fixture cleanup'ı benchmark veya DNS iptali değildir.
+
+K-371 `son-tarih` fixture'ı aynı LF-siz yavaş peer'i kullanır; kaynak düz
+`ileti göndermeyi dene` çağrısını `yarım saniye içinde` bloğuna koyar ve
+adaptör `an_ms` için gerçek monoton saati verir. Adaptör runtime'ın verdiği
+`zaman_asimi_ms` değerinin 1..500 aralığında olduğunu (son tarihsiz vakalarda
+tam 20000) ve gerçek gönderimin 1,5 saniyeden kısa sürdüğünü denetler; çıktı
+`yetişmedi`dir. Düzeltme öncesi runtime düz yola dış son tarihi vermiyordu ve
+native adaptör sabit 20 sn kullanıyordu (gerçek loopback ölçümü 20,0 sn;
+sonrası 1,04 sn).
 
 
 K-259 için `security` fazındaki `native-listener-deadline` kipi gerçek sahip olunan

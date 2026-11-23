@@ -3984,7 +3984,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         alici: &str,
         konu: &str,
         govde: &str,
+        zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
+        let baslangic = std::time::Instant::now();
         self.politika.gerektir(dil::yetkinlik::Yetkinlik::Ag)?;
         let url = match baglanti {
             Some(url) => url.to_string(),
@@ -4017,7 +4019,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 kimlik: &kimlik[..32],
                 tarih: &tarih,
             },
-            std::time::Duration::from_secs(20),
+            // K-371: 20 sn tavanı ve dış son tarihin kalanı; ortam/sır
+            // hazırlığına giden süre aynı mutlak bütçeden düşülür.
+            std::time::Duration::from_millis(
+                u64::try_from(zaman_asimi_ms).map_err(|_| "SMTP bütçesi geçersiz")?,
+            )
+            .checked_sub(baslangic.elapsed())
+            .ok_or("SMTP bütçesi doldu")?,
             &|ip| politika.cozulmus_ipyi_denetle(ip),
         )?;
         let _ = hedef;

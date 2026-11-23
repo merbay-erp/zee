@@ -1,0 +1,6 @@
+# smtp-vaka: son-tarih
+yarım saniye içinde
+    sonuç "ali@ornek.invalid" "Konu" "Gövde" ile ileti göndermeyi dene olsun
+    "ulaşılmaz" yaz
+yetişmezse
+    "yetişmedi" yaz

@@ -12,22 +12,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
-- **Yavaş okuyan istemci sunucu işçisini uzun süre tutamaz (K-372):**
-  Yanıtını hiç okumayan ya da çok yavaş okuyan bir bağlantı, büyük bir yanıtın
-  yazımı sırasında sunucu işçisini artık süresiz meşgul edemez. Yanıt yazımı
-  başladığı andan itibaren en çok `10 sn + yanıt boyutu / 128 KiB/s` sürer
-  (2 MiB yanıt 26 sn) ve 10 sn boyunca hiç ilerlemeyen yazım kesilir; süre
-  dolunca bağlantı kapanır, işçi sonraki isteğe geçer. Yerel ölçümde tek
-  işçili sunucuda üç okumayan istemcinin yol açtığı 75 sn'lik bekleme 30 sn'ye
-  indi. Normal hızdaki istemciler ve küçük sayfalar etkilenmez.
-
-  **İşletmeci notu:** Kesilen yanıt günlükte `zee-web istemci yanıt sırasında
-  koptu: … hata="yanıt yazım bütçesi doldu"` satırıyla, metrikte yanıt
-  teslim edilemedi sayacıyla görünür. 16 MiB'a yaklaşan yanıtları 1 Mbit/s
-  altındaki istemcilere veren site, reverse proxy yanıt tamponlamasını açık
-  tutmalıdır (nginx varsayılanı açıktır). Tek işçili sitede art arda yavaş
-  bağlantılar yine sırayla bekletebilir; çok işçi ve proxy zaman aşımları
-  önerilir.
+- **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
+  dene` artık ekli iletide olduğu gibi çevreleyen `… içinde` bloğunun ya da
+  web isteğinin kalan süresini kullanır. Önceden yanıt vermeyen bir SMTP
+  sunucusu `1 saniye içinde` bloğunu 20 saniye bekletebiliyor, web isteğinin
+  504 yanıtını da geciktirebiliyordu; şimdi süre dolunca `yetişmezse` kolu
+  zamanında çalışır, web'de 504 zamanında gönderilir. Süre bloğu olmayan
+  gönderimde 20 saniyelik üst sınır aynıdır; hata metni ve "otomatik tekrar
+  yok" kuralı değişmez. Ayrıca dış hataların (SMTP, HTTP, PostgreSQL) Zee
+  kodunda nasıl yakalandığı denetlendi; PostgreSQL sorgularının süre sınırına
+  bağlanması ayrı taslak olarak açık kaldı (RFC-0042).
 
   **Göç:** Gerekmez.
 
