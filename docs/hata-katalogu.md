@@ -233,6 +233,11 @@ K-330: `oturum_ömrü_saniye` 300–2592000 sn aralığı dışında ya da `web-
 
 K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç değeridir; adaptör ayrıntısı gizlenir. T034 argüman türü, T048 eylemde geri alınamaz istek ve P015 proje ortam listesi tanıları mevcut kodları korur. Üst program deadline C020 kalır. [Sözleşme](../adr/091-http-post-baslik-ve-gizli-ortam.md).
 
+K-378: `çok_parçalı_yükleme` bildirimi mantıksal değilse P001, `web-oturumu`
+yetkinliği olmadan açılırsa P015'tir. Multipart istek reddi (400 bozuk gövde,
+403 CSRF/oturum, 413 tavan) tanı kodu üretmeyen ham HTTP yanıtıdır; rota
+çalışmaz. [Karar](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md).
+
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY
 kapalı) tanı kodu üretmeyen CLI başlangıç hatalarıdır: `dinleyici devri:`

@@ -45,3 +45,21 @@ GET "/kisiler/disa-aktar" adresine istek geldiğinde
     sonuç "veri/disa-aktar/kisiler.txt" dosyasını tür türünde "kişiler.vcf" adıyla ek olarak göndermeyi dene olsun
     sonuç başarısızsa
         "Dışa aktarım hazır değil." yanıtını 503 durumuyla gönder
+
+# K-378 (RFC-0041 B): ürün içe aktarmayı dosya yerine yapıştırılan ≤ 64 KiB
+# metinle yapıyordu. JS'siz form: gizli `_csrf` dosya alanından önce gelir.
+GET "/kisiler/ice-aktar" adresine istek geldiğinde
+    oturum gerekli
+    anahtar csrf belirteci olsun
+    form "<form method=post action=/kisiler/ice-aktar enctype=multipart/form-data><input type=hidden name=_csrf value=\"" ile anahtar ile "\"><input type=file name=dosya accept=.vcf,.csv><button>İçe aktar</button></form>" olsun
+    form yanıtını gönder
+
+POST "/kisiler/ice-aktar" adresine istek geldiğinde
+    oturum gerekli
+    "yukleme_gecici_yolu" alanı gerekli
+    bayt isteğin "yukleme_bayti" değeri olsun
+    ad "" olsun
+    istekte "yukleme_dosya_adi" varsa
+        ad isteğin "yukleme_dosya_adi" değeri olsun
+    özet ad ile " · " ile bayt ile " bayt alındı" olsun
+    özet yanıtını gönder

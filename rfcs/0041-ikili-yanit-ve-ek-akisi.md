@@ -1,8 +1,9 @@
 # RFC-0041 — Web adaptöründe ikili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı
 
 - **Durum:** kabul — 23 Kasım 2026, K-378 (`dogfood-change`, `urun-h`
-  ZM-F022). Katman A **uygulandı** (spec/11 §4 “Dosya yanıtı”); katman B ve C
-  aynı işin sonraki dilimleridir. Karar [ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md);
+  ZM-F022). Katman A **uygulandı** (spec/11 §4 “Dosya yanıtı”), katman B
+  **uygulandı** (spec/26 “Multipart form yüklemesi”); katman C aynı işin
+  sonraki dilimidir. Karar [ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md);
   açık soruların kapanışı aşağıda “K-378 kararları”nda.
 - **Tarih:** 23 Kasım 2026
 - **İş:** K-373 (taslak), K-378 (uygulama)

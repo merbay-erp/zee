@@ -225,6 +225,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             http_gizli_degiskenleri: Vec::new(),
             web_oturumu: None,
             dinleyiciler: Vec::new(),
+            cok_parcali_yukleme: false,
         }
     );
 }
@@ -1588,4 +1589,29 @@ fn dinleyici_bildirimi_adli_ve_aileye_bagli_okunur() {
     assert!(tani.mesaj.contains("en çok 64"));
     let tani = bildirimi_oku(&format!("{taban}dinleyiciler \"smtp\" olsun\n")).expect_err("tür");
     assert_eq!(tani.kod, "P018");
+}
+
+/// K-378: `çok_parçalı_yükleme` isteğe bağlıdır; açılınca `web-oturumu`
+/// ister (CSRF form alanından oturuma karşı doğrulanır), mantıksal olmalıdır.
+#[test]
+fn cok_parcali_yukleme_bildirimi_web_oturumu_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nağ_hedefleri boş liste olsun\n";
+    let oturumlu = format!("{taban}yetkinlikler \"ağ-sunucusu\", \"web-oturumu\" listesi olsun\n");
+    assert!(!bildirimi_oku(&oturumlu).unwrap().cok_parcali_yukleme);
+    assert!(
+        bildirimi_oku(&format!("{oturumlu}çok_parçalı_yükleme doğru olsun\n"))
+            .unwrap()
+            .cok_parcali_yukleme
+    );
+    assert!(
+        !bildirimi_oku(&format!("{oturumlu}çok_parçalı_yükleme yanlış olsun\n"))
+            .unwrap()
+            .cok_parcali_yukleme
+    );
+    let oturumsuz = format!(
+        "{taban}yetkinlikler \"ağ-sunucusu\" listesi olsun\nçok_parçalı_yükleme doğru olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&oturumsuz).unwrap_err().kod, "P015");
+    let metin = format!("{oturumlu}çok_parçalı_yükleme \"evet\" olsun\n");
+    assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P001");
 }

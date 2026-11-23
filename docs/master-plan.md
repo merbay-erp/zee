@@ -189,8 +189,10 @@ Web arayüzünde ek indirme, JS'siz yükleme ve genişletilmiş SMTP ek türleri
 K-378 ile `dogfood-change` olarak açılıyor ([RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
 kabul, ADR-163). **Gerçekleşen:** katman A — rotadan kayıtlı türle
 `attachment` dosya yanıtı (kapalı `icerik_turu` kaydı RFC-0040 katman C ile
-tek model; sandbox CSP, 16 MiB, K-372 bütçesi). **Açık:** multipart yükleme
-(B) ve proje bildirimli SMTP ek türleri (C) bu işin sonraki dilimleri;
+tek model; sandbox CSP, 16 MiB, K-372 bütçesi). Katman B — proje bildirimiyle
+açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytından
+önce, spec/26 `.parca` modeli). **Açık:** proje bildirimli SMTP ek türleri
+(C) bu işin sonraki dilimi;
 `inline`/Range/ETag sonrası. V1 sözü değildir.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.

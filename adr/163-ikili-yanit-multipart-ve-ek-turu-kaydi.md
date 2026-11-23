@@ -75,6 +75,36 @@ olarak girer.
    uygular, gövdeyi metin dosyası olarak yazar ve (tür, disposition) çiftini
    kaydeder.
 
+### B — `multipart/form-data` yükleme
+
+1. **Açılış proje bildirimiyle:** `çok_parçalı_yükleme doğru olsun`
+   (`web-oturumu` zorunlu, P015; değer mantıksal, P001). Rota politikası
+   cümlesi (`dosya yüklemesi kabul edilir`) açılmadı: grammar değişikliği
+   gerektirirdi ve spec/26 octet-stream yolu da rota başına değil süreç
+   başına açıktır. Bildirimsiz projede multipart davranışı değişmez (415
+   açılmadı; davranış değişikliği olurdu).
+2. **Ayrıştırıcı** `web_cok_parcali` (CLI adaptörü; saf, birim testli):
+   tek geçiş, belleğe alma yok, sınır arama tamponu `ayraç - 1` bayt
+   (ayraçta CR yalnız başta olduğundan arama doğrusal). Sınırlar: ≤ 8 parça,
+   tam bir dosya, başlık bloğu ≤ 8 KiB/≤ 8 satır, metin alanı ≤ 8 KiB UTF-8,
+   alan adı ≤ 128 bayt, önsöz/sonsöz ≤ 1 KiB, zarf `Content-Length` ≤
+   16 MiB + 64 KiB, dosya ≤ 16 MiB (413). Tanınan başlıklar yalnız
+   `Content-Disposition` ve `Content-Type`; `Content-Transfer-Encoding`,
+   katlama, bilinmeyen parametre, yinelenen ya da `yukleme_` önekli alan
+   adı 400 (proxy/Zee ayrıştırma farkını ve alan zehirlemesini kapatır).
+3. **CSRF dosyadan önce.** Multipart isteğinde oturum gövdeden önce yüklenir
+   (`web_istegini_baslat` yalnız bu yolda öne alınır); `_csrf` alanı dosya
+   parçasından önce gelmeli ve oturumla sabit zamanlı eşleşmeli, aksi hâlde
+   dosya baytı diske yazılmadan 403 (başarısız deneme CSRF oran sınırına
+   sayılır). Oturum çerezi yoksa gövde okunmaz. `X-Zee-CSRF` bu yolda yok
+   sayılır. Rota denetimi belirteci ayrıca karşılaştırır.
+4. **Tek ilkel.** Dosya spec/26 `AkanYukleme`'ye akar; rota `yukleme_*`
+   alanlarına ek olarak `yukleme_dosya_adi` (doğrulanmış basename ya da boş)
+   ve `yukleme_bildirilen_tur` (güvenilmez) görür. Red yanıtından önce kısmi
+   `.parca` silinir.
+5. **Okuma bütçesi değişmez:** 10 sn mutlak istek son tarihi; orantılı okuma
+   bütçesi ayrı karar (yavaş bağlantıda büyük yükleme 408).
+
 ## Sonuçlar
 
 - ZeeMail ek, vCard ve CSV indirmesini rotadan, yetki kararı Zee kodunda
@@ -83,6 +113,8 @@ olarak girer.
   yorumlanmaz (tür kaydı + sandbox CSP + `attachment` + `nosniff`).
 - IDOR (hangi dosyanın kime verildiği) ürün sorumluluğudur; dil yetki kararı
   vermez (GB-153 bilinçli sınır).
+- ZeeMail JS'siz formla ek ve kişi dosyası yükleyebilir; bildirimsiz
+  projelerin multipart davranışı aynıdır. Sınırlar ve CSRF sırası GB-154.
 
 ## Değerlendirilen seçenekler
 

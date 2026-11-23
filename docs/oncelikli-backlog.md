@@ -2559,7 +2559,7 @@ K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 
 ## K-378 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türleri (RFC-0041)
 
-**Durum: SÜRÜYOR (katman A kapalı).** Kaynak: etkin dogfood ürünü `urun-h`
+**Durum: SÜRÜYOR (katman A ve B kapalı).** Kaynak: etkin dogfood ürünü `urun-h`
 web arayüzü (ZeeMail, ZM-F022); 23 Kasım 2026 merkez kararı “Sırayla aç”,
 adım 1. RFC-0041 kabul, karar ADR-163, freeze sınıfı `dogfood-change`.
 
@@ -2572,8 +2572,19 @@ Kanıt: `compiler/tests/dosya_yaniti_testi.rs`, `icerik_turu::tests`,
 `web_profili_testleri::dosya_yaniti_parcali_akar_head_govdesiz_kisalan_dosya_kesilir`,
 `dogfood/urun-h/ek-akisi/`. spec/11 §4 “Dosya yanıtı”, GB-153.
 
-Açık (bu iş): katman B multipart yükleme, katman C SMTP ek türleri.
-Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi.
+Katman B (kapalı): `proje.dil` `çok_parçalı_yükleme doğru olsun`
+(web-oturumu, P015/P001); tek geçişli sınırlı ayrıştırıcı `web_cok_parcali`
+(≤ 8 parça, tek dosya, 8 KiB başlık/alan, strict boundary, CTE/katlama/
+bilinmeyen başlık 400); oturum gövdeden önce yüklenir, `_csrf` dosyadan önce
+ve eşleşmeli — aksi hâlde dosya baytı diske akmadan 403; dosya spec/26
+`.parca` modeline akar, red öncesi silinir; `yukleme_dosya_adi`,
+`yukleme_bildirilen_tur`. Kanıt: `compiler/tests/form_yukleme_testi.rs`
+(yavaş gönderim ortasında `.parca` yokluğu), `web_cok_parcali::tests`,
+`proje_testi`, `dogfood/urun-h/ek-akisi/`. spec/26 “Multipart form
+yüklemesi”, GB-154.
+
+Açık (bu iş): katman C SMTP ek türleri.
+Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi, çok dosya.
 
 ## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
 

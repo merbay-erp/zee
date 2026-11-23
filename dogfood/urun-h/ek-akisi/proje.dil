@@ -5,3 +5,4 @@ morfoloji "zee-tr-1" olsun
 giriş "ana.dil" olsun
 yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma" listesi olsun
 ağ_hedefleri boş liste olsun
+çok_parçalı_yükleme doğru olsun

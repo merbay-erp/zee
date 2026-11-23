@@ -5662,4 +5662,10 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Ürün politikası (`dogfood/urun-h/proje.dil`) web arayüzünün kullandığı
   `ağ-sunucusu`, `web-oturumu`, `dosya-okuma` yetkinlikleriyle genişletildi;
   önceki korpus vakaları etkilenmez.
+- Katman B: açılış proje bildirimi `çok_parçalı_yükleme doğru olsun`
+  (web-oturumu); rota politikası cümlesi grammar istediği için reddedildi;
+  bildirimsiz projede 415 davranış değişikliği olacağından açılmadı.
+  Oturum yalnız multipart yolunda gövdeden önce yüklenir; `_csrf` dosyadan
+  önce ZORUNLU (dosyayı önce yazıp sonra doğrulamak K-332 değişmezini
+  bozardı). Ayrıştırıcı CLI adaptörü modülü `web_cok_parcali`.
 

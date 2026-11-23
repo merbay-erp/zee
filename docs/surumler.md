@@ -26,6 +26,21 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez; kalıbı kullanmayan rotaların yanıtı değişmez.
 
+- **JavaScript'siz form ile dosya yükleme (K-378):** `proje.dil` içinde
+  `çok_parçalı_yükleme doğru olsun` yazan proje (`web-oturumu` gerekir),
+  sıradan HTML formuyla (`enctype="multipart/form-data"`) tek dosya kabul
+  eder. Formdaki gizli `_csrf` alanı dosya alanından **önce** yer almalıdır;
+  belirteç doğrulanmadan dosyanın tek baytı bile diske yazılmaz. Dosya,
+  bugünkü ikili yüklemeyle aynı geçici dosyaya akar; rota
+  `yukleme_gecici_yolu`, `yukleme_sha256`, `yukleme_bayti` alanlarına ek
+  olarak `yukleme_dosya_adi` ve `yukleme_bildirilen_tur` (tarayıcının
+  beyanı; güvenilmez) ile diğer form alanlarını görür. En çok 8 alan, tek
+  dosya, 16 MiB; bozuk ya da sınırı aşan gövde 400/413 alır.
+
+  **Göç:** Gerekmez. Bildirimi olmayan projelerde multipart istekler eskisi
+  gibi davranır; `application/octet-stream` + `X-Zee-CSRF` yüklemesi aynen
+  çalışır.
+
 - **systemd'den adla devralınan dinleyiciler ve hazır bildirimi (K-376):**
   Bir proje, systemd'nin kendisi adına açtığı soketleri `proje.dil` içinde
   adla bildirebilir:

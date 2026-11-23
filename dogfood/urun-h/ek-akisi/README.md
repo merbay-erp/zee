@@ -26,3 +26,13 @@ katman C (dosyadan yanıt) ve RFC-0039 katman D'de tekrar ediyor.
 yanıtı yapar. Değişiklik öncesi bu kaynak `S015` verir (kalıp yok); şimdi
 `denetle` temizdir ve gerçek yanıt `dosya_yaniti_testi.rs` ile sınanır.
 Ek yolunun kime ait olduğu ürün kararıdır (IDOR, GB-153).
+
+## Katman B — JS'siz form yüklemesi
+
+[proje.dil](proje.dil) `çok_parçalı_yükleme doğru olsun` bildirir;
+`GET /kisiler/ice-aktar` gizli `_csrf` alanı dosya alanından önce gelen
+`multipart/form-data` formu verir, `POST` rotası dosyayı spec/26 geçici
+dosyası olarak alır (`yukleme_*`). Değişiklik öncesi bildirim
+`P001 "çok_parçalı_yükleme" proje bildirimi alanı değil` verir; çalışma
+zamanında küçük multipart form 403 alıyordu (`_csrf` parça başlığında).
+Gerçek HTTP kanıtı `form_yukleme_testi.rs`.

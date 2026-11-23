@@ -32,6 +32,7 @@ mod adli_dinleyici;
 mod dil_registry;
 #[path = "cli/systemd_bildirim.rs"]
 mod systemd_bildirim;
+mod web_cok_parcali;
 #[path = "cli/web_isci_grubu.rs"]
 mod web_isci_grubu;
 #[cfg(unix)]
@@ -1744,6 +1745,10 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().http_gizli_degiskenleri.clone())
             .unwrap_or_default();
+        io.cok_parcali_yukleme = self
+            .proje
+            .as_ref()
+            .is_some_and(|proje| proje.ana_bildirim().cok_parcali_yukleme);
         if let Some(ayar) = self.oturum_ayari() {
             io.web_guvenligi.oturum_ayarini_belirle(ayar);
         }
@@ -1953,6 +1958,8 @@ struct GercekIo {
     eposta_baglanti_degiskeni: Option<String>,
     gizli_anahtar_degiskeni: Option<String>,
     http_gizli_degiskenleri: Vec<String>,
+    /// K-378: proje `çok_parçalı_yükleme doğru olsun` bildirimi.
+    cok_parcali_yukleme: bool,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
 }
@@ -2098,6 +2105,7 @@ impl GercekIo {
             eposta_baglanti_degiskeni,
             gizli_anahtar_degiskeni,
             http_gizli_degiskenleri: Vec::new(),
+            cok_parcali_yukleme: false,
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
         }
@@ -2409,6 +2417,94 @@ impl GercekIo {
             Err(hata) => Ok(self.istemci_kopmasini_gunlukle(status, &hata)),
         }
     }
+    /// İstek gövdesini okur ve web isteğini (oturum, oran sınırı) başlatır.
+    /// K-378: multipart yolunda oturum gövdeden önce yüklenir ki `_csrf`
+    /// dosya baytı diske akmadan doğrulansın. Hata yanıtı gönderildiyse `None`.
+    fn govdeyi_oku_ve_istegi_baslat(
+        &mut self,
+        akis: &mut web_metrikleri::Akis,
+        baslik: &HttpIstekBasligi<'_>,
+        ilk_govde: &[u8],
+        es: std::net::SocketAddr,
+        son_tarih: std::time::Instant,
+        https: bool,
+    ) -> Option<(String, Option<web_yukleme::IstekYuklemesi>, String)> {
+        let oturum_cerez_adi = self.oturum_cerez_adi();
+        // K-378: multipart yolunda oturum gövdeden önce yüklenir ki `_csrf`
+        // dosya baytı diske akmadan doğrulansın; oturum çerezi yoksa gövde
+        // hiç okunmaz (K-332 ön kapısının karşılığı).
+        let cok_parcali = self.cok_parcali_yukleme && cok_parcali_istegi_mi(baslik);
+        let on_cerez_satiri = if cok_parcali {
+            if !oturum_cerezi_var(baslik, oturum_cerez_adi) {
+                ham_http_hatasi_gonder(
+                    akis,
+                    403,
+                    "CSRF doğrulaması için geçerli form oturumu yok",
+                    false,
+                    https,
+                );
+                return None;
+            }
+            Some(self.web_istegini_baslat(akis, baslik, es, https)?)
+        } else {
+            None
+        };
+        let govde_sonucu = {
+            let web_guvenligi = &mut self.web_guvenligi;
+            let mut csrf_dogrula = |belirtec: &str| -> Result<(), (u16, &'static str)> {
+                let an = web_duvar_saati_ms();
+                web_guvenligi
+                    .denetle(
+                        &dil::agac::RotaErisimi::HerkeseAcik,
+                        Some(belirtec),
+                        true,
+                        an,
+                    )
+                    .map_err(|red| {
+                        let _ = web_guvenligi.rate_limit_artir(
+                            dil::web_guvenligi::RateLimitTuru::Csrf,
+                            "csrf",
+                            an,
+                        );
+                        (red.durum, red.mesaj)
+                    })
+            };
+            if cok_parcali {
+                cok_parcali_istegini_oku(
+                    akis,
+                    &self.kok,
+                    baslik,
+                    ilk_govde,
+                    son_tarih,
+                    https,
+                    &mut csrf_dogrula,
+                )
+            } else {
+                istek_govdesini_oku(
+                    akis,
+                    &self.kok,
+                    baslik,
+                    ilk_govde,
+                    son_tarih,
+                    https,
+                    oturum_cerez_adi,
+                )
+            }
+        };
+        let Some((govde, yukleme)) = govde_sonucu else {
+            if cok_parcali {
+                self.web_guvenligi.istegi_geri_al();
+                self.web_istek_yedegi = None;
+            }
+            return None;
+        };
+        let cerez_satiri = match on_cerez_satiri {
+            Some(satir) => satir,
+            None => self.web_istegini_baslat(akis, baslik, es, https)?,
+        };
+        Some((govde, yukleme, cerez_satiri))
+    }
+
     /// K-378: dosya yanıtını yazar; çerezler 200 yanıtıyla aynı, güvenlik
     /// başlıkları dosya sınıfına özgüdür.
     fn dosya_taslagini_yaz(
@@ -2992,14 +3088,40 @@ fn istek_basliklarini_oku(
     }
 }
 
-/// Content-Type ve Content-Length zarfını doğrular. Başarıda gövdenin binary
-/// yükleme olup olmadığını ve beklenen byte sayısını döndürür.
+/// İstek gövdesinin taşınma biçimi.
+enum GovdeTuru {
+    /// UTF-8 URL-form/metin, 64 KiB.
+    Metin,
+    /// spec/26 `application/octet-stream`, 16 MiB, diske akar.
+    Ikili,
+    /// K-378: proje bildirimiyle açılmış `multipart/form-data` (sınır).
+    CokParcali(String),
+}
+
+/// K-378: multipart yolu yalnız güvenli olmayan yöntemde ve tek
+/// `multipart/form-data` Content-Type ile seçilir.
+fn cok_parcali_istegi_mi(baslik: &HttpIstekBasligi<'_>) -> bool {
+    let yontem = baslik.yontem();
+    let turler = baslik.baslik_degerleri("Content-Type");
+    !yontem.eq_ignore_ascii_case("GET")
+        && !yontem.eq_ignore_ascii_case("HEAD")
+        && turler.len() == 1
+        && turler[0]
+            .split(';')
+            .next()
+            .is_some_and(|tur| tur.trim().eq_ignore_ascii_case("multipart/form-data"))
+}
+
+/// Content-Type ve Content-Length zarfını doğrular. Başarıda gövdenin
+/// taşınma biçimini ve beklenen byte sayısını döndürür. `cok_parcali`
+/// yalnız proje `çok_parçalı_yükleme` bildirimiyle doğrudur (K-378).
 fn govde_zarfini_denetle(
     akis: &mut impl WebTasima,
     baslik: &HttpIstekBasligi<'_>,
     ilk_govde_uzunlugu: usize,
     https: bool,
-) -> Option<(bool, usize)> {
+    cok_parcali: bool,
+) -> Option<(GovdeTuru, usize)> {
     let head = baslik.yontem().eq_ignore_ascii_case("HEAD");
     let icerik_turleri = baslik.baslik_degerleri("Content-Type");
     if icerik_turleri.len() > 1 {
@@ -3015,11 +3137,26 @@ fn govde_zarfini_denetle(
     let binary_yukleme = icerik_turleri
         .first()
         .is_some_and(|deger| deger.eq_ignore_ascii_case("application/octet-stream"));
-    let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
-    let govde_siniri = if binary_yukleme {
-        http_siniri.yukleme_bayti()
+    let govde_turu = if binary_yukleme {
+        GovdeTuru::Ikili
+    } else if cok_parcali && cok_parcali_istegi_mi(baslik) {
+        match web_cok_parcali::siniri_ayristir(icerik_turleri[0]) {
+            Ok(Some(sinir)) => GovdeTuru::CokParcali(sinir),
+            Ok(None) => GovdeTuru::Metin,
+            Err(red) => {
+                ham_http_hatasi_gonder(akis, red.durum, &red.mesaj, head, https);
+                return None;
+            }
+        }
     } else {
-        http_siniri.istek_govde_bayti()
+        GovdeTuru::Metin
+    };
+    let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
+    let govde_siniri = match govde_turu {
+        GovdeTuru::Ikili => http_siniri.yukleme_bayti(),
+        // Dosya tavanı + metin alanları ve parça başlıkları için zarf payı.
+        GovdeTuru::CokParcali(_) => http_siniri.yukleme_bayti() + http_siniri.istek_govde_bayti(),
+        GovdeTuru::Metin => http_siniri.istek_govde_bayti(),
     };
     let beklenen = baslik.govde_uzunlugu();
     if beklenen > govde_siniri {
@@ -3042,7 +3179,7 @@ fn govde_zarfini_denetle(
         );
         return None;
     }
-    Some((binary_yukleme, beklenen))
+    Some((govde_turu, beklenen))
 }
 
 /// K-332: güvenli olmayan yöntemdeki binary yükleme, gövde diske akmadan
@@ -3060,13 +3197,216 @@ fn yukleme_on_kapisi(
     if tek_http_basligi(baslik, "X-Zee-CSRF").is_none_or(|deger| deger.trim().is_empty()) {
         return Some("CSRF belirteci eksik");
     }
-    let oturum_var = baslik.baslik_degerleri("Cookie").iter().any(|cerez| {
+    (!oturum_cerezi_var(baslik, oturum_cerez_adi))
+        .then_some("CSRF doğrulaması için geçerli form oturumu yok")
+}
+
+fn oturum_cerezi_var(baslik: &HttpIstekBasligi<'_>, oturum_cerez_adi: &str) -> bool {
+    baslik.baslik_degerleri("Cookie").iter().any(|cerez| {
         cerez
             .split(';')
             .filter_map(|parca| parca.trim().split_once('='))
             .any(|(ad, deger)| ad == oturum_cerez_adi && !deger.trim().is_empty())
-    });
-    (!oturum_var).then_some("CSRF doğrulaması için geçerli form oturumu yok")
+    })
+}
+
+/// K-378: multipart gövdesinin `_csrf` alanını oturuma karşı doğrulayan kapı.
+/// Başarısızlık (durum, ileti) döndürür.
+type CsrfDogrulayici<'a> = &'a mut dyn FnMut(&str) -> Result<(), (u16, &'static str)>;
+
+/// Form gövdesi için katı yüzde kodlama (yalnız unreserved düz kalır).
+fn form_kodla(metin: &str) -> String {
+    let mut sonuc = String::with_capacity(metin.len());
+    for bayt in metin.bytes() {
+        if bayt.is_ascii_alphanumeric() || matches!(bayt, b'-' | b'.' | b'_' | b'~') {
+            sonuc.push(char::from(bayt));
+        } else {
+            sonuc.push_str(&format!("%{bayt:02X}"));
+        }
+    }
+    sonuc
+}
+
+/// K-378: multipart olaylarını spec/26 yükleyicisine bağlar. `_csrf`
+/// dosya parçasından önce gelip oturumla eşleşmezse dosya baytı diske hiç
+/// yazılmaz (K-332 değişmezinin multipart karşılığı).
+struct CokParcaliAlici<'a> {
+    kok: &'a std::path::Path,
+    csrf_dogrula: CsrfDogrulayici<'a>,
+    alanlar: Vec<(String, String)>,
+    akan: Option<web_yukleme::AkanYukleme>,
+    bayt: usize,
+    dosya: Option<web_cok_parcali::DosyaBilgisi>,
+    sonuc: Option<(web_yukleme::YuklemeBilgisi, web_yukleme::IstekYuklemesi)>,
+}
+
+impl web_cok_parcali::Alici for CokParcaliAlici<'_> {
+    fn alan(&mut self, ad: &str, deger: &str) -> Result<(), web_cok_parcali::Red> {
+        self.alanlar.push((ad.to_string(), deger.to_string()));
+        Ok(())
+    }
+    fn dosya_basladi(
+        &mut self,
+        bilgi: web_cok_parcali::DosyaBilgisi,
+    ) -> Result<(), web_cok_parcali::Red> {
+        let red = |durum, mesaj: &str| web_cok_parcali::Red {
+            durum,
+            mesaj: mesaj.to_string(),
+        };
+        let belirtec = self
+            .alanlar
+            .iter()
+            .find(|(ad, _)| ad == "_csrf")
+            .map(|(_, deger)| deger.clone())
+            .filter(|deger| !deger.is_empty())
+            .ok_or_else(|| red(403, "CSRF belirteci dosya parçasından önce gelmeli"))?;
+        (self.csrf_dogrula)(&belirtec).map_err(|(durum, mesaj)| red(durum, mesaj))?;
+        self.akan = Some(web_yukleme::AkanYukleme::yeni(self.kok).map_err(|hata| red(503, &hata))?);
+        self.dosya = Some(bilgi);
+        Ok(())
+    }
+    fn dosya_verisi(&mut self, veri: &[u8]) -> Result<(), web_cok_parcali::Red> {
+        let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+            .http()
+            .yukleme_bayti();
+        self.bayt += veri.len();
+        if self.bayt > sinir {
+            return Err(web_cok_parcali::Red {
+                durum: 413,
+                mesaj: format!("yüklenen dosya {} KiB sınırını aşıyor", sinir / 1024),
+            });
+        }
+        let akan = self
+            .akan
+            .as_mut()
+            .ok_or_else(|| web_cok_parcali::Red::kotu("dosya parçası açık değil"))?;
+        akan.yaz(veri).map_err(|hata| web_cok_parcali::Red {
+            durum: 503,
+            mesaj: hata,
+        })
+    }
+    fn dosya_bitti(&mut self) -> Result<(), web_cok_parcali::Red> {
+        let akan = self
+            .akan
+            .take()
+            .ok_or_else(|| web_cok_parcali::Red::kotu("dosya parçası açık değil"))?;
+        self.sonuc = Some(akan.tamamla().map_err(|hata| web_cok_parcali::Red {
+            durum: 503,
+            mesaj: hata,
+        })?);
+        Ok(())
+    }
+}
+
+/// K-378: bildirimli projede multipart isteğin zarfını denetler ve gövdesini
+/// okur. Çağıran `cok_parcali_istegi_mi` ile seçer ve oturumu önceden yükler.
+fn cok_parcali_istegini_oku(
+    akis: &mut impl WebTasima,
+    kok: &std::path::Path,
+    baslik: &HttpIstekBasligi<'_>,
+    ilk_govde: &[u8],
+    son_tarih: std::time::Instant,
+    https: bool,
+    csrf_dogrula: CsrfDogrulayici<'_>,
+) -> Option<(String, Option<web_yukleme::IstekYuklemesi>)> {
+    let (govde_turu, beklenen) = govde_zarfini_denetle(akis, baslik, ilk_govde.len(), https, true)?;
+    let GovdeTuru::CokParcali(sinir) = govde_turu else {
+        ham_http_hatasi_gonder(
+            akis,
+            400,
+            "multipart Content-Type bekleniyordu",
+            false,
+            https,
+        );
+        return None;
+    };
+    cok_parcali_govdeyi_oku(
+        akis,
+        kok,
+        &sinir,
+        ilk_govde,
+        beklenen,
+        son_tarih,
+        https,
+        csrf_dogrula,
+    )
+}
+
+/// K-378: multipart gövdesini tek geçişte okur; dosya `.parca`ya akar,
+/// rotaya bugünkü form alanları + `yukleme_*` alanları olarak verilir.
+#[allow(clippy::too_many_arguments)]
+fn cok_parcali_govdeyi_oku(
+    akis: &mut impl WebTasima,
+    kok: &std::path::Path,
+    sinir: &str,
+    ilk_govde: &[u8],
+    beklenen: usize,
+    son_tarih: std::time::Instant,
+    https: bool,
+    csrf_dogrula: CsrfDogrulayici<'_>,
+) -> Option<(String, Option<web_yukleme::IstekYuklemesi>)> {
+    let mut ayristirici = web_cok_parcali::Ayristirici::yeni(sinir);
+    let mut alici = CokParcaliAlici {
+        kok,
+        csrf_dogrula,
+        alanlar: Vec::new(),
+        akan: None,
+        bayt: 0,
+        dosya: None,
+        sonuc: None,
+    };
+    let mut sonuc = ayristirici.besle(ilk_govde, &mut alici);
+    let mut okunan_toplam = ilk_govde.len();
+    while sonuc.is_ok() && okunan_toplam < beklenen {
+        let mut parca = [0u8; 16 * 1024];
+        let parca_siniri = (beklenen - okunan_toplam).min(parca.len());
+        match son_tarihli_soket_oku(akis, &mut parca[..parca_siniri], son_tarih) {
+            Ok(okunan) if okunan > 0 => {
+                okunan_toplam += okunan;
+                sonuc = ayristirici.besle(&parca[..okunan], &mut alici);
+            }
+            Err(hata) if zaman_asimi_mi(&hata) => {
+                istek_zaman_asimi_gonder(akis, https);
+                return None;
+            }
+            _ => {
+                sonuc = Err(web_cok_parcali::Red::kotu(
+                    "istek gövdesi Content-Length'ten kısa",
+                ));
+            }
+        }
+    }
+    if let Err(red) = sonuc.and_then(|()| ayristirici.bitir(&mut alici)) {
+        // Kısmi ya da tamamlanmış `.parca` red yanıtının sınırlı boşaltmasından
+        // (K-374) önce silinir; istemci yanıtı gördüğünde dosya yoktur.
+        drop(alici);
+        ham_http_hatasi_gonder(akis, red.durum, &red.mesaj, false, https);
+        return None;
+    }
+    let (Some((bilgi, koruma)), Some(dosya)) = (alici.sonuc, alici.dosya) else {
+        ham_http_hatasi_gonder(
+            akis,
+            400,
+            "multipart dosya parçası tamamlanmadı",
+            false,
+            https,
+        );
+        return None;
+    };
+    let mut govde = alici
+        .alanlar
+        .iter()
+        .map(|(ad, deger)| format!("{}={}", form_kodla(ad), form_kodla(deger)))
+        .collect::<Vec<_>>();
+    govde.push(format!(
+        "yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}&yukleme_dosya_adi={}&yukleme_bildirilen_tur={}",
+        form_kodla(&bilgi.goreli_yol),
+        bilgi.sha256,
+        bilgi.bayt,
+        form_kodla(&dosya.dosya_adi),
+        form_kodla(&dosya.bildirilen_tur)
+    ));
+    Some((govde.join("&"), Some(koruma)))
 }
 
 /// Ön kapı reddinde 403 gönderir ve `None` döner.
@@ -3100,7 +3440,9 @@ fn istek_govdesini_oku(
     https: bool,
     oturum_cerez_adi: &str,
 ) -> Option<(String, Option<web_yukleme::IstekYuklemesi>)> {
-    let (binary_yukleme, beklenen) = govde_zarfini_denetle(akis, baslik, ilk_govde.len(), https)?;
+    let (govde_turu, beklenen) =
+        govde_zarfini_denetle(akis, baslik, ilk_govde.len(), https, false)?;
+    let binary_yukleme = matches!(govde_turu, GovdeTuru::Ikili);
     if binary_yukleme {
         yukleme_on_kapisini_uygula(akis, baslik, oturum_cerez_adi, https)?;
     }
@@ -3717,19 +4059,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     continue;
                 }
             };
-            let oturum_cerez_adi = self.oturum_cerez_adi();
-            let Some((govde, yukleme)) = istek_govdesini_oku(
+            let Some((govde, yukleme, cerez_satiri)) = self.govdeyi_oku_ve_istegi_baslat(
                 &mut akis,
-                &self.kok,
                 &baslik,
                 &tampon[govde_basi..],
+                es,
                 son_tarih,
                 https,
-                oturum_cerez_adi,
             ) else {
-                continue;
-            };
-            let Some(cerez_satiri) = self.web_istegini_baslat(&mut akis, &baslik, es, https) else {
                 continue;
             };
             self.bekleyen_akis = Some(akis);
