@@ -12,6 +12,7 @@ use std::sync::OnceLock;
 
 static HEDEF: OnceLock<Option<OsString>> = OnceLock::new();
 static HAZIR: AtomicBool = AtomicBool::new(false);
+#[cfg_attr(not(unix), allow(dead_code))]
 static DURUYOR: AtomicBool = AtomicBool::new(false);
 
 /// `govde` başında çağrılır; sonraki çağrılar etkisizdir.
@@ -29,6 +30,7 @@ pub(crate) fn hazir() {
 }
 
 /// Kapanış başladığında (SIGTERM) bir kez; yeni kabul durur, boşaltma sürer.
+#[cfg_attr(not(unix), allow(dead_code))]
 pub(crate) fn durduruluyor() {
     if !DURUYOR.swap(true, Ordering::SeqCst) {
         gonder("STOPPING=1");

@@ -18,6 +18,7 @@ pub(crate) const ONERI: &str = "Öneri: her bildirilen dinleyici için Accept=no
 
 /// Bildirim ↔ devir eşlemesi: her bildirim indeksi için devralınan fd.
 /// Saf işlev: ortam değerleri parametredir, sıra karşılaştırılmaz.
+#[cfg_attr(not(unix), allow(dead_code))]
 pub(crate) fn eslestir(
     bildirim: &[DinleyiciBildirimi],
     pid: Option<&str>,
