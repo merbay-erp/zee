@@ -24,7 +24,7 @@ pub const YETIM_SUPURME_ARALIGI: Duration = Duration::from_secs(5 * 60);
 /// Tek süpürmede incelenen en çok dizin girdisi; kalan sonraki tura kalır.
 const YETIM_SUPURME_GIRDISI: usize = 10_000;
 
-// Eşiğin canlı ömrün en az on katı olduğu `main.rs` içinde derleme zamanı
+// Eşiğin canlı ömrün (yanıt yazımı dahil) en az dört katı olduğu `main.rs` içinde derleme zamanı
 // denetlenir (HTTP sınırlarının sahibi orasıdır).
 
 /// `AkanYukleme::yeni` adlandırması: 64 küçük onaltılık + `.parca`.
