@@ -5,6 +5,24 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 23 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Dolu oturum deposu 500 yerine 503 döner (K-370):** Sunucunun oturum
+  deposu 4096 girişli oturumla dolduğunda, oturumu olmayan bir ziyaretçinin
+  form sayfası (`csrf belirteci`) artık "sunucu hatası" 500 vermez; depo
+  kilidi ya da dosya hatası gibi durumlarla birlikte geçici kaynak durumu
+  olarak `503 web güvenlik durumu güvenle kaydedilemedi` yanıtı gönderilir.
+  Aynı durum isteğin sonunda zaten 503'tü; şimdi rota içinde de aynıdır.
+  Sunucu sonraki isteği yanıtlamaya devam eder, ayrıntı yalnız işletmeci
+  günlüğündedir. Komut satırında çalışan programda davranış değişmez.
+
+  **Göç:** Gerekmez.
+
 ## 21 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
