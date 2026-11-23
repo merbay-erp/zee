@@ -439,7 +439,10 @@ pub fn erken_red_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
     }
     #[cfg(unix)]
     {
-        const BOSALTMA_SINIRI: Duration = Duration::from_secs(6);
+        // Boşaltma bütçesi 2 sn; sınır CI/platform yavaşlığına 10 sn pay
+        // bırakır. Sınırsız boşaltmada damlatıcı durmadığından sonraki istek
+        // `tam_istek` okuma süresine (25 sn) dek yanıtsız kalır.
+        const BOSALTMA_SINIRI: Duration = Duration::from_secs(12);
         let kaynak = std::fs::read_to_string(kaynak_yolu).expect("fixture kaynağı");
         let govdeli = baslik_degeri(&kaynak, "# web-govde: ");
         let baslikli = baslik_degeri(&kaynak, "# web-baslik: ");

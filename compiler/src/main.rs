@@ -5247,34 +5247,39 @@ mod web_profili_testleri {
     }
 
     /// K-374: gövdesi okunmadan reddedilen istekte istemci yanıtı ve FIN'i
-    /// alır (RST değil); boşaltma istemci kapatınca hemen biter.
+    /// alır (RST değil); boşaltma istemci kapatınca bütçeyi beklemeden biter.
+    /// Gövde ayrı iş parçacığında yazılır: soket tamponu küçük platformda
+    /// (Windows) okunmayan 70 KB yazımı testi kilitlemez.
     #[test]
     fn erken_red_okunmamis_govdeyle_yaniti_istemciye_ulastirir() {
         let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
         let adres = dinleyici.local_addr().unwrap();
         let mut istemci = std::net::TcpStream::connect(adres).unwrap();
         let (mut sunucu, _) = dinleyici.accept().unwrap();
-        istemci
-            .write_all(b"POST / HTTP/1.1\r\nContent-Length: 70000\r\n\r\n")
-            .unwrap();
-        istemci.write_all(&vec![b'x'; 70_000]).unwrap();
+        let mut gonderen = istemci.try_clone().unwrap();
+        let gonderici = std::thread::spawn(move || {
+            let _ = gonderen.write_all(b"POST / HTTP/1.1\r\nContent-Length: 70000\r\n\r\n");
+            let _ = gonderen.write_all(&vec![b'x'; 70_000]);
+        });
         // Sunucu yalnız başlığın bir kısmını okur; gövde alım tamponunda kalır.
         let mut parca = [0u8; 16];
         sunucu.read_exact(&mut parca).unwrap();
-        let baslangic = std::time::Instant::now();
         let yazici = std::thread::spawn(move || {
             ham_http_hatasi_gonder(&mut sunucu, 413, "büyük", false, false);
         });
         istemci
-            .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+            .set_read_timeout(Some(std::time::Duration::from_secs(30)))
             .unwrap();
         let mut yanit = Vec::new();
         istemci.read_to_end(&mut yanit).unwrap();
         assert!(yanit.starts_with(b"HTTP/1.1 413 Payload Too Large"));
         assert!(yanit.ends_with(b"\r\n\r\nb\xc3\xbcy\xc3\xbck"));
-        drop(istemci);
+        gonderici.join().unwrap();
+        istemci.shutdown(std::net::Shutdown::Write).unwrap();
+        let kapanis = std::time::Instant::now();
         yazici.join().unwrap();
-        assert!(baslangic.elapsed() < std::time::Duration::from_secs(2));
+        // EOF boşaltmayı bitirir; bütçe dolmasını (2 sn) beklemez.
+        assert!(kapanis.elapsed() < HTTP_ISTEK_ARTIGI_SURESI);
     }
 
     /// K-374: kapatmayıp bayt damlatan istemci boşaltma süresinde, sınırsız
@@ -5303,8 +5308,10 @@ mod web_profili_testleri {
             usize::MAX,
         );
         let gecen = baslangic.elapsed();
-        assert!(gecen >= std::time::Duration::from_millis(300), "{gecen:?}");
-        assert!(gecen < std::time::Duration::from_secs(2), "{gecen:?}");
+        // Alt sınır platform zamanlayıcı ayrıntısına pay bırakır; üst sınır
+        // CI yüküne dayanıklıdır (sınırsız boşaltma damlatıcıyla hiç bitmez).
+        assert!(gecen >= std::time::Duration::from_millis(250), "{gecen:?}");
+        assert!(gecen < std::time::Duration::from_secs(10), "{gecen:?}");
         dur.store(true, std::sync::atomic::Ordering::Relaxed);
         damlatici.join().unwrap();
 
@@ -5312,10 +5319,13 @@ mod web_profili_testleri {
             let istemci = std::net::TcpStream::connect(adres).unwrap();
             (dinleyici.accept().unwrap().0, istemci)
         };
-        istemci.write_all(&vec![b'y'; 64 * 1024]).unwrap();
+        // Bayt sınırı süreden önce biter: istemci kapatmaz, 30 sn'lik
+        // bütçe dolmadan 1 KiB'ta dönülür. 8 KiB her platform tamponuna sığar.
+        istemci.write_all(&vec![b'y'; 8 * 1024]).unwrap();
         let baslangic = std::time::Instant::now();
-        istek_artigini_bosalt(&mut sunucu, std::time::Duration::from_secs(5), 1024);
-        assert!(baslangic.elapsed() < std::time::Duration::from_secs(1));
+        istek_artigini_bosalt(&mut sunucu, std::time::Duration::from_secs(30), 1024);
+        let gecen = baslangic.elapsed();
+        assert!(gecen < std::time::Duration::from_secs(10), "{gecen:?}");
     }
 
     /// K-362 / GB-109: native okuyucu başlık sınırı exact baytta keser.
