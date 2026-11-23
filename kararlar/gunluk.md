@@ -5646,3 +5646,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   SIGSYS; aynı sahipte çağrı kaldırıldı (GB-152). Linux belirli IPv6
   adresinde V6ONLY'yi kendisi açar; çift yığın olumsuz testi joker `[::]` ile.
 
+## K-376 takibi — systemd ölçüm adımı kararlılığı (23 Kasım 2026)
+
+- CI'da `scripts/systemd-adli-soket-olcumu.py` aralıklı olarak soket birimini
+  başlatamadı. Yerelde yoğun loopback trafiğiyle yeniden üretildi (eski
+  0/12): geçici aralıktan seçip bırakılan kapı istemci bağlantılarına
+  verilebiliyor. Karar: kapı geçici aralığın dışından, her ailede boşluğu
+  doğrulanarak ve tekil seçilir; teşhis ve sınırlı yeniden deneme yalnız
+  soket kurulumunda (ölçüm sonucu yeniden denenmez, sahte yeşil olmasın).
+- Reddedilen: sabit kapı (paralel koşu ve runner süreçleriyle çakışır);
+  yalnız yeniden deneme (kök nedeni gizler, yük altında yine kırılır).
+
