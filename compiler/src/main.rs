@@ -3550,7 +3550,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 return self
                     .web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(
                         503,
-                        "web güvenlik durumu güvenle kaydedilemedi".into(),
+                        dil::web_guvenligi::WEB_GUVENLIK_DURUMU_KAYDEDILEMEDI.into(),
                     ))
                     .map(|_| ());
             }

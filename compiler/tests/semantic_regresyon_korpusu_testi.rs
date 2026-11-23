@@ -48,6 +48,8 @@ mod native_unicode_kimlik_fixture;
 mod native_web_depo_cekismesi_fixture;
 #[path = "semantic_regresyon/native_web_kopma.rs"]
 mod native_web_kopma_fixture;
+#[path = "semantic_regresyon/native_web_oturum_deposu.rs"]
+mod native_web_oturum_deposu_fixture;
 #[path = "semantic_regresyon/native_web_yukleme.rs"]
 mod native_web_yukleme_fixture;
 #[path = "semantic_regresyon/native_yedek_artigi.rs"]
@@ -93,6 +95,7 @@ const KIPLER: &[&str] = &[
     "native-coken-degistirme",
     "native-yedek-artigi",
     "native-web-depo-cekismesi",
+    "native-web-oturum-deposu",
     "native-isci-kabul-term",
     "native-eszamanli-tasima",
     "native-eszamanli-paket-ekle",
@@ -277,6 +280,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-web-kopma"
                 | "native-web-yukleme"
                 | "native-web-depo-cekismesi"
+                | "native-web-oturum-deposu"
                 | "native-registry-durum-cekismesi"
                 | "native-unicode-kimlik"
         ),
@@ -437,6 +441,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-depo-cekismesi" {
         let (cikis, cikti) = native_web_depo_cekismesi_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-web-oturum-deposu" {
+        let (cikis, cikti) = native_web_oturum_deposu_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -862,6 +874,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
                 | "native-web-depo-cekismesi"
+                | "native-web-oturum-deposu"
                 | "native-isci-kabul-term"
                 | "native-eszamanli-tasima"
                 | "native-eszamanli-paket-ekle"
@@ -1391,6 +1404,40 @@ fn native_web_depo_cekismesi_regresyonu_gercek_surecle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: kayıpsız istek", vaka.ad);
+    }
+}
+
+#[test]
+fn native_web_oturum_deposu_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-web-oturum-deposu"));
+    assert!(faz_kipi_kabul_eder("security", "native-web-oturum-deposu"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-web-oturum-deposu"));
+    }
+}
+
+/// K-370: kimlikli kayıtlarla dolu ortak depoda oturumsuz CSRF isteği gerçek
+/// native worker'da 500 değil 503 alır ve worker sonraki isteği yanıtlar.
+#[test]
+fn native_web_oturum_deposu_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-web-oturum-deposu")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native web oturum deposu regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(
+            gozlem.cikti, vaka.cikti,
+            "{}: 503 ve yaşayan worker",
+            vaka.ad
+        );
     }
 }
 

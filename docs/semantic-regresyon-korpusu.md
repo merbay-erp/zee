@@ -284,6 +284,18 @@ ve `diğer <n>` sayılarıdır. Düzeltme öncesi worker durumu kilit dışında
 CAS ile yayımladığından her turu kaybeder ve `503 3` görülür; düzeltme
 sonrası `başarılı 3`. Toplu replay bu kipi atlar.
 
+## Native web oturum deposu kipi (K-370)
+
+`security` fazındaki `native-web-oturum-deposu` kipi `--web-proxy` profilli
+gerçek native `dil` worker'ını açar, ilk istekle `.zee/web-durumu-v1.json`
+ortak deposunu kurdurur ve depoyu 4096 geçerli kimlikli oturumla zee'nin
+klasör yazma kilidiyle yeniden yayımlar. Ardından oturumsuz `/form`
+(`csrf belirteci`) ve `/` isteği gönderir; çıktı `form <durum> <gövde>` ve
+`sonraki <durum> <gövde>` satırlarıdır. Düzeltme öncesi `form 500 istek
+işlenemedi; sunucu hatası`; sonrası `form 503 web güvenlik durumu güvenle
+kaydedilemedi`, worker iki durumda da `sonraki 200 tamam` yanıtlar. Toplu
+replay bu kipi atlar.
+
 ## Native registry durum çekişmesi kipi (K-361)
 
 `security` fazındaki `native-registry-durum-cekismesi` kipi `dil::registry`

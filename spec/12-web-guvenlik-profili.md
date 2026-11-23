@@ -89,6 +89,8 @@ yazma kilidi altında okur, günceller ve yayımlar (K-353); eşzamanlı yazar
 sayısı isteği reddettirmez, yalnız spec/08'in 5 sn kilit bekleme sınırı
 aşılırsa istek 503 olur.
 
+ZORUNLU: Rota içinde `csrf belirteci` ya da `oturuma al` yeni oturum kaydı için depoda yer ararken depo kaydı reddederse (yalnız kimlikli kayıtlarla dolu kapasite, depo IO hatası ya da kilit bekleme sınırı) bu kaynak durumudur, kullanıcı/program tanısı değildir: rota o cümlede kesilir, isteğin oturum/çerez mutation'ı ve istek transaction'ı rota hatasındaki gibi geri alınır ve yanıt istek commit'indeki depo reddiyle aynı sabit 503 `web güvenlik durumu güvenle kaydedilemedi` gövdesidir (C022 ya da 500 değildir). Neden yalnız operatör günlüğüne düşer, Zee kodu onu yakalamaz ve işçi sonraki isteği alır. Web isteği dışında aynı ret C022 kalır (K-370).
+
 Her rota gövdesinde `oturum`, `Metin` değerli bir sözlük olarak ZORUNLU
 bulunur. Geçerli kimlikli sunucu oturumunda tam olarak `kimlik`, `kullanıcı`,
 `rol`, `oluşturulma_ms`, `son_erişim_ms` ve `son_geçerlilik_ms` anahtarlarını

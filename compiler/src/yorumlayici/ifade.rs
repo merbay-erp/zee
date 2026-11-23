@@ -1,6 +1,6 @@
 use super::*;
 
-mod web;
+pub(super) mod web;
 
 pub(super) fn degerlendir_async<'a>(
     ifade: &'a Ifade,
@@ -37,13 +37,7 @@ pub(super) fn degerlendir_async<'a>(
                     CSRF_BELIRTECI => {
                         son_tarihi_denetle(io, satir)?;
                         io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
-                            Tani::yeni(
-                                "C022",
-                                format!("CSRF belirteci üretilemedi: {}.", hata),
-                                satir,
-                                1,
-                                1,
-                            )
+                            web::web_oturumu_tanisi("CSRF belirteci üretilemedi", &hata, satir)
                         })
                     }
                     PAROLA_DOGRULA => {
