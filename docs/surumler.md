@@ -31,6 +31,18 @@ Bu kayıt yeni sürüm etiketi değildir.
   statement timeout` (ya da `lock timeout`) satırıyla görünür. COMMIT bu
   süreyle kesilmez; rolde tanımlı `statement_timeout`/`lock_timeout` son
   tarihli sorgularda kalan süreyle geçersiz kılınır, diğerlerinde aynen geçerlidir.
+
+- **Büyük istek reddi artık istemciye ulaşıyor (K-374):** 64 KiB sınırını
+  aşan bir form/gövde (ör. büyük multipart içe aktarma) ya da sınırı aşan
+  başlıklar gönderildiğinde sunucu 413/431 yanıtını yazıyor ama bağlantıyı
+  okunmamış veriyle kapattığından istemci yanıt yerine "bağlantı sıfırlandı"
+  görüyordu (curl `000`). Sunucu artık red yanıtından sonra yazma yönünü
+  kapatıp istemcinin gönderdiklerini en çok 2 sn ve 16 MiB boyunca okuyup
+  atıyor; istemci 413/431 yanıtını ve hata metnini görür. Kabul edilen
+  istekler etkilenmez.
+
+  **Göç:** Gerekmez.
+
 - **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
   dene` artık ekli iletide olduğu gibi çevreleyen `… içinde` bloğunun ya da
   web isteğinin kalan süresini kullanır. Önceden yanıt vermeyen bir SMTP
