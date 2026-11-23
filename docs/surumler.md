@@ -12,6 +12,25 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **PostgreSQL sorguları süre sınırına uyar (K-375):** `… okumayı dene` ve
+  `… değiştirmeyi dene` artık çevreleyen `… içinde` bloğunun ya da web
+  isteğinin 30 saniyelik kalan süresini veritabanı sunucusuna bildirir.
+  Önceden yavaş ya da kilit bekleyen bir sorgu `1 saniye içinde` bloğunu
+  sorgu bitene kadar (ölçümde 4 sn) bekletiyor, web isteğinin 504 yanıtını
+  33. saniyeye geciktirip işçiyi o süre meşgul ediyordu; şimdi sorgu süre
+  dolunca sunucuda kesilir, `yetişmezse` kolu 1 sn'de çalışır, web 504 yanıtı
+  30. saniyede gider. Kesilen sorgu `C025` hatası olarak dönmez, süre aşımı
+  olarak işlenir; eylem içindeyse eylem geri alınır ve satır yazılmaz. Kesilen
+  okuma otomatik tekrar edilmez, bağlantı havuza temiz döner. Süre bloğu
+  olmayan CLI sorgusunda davranış ve sorgu sayısı aynıdır.
+
+  **İşletmeci notu:** Uzun sorgular artık son tarihte kesilir. Web rotasında
+  30 saniyeden uzun süren raporlama/toplu sorgu varsa 504 ile biter; bu işi
+  süre bloğu olmayan bir CLI görevine ya da iş kuyruğuna taşıyın. Sunucu
+  günlüğünde kesilen sorgu PostgreSQL'in `canceling statement due to
+  statement timeout` (ya da `lock timeout`) satırıyla görünür. COMMIT bu
+  süreyle kesilmez; rolde tanımlı `statement_timeout`/`lock_timeout` son
+  tarihli sorgularda kalan süreyle geçersiz kılınır, diğerlerinde aynen geçerlidir.
 - **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
   dene` artık ekli iletide olduğu gibi çevreleyen `… içinde` bloğunun ya da
   web isteğinin kalan süresini kullanır. Önceden yanıt vermeyen bir SMTP
@@ -21,7 +40,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   gönderimde 20 saniyelik üst sınır aynıdır; hata metni ve "otomatik tekrar
   yok" kuralı değişmez. Ayrıca dış hataların (SMTP, HTTP, PostgreSQL) Zee
   kodunda nasıl yakalandığı denetlendi; PostgreSQL sorgularının süre sınırına
-  bağlanması ayrı taslak olarak açık kaldı (RFC-0042).
+  bağlanması RFC-0042 ile ayrıca kapatıldı (K-375, yukarıda).
 - **Yavaş okuyan istemci sunucu işçisini uzun süre tutamaz (K-372):**
   Yanıtını hiç okumayan ya da çok yavaş okuyan bir bağlantı, büyük bir yanıtın
   yazımı sırasında sunucu işçisini artık süresiz meşgul edemez. Yanıt yazımı

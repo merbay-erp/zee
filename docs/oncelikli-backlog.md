@@ -2559,7 +2559,7 @@ K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 
 ## K-371 — Dış etki hata eşlemesi; düz SMTP dış son tarihi
 
-**Durum: KAPALI (düzeltme); PostgreSQL sorgu son tarihi AÇIK.** Kaynak: K-370
+**Durum: KAPALI (düzeltme); PostgreSQL sorgu son tarihi K-375 ile kapandı.** Kaynak: K-370
 web içi oran/kaynak reddini denetledi; aynı soru dış etki tarafı için
 soruldu. SMTP, native HTTP istemcisi ve PostgreSQL adaptörünün bağlantı,
 DNS, TLS, kimlik, sunucu yanıtı, boyut sınırı, havuz, kilit ve son tarih
@@ -2590,12 +2590,47 @@ okuma/değişikliğinde bu hata yakalanabilir C025'tir, C026 yalnız `dil göç�
 Açık kalanlar: (1) PostgreSQL sorgusu son tarihe bağlanmaz — 1 sn son tarihte
 `pg_sleep(4)` 4,1 sn, web'de `pg_sleep(33)` 504'ü 33. saniyede verir; iptalin
 transaction/C027 etkisi tasarım ister → spec/25 AÇIK maddesi ve
-[RFC-0042 taslağı](../rfcs/0042-postgresql-sorgu-son-tarihi.md). (2) Düz SMTP
+[RFC-0042 taslağı](../rfcs/0042-postgresql-sorgu-son-tarihi.md) (K-375'te
+kapandı). (2) Düz SMTP
 yolu K-130 süreç-geneli bağlantı iznini almaz (ekli yol alır); işçi başına tek
 bloklayan çağrı olduğundan ölçülen hata yok, eski yolun "değişmez" kaydı
 spec/23'te sürer. (3) Eski `adresinden gelen yanıt` C018'i spec/11 §5 gereği
 yakalanamaz 500 kalır; ürün yeni `HTTP isteğini dene` kalıbıyla 503'e
 çevirebilir.
+## K-375 — PostgreSQL sorgusu son tarihe bağlanır (RFC-0042)
+
+**Durum: KAPALI.** Kaynak: K-371 açık sınırı, GB-149, spec/25 AÇIK maddesi.
+Ölçüm yerel PostgreSQL 16 ile yeniden üretildi (ısınmış bağlantı, debug
+ikili):
+
+| Senaryo | Önce | Sonra |
+|---|---:|---:|
+| `1 saniye içinde` + `pg_sleep(4)` okuma | 4,00 sn | 1,00 sn |
+| Eylem içi INSERT + `pg_sleep(4)` | 4,06 sn, 0 satır | 1,04 sn, 0 satır |
+| Web `pg_sleep(33)` | 504, 33,0 sn | 504, 30,0 sn |
+| İptal sonrası aynı havuzda sonraki sorgu / istek | başarılı / 200 | başarılı / 200 |
+
+Neden kodda: PostgreSQL intrinsic'i son tarihi yalnız çağrıdan önce denetliyor,
+adaptöre kalan süre vermiyordu; sürücü çağrısı süresizdi. Düzeltme RFC-0042
+seçenek 1'in en küçük hâlidir: `GirdiCikti::postgresql_oku/degistir` HTTP gibi
+`zaman_asimi_ms: Option<i64>` alır; native adaptör ifade başına transaction-local
+`SET LOCAL statement_timeout`/`lock_timeout` uygular (açık transaction'da sorgu
+savepoint'iyle, dışında tek okumalık `BEGIN … COMMIT`; oturum ayarı yok). Kendi
+bitişimizden sonra gelen `57014`/`55P03` `db.deadline` sınıfıyla Ç001'e gider;
+dönüşte dolmuş son tarih de değere dönüşmez. COMMIT bütçeyle iptal edilmez
+(C027 korunur), iptal edilen okuma tekrar edilmez, son tarih bloğu eylem içinde
+bitince sonraki süresiz ifade eski bütçeyi taşımaz. Son tarih yoksa ek round trip
+yok. Grammar, tanı, CLI, IO izi ve `dil::api::v1` değişmez.
+
+Kanıt: regression `runtime/postgresql-sorgu-son-tarihi` (kip `postgresql`,
+sanal sunucu süresi: düzeltme öncesi sözleşmede bütçe yok ve 4000 ms, düzeltmeyle bütçe 1000 ve
+1000 ms), `postgresql_testi` dört hermetik vaka, gerçek PostgreSQL TLS kapısının
+11. vakası `izole_tls_son_tarih_iptali_savepoint_commit_tekrarsiz_ve_havuz_sagligi`
+(yerel `--engine local` 11/11), `postgresql-recovery-v1.tsv` `son_tarih_iptali`
+sütunu, spec/25 ZORUNLU/YASAK maddeleri, spec/09 sınırı, ADR-060 K-375 eki,
+RFC-0042 kabul/uygulandı, GB-149 kapalı. Bilinçli sınır: ağ bölünmesinde istemci
+socket okuması bütçelenmez (RFC-0042 seçenek 2 kapsam dışı).
+
 ## K-372 — Mutlak yanıt yazım bütçesi
 
 **Durum: KAPALI.** Kaynak: K-369 test incelemesinin "okumayan istemci tek

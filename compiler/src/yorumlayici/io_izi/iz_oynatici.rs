@@ -106,6 +106,7 @@ impl GirdiCikti for IzYenidenOynatici {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        _zaman_asimi_ms: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         tasima::postgresql_oku_oynat(self, sorgu, parametreler)
     }
@@ -114,6 +115,7 @@ impl GirdiCikti for IzYenidenOynatici {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        _zaman_asimi_ms: Option<i64>,
     ) -> Result<i64, VeritabaniHatasi> {
         tasima::postgresql_degistir_oynat(self, sorgu, parametreler)
     }

@@ -214,7 +214,12 @@ impl GirdiCikti for UrunIo {
         }
         self.ic.parola_ozeti_uret(p)
     }
-    fn postgresql_degistir(&mut self, s: &str, p: &[String]) -> Result<i64, VeritabaniHatasi> {
+    fn postgresql_degistir(
+        &mut self,
+        s: &str,
+        p: &[String],
+        _sure: Option<i64>,
+    ) -> Result<i64, VeritabaniHatasi> {
         assert!(!self.yedekler.is_empty(), "SQL yazısı eylemde olmalı");
         self.sorgular.push((s.into(), p.to_vec()));
         match s {

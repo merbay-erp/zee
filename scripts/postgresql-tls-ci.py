@@ -31,10 +31,12 @@ EXPECTED_TESTS = (
     "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
     "izole_tls_ayni_backend_istek_commit_public_ve_ikinci_tenant_baglamini_temizler",
     "izole_tls_ayni_backend_istek_rollback_public_ve_ikinci_tenant_baglamini_temizler",
+    "izole_tls_son_tarih_iptali_savepoint_commit_tekrarsiz_ve_havuz_sagligi",
 )
 FAULT_OBSERVATIONS = (
     "K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true",
     "K250 serialization sqlstate=40001 attempts=2 other_value=1 victim_marker=0 fresh_health=true",
+    "K375 deadline read=57014 retry=0 savepoint_rows=1 durable_rows=0 lock=deadline nowait=55P03 commit_deferred=ok leak=0/0 fresh_health=true",
 )
 
 

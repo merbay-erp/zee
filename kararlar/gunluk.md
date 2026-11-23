@@ -5592,3 +5592,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   döngüsü CI'da kaba zamanlayıcıda yavaşladığı için Unix'te `poll(POLLOUT)`'a
   geçildi (Windows ≤2 ms uyku).
 
+## K-375 — PostgreSQL sorgu son tarihi; RFC-0042 kabul (23 Kasım 2026)
+
+- K-371 ölçümü yeniden üretildi: `1 saniye içinde` + `pg_sleep(4)` 4,00 sn,
+  web `pg_sleep(33)` 504'ü 33,0 sn'de. Karar RFC-0042 seçenek 1, en küçük
+  hâl: kalan süre adaptöre `zaman_asimi_ms` olarak gider, adaptör ifade başına
+  transaction-local `SET LOCAL statement_timeout`/`lock_timeout` kullanır
+  (transaction dışında tek okumalık `BEGIN … COMMIT`). Sonrası 1,00 sn ve
+  30,0 sn; eylem içi iptalde satır yazılmaz, havuz temiz (GB-149 kapalı).
+- Açık soruların yanıtı: iptal C025 değil Ç001 (yalnız kendi bitişimiz
+  geçtiyse; `NOWAIT` 55P03 C025 kalır); eylem içinde sorgu savepoint'i
+  iptali ifadeye sınırlar, eylem geri alması olağan yoldan yürür, C021 ile
+  yeni öncelik kuralı gerekmez; COMMIT bütçeyle iptal edilmez çünkü senkron
+  replikasyon beklemesinde iptal yerel commit'i belirsiz bırakır (C027
+  korunur); iptal sonrası transaction dışı okuma tekrar edilmez; IO izi
+  bütçeyi kaydetmez.
+- Reddedilen: istemci tarafı `CancelRequest` (seçenek 2; sonuçla yarış ve C027
+  ile karışma, sürücü değişikliği); oturum düzeyinde `SET` + `RESET` (hata
+  yolunda havuza sızma riski); yalnız belge (seçenek 3; 17 canlı işçinin
+  çoğu PostgreSQL'li, işçi tutma sorunu ürün rolüne bırakılmaz).
+
