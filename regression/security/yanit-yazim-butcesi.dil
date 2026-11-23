@@ -1,0 +1,14 @@
+# web-istegi: GET /buyuk
+# web-sonraki: GET /saglik
+# K-372: 2 MiB yanıtı sürekli ama yavaş okuyan istemci tek işçiyi yalnız mutlak yanıt yazım bütçesi (10 + 16 sn) kadar tutar; sonraki istek 200 alır.
+
+8080 kapısında sunucu başlat
+
+GET "/buyuk" adresine istek geldiğinde
+    metin "x" olsun
+    21 kez tekrarla
+        metin metin ile metin olsun
+    metin yanıtını gönder
+
+GET "/saglik" adresine istek geldiğinde
+    "ayakta" yanıtını gönder
