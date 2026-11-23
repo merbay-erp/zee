@@ -53,7 +53,6 @@ pub(super) fn degerlendir_async<'a>(
                     WEB_OTURUMLARINI_LISTELE | WEB_OTURUMUNU_IPTAL_ET => {
                         web::oturum_yonetimini_degerlendir(kimlik, &degerler, io, satir)
                     }
-                    WEB_DOSYA_YANITI => web::dosya_yanitini_degerlendir(&degerler, io, satir),
                     crate::intrinsic::HTTP_JSON
                     | crate::intrinsic::HTTP_ISTEK
                     | crate::intrinsic::HTTP_GIZLI_ORTAM => {
@@ -80,7 +79,7 @@ pub(super) fn degerlendir_async<'a>(
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, true)
                     }
                     DOSYA_ATOMIK_TASI | DOSYA_SIL | DOSYALARI_LISTELE | DOSYA_SHA256
-                    | DOSYA_ILK_BAYTLAR => {
+                    | DOSYA_ILK_BAYTLAR | WEB_DOSYA_YANITI => {
                         dosya::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
                     PAROLA_OZETI

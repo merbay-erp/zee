@@ -157,11 +157,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
             self.ic.durum_yaniti_gonder(durum, yanit);
         }
     }
-    fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
-        self.web_gerektir()?;
-        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
-        self.ic.dosya_yaniti_gonder(yol, tur, ad)
-    }
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         self.web_gerektir()?;
         self.ic.yonlendir_gonder(adres)
