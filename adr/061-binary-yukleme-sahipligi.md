@@ -112,10 +112,19 @@ uygulamalarında yetimler diskte birikir (istek başına en çok 16 MiB).
   başında, `.zee/yuklemeler` altında yalnız `<64 küçük hex>.parca` adlı,
   sembolik bağ olmayan, son değişikliği `YETIM_PARCA_YASI`'ndan (15 dk) eski
   normal dosyalar silinir. Tur başına en çok 10 000 girdi incelenir.
-- **Neden kilit yok.** Canlı bir `.parca`'nın son yazımından sonraki ömrü gövde
-  okuma son tarihi (10 sn), rota çalıştırma bütçesi (30 sn) ve yanıt yazım
-  zaman aşımıyla (10 sn) sınırlıdır; eşik bunun en az on katı olmak zorundadır
-  ve sınırlar büyürse derleme zamanı `assert!` kırılır. Dolayısıyla eşzamanlı
+- **Neden kilit yok.** Canlı bir `.parca` (`IstekYuklemesi` yanıt yazımı
+  bitene dek düşmez) son yazımından sonra gövde okuma son tarihi (10 sn), rota
+  çalıştırma bütçesi (30 sn), en büyük yanıtın K-372 mutlak yazım bütçesi
+  (16 MiB metin + 64 KiB başlık payı: 139 sn) ve K-374 boşaltması (2 sn)
+  toplamı, yani en çok 181 sn yaşar. Eşik (15 dk) bunun en az dört katı olmak
+  zorundadır ve sınırlar büyürse derleme zamanı `assert!` kırılır.
+  *Düzeltme (23 Kasım 2026):* özgün metin sabit 10 sn yanıt yazım zaman aşımı
+  ve “on kat” payı varsayıyordu; K-372 yazım bütçesini yanıt boyutuyla
+  büyütünce sabit yazımı kapsamaz oldu (güvence bayattı, eşik 181 sn'nin 4,97
+  katı olduğundan canlı dosya hiçbir zaman süpürülemedi). Sabit gerçek bütçeye
+  bağlandı ve birim test (`canli_parca_omru_yanit_yazim_butcesini_kapsar`)
+  formülün `yanit_yazim_butcesi` ile eş kalmasını denetler. Yanıt bellekteki
+  metinden yazılır; yazım sırasında `.parca` okunmaz. Dolayısıyla eşzamanlı
   worker'ların canlı dosyası yaşla korunur; iki worker aynı turda süpürürse
   ikincisi `NotFound`'u yok sayar. Bu tasarım RFC-0038 tek-açılış/birincillik
   profilinden bağımsızdır: birincil/ikincil ayrımına, dosya ya da PG kilidine
