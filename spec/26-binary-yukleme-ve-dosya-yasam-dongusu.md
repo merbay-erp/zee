@@ -7,11 +7,11 @@ sözleşmesini tanımlar (RFC-0027, ADR-061).
 
 `Content-Type: application/octet-stream` taşıyan native HTTP isteği en çok
 16 MiB olabilir. Adaptör gövdeyi bütünüyle belleğe ALMAZ; 16 KiB parçalarla
-proje kökündeki `.zee/yuklemeler` dizininde `0600` izinli, benzersiz `.parca`
+göreli IO kökündeki (spec/07 K-382: giriş kaynağının klasörü) `.zee/yuklemeler` dizininde `0600` izinli, benzersiz `.parca`
 dosyasına yazar ve SHA-256'yı aynı akışta hesaplar. Başarılı framing sonunda
 rota isteği şu alanları görür:
 
-- `yukleme_gecici_yolu`: proje köküne göre güvenli geçici yol;
+- `yukleme_gecici_yolu`: göreli IO köküne göre güvenli geçici yol (`.zee/yuklemeler/<64 hex>.parca`);
 - `yukleme_sha256`: küçük harfli 64 haneli SHA-256;
 - `yukleme_bayti`: onluk byte sayısı.
 

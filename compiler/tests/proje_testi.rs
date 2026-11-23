@@ -589,6 +589,58 @@ fn cli_proje_klasorunu_calistirir_denetler_ve_dener() {
     assert!(String::from_utf8_lossy(&dene.stdout).contains("1 test: 1 geçti, 0 kaldı"));
 }
 
+/// K-382 (spec/07): göreli dosya IO kökü giriş kaynağının klasörüdür;
+/// `çalıştır <proje>`, `çalıştır <giriş dosyası>` ve çağıran klasör anlamı
+/// değiştirmez. `dene` hermetik tablosu diske dokunmaz ve klasör istemez.
+#[test]
+fn goreli_dosya_io_koku_giris_klasorudur() {
+    let gecici = GeciciKlasor::yeni();
+    let kaynak = gecici.yol().join("kaynak");
+    std::fs::create_dir(&kaynak).expect("giriş klasörü");
+    std::fs::write(
+        gecici.yol().join("proje.dil"),
+        "proje \"kok\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"kaynak/ana.dil\" olsun\nyetkinlikler \"dosya-okuma\", \"dosya-yazma\" listesi olsun\n",
+    )
+    .expect("bildirim");
+    std::fs::write(
+        kaynak.join("ana.dil"),
+        "\"veri.txt\" dosyasına \"satır\" ekle\n\ntest \"hermetik tablo\"\n    \"depo/ekler/x.txt\" dosyasına \"a\" ekle\n    okuma \"depo/ekler/x.txt\" dosyasını okumayı dene olsun\n    okuma başarısızsa\n        1 2 ye eşit olmalı\n",
+    )
+    .expect("giriş");
+    let ikili = env!("CARGO_BIN_EXE_dil");
+    for hedef in [gecici.yol().to_path_buf(), kaynak.join("ana.dil")] {
+        let cikti = Command::new(ikili)
+            .arg("çalıştır")
+            .arg(&hedef)
+            .current_dir(std::env::temp_dir())
+            .output()
+            .expect("çalıştır");
+        assert!(
+            cikti.status.success(),
+            "{}",
+            String::from_utf8_lossy(&cikti.stderr)
+        );
+    }
+    assert_eq!(
+        std::fs::read_to_string(kaynak.join("veri.txt")).expect("veri giriş klasöründe"),
+        "satır\nsatır\n"
+    );
+    assert!(!gecici.yol().join("veri.txt").exists());
+
+    let dene = Command::new(ikili)
+        .arg("dene")
+        .arg(gecici.yol())
+        .output()
+        .expect("dene");
+    assert!(
+        dene.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&dene.stdout),
+        String::from_utf8_lossy(&dene.stderr)
+    );
+    assert!(!kaynak.join("depo").exists() && !gecici.yol().join("depo").exists());
+}
+
 #[test]
 fn yeni_komutu_proje_bildirimi_uretir() {
     let gecici = GeciciKlasor::yeni();
@@ -1264,7 +1316,7 @@ fn dosya_imzasi_gercek_ikili_dosyada_sinirli_ve_proje_kokunde_okunur() {
     assert_eq!(satirlar[10], "C013");
     assert!(satirlar[11].contains("sembolik bağ"), "{stdout}");
     assert_eq!(satirlar[12], "C013");
-    assert!(satirlar[13].contains("çözülemedi"), "{stdout}");
+    assert!(satirlar[13].contains("bulunamadı"), "{stdout}");
     assert_eq!(satirlar[14], "C013");
     assert!(satirlar[15].contains("normal dosya değil"), "{stdout}");
     assert_eq!(satirlar.len(), 16, "{stdout}");

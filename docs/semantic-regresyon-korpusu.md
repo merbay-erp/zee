@@ -292,6 +292,19 @@ dosya kalmadığı ayrıca denetlenir. Düzeltme öncesi kaynakta çıktı
 replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder ve Linux
 dışında görünür ignored durumundadır.
 
+## Native proje dosya kökü kipi (K-382)
+
+`runtime` fazındaki `native-proje-dosya-koku` kipi Cargo hedef klasöründe
+girişi `kaynak/ana.dil` olan, `dosya-okuma` ve `dosya-yazma` yetkinlikli bir
+proje kurar, proje kökünde boş bir `depo/ekler` klasörü bırakır ve gerçek
+native `dil çalıştır <proje>` sürecini başka bir çalışma klasöründen çalıştırır.
+Çıktı programın stdout satırlarıdır (taşıma ve okuma `… dene` Sonuç
+hataları). Harness ayrıca yazılan dosyanın `kaynak/` altında durduğunu, proje
+köküne yazılmadığını ve proje kökündeki klasöre dokunulmadığını denetler;
+çözüm kökü proje köküne kaysaydı taşıma başarılı olur, çıktı `taşındı` olurdu.
+Düzeltme öncesi kaynakta iki satır da `dosya yolu güvenle çözülemedi: …`dir.
+Toplu replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder.
+
 ## Native dosya okuma penceresi kipi (K-342)
 
 `runtime` fazındaki `native-dosya-okuma-penceresi` kipi gerçek native `dil`

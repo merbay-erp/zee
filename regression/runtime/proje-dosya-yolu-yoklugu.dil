@@ -1,0 +1,13 @@
+# K-382: proje kipinde hedef klasörü olmayan taşıma ve olmayan dosya okuması "dosya yolu güvenle çözülemedi: No such file" diyordu; göreli yol giriş dosyasının klasöründen çözülür.
+
+"parca.txt" dosyasına "ek" ekle
+taşıma "parca.txt" dosyasını "depo/ekler/ek.txt" yoluna atomik taşımayı dene olsun
+taşıma başarılıysa
+    "taşındı" yaz
+değilse
+    taşımanın hatası yaz
+okuma "yok.txt" dosyasını okumayı dene olsun
+okuma başarılıysa
+    "okundu" yaz
+değilse
+    okumanın hatası yaz

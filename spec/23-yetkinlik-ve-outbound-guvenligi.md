@@ -8,8 +8,8 @@ Kararlı proje yazımları şunlardır:
 
 | Yazım | Açtığı sınır |
 |---|---|
-| `dosya-okuma` | Proje kökündeki dosyayı okuma/listeleme/SHA-256 hesaplama |
-| `dosya-yazma` | Proje kökündeki dosyayı atomik yazma/ekleme/taşıma/silme |
+| `dosya-okuma` | Proje dosya sınırındaki dosyayı okuma/listeleme/SHA-256 hesaplama |
+| `dosya-yazma` | Proje dosya sınırındaki dosyayı atomik yazma/ekleme/taşıma/silme |
 | `ağ` | Bildirilmiş origin'e outbound HTTP(S) |
 | `yerel-ağ` | Private/loopback hedef ve explicit düz HTTP |
 | `ağ-sunucusu` | Native loopback web sunucusu/adaptörü |
@@ -71,8 +71,10 @@ geliştirici profilidir; dosya ve adaptörler açık, outbound yalnız public
 HTTPS, `yerel-ağ` kapalıdır. Her runtime IO çağrısı policy sarmalayıcısından;
 native dosya/ağ/web adaptörü ayrıca aynı kapıdan geçer.
 
-Proje dosya yolu göreli ve kök içinde olmalıdır. `..`, mutlak yol ve
-canonical hedef/ebeveynin sembolik bağla kök dışına çıkması reddedilir. Bu
+Proje dosya yolu göreli ve kök içinde olmalıdır. Göreli yol giriş kaynağının
+klasöründen çözülür, sınır kökü `proje.dil` klasörüdür (spec/07 K-382).
+`..`, mutlak yol ve canonical hedef/ebeveynin sembolik bağla kök dışına
+çıkması reddedilir. Bu
 sözleşme eşzamanlı düşman yerel süreçlere karşı OS sandbox'ı değildir.
 
 ## Paket yetkisi (TANIMLI)

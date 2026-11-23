@@ -2678,6 +2678,55 @@ hepsi test dizesi.
 Açık: kaynak değişmezindeki betiğin yeniden yansıtılması (özet CSP sınırı),
 `style-src 'unsafe-inline'` sertleştirmesi, değer köken izi (RFC adayı).
 
+## K-382 — Göreli dosya IO kökü ve yokluk iletisi
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F029.
+Girişi `kaynak/ana.dil` olan projede dosya IO ve `yukleme_gecici_yolu` proje
+kökünden değil `kaynak/`ten çözülüyordu; eksik hedef klasörü `dosya yolu
+güvenle çözülemedi: No such file` iletisiyle bildiriliyordu. Freeze sınıfı
+`correctness` (semantic-bugfix).
+
+Bulgu: spec/07 K-076 zaten "göreli dosya IO yolları giriş dosyasının
+klasöründen çözülür" diyor; kod uyuyor. spec/26 (`.zee/yuklemeler` "proje
+kökünde") ve spec/23 (yetkinlik tablosu "proje kökündeki dosya") sınırla
+çözüm kökünü karıştıran gevşek ifadeydi. Kök değişmedi; spec/07 "Göreli IO
+kökü ve dosya sınırı kökü (K-382)" bölümü iki kökü, CLI/worker/işçi grubu/
+`dene` davranışını ve yokluk iletisini normatif yazar.
+
+| Senaryo (`giriş "kaynak/ana.dil"`) | Önce | Sonra |
+|---|---|---|
+| `"depo/ekler/x"` hedefine taşıma, `kaynak/depo/ekler` yok | `dosya yolu güvenle çözülemedi: No such file…` | `"depo/ekler/x" için hedef klasör "depo/ekler" yok; göreli yollar giriş dosyasının klasöründen çözülür, klasörü önce oluşturun` |
+| olmayan dosyayı okuma | aynı yanıltıcı ileti | `"yok.txt" bulunamadı; göreli yollar giriş dosyasının klasöründen çözülür` |
+| `..`, mutlak yol, kök dışı bağ, yokluk dışı IO hatası | ret | aynı ret, aynı ileti |
+| yazılan göreli dosyanın yeri | `kaynak/` | `kaynak/` (değişmedi) |
+
+Geriye uyumluluk envanteri (yalnız okuma, yerel): girişi `kaynak/` altında ve
+dosya yetkinlikli 23 tekil proje ile ~70 dağıtım dosyası (`ExecStartPre`
+mkdir, `ReadWritePaths`, rsync dışlamaları, çalışma zamanı denetim betikleri)
+`kaynak/.zee/yuklemeler`, `kaynak/medya`, `kaynak/dosya` yollarına dayanıyor;
+depo içi `kanit-ozeti` ürünü `../../../` yollarını giriş klasörüne göre
+sayıyor. Kökü proje klasörüne kaydırmak hepsini kırardı; bu yüzden reddedildi.
+
+Kanıt: `main.rs::proje_dosya_yolu_kok_ve_yokluk_iletisi`, regression
+`proje-dosya-yolu-yoklugu` (kip `native-proje-dosya-koku`, gerçek
+`dil çalıştır <proje>`; proje kökünde aynı adlı klasör dururken taşıma
+reddedilir, dosya `kaynak/` altına yazılır), spec/07 K-382 bölümü, spec/23 ve
+spec/26 ifade düzeltmesi, hata kataloğu C013.
+
+Açık — takip önerisi (`dogfood-change`, ayrı iş; core freeze altında yeni
+yüzey): `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
+sözleşme: değer proje köküne göre göreli, `..`/mutlak/sürücü öneki yasak
+(P003/P004 sınıfı), proje kökü içinde var olan klasör; verilirse göreli dosya
+IO kökü ve `.zee/yuklemeler` bu klasöre geçer, verilmezse bugünkü giriş
+klasörü davranışı birebir sürer (alan yokluğu göç gerektirmez). Açık
+sorular: bağımlı paketlerin alanı kullanıp kullanamayacağı, mevcut
+`kaynak/.zee/yuklemeler` yetim süpürmesinin geçişte iki dizini tarayıp
+taramayacağı, dosya yanıtı/e-posta eki yollarının aynı köke bağlanması. Kabul
+için iki üründe tekrar eden ihtiyaç (K-164 kuralı) ya da `urun-h` dışında
+ikinci gerçek tüketici kanıtı gerekir; o zamana dek ürün kalıcı veriyi giriş
+klasöründe tutar ya da giriş klasörü içinde proje kökündeki klasöre bağ
+kullanır (sınır içi).
+
 ## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) işletim

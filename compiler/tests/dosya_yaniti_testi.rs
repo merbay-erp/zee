@@ -318,7 +318,7 @@ fn dosya_yaniti_kayitsiz_tur_ad_enjeksiyonu_yol_gecisi_ve_tavani_reddeder() {
         ("belge.bin", "application/pdf", "", "boş"),
         // Yol geçişi ve normal dosya şartı.
         ("../belge.bin", "application/pdf", "a.pdf", "göreli yol"),
-        ("yok.bin", "application/pdf", "a.pdf", "güvenle"),
+        ("yok.bin", "application/pdf", "a.pdf", "bulunamadı"),
         ("klasor", "application/pdf", "a.pdf", "normal dosya"),
         // Tavan: başlık yazılmadan beklenen hata.
         ("buyuk.bin", "application/zip", "a.zip", "16 MiB"),

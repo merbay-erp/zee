@@ -40,6 +40,8 @@ mod native_isci_saglik_mirasi_fixture;
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
 mod native_metric_stdio_fixture;
+#[path = "semantic_regresyon/native_proje_dosya_koku.rs"]
+mod native_proje_dosya_koku_fixture;
 #[path = "semantic_regresyon/native_registry_durum_cekismesi.rs"]
 mod native_registry_durum_cekismesi_fixture;
 #[path = "semantic_regresyon/native_unicode_kimlik.rs"]
@@ -105,6 +107,7 @@ const KIPLER: &[&str] = &[
     "native-eszamanli-paket-ekle",
     "native-registry-durum-cekismesi",
     "native-unicode-kimlik",
+    "native-proje-dosya-koku",
 ];
 
 #[derive(Debug, Clone)]
@@ -274,6 +277,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-eszamanli-tasima"
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
+                | "native-proje-dosya-koku"
         ),
         "concurrency" => kip == "run",
         "security" => matches!(
@@ -499,6 +503,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-unicode-kimlik" {
         let (cikis, cikti) = native_unicode_kimlik_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-proje-dosya-koku" {
+        let (cikis, cikti) = native_proje_dosya_koku_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -939,6 +951,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-isci-saglik-mirasi"
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
+                | "native-proje-dosya-koku"
                 | "native-web-depo-cekismesi"
                 | "native-web-oturum-deposu"
                 | "native-isci-kabul-term"
@@ -1569,6 +1582,36 @@ fn native_yedek_artigi_regresyonu_gercek_surecle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: artık temizliği", vaka.ad);
+    }
+}
+
+#[test]
+fn native_proje_dosya_koku_kipi_yalniz_runtime_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-proje-dosya-koku"));
+    assert!(faz_kipi_kabul_eder("runtime", "native-proje-dosya-koku"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-proje-dosya-koku"));
+    }
+}
+
+/// K-382: proje kipinde göreli yol giriş dosyasının klasöründen çözülür ve
+/// yokluk iletisi eksik hedef klasörü / bulunamayan dosyayı adıyla söyler.
+#[test]
+fn native_proje_dosya_koku_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-proje-dosya-koku")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "proje dosya kökü regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: yokluk iletisi", vaka.ad);
     }
 }
 

@@ -76,6 +76,42 @@ birimin işlem adlarını çağrı çözümünde görür.
 - Bildirimde yan etki, işlem, yapı, test, bilinmeyen veya tekrarlı alan yoktur
   (P001/P002). Böylece proje keşfi kaynak çalıştırmadan deterministiktir.
 
+### Göreli IO kökü ve dosya sınırı kökü (K-382)
+
+TANIMLI: Çalışan programın göreli dosya IO kökü giriş kaynağının klasörüdür:
+proje kipinde `giriş` alanının klasörü (`giriş "kaynak/ana.dil"` → `kaynak/`),
+doğrudan dosya kipinde o dosyanın klasörü. `dil çalıştır <proje>`,
+`dil çalıştır <proje>/<giriş>`, web worker'ı, işçi grubunun her işçisi ve
+`--web-systemd-soketi` aynı köke çözer; çağıran kabuğun klasörü ve systemd
+`WorkingDirectory=` anlamı değiştirmez. Dosya okuma/yazma/ekleme/taşıma/silme,
+dosya yanıtı, imza okuması, e-posta eki ve binary/multipart yüklemenin
+`.zee/yuklemeler` geçici dizini ile rotaya verilen `yukleme_gecici_yolu` bu
+köke göredir. Proje dosya sınırı kökü (spec/23) ise `proje.dil` klasörüdür;
+`.zee/web-durumu-v1.json` ve `.zee/birincil-*.kilit` gibi çalışma zamanı durum
+dosyaları da orada durur. İki kök giriş proje kökündeyken çakışır.
+
+TANIMLI: Proje kipinde `..` ve mutlak yol reddedildiğinden giriş klasörü
+dışında kalan proje kökü yolları göreli yolla adlandırılamaz; bunlara giriş
+klasörü içindeki, canonical hedefi proje kökü içinde kalan bir sembolik bağla
+ulaşılır.
+
+AÇIK: Kökü proje klasörüne taşıyan ya da proje başına ayrı veri kökü açan bir
+bildirim alanı bu sürümde yoktur (K-382 takip önerisi `veri_kökü`; core
+freeze altında yalnız `dogfood-change` olarak).
+
+ZORUNLU: Proje dosya sınırında yol çözümü bir yokluğa çarparsa ileti bunu
+güvenlik reddi gibi göstermez: yazma/ekleme/taşıma hedefinin klasörü yoksa
+`"<yol>" için hedef klasör "<klasör>" yok; göreli yollar giriş dosyasının
+klasöründen çözülür, klasörü önce oluşturun`, okunacak/taşınacak kaynak yoksa
+`"<yol>" bulunamadı; göreli yollar giriş dosyasının klasöründen çözülür`
+yazılır (ölümcül C013 ve `… dene` kalıbının başarısız Sonuç'u aynı metni
+taşır). İleti programın
+verdiği göreli yolu taşır, mutlak yol taşımaz. Yokluk dışındaki çözüm
+hataları `dosya yolu güvenle çözülemedi` olarak kalır.
+
+TANIMLI: `dil dene` hermetik adaptörü dosya tablosunu programın verdiği yol
+metniyle anahtarlar; disk kökü kavramı yoktur.
+
 ## Yerel paket ve kilit (TANIMLI — K-078)
 
 `dil biçimle --denetle <dosya|proje>` kaynağı değiştirmeden kanonik biçimle

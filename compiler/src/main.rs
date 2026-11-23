@@ -2233,8 +2233,27 @@ impl GercekIo {
         } else {
             aday.as_path()
         };
-        let kanonik = std::fs::canonicalize(denetlenecek)
-            .map_err(|hata| format!("dosya yolu güvenle çözülemedi: {}", hata))?;
+        let kanonik = std::fs::canonicalize(denetlenecek).map_err(|hata| {
+            // K-382: yokluk güvenlik reddi değildir; neyin bulunmadığını ve
+            // göreli yolun hangi klasörden çözüldüğünü (spec/07) söyler.
+            if hata.kind() != std::io::ErrorKind::NotFound {
+                return format!("dosya yolu güvenle çözülemedi: {}", hata);
+            }
+            match istenen
+                .parent()
+                .filter(|klasor| yazma && !klasor.as_os_str().is_empty())
+            {
+                Some(klasor) => format!(
+                    "\"{}\" için hedef klasör \"{}\" yok; göreli yollar giriş dosyasının klasöründen çözülür, klasörü önce oluşturun",
+                    yol,
+                    klasor.display()
+                ),
+                None => format!(
+                    "\"{}\" bulunamadı; göreli yollar giriş dosyasının klasöründen çözülür",
+                    yol
+                ),
+            }
+        })?;
         if !kanonik.starts_with(&self.dosya_siniri_koku) {
             return Err(
                 "proje dosya sınırı sembolik bağ üzerinden kök dışına çıkışı reddetti".into(),
@@ -6288,6 +6307,69 @@ mod web_profili_testleri {
                 );
             }
         }
+    }
+
+    /// K-382: göreli yol giriş dosyasının klasöründen çözülür (spec/07), sınır
+    /// proje köküdür; yokluk "güvenle çözülemedi" değil, eksik hedef klasörü ya
+    /// da bulunamayan dosyayı adıyla söyler. Diğer redler değişmez.
+    #[test]
+    fn proje_dosya_yolu_kok_ve_yokluk_iletisi() {
+        let proje = std::env::temp_dir().join(format!(
+            "zee-k382-kok-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let giris = proje.join("kaynak");
+        std::fs::create_dir_all(&giris).unwrap();
+        std::fs::create_dir_all(proje.join("depo")).unwrap();
+        let politika = dil::yetkinlik::YetkinlikPolitikasi::proje(
+            [
+                dil::yetkinlik::Yetkinlik::DosyaOkuma,
+                dil::yetkinlik::Yetkinlik::DosyaYazma,
+            ]
+            .into_iter()
+            .collect(),
+            Default::default(),
+        );
+        let io = GercekIo::yeni_argumanlarla(
+            &giris,
+            &proje,
+            WebModu::Kapali,
+            Vec::new(),
+            politika,
+            None,
+            None,
+            None,
+        );
+
+        assert_eq!(io.dosya_yolu("a.txt", true).unwrap(), giris.join("a.txt"));
+        let yazma = io.dosya_yolu("depo/ekler/x.txt", true).unwrap_err();
+        assert_eq!(
+            yazma,
+            "\"depo/ekler/x.txt\" için hedef klasör \"depo/ekler\" yok; göreli yollar giriş dosyasının klasöründen çözülür, klasörü önce oluşturun"
+        );
+        let okuma = io.dosya_yolu("yok.txt", false).unwrap_err();
+        assert_eq!(
+            okuma,
+            "\"yok.txt\" bulunamadı; göreli yollar giriş dosyasının klasöründen çözülür"
+        );
+        assert_eq!(
+            io.dosya_yolu("../depo/x.txt", true).unwrap_err(),
+            "proje dosya sınırı mutlak veya üst dizine çıkan yolu reddetti"
+        );
+        // Proje kökündeki klasöre giriş klasöründen bağla ulaşmak sınır içidir.
+        #[cfg(unix)]
+        {
+            std::os::unix::fs::symlink(proje.join("depo"), giris.join("depo")).unwrap();
+            assert_eq!(
+                io.dosya_yolu("depo/x.txt", true).unwrap(),
+                giris.join("depo/x.txt")
+            );
+        }
+        let _ = std::fs::remove_dir_all(&proje);
     }
 
     /// K-346: eylemin iki yazımı arasına başka bir süreç eklerse geri alma,
