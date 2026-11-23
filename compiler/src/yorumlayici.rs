@@ -929,6 +929,11 @@ fn calistir_program_kodla(
     match blok_calistir(&program.program().cumleler, &mut ortam, program, io, 0) {
         // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
         Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
+        // K-370: web isteği dışında oturum deposu reddi kullanıcı tanısıdır.
+        Err(mut tani) if tani.kod == "Ç003" => {
+            tani.kod = "C022".into();
+            return Err(tani);
+        }
         Err(tani) => return Err(tani),
         Ok(_) => {}
     }
@@ -952,6 +957,17 @@ fn calistir_program_kodla(
                     io.durum_yaniti_gonder(
                         504,
                         &format!("istek {} saniyelik son tarihini aştı", zaman_asimi / 1000),
+                    );
+                }
+                Err(tani) if tani.kod == "Ç003" => {
+                    // Oturum deposu yeni kaydı kabul etmedi (K-370): commit
+                    // yolundaki gibi geri alınır ve sabit 503 gönderilir;
+                    // neden yalnız operatör günlüğüne düşer.
+                    io.istek_islemini_geri_al();
+                    io.istek_tanisini_gunlukle(503, &tani);
+                    io.durum_yaniti_gonder(
+                        503,
+                        crate::web_guvenligi::WEB_GUVENLIK_DURUMU_KAYDEDILEMEDI,
                     );
                 }
                 Err(tani) if tani.kod == "Ç002" => {
@@ -1393,7 +1409,7 @@ async fn gorevleri_calistir<'a>(
                             )
                         };
                         // Ç000 çıkış kodunu, Ç001 deadline sahibini, Ç002 giriş
-                        // reddi durumunu mesajında taşır; iç akış nöbetçilerini
+                        // reddi durumunu, Ç003 oturum deposu nedenini taşır; iç akış nöbetçilerini
                         // metinsel olarak sarmalama.
                         if !tani.kod.starts_with('Ç') {
                             tani.mesaj = format!(

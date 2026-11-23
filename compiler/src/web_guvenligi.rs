@@ -34,6 +34,14 @@ pub const OTURUM_MUTLAK_TAVAN_SANIYE: i64 = 30 * 24 * 60 * 60;
 pub const GIRIS_ORAN_ASIMI: &str = "çok fazla giriş denemesi";
 /// Giriş oran deposuna erişilemedi: fail-closed 503 (spec/12 §5, K-365).
 pub const GIRIS_ORAN_DEPOSU_YOK: &str = "giriş oran sınırı deposuna erişilemedi";
+/// Oturum deposu yeni kaydı kabul etmedi ya da güvenle kaydedemedi: istek
+/// commit'inde ve rota içindeki CSRF/oturum açma denetiminde aynı 503 gövdesi
+/// (spec/12, K-370).
+pub const WEB_GUVENLIK_DURUMU_KAYDEDILEMEDI: &str = "web güvenlik durumu güvenle kaydedilemedi";
+/// K-370: rota içindeki oturum yeri denetiminin (kapasite, depo IO, kilit)
+/// hatası bu önekle döner; yorumlayıcı öneki `Ç003` iç nöbetçisine çevirir.
+/// Önek yalnız adaptörle yorumlayıcı arasındadır, kullanıcıya sızmaz.
+pub const OTURUM_DEPOSU_REDDI_ONEKI: &str = "[oturum-deposu] ";
 /// Proje ayarıyla seçilebilecek en kısa kimlikli oturum ömrü (5 dakika).
 pub const OTURUM_OMRU_ALT_SANIYE: i64 = 5 * 60;
 
@@ -485,6 +493,11 @@ impl WebGuvenligi {
     }
 
     fn oturum_yerini_denetle(&self, anonim: bool) -> Result<(), String> {
+        self.oturum_yerini_hesapla(anonim)
+            .map_err(|hata| format!("{OTURUM_DEPOSU_REDDI_ONEKI}{hata}"))
+    }
+
+    fn oturum_yerini_hesapla(&self, anonim: bool) -> Result<(), String> {
         self.depo.guncelle(|durum| {
             let mut gorunum = durum.clone();
             for anahtar in &self.bekleyen.silinecekler {

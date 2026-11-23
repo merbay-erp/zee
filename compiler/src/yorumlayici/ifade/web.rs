@@ -45,3 +45,14 @@ pub(super) fn oturum_yonetimini_degerlendir(
         },
     })
 }
+
+/// K-370: rota içindeki `csrf belirteci` ve `oturuma al` hatası. Oturum
+/// deposunun yeni kaydı reddetmesi (kapasite, depo IO, kilit) kullanıcı/program
+/// hatası değil kaynak durumudur: `Ç003` iç nöbetçisi istek döngüsünde commit
+/// yoluyla aynı 503 yanıtına çevrilir. Web isteği dışında C022 kalır.
+pub(in crate::yorumlayici) fn web_oturumu_tanisi(baslik: &str, hata: &str, satir: usize) -> Tani {
+    match hata.strip_prefix(crate::web_guvenligi::OTURUM_DEPOSU_REDDI_ONEKI) {
+        Some(neden) => Tani::yeni("Ç003", format!("{baslik}: {neden}."), satir, 1, 1),
+        None => Tani::yeni("C022", format!("{baslik}: {hata}."), satir, 1, 1),
+    }
+}

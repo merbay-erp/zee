@@ -5518,3 +5518,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   oynatma determinizmi değişir; core freeze). Rotanın aşımda `yanlış` görmesi
   spec/12 §5 AÇIK maddesidir. Yeni grammar, tanı, CLI ya da dil::api::v1 yok.
   Regression `security/totp-oran-asimi`.
+
+## K-370 — Web oran/kaynak reddi 500 denetimi (23 Kasım 2026)
+
+- K-365/K-368 ailesi sistematik denetlendi: bütün `RateLimitTuru` çağrı
+  yerleri aşımda 429, depo hatasında 503 dönüyor. Web isteğinde yakalanamayan
+  C-tanılarından yalnız rota içi oturum deposu reddi (C022, kapasite/IO/kilit)
+  yanlış sınıflıydı: kaynak durumu 500 dönüyordu, commit yolunda aynı durum
+  503'tü. Karar: K-365 modeliyle iç nöbetçi `Ç003`, istek döngüsünde commit
+  yoluyla aynı sabit 503 gövdesi; web dışında C022 kalır.
+- Reddedilen: `istek_hatasi_yaniti`nda C022'yi topluca 503 yapmak (geçersiz
+  çerez adı/yönlendirme gibi program hataları 500 kalmalı); `GirdiCikti`
+  oturum işlemlerini yapılandırılmış hata tipine çevirmek (bütün delegeler ve
+  IO izi şeması değişir). Eski GET'in yakalanamaz C018'i spec/11 §5 gereği
+  500 kalır; C025/C029 zaten yakalanabilir `Sonuç`tur. Denetim tablosu `docs/k370-web-oran-500-denetimi.md`.
+

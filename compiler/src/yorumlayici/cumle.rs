@@ -459,12 +459,10 @@ pub(super) fn blok_calistir_async<'a>(
                     )?;
                     son_tarihi_denetle(cikti, *satir)?;
                     cikti.oturum_ac(&kullanici, &rol).map_err(|hata| {
-                        Tani::yeni(
-                            "C022",
-                            format!("Güvenli oturum açılamadı: {}.", hata),
+                        super::ifade::web::web_oturumu_tanisi(
+                            "Güvenli oturum açılamadı",
+                            &hata,
                             *satir,
-                            1,
-                            1,
                         )
                     })?;
                 }

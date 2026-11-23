@@ -1,0 +1,9 @@
+# K-370: oturum deposu yalnız kimlikli kayıtlarla doluyken oturumsuz istemcinin CSRF belirteci isteği C022 → 500 dönüyordu; aynı kaynak durumu istek commit'inde 503'tü. Rota içi depo reddi de 503 olur, işçi sonraki isteği alır.
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder
+
+GET "/form" adresine istek geldiğinde
+    csrf belirteci yanıtını gönder

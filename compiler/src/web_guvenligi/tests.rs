@@ -208,6 +208,14 @@ fn yalniz_kimlikli_kayitlarla_dolu_depo_yeni_girisi_reddeder() {
         .oturum_ac("Üç".into(), "okur".into(), 2, &mut uret)
         .unwrap_err();
     assert!(hata.contains("kapasitesi dolu"));
+    assert!(hata.starts_with(OTURUM_DEPOSU_REDDI_ONEKI), "{hata}");
+    assert_eq!(depo.oturum_sayisi().unwrap(), 2);
+
+    // K-370: oturumsuz istemcinin CSRF belirteci isteği de aynı depo reddini
+    // önekle döndürür; yorumlayıcı onu 500 değil 503 yanıtına çevirir.
+    istegi_baslat(&mut depo, None, 3);
+    let hata = depo.csrf_belirteci(3, &mut uret).unwrap_err();
+    assert!(hata.starts_with(OTURUM_DEPOSU_REDDI_ONEKI), "{hata}");
     assert_eq!(depo.oturum_sayisi().unwrap(), 2);
 }
 

@@ -2557,6 +2557,40 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-370 — Web oran/kaynak reddi 500 denetimi; oturum deposu reddi 503
+
+**Durum: KAPALI.** Kaynak: ZM-F020 (K-365) ve ZM-F021 (K-368) aynı aileden
+çıktı; sistematik denetim istendi. Bütün `RateLimitTuru` çağrı yerleri ve web
+isteğinde yakalanamayan C-tanıları tablolandı
+([denetim kanıtı](k370-web-oran-500-denetimi.md)). Oran kovalarının hepsi
+(uç nokta, CSRF, parola doğrulaması, parola özeti, TOTP) aşımda 429, depo
+hatasında 503 dönüyor; yeni oran açığı yok.
+
+Bulunan tek hata: rota içinde `csrf belirteci` ya da `oturuma al` yeni oturum
+kaydı için yer ararken oturum deposu reddederse (yalnız kimlikli kayıtlarla
+dolu 4096 kapasite, depo IO hatası, 5 sn kilit sınırı) ret C022 tanısına ve
+istek-yerel sınırda 500 "sunucu hatası" yanıtına dönüşüyordu; aynı kaynak
+durumu istek commit'inde zaten 503 `web güvenlik durumu güvenle
+kaydedilemedi` idi ve spec/12 depo IO/kilit hatasını 503 sayar. Gerçek native
+`--web-proxy` worker'ında 4096 kimlikli oturumlu depoda oturumsuz `/form`
+isteği `500` (stderr `kod=C022 … web oturumu kapasitesi dolu`).
+
+Düzeltme: `WebGuvenligi` oturum yeri denetiminin hatasını iç önekle döndürür,
+yorumlayıcı öneki `Ç003` iç nöbetçisine çevirir; istek döngüsü isteği geri
+alır, nedeni operatör günlüğüne yazar ve commit yoluyla aynı sabit 503
+gövdesini gönderir. Web isteği dışında C022 kalır. Yeni grammar, CLI ya da
+`dil::api::v1` yok; `Ç003` iç nöbetçi kaydı.
+
+Kanıt: regression `security/oturum-deposu-dolu` (kip
+`native-web-oturum-deposu`, eski kod `form 500`), `web_guvenligi::tests::
+yalniz_kimlikli_kayitlarla_dolu_depo_yeni_girisi_reddeder`, spec/12 ZORUNLU
+maddesi `#989f1f5cf59b94c8`.
+
+Değişmeyen (spec/11 §5 kararı): eski `adresinden getir` GET'inin C018 ağ
+tanısı yakalanamaz ve 500'dür; yeni `HTTP isteğini dene`, PostgreSQL (C025) ve
+e-posta (C029) zaten yakalanabilir `Sonuç` döndürür, ürün geçici dış hatayı
+kendisi 503'e çevirebilir. C026 yalnız CLI göç/bağlantı yolundadır.
+
 ## K-368 — TOTP doğrulamasında giriş kovası aşımı 429 döner
 
 **Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F021 (ZeeMail uçtan uca
