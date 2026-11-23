@@ -150,7 +150,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Site
 
-- **zeedili.com 23 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-378 rotadan dosya indirme, JavaScript'siz yükleme ve e-posta ek türleri, K-379 satır içi betik CSP izninin sıkılaşması, K-376 systemd soketlerinin adla devralınması, K-365/K-368/K-370/K-374 sınır aşımında 413/429/503 yanıtları, K-371/K-372/K-375 yavaş istemci, SMTP ve PostgreSQL süre sınırı, RFC-0040/RFC-0041 takvim/kişi eşitleme ve dosya eki taslakları ve K-366 Windows'ta taşınabilir paketler haberleri eklendi. Dil davranışı değişmedi.
+- **zeedili.com 23 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-378 rotadan dosya indirme, JavaScript'siz yükleme ve e-posta ek türleri, K-379 satır içi betik CSP izninin sıkılaşması, K-376 systemd soketlerinin adla devralınması, K-365/K-368/K-370/K-374 sınır aşımında 413/429/503 yanıtları, K-371/K-372/K-375 yavaş istemci, SMTP ve PostgreSQL süre sınırı, RFC-0040/RFC-0041 takvim/kişi eşitleme ve dosya eki taslakları ve K-366 Windows'ta taşınabilir paketler haberleri eklendi; 24 Kasım'da K-381 web dışı ağ hizmetleri (adlı dinleyiciden bağlantı, sunucu TLS'i ve STARTTLS) ve K-382 daha açık dosya yolu iletisi haberi eklendi. Dil davranışı değişmedi.
 
 ### Düzeltilenler
 
