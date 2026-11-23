@@ -273,6 +273,9 @@ impl Sink {
 pub(super) trait WebTasima: Read + Write {
     fn set_read_timeout(&self, duration: Option<std::time::Duration>) -> std::io::Result<()>;
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()>;
+    /// K-374: yanıt yazıldıktan sonra yalnız yazma yönünü kapatır (FIN);
+    /// okuma yönü istek artığını boşaltmak için açık kalır.
+    fn yazmayi_kapat(&self) -> std::io::Result<()>;
     /// K-372: nonblocking yazım `WouldBlock` sonrası soket yazılabilir olana
     /// ya da `en_cok` dolana dek bekler; erken dönüş hata değildir.
     fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()>;
@@ -284,6 +287,9 @@ impl WebTasima for TcpStream {
     }
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
         TcpStream::set_nonblocking(self, nonblocking)
+    }
+    fn yazmayi_kapat(&self) -> std::io::Result<()> {
+        TcpStream::shutdown(self, std::net::Shutdown::Write)
     }
     fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()> {
         yazilabilir_bekle(self, en_cok)
@@ -370,6 +376,9 @@ impl WebTasima for Akis {
     }
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
         self.inner.set_nonblocking(nonblocking)
+    }
+    fn yazmayi_kapat(&self) -> std::io::Result<()> {
+        self.inner.shutdown(std::net::Shutdown::Write)
     }
     fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()> {
         yazilabilir_bekle(&self.inner, en_cok)

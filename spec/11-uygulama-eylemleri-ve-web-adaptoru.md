@@ -124,6 +124,17 @@ Okuma süresi her parçada kalan mutlak bütçeye ayarlanır; bayt damlatmak sü
 yenilemez. Yanıt yazma socket'i de 10 saniye ile sınırlıdır. Bu limitleri
 büyüten kaynak sözdizimi v1'de yoktur.
 
+ZORUNLU: Gerçek TCP adaptörü ham red yanıtı (413, 431, 400, 408, 403, 429,
+503 ve benzeri; çoğu gövde ya da başlığın kalanı okunmadan verilir) yazdıktan
+sonra bağlantıyı doğrudan kapatmaz: önce yalnız yazma yönünü kapatır (yanıt
+ve FIN istemciye gider), ardından istemcinin gönderdiklerini en çok 2 saniye
+ve en çok 16 MiB (yükleme sınırı) boyunca okuyup atar, EOF'ta, okuma
+hatasında ya da bütçe dolunca kapatır. Okunmamış istek baytıyla kapanış
+çekirdeğin RST göndermesine ve istemcinin yanıtı hiç görememesine yol açar;
+bu YASAKTIR. Boşaltma bütçesi mutlaktır: bayt damlatan ya da bağlantıyı
+kapatmayan istemci işçiyi yanıt yazımından sonra 2 saniyeden uzun tutamaz
+(K-374).
+
 K-140/ADR-037 uyarınca gerçek TCP isteği metne çevrilmeden önce byte tabanlı
 parser'dan geçmek ZORUNDADIR. Yalnız CRLF satır sonu, RFC token yöntemi, `/`
 ile başlayan origin-form hedef ve `HTTP/1.0`/`HTTP/1.1` kabul edilir. Bare-LF,

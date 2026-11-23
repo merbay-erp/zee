@@ -2557,6 +2557,62 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-374 — Erken red yanıtı okunmamış istekle RST'ye dönüşmesin
+
+**Durum: KAPALI.** Kaynak: RFC-0041 (K-373) incelemesi; ZeeMail (urun-h)
+70 KB multipart içe aktarma yanıtsız kesiliyordu. Yeniden üretim (yerel
+Darwin, release ikili, `--web-proxy`, curl 8.7.1, 70 KB gövde):
+
+| Senaryo | Önce | Sonra |
+|---|---:|---:|
+| Tek işçi, ham gövde (`--data-binary`) 413 | 000 (RST) | 413 |
+| Tek işçi, multipart 413 | 000 | 413 |
+| `Expect: 100-continue` ile 413 | 413 | 413 |
+| 40 KiB başlık 431 | 000 | 431 |
+| 3 işçi, ham gövde / multipart 413 | 000 / yarışa bağlı | 413 / 413 |
+| 16 MiB yükleme ön kapısı 403, 20 MB 413 | — | 403 / 413 |
+| Kapatmayan damlatıcının ardından tek işçide GET | — | ~2,0 sn |
+
+Neden kodda: `ham_http_hatasi_gonder` red yanıtını yazar, çağıran
+`continue` ile akışı düşürür. 413 (`govde_zarfini_denetle`), 431/400/408
+(başlık okuma), 403 yükleme ön kapısı, kabul anındaki 403/503 gibi yollar
+gövdeyi ya da başlığın kalanını okumadan döner; alım tamponunda okunmamış
+bayt varken `close` çekirdeğe RST gönderir ve istemcinin henüz okumadığı
+yanıt silinir (curl `000`, istemci `ConnectionReset`). `Expect` ile istemci
+gövdeyi göndermeden beklediği için yalnız o kip yanıtı görüyordu. İçerik
+türünden bağımsızdır. Spec/11 §5 "gövdeyi uygulamaya vermeden 413 döner"
+diyordu; yanıtın gözlenebilmesi yazılı değildi.
+
+Taranan diğer yollar: `web_istegini_baslat` içindeki 429/503/400/403
+yanıtları gövde okunduktan sonra verilir (artık yok); rota 404/405 ve rota
+yanıtları gövdenin tamamı okunduktan sonra `web_yanit_taslagini_yaz` ile
+yazılır. Hepsi aynı `ham_http_hatasi_gonder` yolundan geçtiği için düzeltme
+tek yerdedir; artık yoksa istemci yanıtı alıp kapattığı anda boşaltma biter.
+
+Düzeltme: `istek_artigini_bosalt` başarılı ham red yazımından sonra
+`shutdown(Write)` ile yanıt + FIN'i gönderir, istemcinin baytlarını en çok
+2 sn (`HTTP_ISTEK_ARTIGI_SURESI`) ve en çok 16 MiB (yükleme
+sınırı) okuyup atar; EOF, hata ya da bütçe sonunda kapatır. Bütçe
+gerekçesi (K-372 ile tutarlı): karşı uç loopback reverse proxy'dir ve
+tamponlanmış gövdeyi milisaniyelerde boşaltır; 2 sn okuma bütçesinin
+(10 sn) beşte biridir ve yalnız red yolunda harcanır. Bağlantı başına en
+kötü tutma `10 sn okuma + yanıt yazım bütçesi (K-372) + 2 sn` olur; yeni
+sınırsız yol yoktur. Bayt sınırı yükleme sınırıdır: meşru hiçbir istemci
+bundan büyük gövde göndermez. Normal (kabul edilen) istekler boşaltma
+yapmaz. Yeni grammar, CLI, tanı, metrik alanı ya da `dil::api::v1` yok.
+
+Kanıt: regression `security/erken-red-yanit-okunur` (kip
+`native-web-erken-red`; düzeltme öncesi `yanıt yok: ConnectionReset` ×2,
+sonrası 413 ve 431 gövdeleri, `200 tamam`, `damlatan bütçede bırakıldı`),
+`web_profili_testleri` iki birim vakası (okunmamış gövdeyle 413 istemciye
+ulaşır; süre ve bayt sınırı), spec/11 §5 ZORUNLU maddesi, ADR-017 K-374
+eki, GB-151.
+
+Bilinçli sınır: 16 MiB'dan büyük gövdeye verilen 413'te boşaltma bayt
+sınırında biter ve istemci gönderimi sürüyorsa yine RST görebilir; 2 sn
+içinde gövdesini bitiremeyen yavaş istemci de aynı. Boşaltma bağlantı
+başınadır; tek işçide art arda K damlatıcı işçiyi K × 2 sn ek bekletebilir.
+
 ## K-371 — Dış etki hata eşlemesi; düz SMTP dış son tarihi
 
 **Durum: KAPALI (düzeltme); PostgreSQL sorgu son tarihi AÇIK.** Kaynak: K-370

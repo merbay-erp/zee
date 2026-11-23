@@ -5592,3 +5592,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   döngüsü CI'da kaba zamanlayıcıda yavaşladığı için Unix'te `poll(POLLOUT)`'a
   geçildi (Windows ≤2 ms uyku).
 
+## K-374 — Erken red yanıtı ve sınırlı boşaltma (23 Kasım 2026)
+
+- RFC-0041 incelemesinin bulduğu hata yeniden üretildi: 64 KiB üstü gövdeye
+  413 (ve 40 KiB başlığa 431) yazılıyor, okunmamış istek baytı alım
+  tamponunda dururken bağlantı kapanıyor, çekirdek RST gönderiyor; istemci
+  `ConnectionReset`/curl `000` görüyor. Tek ve çok işçide, ham ve multipart
+  gövdede aynı; yalnız `Expect: 100-continue` kurtarıyordu. Karar: ham red
+  yanıtından sonra `shutdown(Write)`, ardından en çok 2 sn ve 16 MiB okuyup
+  atma, sonra kapatma (spec/11 §5 ZORUNLU, ADR-017 eki, GB-151).
+- Reddedilen: `SO_LINGER` (RST'yi önlemez, yalnız kapanışı bekletir);
+  istek okuma son tarihinin kalanını bütçe yapmak (408 yolunda sıfır, 413
+  yolunda ~10 sn: damlatıcıya fazla süre); 128 KiB/s ile orantılı bütçe
+  (16 MiB için 128 sn, red yolunda gereksiz uzun); her bağlantıda boşaltma
+  (kabul edilen isteklerde artık yok, normal yola maliyet eklemez).
+

@@ -1,0 +1,9 @@
+# web-govde: POST /yukle
+# web-baslik: GET /
+# web-sonraki: GET /
+# K-374: sınırı aşan gövdeye 413 ve başlığa 431 yazılıp okunmamış istekle kapatılınca çekirdek RST gönderiyor, istemci yanıtı göremiyordu; yazma yönü kapatılıp artık sınırlı boşaltılır.
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "tamam" yanıtını gönder
