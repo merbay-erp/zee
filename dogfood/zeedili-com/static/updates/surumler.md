@@ -10,6 +10,25 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Güvenlik
+
+- **Yansıyan betik artık CSP iznini alamıyor (K-379):** Web sunucusu HTML
+  yanıtındaki satır içi `<script>` bloklarının hepsini otomatik olarak CSP
+  `script-src` iznine ekliyordu. Uygulamada kaçışlanmamış tek bir kullanıcı
+  girdisi (ör. `?q=<script>…</script>`) sayfaya yansırsa saldırganın betiği
+  de izin alıyor ve tarayıcıda çalışıyordu. Artık yalnız programın kaynak
+  dosyalarında **tek bir dize değişmezinin** içinde tam duran betikler izin
+  alır (`test` bloklarındaki değişmezler sayılmaz); istekten, dosyadan, veritabanından gelen ya da parçalar birleştirilerek
+  kurulan betik çalışmaz ve sunucu bunu bir kez uyarı olarak yazar.
+  `<script src="…">` ve JSON-LD veri blokları etkilenmez.
+
+  **Göç:** Satır içi betiğinizi tek bir dize değişmezinde tutun; içine
+  çalışma zamanı değeri (CSRF belirteci, kimlik) birleştirmeyin, değeri
+  `html güvenlisi` ile bir `data-*` özniteliğine yazıp betikten okuyun.
+  Parça parça kurulan ya da dosyadan okunan betiği statik dosyaya taşıyın
+  (`<script src="/assets/…" defer>`). Sunucu günlüğünde
+  `UYARI K-379` satırı görüyorsanız bir betik engellenmiştir.
+
 ### Eklenenler
 
 - **systemd'den adla devralınan dinleyiciler ve hazır bildirimi (K-376):**

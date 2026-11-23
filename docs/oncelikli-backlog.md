@@ -2557,6 +2557,41 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-379 — Satır içi betik CSP özeti yalnız kaynak değişmezinden
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) güvenlik
+denetiminin kritik bulgusu. Gerçek web adaptörü `text/html` yanıt
+gövdesindeki öznitelikiz her `<script>` bloğunu özetleyip CSP
+`script-src`'ye ekliyordu; tek bir kaçışsız yansımada saldırgan betiği de
+izinli oluyordu. Yeniden üretim (yerel Darwin, release, `--web-proxy` ve
+`--deneysel-web`, Chromium):
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| `?q=<script>alert(1)</script>` yansıması | özet CSP'de, betik çalıştı | özet yok, CSP ihlali |
+| Değişmez `<script>document.title='zee'</script>` | izinli | izinli |
+| Resmî site 12 rota | CSP referansı | birebir aynı |
+| Yerel ERP UI birimleri (23 değişmez betik) | 22 özet | birebir aynı 22 özet |
+| Yalnız değişmezlerden parça parça kurulan betik | izinli | engelli + tek uyarı |
+| `test` bloğunda değişmez `alert(1)` + aynı yansıma | izinli | engelli |
+
+Minimal kapsam (core freeze `security`): güvenilir küme derleme sonrası ana
+kaynak ve yüklenen birimlerin dize değişmezlerinden (gerçek lexer) kurulur;
+yanıtta yalnız bu özetler; küme yokken hiçbir satır içi betik. Yeni grammar,
+kalıp, CLI, tanı, `dil::api::v1` ya da bağımlılık yok. Nonce, değer köken
+izi ve parça birleştirme reddedildi (ADR-164).
+
+Kanıt: `main.rs::yansiyan_betik_csp_ozeti_alamaz`,
+`kaynak_betik_ozetleri_yalniz_tek_degismezi_sayar`, regression
+`yansiyan-betik-csp-ozeti` ve `test-blogu-betik-csp-ozeti` (kip `native-web-csp`),
+`test_blogundaki_betik_degismezi_guvenilmez`, spec/12 K-379 bölümü,
+ADR-164, GB-153. Envanter: 1.926 yerel `.dil` üzerinde gerçek lexer ile
+155 tam değişmez betik; tek değişmezde kapanmayan 55 adayın biri dışında
+hepsi test dizesi.
+
+Açık: kaynak değişmezindeki betiğin yeniden yansıtılması (özet CSP sınırı),
+`style-src 'unsafe-inline'` sertleştirmesi, değer köken izi (RFC adayı).
+
 ## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) işletim

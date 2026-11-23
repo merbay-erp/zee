@@ -267,6 +267,15 @@ seferde gönderip yanıtı okur; çıktı her biri için `durum gövde` ya da
 alındıysa `damlatan bütçede bırakıldı` yazılır. Düzeltme öncesi kaynakta
 ilk iki satır `yanıt yok: ConnectionReset`. Toplu replay bu kipi atlar;
 Unix dışında görünür ignored durumundadır.
+## Native web CSP kipi (K-379)
+
+`security` fazındaki `native-web-csp` kipi gerçek native `dil` worker'ını
+`--web-proxy` profiliyle başlatır ve `# web-istegi:` isteğini gönderir.
+Çıktı yanıt durum kodu ile gövdedeki her öznitelikiz satır içi `<script>`
+için `izinli <içerik>` (SHA-256 özeti CSP `script-src` içinde) ya da
+`engelli <içerik>` satırıdır. Düzeltme öncesi kaynakta yansıyan saldırgan
+betiği `izinli` görünür. Toplu replay bu kipi atlar; Unix dışında görünür
+ignored durumundadır.
 ## Native dosya EXDEV kipi (K-329)
 
 `runtime` fazındaki `native-dosya-exdev` kipi gerçek native `dil` sürecini

@@ -235,3 +235,10 @@ drift riski taşıdığından reddedildi. `sozcukleyici` sözdizimi katmanıdır
 yalnız `kaynak_sinirlari`/`tani`ya bağlıdır; çevrim oluşmaz. `paket` ve
 `registry`nin `artefakt_dogrulama::gorunmez_bicim_imi` kullanımı var olan
 kenarlardan geçer.
+
+K-379 bir exact kenar ekler: `dil_cli -> sozcukleyici`. Web adaptörü CSP
+için güvenilir satır içi betik özetlerini derlenen birimlerin dize
+değişmezlerinden kurar; değişmez değeri parser'ın kullandığı aynı lexer
+token'ından okunur (kaçış çözümünün ikinci kopyası reddedildi). Kenar
+adaptörden sözdizimine aşağı yönlüdür; `sozcukleyici` adaptöre dönmez,
+çevrim oluşmaz.
