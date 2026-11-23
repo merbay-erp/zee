@@ -1,0 +1,7 @@
+# postgresql-sorgu-suresi-ms: 4000
+parametreler "x" listesi olsun
+1 saniye içinde
+    sonuç "SELECT pg_sleep(4)::text AS s, $1 AS p" sorgusunu parametreler ile okumayı dene olsun
+    "döndü" yaz
+yetişmezse
+    "yetişmedi" yaz

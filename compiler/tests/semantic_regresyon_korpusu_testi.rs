@@ -78,6 +78,7 @@ const KIPLER: &[&str] = &[
     "capability",
     "web",
     "smtp",
+    "postgresql",
     "cli",
     "lsp-uri",
     "lsp-utf16",
@@ -264,6 +265,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
             kip,
             "run"
                 | "trace"
+                | "postgresql"
                 | "native-dosya-exdev"
                 | "native-dosya-okuma-penceresi"
                 | "native-dosya-okuma-izsiz-penceresi"
@@ -650,6 +652,36 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
                     cikti: io.cikti,
                 },
                 Err(tani) => hata_gozle(tani, io.cikti),
+            }
+        }
+        "postgresql" => {
+            // K-375: hermetik PostgreSQL her sorguda başlıktaki sanal süreyi
+            // harcar; adaptöre verilen bütçe ve geçen sanal süre çıktıya eklenir.
+            let sure: i64 = kaynak
+                .lines()
+                .find_map(|satir| satir.strip_prefix("# postgresql-sorgu-suresi-ms: "))
+                .and_then(|deger| deger.parse().ok())
+                .unwrap_or_else(|| panic!("{}: postgresql sorgu süresi başlığı yok", vaka.ad));
+            let mut io = ToplayanIo::yeni(Vec::new());
+            io.postgresql.sorgu_suresi_ms = Some(sure);
+            let sonuc = calistir_baglanmis_io_kodla(&program, &mut io);
+            let butceler = io
+                .postgresql
+                .sureler
+                .iter()
+                .map(|butce| butce.map_or("-".to_string(), |ms| ms.to_string()))
+                .collect::<Vec<_>>()
+                .join(",");
+            let gecen = dil::yorumlayici::GirdiCikti::an_ms(&mut io);
+            let mut cikti = io.cikti;
+            cikti.push(format!("[postgresql] bütçe={butceler} geçen={gecen}ms"));
+            match sonuc {
+                Ok(cikis) => Gozlem {
+                    tani: None,
+                    cikis,
+                    cikti,
+                },
+                Err(tani) => hata_gozle(tani, cikti),
             }
         }
         "smtp" => {

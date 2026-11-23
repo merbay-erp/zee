@@ -115,7 +115,7 @@ request-bound tenant bağlamı, `dil göçür`.
 | Tenant bağlamı kurulamaz / çözücü reddi | yakalanamaz (rota çalışmaz) | WebReddi | 503 | — | spec/25 "fail-closed 503" | ✓ |
 | İstek transaction'ı commit edilemez | yakalanamaz | — | 503 | — | ADR-077 | ✓ |
 | Göç planı / uygulama hatası | — | C026 (`dil göçür`) | — | çıkış 1 | spec/25 Migration | ✓ |
-| **Sorgu dış `içinde` / web 30 sn son tarihini aşar** | iptal yalnız sonraki cümle sınırında | Ç001 | 504 ama sorgu bitene kadar bekler (ölçüm: `pg_sleep(33)` → **504, 33,0 sn**) | `yetişmezse` geç (ölçüm: `1 saniye içinde` + `pg_sleep(4)` → **4,1 sn**) | spec/09 iptal noktaları; spec/25 sorgu son tarihi söylemez | **açık sınır** → RFC-0042 taslağı |
+| **Sorgu dış `içinde` / web 30 sn son tarihini aşar** | iptal yalnız sonraki cümle sınırında | Ç001 | 504 ama sorgu bitene kadar bekler (ölçüm: `pg_sleep(33)` → **504, 33,0 sn**) | `yetişmezse` geç (ölçüm: `1 saniye içinde` + `pg_sleep(4)` → **4,1 sn**) | spec/09 iptal noktaları; spec/25 sorgu son tarihi söylemez | **açık sınır** → RFC-0042 taslağı; **K-375'te kapandı** (1,00 sn / 504 30,0 sn) |
 
 **Belge sapması (davranış değişmedi).** spec/25 "Havuz tükenmesi ve
 TLS/bağlantı kurma hatası C026'dır" diyor; uygulama okuma/değişiklik

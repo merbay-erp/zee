@@ -3081,6 +3081,13 @@ fn istek_govdesini_oku(
     }
 }
 
+/// K-375: yorumlayıcının verdiği kalan son tarih (ms), çağrı anından itibaren
+/// mutlak monoton bitişe çevrilir; bağlantı checkout'u da bu bütçeden düşer.
+fn postgresql_bitisi(zaman_asimi_ms: Option<i64>) -> Option<std::time::Instant> {
+    zaman_asimi_ms
+        .map(|ms| std::time::Instant::now() + std::time::Duration::from_millis(ms.max(0) as u64))
+}
+
 fn web_duvar_saati_ms() -> i64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -3399,9 +3406,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, dil::yorumlayici::VeritabaniHatasi> {
+        let bitis = postgresql_bitisi(zaman_asimi_ms);
         let db = self.postgresql_oturumunu_al()?;
-        let result = db.oku(sorgu, parametreler);
+        let result = db.oku_son_tarihli(sorgu, parametreler, bitis);
         db.metrik_ozetini_yayinla();
         result
     }
@@ -3409,7 +3418,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<i64, dil::yorumlayici::VeritabaniHatasi> {
+        let bitis = postgresql_bitisi(zaman_asimi_ms);
         if self.postgresql_yazma_eylemleri.is_empty() {
             return Err(dil::yorumlayici::VeritabaniHatasi {
                 mesaj: "PostgreSQL değişikliği açık bir eylem transaction'ı istiyor".into(),
@@ -3426,7 +3437,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .iter_mut()
             .for_each(|kullandi| *kullandi = true);
         let db = self.postgresql_oturumunu_al()?;
-        let result = db.degistir(sorgu, parametreler);
+        let result = db.degistir_son_tarihli(sorgu, parametreler, bitis);
         db.metrik_ozetini_yayinla();
         result
     }

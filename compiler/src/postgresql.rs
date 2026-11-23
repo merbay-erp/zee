@@ -39,6 +39,59 @@ pub struct PostgresqlOturumu {
     eylem_derinligi: usize,
     istek_baglami_acik: bool,
     gecersiz_eylem: Option<VeritabaniHatasi>,
+    /// K-375: açık transaction'da son tarihten türetilmiş `SET LOCAL`
+    /// zaman aşımı etkin olabilir mi? Sonraki süresiz sorgu ve COMMIT öncesi
+    /// varsayılana döndürülür.
+    sure_ayari_etkin: bool,
+    /// Transaction içinde en az bir kez süre ayarlandı; `ROLLBACK TO
+    /// SAVEPOINT` varsayılana dönüşü de geri alabileceği için yeniden kirli sayılır.
+    sure_ayari_transactionda: bool,
+}
+
+/// K-375/RFC-0042: son tarihin sunucu tarafı bütçesi.
+const SURE_AYARI_VARSAYILAN: &str =
+    "SET LOCAL statement_timeout TO DEFAULT; SET LOCAL lock_timeout TO DEFAULT";
+
+fn sure_ayari(bitis: std::time::Instant) -> Result<String, VeritabaniHatasi> {
+    let kalan = bitis.saturating_duration_since(std::time::Instant::now());
+    if kalan.is_zero() {
+        return Err(son_tarih_hatasi(None));
+    }
+    // Yukarı yuvarlama: sunucu iptali son tarihten önce gelemez; 0 PostgreSQL'de
+    // "sınırsız" demektir, en az 1 ms gönderilir.
+    let ms = kalan.as_micros().div_ceil(1000).clamp(1, i32::MAX as u128);
+    Ok(format!(
+        "SET LOCAL statement_timeout = {ms}; SET LOCAL lock_timeout = {ms}"
+    ))
+}
+
+/// Sunucu `statement_timeout` (57014) ya da `lock_timeout` (55P03) iptali
+/// yalnız kendi bitiş anımız geçtiyse son tarih sayılır; süresi dolmadan gelen
+/// `NOWAIT` 55P03 ya da yönetici iptali olağan C025 olarak kalır.
+fn son_tarih_iptali(h: &postgres::Error, bitis: std::time::Instant) -> Option<VeritabaniHatasi> {
+    let kod = h.as_db_error()?.code().code();
+    (matches!(kod, "57014" | "55P03") && std::time::Instant::now() >= bitis)
+        .then(|| son_tarih_hatasi(Some(kod)))
+}
+
+fn son_tarih_hatasi(sqlstate: Option<&str>) -> VeritabaniHatasi {
+    let mut veri = Vec::new();
+    if let Some(kod) = sqlstate {
+        veri.push(("sqlstate".into(), kod.into()));
+    }
+    veri.push((
+        "hata_sinifi".into(),
+        crate::veritabani_modeli::SON_TARIH_IPTALI_SINIFI.into(),
+    ));
+    verili_hata(
+        "PostgreSQL sorgusu son tarih dolduğu için iptal edildi; otomatik tekrar yapılmadı",
+        veri,
+    )
+}
+
+enum SureliOkumaHatasi {
+    Surucu(postgres::Error),
+    Zee(VeritabaniHatasi),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -87,6 +140,8 @@ impl PostgresqlOturumu {
             eylem_derinligi: 0,
             istek_baglami_acik: false,
             gecersiz_eylem: None,
+            sure_ayari_etkin: false,
+            sure_ayari_transactionda: false,
         };
         for _ in 0..eylem_derinligi {
             sonuc.eylem_baslat()?;
@@ -99,10 +154,27 @@ impl PostgresqlOturumu {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        self.oku_son_tarihli(sorgu, parametreler, None)
+    }
+
+    /// K-375/RFC-0042: `bitis` varsa sorgu sunucuda kalan süreyle sınırlanır.
+    /// Transaction içinde `SET LOCAL` + sorgu savepoint'i, dışında tek okumalık
+    /// `BEGIN … COMMIT` kullanılır; oturum düzeyinde ayar havuza sızmaz.
+    /// `bitis` yoksa round trip sayısı ve davranış değişmez.
+    pub fn oku_son_tarihli(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+        bitis: Option<std::time::Instant>,
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         self.eylemi_denetle()?;
         girdiyi_denetle(sorgu, parametreler)?;
         let baglar = metin_baglari(parametreler);
+        if let Some(bitis) = bitis {
+            return self.sureli_oku(sorgu, &baglar, bitis);
+        }
         if self.eylem_derinligi > 0 {
+            self.sure_ayarini_sifirla()?;
             let istemci = self
                 .kiralik
                 .as_mut()
@@ -122,6 +194,7 @@ impl PostgresqlOturumu {
                     self.eylem_derinligi,
                     kiralik.is_closed(),
                     0,
+                    false,
                 ) =>
             {
                 drop(kiralik);
@@ -139,12 +212,24 @@ impl PostgresqlOturumu {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<i64, VeritabaniHatasi> {
+        self.degistir_son_tarihli(sorgu, parametreler, None)
+    }
+
+    /// K-375: değişiklik zaten sorgu savepoint'i taşır; son tarih varsa aynı
+    /// batch `SET LOCAL` ile başlar ve iptal yalnız bu ifadeyi geri alır.
+    pub fn degistir_son_tarihli(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+        bitis: Option<std::time::Instant>,
+    ) -> Result<i64, VeritabaniHatasi> {
         self.eylemi_denetle()?;
         debug_assert!(!yeniden_baglanabilir(
             SorguSinifi::Yazma,
             self.eylem_derinligi,
             self.kiralik.as_ref().is_some_and(|k| k.is_closed()),
-            0
+            0,
+            false
         ));
         if self.eylem_derinligi == 0 {
             return Err(hata(
@@ -152,6 +237,19 @@ impl PostgresqlOturumu {
             ));
         }
         girdiyi_denetle(sorgu, parametreler)?;
+        let acilis = match bitis {
+            Some(bitis) => {
+                let ayar = sure_ayari(bitis)?;
+                self.sure_ayari_etkin = true;
+                self.sure_ayari_transactionda = true;
+                format!("{ayar}; SAVEPOINT zee_intrinsic")
+            }
+            None if self.sure_ayari_etkin => {
+                self.sure_ayari_etkin = false;
+                format!("{SURE_AYARI_VARSAYILAN}; SAVEPOINT zee_intrinsic")
+            }
+            None => "SAVEPOINT zee_intrinsic".to_string(),
+        };
         let istemci = self
             .kiralik
             .as_mut()
@@ -159,7 +257,7 @@ impl PostgresqlOturumu {
         let baglar = metin_baglari(parametreler);
         let sonuc = (|| -> Result<u64, (&str, postgres::Error)> {
             istemci
-                .batch_execute("SAVEPOINT zee_intrinsic")
+                .batch_execute(&acilis)
                 .map_err(|h| ("PostgreSQL sorgu savepoint'i açılamadı", h))?;
             match istemci.execute_typed(sorgu, &baglar) {
                 Ok(adet) => {
@@ -180,8 +278,123 @@ impl PostgresqlOturumu {
                 }
             }
         })();
-        let adet = sonuc.map_err(|(on, h)| self.sorgu_hatasi(on, h))?;
+        let adet = sonuc.map_err(|(on, h)| {
+            match bitis.and_then(|bitis| son_tarih_iptali(&h, bitis)) {
+                // Sorgu savepoint'i geri alındı; transaction kullanılabilir kalır.
+                Some(son_tarih) => son_tarih,
+                None => self.sorgu_hatasi(on, h),
+            }
+        })?;
         i64::try_from(adet).map_err(|_| hata("Etkilenen satır sayısı TamSayı sınırını aşıyor"))
+    }
+
+    fn sureli_oku(
+        &mut self,
+        sorgu: &str,
+        baglar: &[(&(dyn ToSql + Sync), Type)],
+        bitis: std::time::Instant,
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        if self.eylem_derinligi > 0 {
+            let ayar = sure_ayari(bitis)?;
+            self.sure_ayari_etkin = true;
+            self.sure_ayari_transactionda = true;
+            let istemci = self
+                .kiralik
+                .as_mut()
+                .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?;
+            // Okuma da değişiklik gibi sorgu savepoint'i taşır: iptal edilen
+            // ifade açık transaction'ı abort etmez, `yetişmezse` sonrası eylem
+            // aynı transaction'la sürebilir.
+            let sonuc = (|| -> Result<_, (&str, postgres::Error)> {
+                istemci
+                    .batch_execute(&format!("{ayar}; SAVEPOINT zee_sure"))
+                    .map_err(|h| ("PostgreSQL sorgu savepoint'i açılamadı", h))?;
+                match sonuc::oku(istemci, sorgu, baglar) {
+                    Ok(sonuc) => {
+                        if let Err(h) = istemci.batch_execute("RELEASE SAVEPOINT zee_sure") {
+                            // Bütçe tam RELEASE'te dolarsa transaction abort kalmasın.
+                            if wire_hatasi(&h).is_none() {
+                                let _ = istemci.batch_execute(
+                                    "ROLLBACK TO SAVEPOINT zee_sure; RELEASE SAVEPOINT zee_sure",
+                                );
+                            }
+                            return Err(("PostgreSQL sorgu savepoint'i kapanamadı", h));
+                        }
+                        Ok(sonuc)
+                    }
+                    Err(h) => {
+                        if wire_hatasi(&h).is_none() {
+                            istemci
+                                .batch_execute(
+                                    "ROLLBACK TO SAVEPOINT zee_sure; RELEASE SAVEPOINT zee_sure",
+                                )
+                                .map_err(|h| ("PostgreSQL sorgu savepoint'i geri alınamadı", h))?;
+                        }
+                        Err(("PostgreSQL sorgusu başarısız", h))
+                    }
+                }
+            })();
+            return match sonuc {
+                Ok(sonuc) => sonuc,
+                Err((on, h)) => Err(match son_tarih_iptali(&h, bitis) {
+                    Some(son_tarih) => son_tarih,
+                    None => self.sorgu_hatasi(on, h),
+                }),
+            };
+        }
+        let mut deneme = 0usize;
+        loop {
+            // Yeniden bağlanma kalan süreyi tüketir; ayar her girişimde yeniden hesaplanır.
+            let ayar = sure_ayari(bitis)?;
+            let mut kiralik = havuz::al(&self.havuz)?;
+            match tek_sureli_okuma(&mut kiralik, &ayar, sorgu, baglar) {
+                Ok(sonuc) => return sonuc,
+                Err(SureliOkumaHatasi::Zee(h)) => return Err(h),
+                Err(SureliOkumaHatasi::Surucu(h)) => {
+                    let iptal = son_tarih_iptali(&h, bitis);
+                    if wire_hatasi(&h).is_none()
+                        && yeniden_baglanabilir(
+                            SorguSinifi::Okuma,
+                            self.eylem_derinligi,
+                            kiralik.is_closed(),
+                            deneme,
+                            iptal.is_some(),
+                        )
+                    {
+                        deneme += 1;
+                        continue;
+                    }
+                    if let Some(son_tarih) = iptal {
+                        return Err(son_tarih);
+                    }
+                    return Err(postgres_hatasi(
+                        if deneme == 0 {
+                            "PostgreSQL sorgusu başarısız"
+                        } else {
+                            "PostgreSQL sorgusu yeniden denendi ama başarısız"
+                        },
+                        h,
+                    ));
+                }
+            }
+        }
+    }
+
+    /// Son tarih bloğu bittiği hâlde transaction sürüyorsa eski `SET LOCAL`
+    /// bütçesi süresiz sorguya taşınmaz. Yalnız ayar yapılmış transaction'da
+    /// round trip ekler.
+    fn sure_ayarini_sifirla(&mut self) -> Result<(), VeritabaniHatasi> {
+        if !self.sure_ayari_etkin || self.eylem_derinligi == 0 {
+            return Ok(());
+        }
+        let sonuc = self
+            .kiralik
+            .as_mut()
+            .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
+            .batch_execute(SURE_AYARI_VARSAYILAN);
+        sonuc.map_err(|h| self.sorgu_hatasi("PostgreSQL süre ayarı sıfırlanamadı", h))?;
+        self.sure_ayari_etkin = false;
+        Ok(())
     }
 
     /// Doğrulanmış web oturumunu aynı bağlantıda request-local RLS bağlamına
@@ -268,6 +481,8 @@ impl PostgresqlOturumu {
                 .map_err(|h| self.sorgu_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
             self.kiralik = Some(kiralik);
             self.eylem_derinligi = 1;
+            self.sure_ayari_etkin = false;
+            self.sure_ayari_transactionda = false;
             return Ok(());
         }
         let sorgu = format!("SAVEPOINT zee_{}", self.eylem_derinligi);
@@ -287,6 +502,7 @@ impl PostgresqlOturumu {
             self.eylem_derinligi,
             self.kiralik.as_ref().is_some_and(|k| k.is_closed()),
             0,
+            false,
         ));
         let Some(yeni_derinlik) = self.eylem_derinligi.checked_sub(1) else {
             return Err(hata("Açık PostgreSQL transaction'ı yok"));
@@ -296,6 +512,15 @@ impl PostgresqlOturumu {
         } else {
             format!("RELEASE SAVEPOINT zee_{}", yeni_derinlik)
         };
+        if yeni_derinlik == 0 && self.sure_ayari_etkin {
+            // K-375: COMMIT son tarih bütçesiyle iptal EDİLMEZ (senkron
+            // replikasyon beklemesinde iptal yerel commit'i belirsiz bırakır).
+            // Hata COMMIT'e bırakılır; sonucu C027 sınıflandırması karşılar.
+            if let Some(istemci) = self.kiralik.as_mut() {
+                let _ = istemci.batch_execute(SURE_AYARI_VARSAYILAN);
+            }
+            self.sure_ayari_etkin = false;
+        }
         let sonuc = self
             .kiralik
             .as_mut()
@@ -344,6 +569,8 @@ impl PostgresqlOturumu {
             .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
             .batch_execute(&sorgu)
             .map_err(|h| self.sorgu_hatasi("PostgreSQL transaction'ı geri alınamadı", h))?;
+        // ROLLBACK TO SAVEPOINT, savepoint içindeki varsayılana dönüşü de geri alır.
+        self.sure_ayari_etkin |= self.sure_ayari_transactionda;
         self.eylem_derinligi = yeni_derinlik;
         if yeni_derinlik == 0 {
             self.kiralik.take();
@@ -366,16 +593,46 @@ impl PostgresqlOturumu {
     }
 }
 
+/// K-375: transaction dışı tek okuma için `BEGIN; SET LOCAL …` → sorgu → `COMMIT`.
+/// Hata yolunda bağlantı açıksa `ROLLBACK` ile havuza temiz döner; kapalıysa
+/// r2d2 onu bozuk sayıp atar. Oturum düzeyinde ayar hiç yapılmaz.
+fn tek_sureli_okuma(
+    istemci: &mut postgres::Client,
+    ayar: &str,
+    sorgu: &str,
+    baglar: &[(&(dyn ToSql + Sync), Type)],
+) -> Result<crate::veritabani_modeli::VeritabaniOkumaSonucu, SureliOkumaHatasi> {
+    let sonuc = (|| {
+        istemci.batch_execute(&format!("BEGIN; {ayar}"))?;
+        let sonuc = sonuc::oku(istemci, sorgu, baglar)?;
+        istemci.batch_execute("COMMIT")?;
+        Ok(sonuc)
+    })();
+    if sonuc.is_err() && !istemci.is_closed() {
+        if let Err(h) = istemci.batch_execute("ROLLBACK") {
+            return Err(SureliOkumaHatasi::Zee(postgres_hatasi(
+                "PostgreSQL okuma transaction'ı geri alınamadı",
+                h,
+            )));
+        }
+    }
+    sonuc.map_err(SureliOkumaHatasi::Surucu)
+}
+
+/// K-375: son tarih iptali bağlantı kaybı değildir; sorgu sunucuda
+/// çalışmış olabilir ve süre bitmiştir, otomatik tekrar YASAKTIR.
 fn yeniden_baglanabilir(
     sinif: SorguSinifi,
     eylem_derinligi: usize,
     istemci_kapali: bool,
     yeniden_deneme_sayisi: usize,
+    son_tarih_iptali: bool,
 ) -> bool {
     sinif == SorguSinifi::Okuma
         && eylem_derinligi == 0
         && istemci_kapali
         && yeniden_deneme_sayisi == 0
+        && !son_tarih_iptali
 }
 
 /// Migration klasörünü tarar; her dosyayı `NNNN_aciklama.sql` adı, tek dosya
@@ -1051,7 +1308,7 @@ mod testler {
             }
             vaka_sayisi += 1;
             let alanlar = satir.split('\t').collect::<Vec<_>>();
-            assert_eq!(alanlar.len(), 5, "{} numaralı fixture satırı", sira + 1);
+            assert_eq!(alanlar.len(), 6, "{} numaralı fixture satırı", sira + 1);
             let sinif = match alanlar[0] {
                 "read" => SorguSinifi::Okuma,
                 "write" => SorguSinifi::Yazma,
@@ -1065,9 +1322,10 @@ mod testler {
                 alanlar[3]
                     .parse()
                     .expect("yeniden deneme sayısı sayı olmalı"),
+                alanlar[4].parse().expect("son tarih iptali bool olmalı"),
             );
-            assert_eq!(gercek, alanlar[4] == "retry", "fixture satırı: {satir}");
+            assert_eq!(gercek, alanlar[5] == "retry", "fixture satırı: {satir}");
         }
-        assert_eq!(vaka_sayisi, 6, "recovery karar matrisi eksilmemeli");
+        assert_eq!(vaka_sayisi, 7, "recovery karar matrisi eksilmemeli");
     }
 }

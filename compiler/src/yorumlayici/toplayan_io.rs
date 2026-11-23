@@ -74,6 +74,20 @@ pub struct GuvenliCerezKaydi {
 }
 
 impl ToplayanIo {
+    /// K-375: hermetik PostgreSQL'in son tarih bütçesine uyan sanal süresi.
+    fn postgresql_suresini_isle(
+        &mut self,
+        zaman_asimi_ms: Option<i64>,
+    ) -> Option<VeritabaniHatasi> {
+        self.postgresql.sureler.push(zaman_asimi_ms);
+        let sure = self.postgresql.sorgu_suresi_ms?;
+        let gecen = zaman_asimi_ms.map_or(sure, |butce| butce.min(sure)).max(0);
+        self.an_son_degeri = self.an_son_degeri.saturating_add(gecen);
+        zaman_asimi_ms
+            .filter(|butce| *butce < sure)
+            .map(|_| super::veritabani::son_tarih_iptali("57014"))
+    }
+
     pub fn yeni(girdiler: Vec<String>) -> ToplayanIo {
         ToplayanIo {
             girdiler: girdiler.into(),
@@ -258,14 +272,28 @@ impl GirdiCikti for ToplayanIo {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        if let Some(hata) = self.postgresql_suresini_isle(zaman_asimi_ms) {
+            self.postgresql
+                .istekler
+                .push((sorgu.into(), parametreler.to_vec(), false));
+            return Err(hata);
+        }
         self.postgresql.oku(sorgu, parametreler)
     }
     fn postgresql_degistir(
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<i64, VeritabaniHatasi> {
+        if let Some(hata) = self.postgresql_suresini_isle(zaman_asimi_ms) {
+            self.postgresql
+                .istekler
+                .push((sorgu.into(), parametreler.to_vec(), true));
+            return Err(hata);
+        }
         self.postgresql.degistir(sorgu, parametreler)
     }
     fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {

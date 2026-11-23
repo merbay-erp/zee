@@ -402,19 +402,23 @@ pub trait GirdiCikti {
     }
     /// Tek ifadeli, extended-query protokolünde ayrı TEXT parametreleriyle
     /// yürütülen PostgreSQL okuması. Sonuç sütunları v1'de non-null metindir.
+    /// `zaman_asimi_ms`, etkin son tarihin kalanıdır (K-375/RFC-0042); `None`
+    /// iken adaptör ek ayar ya da round trip yapmaz. IO izi bu bütçeyi kaydetmez.
     fn postgresql_oku(
         &mut self,
         _sorgu: &str,
         _parametreler: &[String],
+        _zaman_asimi_ms: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         Err(veritabani::desteklenmeyen())
     }
     /// PostgreSQL değişikliği; etkilenen satır sayısını verir ve yalnız eylem
-    /// transaction'ı içinde kullanılabilir.
+    /// transaction'ı içinde kullanılabilir. Son tarih bütçesi okumayla aynıdır.
     fn postgresql_degistir(
         &mut self,
         _sorgu: &str,
         _parametreler: &[String],
+        _zaman_asimi_ms: Option<i64>,
     ) -> Result<i64, VeritabaniHatasi> {
         Err(veritabani::desteklenmeyen())
     }
@@ -636,17 +640,21 @@ impl GirdiCikti for PaylasilanIo<'_> {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
-        self.ic.borrow_mut().postgresql_oku(sorgu, parametreler)
+        self.ic
+            .borrow_mut()
+            .postgresql_oku(sorgu, parametreler, zaman_asimi_ms)
     }
     fn postgresql_degistir(
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<i64, VeritabaniHatasi> {
         self.ic
             .borrow_mut()
-            .postgresql_degistir(sorgu, parametreler)
+            .postgresql_degistir(sorgu, parametreler, zaman_asimi_ms)
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.ic.borrow_mut().sunucu_kur(kapi)

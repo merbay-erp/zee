@@ -48,7 +48,7 @@ class StrictGateTests(unittest.TestCase):
             CHECK(transcript("5 passed; 0 failed; 0 ignored", TESTS[:5]), 0)
 
     def test_original_eight_or_missing_same_backend_case_cannot_pass(self):
-        self.assertEqual(len(TESTS), 10)
+        self.assertEqual(len(TESTS), 11)
         for tests in [TESTS[:8], TESTS[:8] + TESTS[8:9], TESTS[:8] + TESTS[9:]]:
             with self.subTest(tests=tests):
                 with self.assertRaises(ValueError):
@@ -62,7 +62,8 @@ class StrictGateTests(unittest.TestCase):
     def test_wrong_state_replay_or_missing_health_cannot_pass(self):
         for old, new in [("40P01", "57014"), ("40001", "40P01"), ("attempts=4", "attempts=5"),
                          ("attempts=2", "attempts=3"), ("durable_sum=0", "durable_sum=1"),
-                         ("victim_marker=0", "victim_marker=10"), ("fresh_health=true", "fresh_health=false")]:
+                         ("victim_marker=0", "victim_marker=10"), ("fresh_health=true", "fresh_health=false"),
+                         ("retry=0", "retry=1"), ("durable_rows=0", "durable_rows=1"), ("leak=0/0", "leak=500/500")]:
             with self.assertRaises(ValueError):
                 CHECK(transcript().replace(old, new), 0)
 

@@ -734,3 +734,262 @@ fn izole_tls_ayni_backend_istek_rollback_public_ve_ikinci_tenant_baglamini_temiz
         "tenant B also returns an empty public context on the same backend",
     );
 }
+
+// K-375/RFC-0042: son tarih adaptöre sorgu bütçesi olarak gider; dolarsa
+// sorgu C025 değerine dönüşmez, sahibine Ç001 ile `yetişmezse` çalışır.
+#[test]
+fn son_tarih_kalani_postgresql_butcesine_gider_iptal_yetismezse_olur() {
+    use dil::yorumlayici::GirdiCikti;
+    let kaynak = r#"
+parametreler "x" listesi olsun
+1 saniye içinde
+    sonuç "SELECT pg_sleep(4)::text AS s, $1 AS p" sorgusunu parametreler ile okumayı dene olsun
+    sonuç başarısızsa
+        sonucun hatası yaz
+    "döndü" yaz
+yetişmezse
+    "yetişmedi" yaz
+"#;
+    let program = kaynagi_derle(kaynak).expect("son tarihli okuma derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.postgresql.sorgu_suresi_ms = Some(4000);
+    yorumlayici::calistir_io(&program, &mut io).expect("yetişmezse yönetmeli");
+    assert_eq!(io.cikti, ["yetişmedi"]);
+    assert_eq!(io.postgresql.sureler, [Some(1000)]);
+    assert_eq!(io.an_ms(), 1000, "sorgu son tarihte kesilir, 4 sn sürmez");
+}
+
+#[test]
+fn son_tarihsiz_postgresql_butce_almaz_ve_davranis_degismez() {
+    let kaynak = r#"
+parametreler "x" listesi olsun
+sonuç "SELECT $1 AS p" sorgusunu parametreler ile okumayı dene olsun
+sonuç başarılıysa
+    "ok" yaz
+"#;
+    let program = kaynagi_derle(kaynak).expect("okuma derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.postgresql
+        .okuma_sonuclari
+        .push_back(Ok(vec![vec![("p".into(), "x".into())]]));
+    yorumlayici::calistir_io(&program, &mut io).expect("okuma çalışmalı");
+    assert_eq!(io.cikti, ["ok"]);
+    assert_eq!(io.postgresql.sureler, [None]);
+}
+
+#[test]
+fn son_tarih_icinde_degisiklik_iptali_eylemi_geri_alir_c025_degildir() {
+    let kaynak = r#"
+eylem kaydı oluştur
+    değer döndürmez
+    p "yazıldı" listesi olsun
+    a "INSERT INTO k375 VALUES ($1)" sorgusunu p ile değiştirmeyi dene olsun
+
+1 saniye içinde
+    kaydı oluştur
+    "eylem bitti" yaz
+yetişmezse
+    "yetişmedi" yaz
+"#;
+    let program = kaynagi_derle(kaynak).expect("eylem içi son tarihli yazım derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.postgresql.sorgu_suresi_ms = Some(4000);
+    yorumlayici::calistir_io(&program, &mut io).expect("yetişmezse yönetmeli");
+    assert_eq!(io.cikti, ["yetişmedi"]);
+    assert_eq!(io.postgresql.sureler, [Some(1000)]);
+}
+
+#[test]
+fn son_tarihten_once_gelen_55p03_olagan_c025_kalir() {
+    let kaynak = r#"
+parametreler "x" listesi olsun
+5 saniye içinde
+    sonuç "SELECT $1 AS p FOR UPDATE NOWAIT" sorgusunu parametreler ile okumayı dene olsun
+    sonuç başarısızsa
+        hata sonucun hatası olsun
+        hatanın kodu yaz
+        bilgi hatanın verisi olsun
+        bilginin "sqlstate" değeri yaz
+yetişmezse
+    "yetişmedi" yaz
+"#;
+    let program = kaynagi_derle(kaynak).expect("NOWAIT okuması derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.postgresql
+        .okuma_sonuclari
+        .push_back(Err(VeritabaniHatasi {
+            mesaj: "could not obtain lock".into(),
+            veri: vec![("sqlstate".into(), "55P03".into())],
+        }));
+    yorumlayici::calistir_io(&program, &mut io).expect("C025 yönetilmeli");
+    assert_eq!(io.cikti, ["C025", "55P03"]);
+    assert_eq!(io.postgresql.sureler, [Some(5000)]);
+}
+
+#[test]
+#[ignore = "scripts/postgresql-tls-ci.py geçici gerçek TLS sunucusunu sağlar"]
+fn izole_tls_son_tarih_iptali_savepoint_commit_tekrarsiz_ve_havuz_sagligi() {
+    use std::time::{Duration, Instant};
+    let mut admin = fault_admin();
+    admin.batch_execute("CREATE TABLE zee_k375(value text); CREATE SEQUENCE zee_k375_attempts;
+        CREATE FUNCTION zee_k375_slow(seconds double precision) RETURNS text LANGUAGE plpgsql AS $$ BEGIN PERFORM nextval('zee_k375_attempts'); PERFORM pg_sleep(seconds); RETURN 'slow'; END $$;
+        CREATE TABLE zee_k375_commit(value text);
+        CREATE FUNCTION zee_k375_deferred() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_sleep(0.8); RETURN NEW; END $$;
+        CREATE CONSTRAINT TRIGGER zee_k375_deferred AFTER INSERT ON zee_k375_commit DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION zee_k375_deferred();").unwrap();
+    let attempts = |admin: &mut postgres::Client| -> i64 {
+        admin
+            .query_one(
+                "SELECT CASE WHEN is_called THEN last_value ELSE 0 END FROM zee_k375_attempts",
+                &[],
+            )
+            .unwrap()
+            .get(0)
+    };
+    let durable = |admin: &mut postgres::Client, table: &str| -> i64 {
+        admin
+            .query_one(&format!("SELECT count(*) FROM {table}"), &[])
+            .unwrap()
+            .get(0)
+    };
+    let deadline = |ms| Some(Instant::now() + Duration::from_millis(ms));
+    let son_tarih = |h: &VeritabaniHatasi| {
+        assert!(h.son_tarih_iptali_mi(), "{h:?}");
+        assert!(!h.commit_sonucu_belirsiz_mi());
+    };
+    let mut oturum = tls_olumlu_oturum();
+
+    // 1. Transaction dışı okuma: 57014, yeniden bağlanma/tekrar yok, ayar havuza sızmaz.
+    let basla = Instant::now();
+    let hata = oturum
+        .oku_son_tarihli("SELECT zee_k375_slow(4) AS s", &[], deadline(500))
+        .unwrap_err();
+    let gecen = basla.elapsed();
+    son_tarih(&hata);
+    assert_eq!(fault_sqlstate(&hata), "57014");
+    assert!(
+        gecen < Duration::from_secs(3),
+        "4 sn sorgu son tarihte kesilmeli: {gecen:?}"
+    );
+    assert_eq!(
+        attempts(&mut admin),
+        1,
+        "iptal edilen okuma otomatik tekrar edilmez"
+    );
+    for _ in 0..4 {
+        let ayar = oturum
+            .oku(
+                "SELECT current_setting('statement_timeout') || '/' || current_setting('lock_timeout') AS t",
+                &[],
+            )
+            .unwrap();
+        assert_eq!(ayar[0][0].1, "0/0", "SET LOCAL havuz bağlantısına sızmaz");
+    }
+
+    // 2. Eylem içi okuma iptali yalnız ifadeyi geri alır; eylem geri alınınca satır yok.
+    oturum.eylem_baslat().unwrap();
+    assert_eq!(
+        oturum
+            .degistir("INSERT INTO zee_k375 VALUES ($1)", &["before".into()])
+            .unwrap(),
+        1
+    );
+    son_tarih(
+        &oturum
+            .oku_son_tarihli("SELECT zee_k375_slow(4) AS s", &[], deadline(300))
+            .unwrap_err(),
+    );
+    let ic = oturum
+        .oku(
+            "SELECT count(*)::text || '/' || current_setting('statement_timeout') AS t FROM zee_k375",
+            &[],
+        )
+        .unwrap();
+    assert_eq!(
+        ic[0][0].1, "1/0",
+        "savepoint korur; süresiz sorguda eski bütçe yok"
+    );
+    son_tarih(
+        &oturum
+            .degistir_son_tarihli(
+                "INSERT INTO zee_k375 SELECT zee_k375_slow(4)",
+                &[],
+                deadline(300),
+            )
+            .unwrap_err(),
+    );
+    oturum.eylem_geri_al().unwrap();
+    assert_eq!(
+        durable(&mut admin, "zee_k375"),
+        0,
+        "iptal sonrası satır yazılmaz"
+    );
+
+    // 3. Kilit bekleyen değişiklik son tarihte kesilir (lock/statement timeout).
+    let mut kilit = fault_admin();
+    let mut kilit_tx = kilit.transaction().unwrap();
+    kilit_tx
+        .batch_execute("LOCK TABLE zee_k375 IN ACCESS EXCLUSIVE MODE")
+        .unwrap();
+    oturum.eylem_baslat().unwrap();
+    let basla = Instant::now();
+    let hata = oturum
+        .degistir_son_tarihli(
+            "INSERT INTO zee_k375 VALUES ($1)",
+            &["locked".into()],
+            deadline(500),
+        )
+        .unwrap_err();
+    son_tarih(&hata);
+    assert!(matches!(fault_sqlstate(&hata), "55P03" | "57014"));
+    assert!(basla.elapsed() < Duration::from_secs(3));
+    oturum.eylem_geri_al().unwrap();
+    kilit_tx.rollback().unwrap();
+    // NOWAIT satır kilidi reddi son tarih dolmadan gelirse olağan C025 kalır.
+    admin
+        .batch_execute("INSERT INTO zee_k375 VALUES ('row')")
+        .unwrap();
+    let mut kilit_tx = kilit.transaction().unwrap();
+    kilit_tx
+        .batch_execute("SELECT value FROM zee_k375 FOR UPDATE")
+        .unwrap();
+    let basla = Instant::now();
+    let hata = oturum
+        .oku_son_tarihli(
+            "SELECT value FROM zee_k375 FOR UPDATE NOWAIT",
+            &[],
+            deadline(5_000),
+        )
+        .unwrap_err();
+    assert!(!hata.son_tarih_iptali_mi(), "{hata:?}");
+    assert_eq!(fault_sqlstate(&hata), "55P03");
+    assert!(basla.elapsed() < Duration::from_secs(3));
+    kilit_tx.rollback().unwrap();
+
+    // 4. COMMIT son tarih bütçesiyle iptal edilmez: ertelenmiş tetikleyici
+    // COMMIT'te 0,8 sn sürer, son tarihten kalan 300 ms bütçe uygulanmaz.
+    oturum.eylem_baslat().unwrap();
+    oturum
+        .degistir_son_tarihli(
+            "INSERT INTO zee_k375_commit VALUES ($1)",
+            &["c".into()],
+            deadline(300),
+        )
+        .unwrap();
+    oturum.eylem_tamamla().unwrap();
+    assert_eq!(durable(&mut admin, "zee_k375_commit"), 1);
+
+    // 5. Dolmuş son tarih sunucuya hiç gitmez.
+    let once = attempts(&mut admin);
+    son_tarih(
+        &oturum
+            .oku_son_tarihli("SELECT zee_k375_slow(0) AS s", &[], Some(Instant::now()))
+            .unwrap_err(),
+    );
+    assert_eq!(attempts(&mut admin), once);
+    assert_eq!(
+        oturum.oku("SELECT 'alive'::text AS health", &[]).unwrap()[0][0].1,
+        "alive"
+    );
+    fault_fresh_health(&[]);
+    eprintln!("K375 deadline read=57014 retry=0 savepoint_rows=1 durable_rows=0 lock=deadline nowait=55P03 commit_deferred=ok leak=0/0 fresh_health=true");
+}
