@@ -121,8 +121,12 @@ taşır. Gövde/alan sınırı aşımı 413, eksik başlık/gövdeyi yavaşça t
 okuma süresi aşımı 408, uygulama son tarihi aşımı 504'tür. Gerçek TCP adaptörü
 bildirilen `Content-Length` sınırı aşınca gövdeyi uygulamaya vermeden 413 döner.
 Okuma süresi her parçada kalan mutlak bütçeye ayarlanır; bayt damlatmak süreyi
-yenilemez. Yanıt yazma socket'i de 10 saniye ile sınırlıdır. Bu limitleri
-büyüten kaynak sözdizimi v1'de yoktur.
+yenilemez. Yanıt yazımı da mutlak bütçeyle sınırlıdır (K-372): yazım
+başladığı andan en çok `10 sn + yanıt baytı / 128 KiB/s` sürer ve 10 saniye
+boyunca tek bayt ilerlemeyen yazım kesilir; kısmi ilerleme bütçeyi yenilemez.
+Ham red yanıtından sonraki istek artığı boşaltması (aşağıda, K-374) bu
+bütçeden sonra en çok 2 saniye ve 16 MiB ekler. Bu limitleri büyüten kaynak
+sözdizimi v1'de yoktur.
 
 ZORUNLU: Gerçek TCP adaptörü ham red yanıtı (413, 431, 400, 408, 403, 429,
 503 ve benzeri; çoğu gövde ya da başlığın kalanı okunmadan verilir) yazdıktan
@@ -168,7 +172,8 @@ bitir` rotada sunucuyu kapatmaya devam eder; geçersiz N (C020) 500'dür.
 
 K-327 uyarınca “worker bu istek yüzünden SONLANMAMALI” ilkesi yanıtın socket'e
 yazımını da kapsar: istemci ya da önündeki proxy yanıt yazılırken bağlantıyı
-keserse (EPIPE, ECONNRESET, 10 saniyelik yazma zaman aşımı ve diğer socket
+keserse (EPIPE, ECONNRESET, K-372 yazım bütçesinin ya da ilerlemesizlik
+süresinin dolması ve diğer socket
 yazım hataları) hata istek kapsamlı kalmak ve worker sonraki bağımsız isteği
 kabul etmek ZORUNDADIR. Yanıt taslağının çerez ve oturum commit'i geri alınır
 (istemci yanıtı almadı); PostgreSQL istek transaction'ı bu noktada zaten
