@@ -191,8 +191,9 @@ kabul, ADR-163). **Gerçekleşen:** katman A — rotadan kayıtlı türle
 `attachment` dosya yanıtı (kapalı `icerik_turu` kaydı RFC-0040 katman C ile
 tek model; sandbox CSP, 16 MiB, K-372 bütçesi). Katman B — proje bildirimiyle
 açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytından
-önce, spec/26 `.parca` modeli). **Açık:** proje bildirimli SMTP ek türleri
-(C) bu işin sonraki dilimi;
+önce, spec/26 `.parca` modeli). Katman C — proje bildirimli SMTP ek türleri
+(`e_posta_ek_türleri`, makro/yürütülebilir yapısal yasak, imza/UTF-8,
+ölçülebilir yerel ret). **Açık:**
 `inline`/Range/ETag sonrası. V1 sözü değildir.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.

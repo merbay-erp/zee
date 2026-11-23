@@ -5668,4 +5668,10 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   Oturum yalnız multipart yolunda gövdeden önce yüklenir; `_csrf` dosyadan
   önce ZORUNLU (dosyayı önce yazıp sonra doğrulamak K-332 değişmezini
   bozardı). Ayrıştırıcı CLI adaptörü modülü `web_cok_parcali`.
+- Katman C: `e_posta_ek_türleri` tam küme (P019 yeni tanı); profil etiketi
+  değişmez; ek okuması SMTP ayarından öne alındı ki yerel ret ağdan ve SMTP
+  yapılandırmasından bağımsız ölçülsün; ret sabit önekle maskeden ayrılır.
+  Reddedilen: `zee-smtp-mime-2` (tel aynı), çağrı başına liste (dil yüzeyi),
+  varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
+  kancası. K-378 kapandı.
 

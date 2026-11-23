@@ -17,35 +17,142 @@ pub const AZAMI_TOPLAM_EK_BAYTI: usize = SINIRLAR.toplam_ek_bayti();
 pub const AZAMI_METIN_BAYTI: usize = SINIRLAR.metin_bayti();
 pub const AZAMI_ILETI_BAYTI: usize = SINIRLAR.ileti_bayti();
 
+/// SMTP eki türleri: `icerik_turu` kaydının SMTP adayı satırları (K-378).
+/// Varsayılan küme (`zee-smtp-mime-1`, bildirimsiz proje) ilk dördüdür.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum EkTuru {
     Pdf,
     Png,
     Jpeg,
     Webp,
+    Txt,
+    Csv,
+    Ics,
+    Docx,
+    Xlsx,
+    Pptx,
+    Zip,
 }
 
 impl EkTuru {
-    fn mime(self) -> &'static str {
+    pub const TUMU: [EkTuru; 11] = [
+        Self::Pdf,
+        Self::Png,
+        Self::Jpeg,
+        Self::Webp,
+        Self::Txt,
+        Self::Csv,
+        Self::Ics,
+        Self::Docx,
+        Self::Xlsx,
+        Self::Pptx,
+        Self::Zip,
+    ];
+
+    /// `icerik_turu` kaydındaki kanonik kısa ad.
+    pub fn ad(self) -> &'static str {
         match self {
-            Self::Pdf => "application/pdf",
-            Self::Png => "image/png",
-            Self::Jpeg => "image/jpeg",
-            Self::Webp => "image/webp",
+            Self::Pdf => "pdf",
+            Self::Png => "png",
+            Self::Jpeg => "jpeg",
+            Self::Webp => "webp",
+            Self::Txt => "txt",
+            Self::Csv => "csv",
+            Self::Ics => "ics",
+            Self::Docx => "docx",
+            Self::Xlsx => "xlsx",
+            Self::Pptx => "pptx",
+            Self::Zip => "zip",
         }
     }
+
+    fn kayit(self) -> Option<&'static crate::icerik_turu::IcerikTuru> {
+        crate::icerik_turu::adla(self.ad()).filter(|tur| tur.smtp_aday)
+    }
+
+    fn mime(self) -> String {
+        self.kayit()
+            .map(crate::icerik_turu::baslik_degeri)
+            .unwrap_or_else(|| "application/octet-stream".into())
+    }
+
+    fn gorsel(self) -> bool {
+        matches!(self, Self::Png | Self::Jpeg | Self::Webp)
+    }
+
+    /// Ad (kanonik kısa ad) ile tür.
+    pub fn adla(ad: &str) -> Option<Self> {
+        Self::TUMU.into_iter().find(|tur| tur.ad() == ad)
+    }
+
+    /// Dosya adının son uzantısından aday tür (izin kararı vermez).
+    pub fn uzantidan(ad: &str) -> Option<Self> {
+        crate::icerik_turu::uzantidan(ad)
+            .filter(|tur| tur.smtp_aday)
+            .and_then(|tur| Self::adla(tur.ad))
+    }
+
+    /// Bildirimsiz projenin dört tür kuralı (`zee-smtp-mime-1`).
     pub fn dosya_adindan(ad: &str) -> Result<Self, String> {
-        match ad
-            .rsplit_once('.')
-            .map(|(_, son)| son.to_ascii_lowercase())
-            .as_deref()
-        {
-            Some("pdf") => Ok(Self::Pdf),
-            Some("png") => Ok(Self::Png),
-            Some("jpg" | "jpeg") => Ok(Self::Jpeg),
-            Some("webp") => Ok(Self::Webp),
-            _ => Err("MIME ek türü PDF/PNG/JPEG/WebP olmalı".into()),
+        Self::dosya_adindan_izinle(ad, &EkIzni::default())
+    }
+
+    pub fn dosya_adindan_izinle(ad: &str, izin: &EkIzni) -> Result<Self, String> {
+        Self::uzantidan(ad)
+            .filter(|tur| izin.izinli_mi(*tur))
+            .ok_or_else(|| format!("MIME ek türü izinli değil; izinli türler: {}", izin.adlar()))
+    }
+}
+
+/// K-378: projenin SMTP ek türü kümesi. Varsayılan dört türdür; proje
+/// `e_posta_ek_türleri` bildirimi kümeyi tam olarak belirler (varsayılanlar
+/// örtük eklenmez) ve yalnız kayıttaki SMTP adaylarından seçebilir.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EkIzni {
+    turler: Vec<EkTuru>,
+}
+
+impl Default for EkIzni {
+    fn default() -> Self {
+        Self {
+            turler: EkTuru::TUMU
+                .into_iter()
+                .filter(|tur| tur.kayit().is_some_and(|k| k.smtp_varsayilan))
+                .collect(),
         }
+    }
+}
+
+impl EkIzni {
+    /// Bildirimdeki kanonik adları doğrular: boş liste, bilinmeyen ya da
+    /// yinelenen ad reddedilir.
+    pub fn adlardan(adlar: &[String]) -> Result<Self, String> {
+        if adlar.is_empty() {
+            return Err("ek türü listesi boş olamaz".into());
+        }
+        let mut turler = Vec::new();
+        for ad in adlar {
+            let tur = EkTuru::adla(ad).filter(|tur| tur.kayit().is_some()).ok_or_else(|| {
+                format!("\"{ad}\" SMTP ek türü kaydında yok (makro, yürütülebilir ve betik türleri açılamaz)")
+            })?;
+            if turler.contains(&tur) {
+                return Err(format!("\"{ad}\" ek türü birden çok kez yazıldı"));
+            }
+            turler.push(tur);
+        }
+        Ok(Self { turler })
+    }
+
+    pub fn izinli_mi(&self, tur: EkTuru) -> bool {
+        self.turler.contains(&tur)
+    }
+
+    fn adlar(&self) -> String {
+        self.turler
+            .iter()
+            .map(|tur| tur.ad())
+            .collect::<Vec<_>>()
+            .join(", ")
     }
 }
 
@@ -70,10 +177,23 @@ pub struct YetkiliEk {
     pub baytlar: Vec<u8>,
 }
 
-/// The host must grant DosyaOkuma and resolve its file boundary before opening.
-/// Only read handles enter this bounded loader; it never creates/writes files.
+/// Bildirimsiz projenin dört tür kümesiyle [`ekleri_izinle_oku`].
 pub fn ekleri_oku(
     yollar: &[String],
+    yetkili_ac: &mut dyn FnMut(&str) -> Result<std::fs::File, String>,
+) -> Result<Vec<YetkiliEk>, String> {
+    ekleri_izinle_oku(yollar, &EkIzni::default(), yetkili_ac)
+}
+
+/// The host must grant DosyaOkuma and resolve its file boundary before opening.
+/// Only read handles enter this bounded loader; it never creates/writes files.
+/// K-378: tür projenin `izin` kümesinden seçilir; imzalı türlerde (OOXML/zip)
+/// ilk baytlar, metin türlerinde UTF-8 strict denetlenir. Bu yalnız uzantı
+/// sahteciliğini daraltır; içerik/antivirüs güvenliği değildir. Bütün
+/// hatalar sır taşımayan sabit metinlerdir ve ağa çıkmadan döner.
+pub fn ekleri_izinle_oku(
+    yollar: &[String],
+    izin: &EkIzni,
     yetkili_ac: &mut dyn FnMut(&str) -> Result<std::fs::File, String>,
 ) -> Result<Vec<YetkiliEk>, String> {
     if yollar.len() > AZAMI_EK_ADEDI {
@@ -87,7 +207,7 @@ pub fn ekleri_oku(
             .and_then(|ad| ad.to_str())
             .ok_or("MIME ek adı geçersiz")?;
         ek_adini_denetle(ad)?;
-        let tur = EkTuru::dosya_adindan(ad)?;
+        let tur = EkTuru::dosya_adindan_izinle(ad, izin)?;
         let mut dosya = yetkili_ac(yol).map_err(|_| "MIME ek erişimi reddedildi")?;
         let meta = dosya.metadata().map_err(|_| "MIME ek bilgisi okunamadı")?;
         if !meta.is_file() || meta.len() > AZAMI_EK_BAYTI as u64 {
@@ -110,6 +230,7 @@ pub fn ekleri_oku(
         {
             return Err("MIME ek okunurken değişti".into());
         }
+        icerigi_denetle(tur, &baytlar)?;
         toplam += baytlar.len();
         ekler.push(YetkiliEk {
             ad: ad.into(),
@@ -118,6 +239,20 @@ pub fn ekleri_oku(
         });
     }
     Ok(ekler)
+}
+
+/// K-378: imzalı türde ilk baytlar, metin türünde UTF-8 strict (NUL yok).
+fn icerigi_denetle(tur: EkTuru, baytlar: &[u8]) -> Result<(), String> {
+    let Some(kayit) = tur.kayit() else {
+        return Err("MIME ek türü kayıtta yok".into());
+    };
+    if kayit.imza.is_some_and(|imza| !baytlar.starts_with(imza)) {
+        return Err("MIME ek içeriği uzantısındaki türle uyuşmuyor".into());
+    }
+    if kayit.metin && (std::str::from_utf8(baytlar).is_err() || baytlar.contains(&0)) {
+        return Err("MIME metin eki geçerli UTF-8 değil".into());
+    }
+    Ok(())
 }
 
 fn baslik_denetle(deger: &str, azami: usize) -> Result<(), String> {
@@ -186,9 +321,9 @@ fn govde_kur(cikti: &mut String, ileti: &Ileti<'_>, secenek: &MimeSecenekleri<'_
 }
 
 /// HTML'nin `cid:<ad>` ile başvurduğu görsel ek iletiye gömülür (multipart/related, Content-ID <ad>).
-/// Ad yalnız ASCII harf/rakam ve `.` `_` `-` taşıyorsa uygundur; PDF ve başvurulmayan ekler eklenti kalır.
+/// Ad yalnız ASCII harf/rakam ve `.` `_` `-` taşıyorsa uygundur; görsel olmayan ve başvurulmayan ekler eklenti kalır.
 fn gomulu_mu(ek: &EkDosya<'_>, html: Option<&str>) -> bool {
-    ek.tur != EkTuru::Pdf
+    ek.tur.gorsel()
         && !ek.ad.is_empty()
         && ek
             .ad
@@ -268,7 +403,7 @@ pub fn ileti_kur(
     let mut toplam = 0usize;
     for ek in secenek.ekler {
         ek_adini_denetle(ek.ad)?;
-        if EkTuru::dosya_adindan(ek.ad)? != ek.tur {
+        if EkTuru::uzantidan(ek.ad) != Some(ek.tur) {
             return Err("MIME ek adı ve türü uyuşmuyor".into());
         }
         if ek.baytlar.len() > AZAMI_EK_BAYTI {

@@ -211,6 +211,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P016 | Registry HTTPS taşıması, içerik-adresli cache veya atomik kalıcı durum işlemi başarısız | Origin/root pin/cache yolunu denetle; bozuk nesneyi kullanma ve güvenilir aynadan yeniden doğrula |
 | P017 | Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz | Exact sürüm, HTTPS origin, pozitif root sürümü ve ağ dışı `sha256:` root özetini birlikte bildir |
 | P018 | `dinleyiciler` bildirimi `<ad> <adres>:<kapı>` değil; ad/adres yinelenmiş, kapı 0, IPv6 kapsamlı ya da IPv4 eşlemeli, 64'ten fazla öğe | Her dinleyiciyi `"smtp_v4 0.0.0.0:25"` biçiminde, systemd `FileDescriptorName=` ile aynı tekil adla yaz; çift yığında aileye ayrı ad ver |
+| P019 | `e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür | Listeyi kanonik adlarla yaz (pdf, png, jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip); liste kümeyi tam belirler, varsayılanları da yaz; makro taşıyan ve yürütülebilir türler açılamaz |
 
 ## Ç — İç akış
 
@@ -237,6 +238,12 @@ K-378: `çok_parçalı_yükleme` bildirimi mantıksal değilse P001, `web-oturum
 yetkinliği olmadan açılırsa P015'tir. Multipart istek reddi (400 bozuk gövde,
 403 CSRF/oturum, 413 tavan) tanı kodu üretmeyen ham HTTP yanıtıdır; rota
 çalışmaz. [Karar](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md).
+
+K-378: `e_posta_ek_türleri` bildirim hataları P019'dur (`ağ` yetkinliği
+yoksa P015). Bildirime uymayan, imzası/UTF-8'i türüyle uyuşmayan ya da sınırı
+aşan ek çalışma zamanında yine C029'dur, ama ağa çıkmadan verilen bu yerel
+ret `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` sabit metniyle
+SMTP/ağ hatasının maskesinden ayrılır (K-236 maskesi diğer hatalar için aynen).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

@@ -2,13 +2,13 @@
 # depodadır; bu klasör RFC-0039 ağ sunucusu yetkinliğinin depo içi kanıt
 # aynasıdır. Bugünkü ürün kodu saf SMTP durum makinesi ve stdio deneme
 # aracıdır; reproducer'lar ağ ve metin yüzeyi eksiklerini taşır. K-378: ürünün
-# web arayüzü (ZeeMail) oturumlu web sunucusu ve dosya okuma kullanır; ek akışı
-# kesiti bu politikayla derlenir.
+# web arayüzü (ZeeMail) oturumlu web sunucusu, dosya okuma ve SMTP gönderimi
+# kullanır; ek akışı kesiti bu politikayla derlenir.
 
 proje "urun-h" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "korpus/f001-ascii-katlama-elle.dil" olsun
-yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma" listesi olsun
-ağ_hedefleri boş liste olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "ağ" listesi olsun
+ağ_hedefleri "smtps://smtp.ornek.test:465" listesi olsun
 yerel_bağımlılıklar boş liste olsun

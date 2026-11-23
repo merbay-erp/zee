@@ -36,3 +36,15 @@ dosyası olarak alır (`yukleme_*`). Değişiklik öncesi bildirim
 `P001 "çok_parçalı_yükleme" proje bildirimi alanı değil` verir; çalışma
 zamanında küçük multipart form 403 alıyordu (`_csrf` parça başlığında).
 Gerçek HTTP kanıtı `form_yukleme_testi.rs`.
+
+## Katman C — SMTP ek türleri
+
+[proje.dil](proje.dil) `e_posta_ek_türleri` ile kümeyi on bir aday türe açar;
+[smtp-ek.dil](smtp-ek.dil) docx/xlsx/csv ekli ileti gönderir. Kaynak her
+sürümde derlenir; sürtünme çalışma zamanındaydı: `.docx` eki C029 maskeli
+metinle dönüyor, SMTP sunucusu yokken `.pdf` ile aynı sonucu veriyordu (ürün
+ölçümü). Şimdi bildirimsiz projede ret `ek reddedildi (… izinli türler: pdf,
+png, jpeg, webp)` olarak ağa çıkmadan görünür; bildirimli projede ek gider,
+imzası uyuşmayan `.docx` ve UTF-8 olmayan `.csv` reddedilir. Gerçek SMTP
+fixture kanıtı `smtp_ek_turu_testi.rs`. Antivirüs/içerik taraması ürün ve
+operatör sorumluluğudur (seçenek a).

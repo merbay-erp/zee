@@ -709,3 +709,51 @@ fn ek_loader_kok_disina_cikis_ve_symlink_icin_host_reddini_asamaz() {
     let ekler = ekleri_oku(&[], &mut |_| panic!("eksiz gönderim dosya açmaz")).unwrap();
     assert!(ekler.is_empty());
 }
+
+/// K-378: varsayılan küme dört tür; bildirim kümeyi tam belirler; imzalı ve
+/// metin türleri içerikle denetlenir; makro/yürütülebilir aday bile değildir.
+#[test]
+fn ek_izni_varsayilan_dort_tur_bildirim_tam_kume_ve_icerik_denetimi() {
+    let varsayilan = EkIzni::default();
+    for ad in ["a.pdf", "a.PNG", "a.jpg", "a.jpeg", "a.webp"] {
+        assert!(EkTuru::dosya_adindan(ad).is_ok(), "{ad}");
+    }
+    for ad in [
+        "a.docx", "a.csv", "a.txt", "a.zip", "a.ics", "a.exe", "a.docm", "a",
+    ] {
+        assert!(
+            EkTuru::dosya_adindan_izinle(ad, &varsayilan).is_err(),
+            "{ad}"
+        );
+    }
+    let izin = EkIzni::adlardan(&["docx".into(), "csv".into()]).unwrap();
+    assert_eq!(
+        EkTuru::dosya_adindan_izinle("R.DOCX", &izin),
+        Ok(EkTuru::Docx)
+    );
+    assert!(
+        EkTuru::dosya_adindan_izinle("a.pdf", &izin).is_err(),
+        "örtük varsayılan yok"
+    );
+    for kotu in [
+        vec![],
+        vec!["docm".into()],
+        vec!["exe".into()],
+        vec!["ikili".into()],
+        vec!["pdf".into(), "pdf".into()],
+    ] {
+        assert!(EkIzni::adlardan(&kotu).is_err(), "{kotu:?}");
+    }
+    assert!(icerigi_denetle(EkTuru::Docx, b"PK\x03\x04rest").is_ok());
+    assert!(icerigi_denetle(EkTuru::Zip, b"MZ\x90").is_err());
+    assert!(icerigi_denetle(EkTuru::Csv, "ad;soyad\nçağ;ı\n".as_bytes()).is_ok());
+    assert!(icerigi_denetle(EkTuru::Csv, b"\xff").is_err());
+    assert!(icerigi_denetle(EkTuru::Txt, b"a\0b").is_err());
+    // Varsayılan türlerde içerik denetimi davranışı değişmez.
+    assert!(icerigi_denetle(EkTuru::Pdf, b"MZ").is_ok());
+    assert_eq!(EkTuru::Csv.mime(), "text/csv; charset=utf-8");
+    assert_eq!(EkTuru::Pdf.mime(), "application/pdf");
+    for tur in EkTuru::TUMU {
+        assert!(tur.kayit().is_some(), "{tur:?} kayıtta SMTP adayı olmalı");
+    }
+}

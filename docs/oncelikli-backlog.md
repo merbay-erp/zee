@@ -2559,7 +2559,7 @@ K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 
 ## K-378 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türleri (RFC-0041)
 
-**Durum: SÜRÜYOR (katman A ve B kapalı).** Kaynak: etkin dogfood ürünü `urun-h`
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h`
 web arayüzü (ZeeMail, ZM-F022); 23 Kasım 2026 merkez kararı “Sırayla aç”,
 adım 1. RFC-0041 kabul, karar ADR-163, freeze sınıfı `dogfood-change`.
 
@@ -2583,8 +2583,17 @@ ve eşleşmeli — aksi hâlde dosya baytı diske akmadan 403; dosya spec/26
 `proje_testi`, `dogfood/urun-h/ek-akisi/`. spec/26 “Multipart form
 yüklemesi”, GB-154.
 
-Açık (bu iş): katman C SMTP ek türleri.
-Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi, çok dosya.
+Katman C (kapalı): `proje.dil` `e_posta_ek_türleri` (P019, ağsız P015) tam
+küme; ortak kaydın 11 SMTP adayı, makro/yürütülebilir/betik yapısal yasak;
+OOXML/zip imza ve metin UTF-8 denetimi; profil `zee-smtp-mime-1` değişmez;
+yerel ek reddi SMTP ayarından ve ağdan önce, sabit önekli ölçülebilir C029
+metniyle (K-236 maskesi diğer hatalar için aynen). Kanıt:
+`compiler/tests/smtp_ek_turu_testi.rs` (gerçek SMTP fixture docx/csv, yerel
+ret bağlantısız), `eposta::mime::tests`, `proje_testi`,
+`dogfood/urun-h/ek-akisi/smtp-ek.dil`. spec/23 “Proje ek türü kaydı”, GB-155.
+
+Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi, çok dosya,
+literal ek listesi için `dil denetle` uyarısı, antivirüs (ürün/operatör).
 
 ## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
 

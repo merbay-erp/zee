@@ -20,9 +20,11 @@
 //! veritabanı_istek_bağlamı "platform.session_context" olsun
 //! dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun
 //! çok_parçalı_yükleme doğru olsun
+//! e_posta_ek_türleri "pdf", "docx", "csv" listesi olsun
 //! ```
 
 mod dinleyici;
+mod eposta_ek;
 mod form_yukleme;
 mod http_istek;
 mod kimlik_iletisim;
@@ -74,6 +76,8 @@ pub struct ProjeBildirimi {
     pub dinleyiciler: Vec<DinleyiciBildirimi>,
     /// K-378: `çok_parçalı_yükleme doğru olsun` — multipart form yüklemesi.
     pub cok_parcali_yukleme: bool,
+    /// K-378: `e_posta_ek_türleri` — SMTP ek türü kümesi; `None` dört varsayılan.
+    pub eposta_ek_turleri: Option<Vec<String>>,
 }
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
@@ -179,12 +183,13 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "oturum_kayar"
                 | "dinleyiciler"
                 | "çok_parçalı_yükleme"
+                | "e_posta_ek_türleri"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, çok_parçalı_yükleme.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, çok_parçalı_yükleme, e_posta_ek_türleri.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -213,7 +218,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let (ag_hedef_yazimlari, ag_hedef_satiri) =
         metin_listesini_al(&mut alanlar, "ağ_hedefleri", "P015")?;
     let veritabani = veritabani_bildirimini_al(&mut alanlar, &yetkinlik_yazimlari)?;
-    let (eposta_baglanti_degiskeni, gizli_anahtar_degiskeni) =
+    let (eposta_baglanti_degiskeni, gizli_anahtar_degiskeni, eposta_ek_turleri) =
         kimlik_iletisim::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let http_gizli_degiskenleri = http_istek::gizli_adlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let web_oturumu = web_oturumu::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
@@ -363,6 +368,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         web_oturumu,
         dinleyiciler,
         cok_parcali_yukleme,
+        eposta_ek_turleri,
     })
 }
 

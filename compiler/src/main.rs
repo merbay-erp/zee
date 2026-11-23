@@ -1749,6 +1749,14 @@ impl KaynakGirdisi {
             .proje
             .as_ref()
             .is_some_and(|proje| proje.ana_bildirim().cok_parcali_yukleme);
+        // Bildirim `proje` katmanında P019 ile doğrulandı; burada yalnız savunma.
+        if let Some(adlar) = self
+            .proje
+            .as_ref()
+            .and_then(|proje| proje.ana_bildirim().eposta_ek_turleri.as_ref())
+        {
+            io.eposta_ek_izni = dil::eposta::mime::EkIzni::adlardan(adlar).unwrap_or_default();
+        }
         if let Some(ayar) = self.oturum_ayari() {
             io.web_guvenligi.oturum_ayarini_belirle(ayar);
         }
@@ -1960,6 +1968,8 @@ struct GercekIo {
     http_gizli_degiskenleri: Vec<String>,
     /// K-378: proje `çok_parçalı_yükleme doğru olsun` bildirimi.
     cok_parcali_yukleme: bool,
+    /// K-378: proje `e_posta_ek_türleri` kümesi; yoksa dört varsayılan.
+    eposta_ek_izni: dil::eposta::mime::EkIzni,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
 }
@@ -2106,6 +2116,7 @@ impl GercekIo {
             gizli_anahtar_degiskeni,
             http_gizli_degiskenleri: Vec::new(),
             cok_parcali_yukleme: false,
+            eposta_ek_izni: Default::default(),
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
         }
@@ -2916,6 +2927,23 @@ fn son_tarihli_yaz(
         }
     }
     Ok(())
+}
+
+/// K-378: yerel (ağdan önce) ek reddinin iç öneki; kullanıcıya görünmez.
+const YEREL_EK_REDDI: &str = "\u{0}yerel-ek:";
+
+/// K-378: ağa çıkmadan verilen yerel ek reddi sır taşımayan sabit nedeniyle
+/// ayrılır; SMTP/URL/kimlik hataları maskeli kalır (K-236).
+fn mime_hatasini_maskele(hata: String) -> String {
+    match hata.strip_prefix(YEREL_EK_REDDI) {
+        Some(neden) => format!(
+            "{}{neden}); ağa çıkılmadı, otomatik tekrar yok",
+            dil::eposta::MIME_EK_REDDI_ONEKI
+        ),
+        None => {
+            "MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi; otomatik tekrar yok".into()
+        }
+    }
 }
 
 /// K-378: dosya yanıtının güvenlik başlıkları. Kullanıcı kaynaklı dosya
@@ -4582,6 +4610,15 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let baslangic = std::time::Instant::now();
         let sonuc = (|| {
             self.politika.gerektir(dil::yetkinlik::Yetkinlik::Ag)?;
+            // K-378: ekler SMTP ayarından ve ağdan önce okunur; ret ölçülebilir.
+            let izin = self.eposta_ek_izni.clone();
+            let ekler = dil::eposta::mime::ekleri_izinle_oku(secenek.ekler, &izin, &mut |yol| {
+                self.politika
+                    .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+                let yol = self.dosya_yolu(yol, false)?;
+                dil::eposta::mime::dosyayi_guvenle_ac(&yol)
+            })
+            .map_err(|neden| format!("{YEREL_EK_REDDI}{neden}"))?;
             let url = match baglanti {
                 Some(url) => url.to_string(),
                 None => {
@@ -4601,12 +4638,6 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             let sema = if ayar.implicit_tls { "smtps" } else { "smtp" };
             self.politika
                 .ag_istegini_denetle(&format!("{sema}://{}:{}", ayar.konak, ayar.kapi))?;
-            let ekler = dil::eposta::mime::ekleri_oku(secenek.ekler, &mut |yol| {
-                self.politika
-                    .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
-                let yol = self.dosya_yolu(yol, false)?;
-                dil::eposta::mime::dosyayi_guvenle_ac(&yol)
-            })?;
             let ekler: Vec<_> = ekler
                 .iter()
                 .map(|ek| dil::eposta::mime::EkDosya {
@@ -4650,9 +4681,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             )?;
             Ok(1)
         })();
-        sonuc.map_err(|_: String| {
-            "MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi; otomatik tekrar yok".into()
-        })
+        sonuc.map_err(mime_hatasini_maskele)
     }
     fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
         let anahtar = self.gizli_anahtari()?;

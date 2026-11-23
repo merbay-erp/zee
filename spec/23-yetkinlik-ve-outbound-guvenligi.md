@@ -112,7 +112,8 @@ atomik/coherent filesystem snapshot garantisi AÇIKTIR (GB-016 sınırı).
 
 `zee-smtp-mime-1` profili HTML için multipart/alternative, ekler için dış
 multipart/mixed, 76 sütun Base64/CRLF, RFC2047 Unicode başlık ve RFC2231
-filename* kullanır. PDF/PNG/JPEG/WebP dışında ek tipi YASAKTIR. Bu etiket
+filename* kullanır. `e_posta_ek_türleri` bildirimi olmayan projede PDF/PNG/JPEG/WebP
+dışında ek tipi YASAKTIR (bildirimli küme aşağıda, K-378). Bu etiket
 whitelist'idir; içerik/antivirüs doğrulaması AÇIKTIR. Envelope ASCII tek adres,
 254 bayt ve local-part 64 bayt sınırında olmak ZORUNDADIR. Header injection,
 boş/çok bileşenli ek basename'i ve 998 baytı aşan fiziksel SMTP satırı YASAKTIR.
@@ -135,6 +136,31 @@ YASAKTIR; serialized sır/ek olayı eklenmez. WASM/playground unsupported
 başarısız Sonuç TANIMLIDIR. Canlı SMTP/M365/Gmail, özel ürün rota entegrasyonu
 ve staging kabulü ile P09 queue/outbox/retry/cron AÇIKTIR. Eski düz metin
 encoder/transport/deadline/failure davranışı K-232 kapsamında değişmez.
+
+### Proje ek türü kaydı — K-378
+
+Normatif kaynak: [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md) katman C,
+[ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md). Profil etiketi
+`zee-smtp-mime-1` ve tel biçimi değişmez.
+
+- `proje.dil` `e_posta_ek_türleri "pdf", "docx", "csv" listesi olsun` ek türü
+  kümesini **tam** belirler (varsayılan dört tür örtük eklenmez). Yalnız ortak
+  `icerik_turu` kaydının SMTP adayları yazılabilir: `pdf`, `png`, `jpeg`,
+  `webp`, `txt`, `csv`, `ics`, `docx`, `xlsx`, `pptx`, `zip`. Boş liste,
+  kayıtta olmayan (makro taşıyan `docm`/`xlsm`/`pptm`, eski `doc`/`xls`/`ppt`,
+  yürütülebilir, betik, HTML, SVG dahil) ya da yinelenen ad P019'dur; `ağ`
+  yetkinliği olmadan P015. Bu kurallar ZORUNLUDUR.
+- Tür dosya adının uzantısından seçilir ve projenin kümesinde olmak
+  ZORUNDADIR. Ek olarak OOXML/zip eklerinin ilk baytları `PK\x03\x04`, metin
+  eklerinin (`txt`, `csv`, `ics`) içeriği NUL'suz UTF-8 olmak ZORUNDADIR;
+  `text/*` türleri `charset=utf-8` ile kodlanır. Varsayılan dört türün içerik
+  denetimi değişmez. Bu denetim uzantı sahteciliğini daraltır; içerik,
+  makro, arşiv ve antivirüs güvenliği AÇIKTIR (ürün/operatör sorumluluğu).
+- Ek türü, imza, UTF-8, boyut, ad ve erişim reddi SMTP ayarı çözülmeden ve
+  ağa çıkılmadan verilir ve C029 içinde sabit
+  `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` metniyle görünmek
+  ZORUNDADIR; neden sır, yol ya da sunucu bilgisi taşımaz. SMTP/URL/kimlik
+  bilgisi hataları K-236 maskesiyle aynen gizli kalır.
 
 ## SMTP hata sonucu (TANIMLI — K-236)
 

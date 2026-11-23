@@ -11,7 +11,7 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Metin kaçışında `\r` yok, çıplak CR denetimi yazılamaz (S040) | `korpus/f004-cr-kacisi-yok.dil` | A (çalışma zamanı değişmezi) |
 | Yerleşik büyük harf Türkçe yerel ayarlı (`MAİL`), ASCII katlama yok | `korpus/f001-yerel-ayarli-buyuk-harf.dil`, çözüm `korpus/f001-ascii-katlama-elle.dil` | D adayı |
 | Adlı systemd soketi ve `Type=notify` yok; on soket sırasız geliyor (K-376, çözüldü: A1) | `dinleyici-devri/` | A1 (uygulandı) |
-| Web arayüzü ek indiremiyor ve JS'siz dosya yükleyemiyor (ZM-F022; K-378, çözüldü: RFC-0041 A, B) | `ek-akisi/` | RFC-0041 A, B (uygulandı) |
+| Web arayüzü ek indiremiyor, JS'siz dosya yükleyemiyor, PDF/görsel dışı ek gönderemiyor (ZM-F022; K-378, çözüldü: RFC-0041 A, B, C) | `ek-akisi/` | RFC-0041 A, B, C (uygulandı) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355
 kaydındadır. Korpus vakaları `dogfood/korpus-v1.tsv` içinde exact

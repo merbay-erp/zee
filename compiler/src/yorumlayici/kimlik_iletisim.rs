@@ -99,7 +99,15 @@ pub(super) fn intrinsic_degerlendir(
                 },
             );
             son_tarihi_denetle(io, satir)?;
-            Ok(eposta_sonucu(sonuc.map_err(|_| "MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi; otomatik tekrar yok".into())))
+            // K-378: yerel ek reddi (sabit önek) ayrı görünür; diğer her hata maskeli.
+            Ok(eposta_sonucu(sonuc.map_err(|hata| {
+                if hata.starts_with(crate::eposta::MIME_EK_REDDI_ONEKI) {
+                    hata
+                } else {
+                    "MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi; otomatik tekrar yok"
+                        .into()
+                }
+            })))
         }
         (GIZLI_SIFRELE, [duz]) => io
             .gizli_sifrele(&metne_sinirli(duz, satir)?)

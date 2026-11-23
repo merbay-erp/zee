@@ -3,6 +3,8 @@ proje "ek-akisi" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "ana.dil" olsun
-yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma" listesi olsun
-ağ_hedefleri boş liste olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "ağ" listesi olsun
+ağ_hedefleri "smtps://smtp.ornek.test:465" listesi olsun
+e_posta_bağlantı_değişkeni "URUN_H_SMTP_URL" olsun
+e_posta_ek_türleri "pdf", "png", "jpeg", "webp", "txt", "csv", "ics", "docx", "xlsx", "pptx", "zip" listesi olsun
 çok_parçalı_yükleme doğru olsun

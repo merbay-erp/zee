@@ -105,6 +105,29 @@ olarak girer.
 5. **Okuma bütçesi değişmez:** 10 sn mutlak istek son tarihi; orantılı okuma
    bütçesi ayrı karar (yavaş bağlantıda büyük yükleme 408).
 
+### C — SMTP ek türü kaydı
+
+1. **Bildirim:** `e_posta_ek_türleri "pdf", "docx" listesi olsun` kümeyi tam
+   belirler (varsayılanlar örtük eklenmez; kurum PDF'yi de kapatabilir).
+   Yalnız `icerik_turu` SMTP adayları (11 tür); makro/eski Office/
+   yürütülebilir/betik/HTML/SVG kayıtta yoktur, bildirimle açılamaz. Hata
+   yeni tanı **P019**; `ağ` yoksa P015. Alan yoksa dört varsayılan.
+2. **Profil etiketi değişmez** (`zee-smtp-mime-1`): tel biçimi aynı, yalnız
+   tür kümesi bildirimle genişler; ayrı `zee-smtp-mime-2` iki profil kanıtı
+   doğururdu.
+3. **İçerik denetimi:** OOXML/zip için `PK\x03\x04`, metin türleri için
+   NUL'suz UTF-8; `text/*` `charset=utf-8`. Varsayılan dört türün içerik
+   denetimi eklenmedi (bugünkü davranış bayt bayt aynı). Bu yalnız uzantı
+   sahteciliğini daraltır.
+4. **Ölçülebilir yerel ret:** ekler SMTP ayarı çözülmeden ve ağdan önce
+   okunur; tür/imza/UTF-8/boyut/ad/erişim reddi C029 içinde sabit
+   `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` metniyle görünür.
+   Neden yalnız sabit metinlerdir (yol, sunucu, kimlik yok). SMTP/URL/kimlik
+   hataları K-236 maskesinde kalır. `dil denetle` uyarısı açılmadı.
+5. **Çağrı başına dar liste açılmadı:** ürün kurum politikasını gönderimden
+   önce Zee kodunda uygular; proje tavanı bildirimde tek yerde kalır.
+6. **Antivirüs:** seçenek (a) — ürün/operatör; dile tarayıcı protokolü girmez.
+
 ## Sonuçlar
 
 - ZeeMail ek, vCard ve CSV indirmesini rotadan, yetki kararı Zee kodunda
@@ -113,6 +136,9 @@ olarak girer.
   yorumlanmaz (tür kaydı + sandbox CSP + `attachment` + `nosniff`).
 - IDOR (hangi dosyanın kime verildiği) ürün sorumluluğudur; dil yetki kararı
   vermez (GB-153 bilinçli sınır).
+- ZeeMail docx/xlsx/pptx/zip/txt/csv/ics ekli ileti gönderebilir; bildirimsiz
+  projelerde dört tür kuralı aynıdır; yerel ek reddi artık ağ hatasından
+  ayırt edilir (GB-155).
 - ZeeMail JS'siz formla ek ve kişi dosyası yükleyebilir; bildirimsiz
   projelerin multipart davranışı aynıdır. Sınırlar ve CSRF sırası GB-154.
 

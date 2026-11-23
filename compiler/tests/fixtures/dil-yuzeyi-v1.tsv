@@ -41,6 +41,7 @@ bicim	icerik-turu.xlsx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "applic
 bicim	icerik-turu.zip	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/zip",
 bicim	multipart-yukleme-alanlari	aktif	1.0.0-dev	compiler/src/main.rs	"yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}&yukleme_dosya_adi={}&yukleme_bildirilen_tur={}",
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
+bicim	smtp-yerel-ek-reddi	aktif	1.0.0-dev	compiler/src/eposta.rs	pub const MIME_EK_REDDI_ONEKI: &str = "MIME e-posta gönderilemedi: ek reddedildi (";
 bicim	web-dosya-yaniti-disposition	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	"attachment; filename=\"{}\"; filename*=UTF-8''{}",
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 bicim	zee-active-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-active-1
@@ -290,6 +291,7 @@ profil	derleyici-yerel-launcher	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'laun
 profil	dinleyiciler-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dinleyiciler"
 profil	dispatcher-service-calendar	aktif	0.8.0-dev	scripts/dispatcher-service.py	--calendar
 profil	dispatcher-service-run	aktif	0.8.0-dev	scripts/dispatcher-service.py	--run
+profil	e-posta-ek-turleri-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "e_posta_ek_türleri"
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
 profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_değişkenleri"
 profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(

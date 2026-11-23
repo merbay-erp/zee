@@ -26,6 +26,22 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez; kalıbı kullanmayan rotaların yanıtı değişmez.
 
+- **E-postada Office, ZIP ve metin ekleri (K-378):** `proje.dil` içinde
+  `e_posta_ek_türleri "pdf", "docx", "xlsx", "csv" listesi olsun` yazan
+  proje, ekli iletide bu türleri gönderebilir. Seçilebilen türler: pdf, png,
+  jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip. Liste kümenin tamamıdır
+  (yazılmayan tür kapalıdır). Makro taşıyan Office dosyaları, eski Office
+  biçimleri, yürütülebilir ve betik dosyaları hiçbir koşulda açılamaz
+  (yeni tanı P019). Word/Excel/PowerPoint/ZIP eklerinin gerçekten ZIP
+  biçiminde, metin eklerinin geçerli UTF-8 olduğu denetlenir; bu bir virüs
+  taraması değildir. Ayrıca ek reddedildiğinde hata artık
+  `MIME e-posta gönderilemedi: ek reddedildi (<neden>)` biçiminde nedeni
+  gösterir ve SMTP'ye hiç bağlanılmadığını söyler; sunucu/parola hataları
+  eskisi gibi gizlidir.
+
+  **Göç:** Gerekmez; bildirimsiz projeler yine yalnız PDF/PNG/JPEG/WebP
+  gönderir. Yalnız reddedilen ekin hata metni değişti (kod yine C029).
+
 - **JavaScript'siz form ile dosya yükleme (K-378):** `proje.dil` içinde
   `çok_parçalı_yükleme doğru olsun` yazan proje (`web-oturumu` gerekir),
   sıradan HTML formuyla (`enctype="multipart/form-data"`) tek dosya kabul

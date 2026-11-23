@@ -226,6 +226,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             web_oturumu: None,
             dinleyiciler: Vec::new(),
             cok_parcali_yukleme: false,
+            eposta_ek_turleri: None,
         }
     );
 }
@@ -1614,4 +1615,35 @@ fn cok_parcali_yukleme_bildirimi_web_oturumu_ister() {
     assert_eq!(bildirimi_oku(&oturumsuz).unwrap_err().kod, "P015");
     let metin = format!("{oturumlu}çok_parçalı_yükleme \"evet\" olsun\n");
     assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P001");
+}
+
+/// K-378: `e_posta_ek_türleri` kanonik aday adlarla tam küme; `ağ` ister.
+#[test]
+fn eposta_ek_turleri_bildirimi_aday_kayittan_ve_ag_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let agli = format!(
+        "{taban}yetkinlikler \"ağ\" listesi olsun\nağ_hedefleri \"smtps://smtp.example.com:465\" listesi olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&agli).unwrap().eposta_ek_turleri, None);
+    assert_eq!(
+        bildirimi_oku(&format!(
+            "{agli}e_posta_ek_türleri \"pdf\", \"docx\" listesi olsun\n"
+        ))
+        .unwrap()
+        .eposta_ek_turleri,
+        Some(vec!["pdf".to_string(), "docx".to_string()])
+    );
+    for kotu in [
+        "boş liste",
+        "\"xlsm\" listesi",
+        "\"docx\", \"docx\" listesi",
+        "\"pdf\"",
+    ] {
+        let hata = bildirimi_oku(&format!("{agli}e_posta_ek_türleri {kotu} olsun\n")).unwrap_err();
+        assert_eq!(hata.kod, "P019", "{kotu}");
+    }
+    let agsiz = format!(
+        "{taban}yetkinlikler boş liste olsun\nağ_hedefleri boş liste olsun\ne_posta_ek_türleri \"pdf\" listesi olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&agsiz).unwrap_err().kod, "P015");
 }
