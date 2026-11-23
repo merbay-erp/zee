@@ -2710,6 +2710,29 @@ biçimi grammar/API genişlemesidir, K-364 taslağının açık sorusudur. TOTP
 doğrulaması giriş kovası aşımında yanıt yazmadan `yanlış` döner (429 değil);
 ayrı takip.
 
+## K-373 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türü RFC taslağı
+
+**Durum: AÇIK (taslak).** [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md):
+`urun-h` (ZM-F022) web arayüzünde ek indirme, JS'siz form yüklemesi ve
+PDF/görsel dışı SMTP eki istiyor. Üç eksik e63a439 kaynağıyla doğrulandı:
+yanıt taslağı yalnız `Metin` gövdeli üç biçim, tür ilk karakterden,
+`Content-Disposition` yazılamaz (`nosniff` zaten var); multipart yolu yok,
+CSRF yalnız `X-Zee-CSRF` başlığından, multipart gövde 64 KiB form çözümüne
+düşer (spec/26 multipart'ı "sözü değil" sayar); `EkTuru` kapalı dört değer,
+tür yalnız uzantıdan, proje alanı yok. Üç katman: RFC-0040 katman C ile tek
+tür/başlık kaydına "dosya" sınıfı (HTML/SVG/betik yok, `attachment`
+varsayılanı, sandbox CSP, RFC 6266/8187 ad kodlaması), spec/26 yükleyicisine
+akan sınırlı tek dosyalı multipart ve dosya parçasından önce ZORUNLU `_csrf`
+(gövde diske akmadan red), varsayılanı değişmeyen kapalı aday tablodan proje
+bildirimli SMTP ek türleri (makro/yürütülebilir yapısal yasak, imza denetimi,
+antivirüs ürün/operatör sınırı). Core freeze altında uygulama yok; depo içi
+reproducer katman açılmadan önce ürünün işi. V1 kapısı değildir.
+Ürün ölçümüyle (23 Kasım 2026) iki ek bulgu: maskeli C029 yerel ek reddini
+ağ hatasından ayırmıyor (katman C “ölçülebilir ret” şartı); 64 KiB üstü
+gövdede 413 yazılıp gövde boşaltılmadan kapanıldığı için istemci RST alıp
+yanıtı göremiyor (içerik türünden bağımsız, spec/11 §5 correctness boşluğu,
+ayrı fix adayı).
+
 ## K-364 — WebDAV/CalDAV/CardDAV web adaptörü RFC taslağı
 
 **Durum: AÇIK (taslak).** [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
