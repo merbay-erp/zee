@@ -2591,6 +2591,16 @@ Açık: bağlantı yüzeyi ve `ağ-dinleyici` yetkinliği (A2), çok işçiye ad
 aktarım, web dışı programda `READY=1`, HTTP dinleyicisinin adlı devirden
 alınması.
 
+Takip (CI kararlılığı): ölçüm adımı bir ubuntu koşusunda
+`systemctl start …-web_v4.socket` ile aralıklı kırıldı. Kök neden: ölçüm
+betiği kapıları geçici aralıktan seçip bırakıyordu; kapı runner'daki istemci
+bağlantılarına verilebiliyordu. Docker systemd 255'te yoğun loopback
+trafiği altında eski betik 0/12, yeni betik 12/12 (sessiz ortamda ikisi de
+12/12). Düzeltme yalnız betikte: geçici aralık dışı, her ailede doğrulanan,
+tekil kapılar; koşu başına benzersiz birim adı; başta eski birim temizliği;
+soket başlatma hatasında status/günlük/`ss` teşhisi ve en çok üç deneme.
+Ürün kodu değişmedi.
+
 ## K-374 — Erken red yanıtı okunmamış istekle RST'ye dönüşmesin
 
 **Durum: KAPALI.** Kaynak: RFC-0041 (K-373) incelemesi; ZeeMail (urun-h)
