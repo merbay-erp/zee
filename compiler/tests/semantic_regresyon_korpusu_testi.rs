@@ -85,6 +85,7 @@ const KIPLER: &[&str] = &[
     "native-metric-stdio",
     "native-web-kopma",
     "native-web-yazim-butcesi",
+    "native-web-erken-red",
     "native-dosya-exdev",
     "native-web-yukleme",
     "native-dosya-okuma-penceresi",
@@ -280,6 +281,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-listener-deadline"
                 | "native-web-kopma"
                 | "native-web-yazim-butcesi"
+                | "native-web-erken-red"
                 | "native-web-yukleme"
                 | "native-web-depo-cekismesi"
                 | "native-web-oturum-deposu"
@@ -387,6 +389,15 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-yazim-butcesi" {
         let (cikis, cikti) = native_web_kopma_fixture::butce_calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-web-erken-red" {
+        let (cikis, cikti) =
+            native_web_kopma_fixture::erken_red_calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -874,6 +885,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-metric-stdio"
                 | "native-web-kopma"
                 | "native-web-yazim-butcesi"
+                | "native-web-erken-red"
                 | "native-dosya-exdev"
                 | "native-web-yukleme"
                 | "native-dosya-okuma-penceresi"
@@ -1141,6 +1153,43 @@ fn native_web_yazim_butcesi_regresyonu_gercek_worker_ile_korunur() {
             vaka.ad
         );
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: sonraki istek", vaka.ad);
+    }
+}
+
+#[test]
+fn native_web_erken_red_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-web-erken-red"));
+    assert!(faz_kipi_kabul_eder("security", "native-web-erken-red"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-web-erken-red"));
+    }
+}
+
+/// K-374: gövde (413) ve başlık (431) sınırını aşan isteği tek seferde
+/// gönderen istemci red yanıtını okuyabilir; damlatan istemci tek işçiyi
+/// yalnız boşaltma bütçesi kadar tutar. ToplayanIo socket kapanışını taklit
+/// edemediği için toplu replay bu kipi atlar; Unix dışında sahte başarı yok.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix owned socket capability unavailable")]
+fn native_web_erken_red_regresyonu_gercek_worker_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-web-erken-red")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native web erken red regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(
+            gozlem.cikis, vaka.cikis,
+            "{}: worker ayakta kalmalı",
+            vaka.ad
+        );
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: red yanıtları", vaka.ad);
     }
 }
 

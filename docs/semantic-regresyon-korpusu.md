@@ -226,6 +226,19 @@ bütçesi doldu` göründüyse `bütçede serbest`, değilse `işçi N sn tutuld
 satırıdır. Düzeltme öncesi kaynakta Darwin'de `işçi 34 sn tutuldu` (Linux'ta
 yanıt aktarılana dek). Toplu replay bu kipi atlar; Unix dışında görünür
 ignored durumundadır.
+
+## Native web erken red kipi (K-374)
+
+`security` fazındaki `native-web-erken-red` kipi gerçek native `dil`
+worker'ını `--web-proxy` profiliyle başlatır. İstemci `# web-govde:`
+isteğini 70 KiB gövdeyle, `# web-baslik:` isteğini 40 KiB başlıkla tek
+seferde gönderip yanıtı okur; çıktı her biri için `durum gövde` ya da
+`yanıt yok: <hata türü>` satırıdır. Ardından büyük `Content-Length` bildirip
+50 ms'de bir bayt damlatan, kapatmayan bir istemci bağlanır ve
+`# web-sonraki:` isteğinin `durum gövde` satırı ile 6 sn içinde yanıt
+alındıysa `damlatan bütçede bırakıldı` yazılır. Düzeltme öncesi kaynakta
+ilk iki satır `yanıt yok: ConnectionReset`. Toplu replay bu kipi atlar;
+Unix dışında görünür ignored durumundadır.
 ## Native dosya EXDEV kipi (K-329)
 
 `runtime` fazındaki `native-dosya-exdev` kipi gerçek native `dil` sürecini

@@ -102,3 +102,27 @@ sınırındaki koruma proxy tamponlaması ve proxy zaman aşımlarıdır
 `regression/security/yanit-yazim-butcesi.dil` (kip
 `native-web-yazim-butcesi`; düzeltme öncesi Darwin'de işçi 34 sn tutuldu,
 sonrası 25,5 sn), `web_profili_testleri` yazım birim vakaları, GB-150.
+
+## K-374 eki — Erken red sonrası sınırlı boşaltma (23 Kasım 2026)
+
+Bağlam: ham red yanıtları (413, 431, 400, 408, 403, 503) çoğu kez istek
+gövdesi ya da başlığın kalanı okunmadan yazılır ve bağlantı hemen kapanır.
+Alım tamponunda okunmamış bayt varken `close` çekirdeğe RST gönderir;
+istemci henüz okumadığı yanıtı kaybeder (yerel ölçüm: 70 KB gövdeye 413,
+40 KiB başlığa 431 curl'de `000`; tek ve çok işçide aynı).
+
+Karar: `ham_http_hatasi_gonder` yanıtı başarıyla yazınca
+`shutdown(Write)` ile yanıt + FIN gönderilir, istemcinin baytları en çok
+`HTTP_ISTEK_ARTIGI_SURESI` (2 sn) ve en çok `yukleme_bayti` (16 MiB) okunup
+atılır; EOF, okuma hatası ya da bütçe sonunda bağlantı kapanır. Bütçe
+mutlaktır, K-372 yazım bütçesinden sonra ayrı uygulanır; bağlantı başına en
+kötü tutma `10 sn okuma + yazım bütçesi + 2 sn` olur. Kabul edilen istek
+gövdesini zaten tamamen okuduğu için boşaltma yapmaz.
+
+Bilinçli sınır: 16 MiB'ı aşan gövdeyi gönderip duran ya da 2 sn içinde
+bitiremeyen istemci yine RST görebilir; damlatıcı tek işçide bağlantı başına
+2 sn ek tutabilir. Süre `HTTP_ISTEK_ARTIGI_SURESI`, bayt sınırı
+`VARSAYILAN_KAYNAK_SINIRLARI.http().yukleme_bayti()` sahipliğindedir. Kanıt: `regression/security/erken-red-yanit-okunur.dil`
+(kip `native-web-erken-red`), `web_profili_testleri` boşaltma birim
+vakaları, spec/11 §5, GB-151.
+

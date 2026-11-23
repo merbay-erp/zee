@@ -54,6 +54,14 @@ const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_s
         .http()
         .istek_okuma_saniyesi(),
 );
+/// K-374: ham red yanıtından sonra okunmamış istek artığını boşaltma süresi.
+/// Karşı uç loopback proxy'dir ve tamponlu gövdeyi milisaniyelerde boşaltır;
+/// 2 sn okuma bütçesinin beşte biridir ve yalnız red yolunda harcanır.
+const HTTP_ISTEK_ARTIGI_SURESI: std::time::Duration = std::time::Duration::from_secs(2);
+/// K-374: boşaltmanın en çok okuyacağı bayt; meşru en büyük gövde (yükleme).
+const HTTP_ISTEK_ARTIGI_BAYTI: usize = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .http()
+    .yukleme_bayti();
 /// K-332 eki: canlı `.parca`'nın son yazımından sonra yaşayabileceği en uzun
 /// süre — gövde okuma son tarihi, rota çalıştırma bütçesi, yanıt yazım zaman aşımı.
 const CANLI_PARCA_AZAMI_SANIYE: u64 = {
@@ -2661,6 +2669,33 @@ fn ham_http_hatasi_gonder(
     }
     let ok = yanit_butcesiyle_yaz(akis, &yanit).is_ok();
     akis.metrik_yanit(durum, ok);
+    if ok {
+        istek_artigini_bosalt(akis, HTTP_ISTEK_ARTIGI_SURESI, HTTP_ISTEK_ARTIGI_BAYTI);
+    }
+}
+
+/// K-374: ham red yanıtı (413, 431, 400, 408, 403, 429, 503…) çoğu kez istek
+/// gövdesi ya da başlığın kalanı okunmadan yazılır. Alım tamponunda okunmamış
+/// bayt varken soket kapanırsa çekirdek FIN yerine RST gönderir ve istemci
+/// henüz okumadığı yanıtı kaybeder (curl 000, tarayıcı "bağlantı sıfırlandı").
+/// Bu yüzden yazma yönü kapatılır (yanıt + FIN istemciye gider), ardından
+/// istemcinin gönderdikleri en çok `sure` boyunca ve `bayt` kadar okunup
+/// atılır; EOF, hata, süre ya da bayt sınırında bağlantı kapanır. Bütçe
+/// mutlaktır: veri damlatan istemci işçiyi `sure`den uzun tutamaz.
+fn istek_artigini_bosalt(akis: &mut impl WebTasima, sure: std::time::Duration, bayt: usize) {
+    if akis.yazmayi_kapat().is_err() || akis.set_nonblocking(false).is_err() {
+        return;
+    }
+    let son_tarih = std::time::Instant::now() + sure;
+    let mut kalan = bayt;
+    let mut tampon = [0u8; 16 * 1024];
+    while kalan > 0 {
+        let sinir = kalan.min(tampon.len());
+        match son_tarihli_soket_oku(akis, &mut tampon[..sinir], son_tarih) {
+            Ok(0) | Err(_) => return,
+            Ok(okunan) => kalan -= okunan,
+        }
+    }
 }
 
 /// K-372: `bayt` uzunluğundaki yanıtın yazılabileceği mutlak süre:
@@ -5100,6 +5135,9 @@ mod web_profili_testleri {
             self.nonblocking.set(deger);
             Ok(())
         }
+        fn yazmayi_kapat(&self) -> std::io::Result<()> {
+            Ok(())
+        }
     }
 
     #[test]
@@ -5195,6 +5233,78 @@ mod web_profili_testleri {
         assert!(gecen < std::time::Duration::from_secs(3), "{gecen:?}");
     }
 
+    /// K-374: gövdesi okunmadan reddedilen istekte istemci yanıtı ve FIN'i
+    /// alır (RST değil); boşaltma istemci kapatınca hemen biter.
+    #[test]
+    fn erken_red_okunmamis_govdeyle_yaniti_istemciye_ulastirir() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        istemci
+            .write_all(b"POST / HTTP/1.1\r\nContent-Length: 70000\r\n\r\n")
+            .unwrap();
+        istemci.write_all(&vec![b'x'; 70_000]).unwrap();
+        // Sunucu yalnız başlığın bir kısmını okur; gövde alım tamponunda kalır.
+        let mut parca = [0u8; 16];
+        sunucu.read_exact(&mut parca).unwrap();
+        let baslangic = std::time::Instant::now();
+        let yazici = std::thread::spawn(move || {
+            ham_http_hatasi_gonder(&mut sunucu, 413, "büyük", false, false);
+        });
+        istemci
+            .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+            .unwrap();
+        let mut yanit = Vec::new();
+        istemci.read_to_end(&mut yanit).unwrap();
+        assert!(yanit.starts_with(b"HTTP/1.1 413 Payload Too Large"));
+        assert!(yanit.ends_with(b"\r\n\r\nb\xc3\xbcy\xc3\xbck"));
+        drop(istemci);
+        yazici.join().unwrap();
+        assert!(baslangic.elapsed() < std::time::Duration::from_secs(2));
+    }
+
+    /// K-374: kapatmayıp bayt damlatan istemci boşaltma süresinde, sınırsız
+    /// gönderen istemci bayt sınırında bırakılır; işçi bütçeden uzun tutulmaz.
+    #[test]
+    fn istek_artigi_bosaltmasi_sure_ve_bayt_sinirinda_biter() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        let dur = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let durdur = dur.clone();
+        let mut damla = istemci.try_clone().unwrap();
+        let damlatici = std::thread::spawn(move || {
+            while !durdur.load(std::sync::atomic::Ordering::Relaxed) {
+                if damla.write_all(b"x").is_err() {
+                    break;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(20));
+            }
+        });
+        let baslangic = std::time::Instant::now();
+        istek_artigini_bosalt(
+            &mut sunucu,
+            std::time::Duration::from_millis(300),
+            usize::MAX,
+        );
+        let gecen = baslangic.elapsed();
+        assert!(gecen >= std::time::Duration::from_millis(300), "{gecen:?}");
+        assert!(gecen < std::time::Duration::from_secs(2), "{gecen:?}");
+        dur.store(true, std::sync::atomic::Ordering::Relaxed);
+        damlatici.join().unwrap();
+
+        let (mut sunucu, mut istemci) = {
+            let istemci = std::net::TcpStream::connect(adres).unwrap();
+            (dinleyici.accept().unwrap().0, istemci)
+        };
+        istemci.write_all(&vec![b'y'; 64 * 1024]).unwrap();
+        let baslangic = std::time::Instant::now();
+        istek_artigini_bosalt(&mut sunucu, std::time::Duration::from_secs(5), 1024);
+        assert!(baslangic.elapsed() < std::time::Duration::from_secs(1));
+    }
+
     /// K-362 / GB-109: native okuyucu başlık sınırı exact baytta keser.
     /// Tam sınırda biten başlık kabul edilir; bir bayt fazlası ayrıştırıcıya
     /// ulaşmadan 431 alır. Bağımsız kâhin (`http_kahini_testi`) aynı boyuttaki
@@ -5204,6 +5314,9 @@ mod web_profili_testleri {
         struct BellekAkisi {
             girdi: std::io::Cursor<Vec<u8>>,
             cikti: Vec<u8>,
+            // K-374: red yanıtından sonra boşaltma artığı okur; ayrıştırıcının
+            // okuduğu konum yazma yönü kapatılırken kaydedilir.
+            kapanis_konumu: std::cell::Cell<Option<u64>>,
         }
         impl Read for BellekAkisi {
             fn read(&mut self, tampon: &mut [u8]) -> std::io::Result<usize> {
@@ -5225,6 +5338,10 @@ mod web_profili_testleri {
             fn set_nonblocking(&self, _: bool) -> std::io::Result<()> {
                 Ok(())
             }
+            fn yazmayi_kapat(&self) -> std::io::Result<()> {
+                self.kapanis_konumu.set(Some(self.girdi.position()));
+                Ok(())
+            }
         }
         let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
             .http()
@@ -5237,6 +5354,7 @@ mod web_profili_testleri {
             let mut akis = BellekAkisi {
                 girdi: std::io::Cursor::new(istek),
                 cikti: Vec::new(),
+                kapanis_konumu: std::cell::Cell::new(None),
             };
             let sonuc = istek_basliklarini_oku(&mut akis, son_tarih, false);
             let yanit = String::from_utf8_lossy(&akis.cikti).into_owned();
@@ -5249,8 +5367,8 @@ mod web_profili_testleri {
                 assert!(sonuc.is_none(), "sınır aşımı ayrıştırıcıya ulaşmaz");
                 assert!(yanit.starts_with("HTTP/1.1 431"), "{yanit}");
                 assert_eq!(
-                    akis.girdi.position() as usize,
-                    sinir,
+                    akis.kapanis_konumu.get(),
+                    Some(sinir as u64),
                     "sınırdan fazla okunmaz"
                 );
             }

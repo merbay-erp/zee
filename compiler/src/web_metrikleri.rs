@@ -273,6 +273,9 @@ impl Sink {
 pub(super) trait WebTasima: Read + Write {
     fn set_read_timeout(&self, duration: Option<std::time::Duration>) -> std::io::Result<()>;
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()>;
+    /// K-374: yanıt yazıldıktan sonra yalnız yazma yönünü kapatır (FIN);
+    /// okuma yönü istek artığını boşaltmak için açık kalır.
+    fn yazmayi_kapat(&self) -> std::io::Result<()>;
     fn metrik_yanit(&mut self, _status: u16, _success: bool) {}
 }
 impl WebTasima for TcpStream {
@@ -281,6 +284,9 @@ impl WebTasima for TcpStream {
     }
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
         TcpStream::set_nonblocking(self, nonblocking)
+    }
+    fn yazmayi_kapat(&self) -> std::io::Result<()> {
+        TcpStream::shutdown(self, std::net::Shutdown::Write)
     }
 }
 pub(super) struct Akis {
@@ -338,6 +344,9 @@ impl WebTasima for Akis {
     }
     fn set_nonblocking(&self, nonblocking: bool) -> std::io::Result<()> {
         self.inner.set_nonblocking(nonblocking)
+    }
+    fn yazmayi_kapat(&self) -> std::io::Result<()> {
+        self.inner.shutdown(std::net::Shutdown::Write)
     }
     fn metrik_yanit(&mut self, status: u16, success: bool) {
         self.outcome = Some((status, success));
