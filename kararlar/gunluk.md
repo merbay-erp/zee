@@ -5533,3 +5533,24 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   IO izi şeması değişir). Eski GET'in yakalanamaz C018'i spec/11 §5 gereği
   500 kalır; C025/C029 zaten yakalanabilir `Sonuç`tur. Denetim tablosu `docs/k370-web-oran-500-denetimi.md`.
 
+
+## K-373 — RFC-0041 taslağı: ikili dosya yanıtı, multipart yükleme, SMTP ek türü kaydı (23 Kasım 2026)
+
+- `urun-h` (ZeeMail, ZM-F022) web arayüzünde ek indirme, tarayıcıdan JS'siz
+  ek yükleme ve docx/xlsx/pptx/zip/txt/csv/ics eki gönderme istiyor.
+- Üç eksik e63a439 kaynağıyla doğrulandı: (1) yok — `WebYanitTaslagi` yalnız
+  `Metin` gövdeli, tür ilk karakterden, `Content-Disposition` yok,
+  `nosniff` zaten var; (2) yok — multipart ayrıştırıcı yok, CSRF yalnız
+  `X-Zee-CSRF`, multipart gövde 64 KiB form çözümüne düşer; (3) var (yasak) —
+  `EkTuru` dört değerli, tür uzantıdan, genişletme alanı yok.
+- Kararlar (taslak): yanıt türü/başlık kaydı RFC-0040 katman C ile tek tablo,
+  "metin" ve "dosya" sınıfı; dosya sınıfında HTML/SVG/betik türü yok,
+  `inline` yalnız PDF + dört görsel; ad kodlaması SMTP `yuzde_kodla` ile
+  ortak. Multipart tek dosya + ≤ 8 parça, spec/26 yükleyicisine akar, `_csrf`
+  dosya parçasından önce ZORUNLU ve doğrulanmadan bayt diske akmaz. SMTP
+  varsayılanı değişmez; proje alanı yalnız kapalı aday tablodan seçer,
+  makro/yürütülebilir türler bildirimle de açılamaz; antivirüs ürün/operatör
+  sınırı. Base64 `Metin` yanıt, vekil `X-Sendfile` ilk model olarak, statik
+  dizin, önce-yaz-sonra-CSRF ve serbest MIME listesi reddedildi.
+- Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
+  depo içi reproducer katman açılmadan önce ürünün işi. K-373 açık kalır.
