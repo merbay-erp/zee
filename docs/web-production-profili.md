@@ -129,7 +129,10 @@ işçiyi en çok bu bütçe kadar tutar; tek işçili sitede art arda bağlantı
 yine sırayla bekletir, bu yüzden proxy yanıt tamponlaması (nginx varsayılanı)
 ve proxy'nin kendi istemci zaman aşımları açık kalmalıdır. 16 MiB'a yaklaşan
 yanıtları 1 Mbit/s altındaki istemcilere tamponsuz proxy üzerinden veren site
-bütçe aşımında yarım yanıt görür. Benchmark sonuçları process
+bütçe aşımında yarım yanıt görür. Ham red yanıtından (413, 431, 400, 408,
+403, 503) sonra yazma yönü kapatılır ve okunmamış istek artığı en çok 2 sn /
+16 MiB boşaltılır; istemci red yanıtını RST yerine görür, kapatmayan istemci
+işçiyi en çok 2 sn ek tutar (K-374). Benchmark sonuçları process
 başına tek worker gerçeğiyle yorumlanmalı; `-c 100` tek bir process'te 100
 paralel uygulama yürütümü vaat etmez.
 

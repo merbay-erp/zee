@@ -12,9 +12,20 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Site
 
-- **zeedili.com 23 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-365/K-368/K-370 sınır aşımında 429/503 yanıtları, K-371/K-372 yavaş istemci ve SMTP süre sınırı, RFC-0040/RFC-0041 takvim/kişi eşitleme ve dosya eki taslakları ve K-366 Windows'ta taşınabilir paketler haberleri eklendi. Dil davranışı değişmedi.
+- **zeedili.com 23 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-365/K-368/K-370/K-374 sınır aşımında 413/429/503 yanıtları, K-371/K-372 yavaş istemci ve SMTP süre sınırı, RFC-0040/RFC-0041 takvim/kişi eşitleme ve dosya eki taslakları ve K-366 Windows'ta taşınabilir paketler haberleri eklendi. Dil davranışı değişmedi.
 
 ### Düzeltilenler
+
+- **Büyük istek reddi artık istemciye ulaşıyor (K-374):** 64 KiB sınırını
+  aşan bir form/gövde (ör. büyük multipart içe aktarma) ya da sınırı aşan
+  başlıklar gönderildiğinde sunucu 413/431 yanıtını yazıyor ama bağlantıyı
+  okunmamış veriyle kapattığından istemci yanıt yerine "bağlantı sıfırlandı"
+  görüyordu (curl `000`). Sunucu artık red yanıtından sonra yazma yönünü
+  kapatıp istemcinin gönderdiklerini en çok 2 sn ve 16 MiB boyunca okuyup
+  atıyor; istemci 413/431 yanıtını ve hata metnini görür. Kabul edilen
+  istekler etkilenmez.
+
+  **Göç:** Gerekmez.
 
 - **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
   dene` artık ekli iletide olduğu gibi çevreleyen `… içinde` bloğunun ya da

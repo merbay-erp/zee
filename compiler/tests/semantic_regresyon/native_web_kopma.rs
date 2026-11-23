@@ -422,3 +422,116 @@ pub fn butce_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         (cikis, cikti)
     }
 }
+
+/// K-374 korpus kipi `native-web-erken-red`: istemci isteğin tamamını
+/// (başlık + gövde) tek seferde gönderir, sonra yanıtı okur. `# web-govde:`
+/// isteği gövde sınırını aşan ham gövde (413), `# web-baslik:` isteği başlık
+/// sınırını aşan başlık (431) taşır. Ardından gövde gönderip hiç kapatmayan
+/// ve bayt damlatan bir istemci 413 alır; `# web-sonraki:` isteği tek işçinin
+/// bu istemciyi boşaltma bütçesinde bırakıp bırakmadığını gösterir. Düzeltme
+/// öncesi sunucu okunmamış gövdeyle kapattığından çekirdek RST gönderir ve
+/// istemci yanıtı göremez (`yanıt yok`).
+pub fn erken_red_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
+    #[cfg(not(unix))]
+    {
+        let _ = kaynak_yolu;
+        panic!("actual Unix owned socket capability unavailable; no synthetic pass");
+    }
+    #[cfg(unix)]
+    {
+        // Boşaltma bütçesi 2 sn; sınır CI/platform yavaşlığına 10 sn pay
+        // bırakır. Sınırsız boşaltmada damlatıcı durmadığından sonraki istek
+        // `tam_istek` okuma süresine (25 sn) dek yanıtsız kalır.
+        const BOSALTMA_SINIRI: Duration = Duration::from_secs(12);
+        let kaynak = std::fs::read_to_string(kaynak_yolu).expect("fixture kaynağı");
+        let govdeli = baslik_degeri(&kaynak, "# web-govde: ");
+        let baslikli = baslik_degeri(&kaynak, "# web-baslik: ");
+        let sonraki = baslik_degeri(&kaynak, "# web-sonraki: ");
+        let kapi = bos_kapi();
+        let mut worker = worker_baslat(kaynak_yolu, kapi, Stdio::piped);
+        dinlemeyi_bekle(kapi);
+        let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+        let ozetle = |yanit: std::io::Result<Vec<u8>>| match yanit {
+            Ok(yanit) if !yanit.is_empty() => {
+                let yanit = String::from_utf8_lossy(&yanit).into_owned();
+                let durum = yanit.split_whitespace().nth(1).unwrap_or("").to_string();
+                let govde = yanit.split("\r\n\r\n").nth(1).unwrap_or("").to_string();
+                format!("{durum} {govde}")
+            }
+            Ok(_) => "yanıt yok: boş".to_string(),
+            Err(hata) => format!("yanıt yok: {:?}", hata.kind()),
+        };
+        // Tüm isteği yazar (sunucu erken kapatırsa yazım hatası beklenir),
+        // ardından yanıtı sonuna dek okur.
+        let gonder_oku = |istek: Vec<u8>| -> std::io::Result<Vec<u8>> {
+            let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(2))?;
+            akis.set_read_timeout(Some(Duration::from_secs(15)))?;
+            let _ = akis.write_all(&istek);
+            let mut yanit = Vec::new();
+            akis.read_to_end(&mut yanit)?;
+            Ok(yanit)
+        };
+        let govde = vec![b'x'; 70 * 1024];
+        let mut istek = format!(
+            "{govdeli} HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=198.51.100.5;proto=https;host=panel.example\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+            govde.len()
+        )
+        .into_bytes();
+        istek.extend_from_slice(&govde);
+        let mut cikti = vec![ozetle(gonder_oku(istek))];
+        let istek = format!(
+            "{baslikli} HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=198.51.100.6;proto=https;host=panel.example\r\nX-Dolgu: {}\r\nConnection: close\r\n\r\n",
+            "a".repeat(40 * 1024)
+        );
+        cikti.push(ozetle(gonder_oku(istek.into_bytes())));
+        // Damlatan istemci: büyük Content-Length, sonra 50 ms'de bir bayt;
+        // yanıtı okumaz, bağlantıyı kendisi kapatmaz.
+        let dur = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let durdur = dur.clone();
+        let mut damla = TcpStream::connect_timeout(&adres, Duration::from_secs(2)).expect("damla");
+        damla
+            .write_all(format!(
+                "{govdeli} HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=198.51.100.7;proto=https;host=panel.example\r\nContent-Length: 900000\r\nConnection: close\r\n\r\n"
+            ).as_bytes())
+            .expect("damla başlığı");
+        let damlatici = std::thread::spawn(move || {
+            while !durdur.load(std::sync::atomic::Ordering::Relaxed) {
+                if damla.write_all(b"x").is_err() {
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(50));
+            }
+        });
+        std::thread::sleep(Duration::from_millis(300));
+        let baslangic = Instant::now();
+        let yanit = tam_istek(kapi, sonraki, "198.51.100.8");
+        let sure = baslangic.elapsed();
+        dur.store(true, std::sync::atomic::Ordering::Relaxed);
+        damlatici.join().expect("damlatıcı");
+        cikti.push(match yanit {
+            Some(yanit) => {
+                let durum = yanit.split_whitespace().nth(1).unwrap_or("").to_string();
+                let govde = yanit.split("\r\n\r\n").nth(1).unwrap_or("");
+                format!("{durum} {govde}")
+            }
+            None => "sonraki yanıtsız".to_string(),
+        });
+        cikti.push(if sure <= BOSALTMA_SINIRI {
+            "damlatan bütçede bırakıldı".to_string()
+        } else {
+            format!("işçi {} sn tutuldu", sure.as_secs())
+        });
+        let cikis = match worker.try_wait().expect("worker durumu") {
+            Some(durum) => i64::from(durum.code().unwrap_or(-1)),
+            None => 0,
+        };
+        let _ = worker.kill();
+        let _ = worker.wait();
+        let mut hata = String::new();
+        if let Some(mut boru) = worker.stderr.take() {
+            let _ = boru.read_to_string(&mut hata);
+        }
+        eprintln!("native-web-erken-red: sonraki istek {sure:?}; worker stderr:\n{hata}");
+        (cikis, cikti)
+    }
+}
