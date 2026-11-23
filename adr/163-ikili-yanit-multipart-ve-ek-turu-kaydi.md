@@ -5,7 +5,7 @@
 - **İlgili kayıt:** K-378, K-373, K-355 (`urun-h`, ZM-F022), RFC-0041,
   RFC-0040 katman C, RFC-0036, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-096 (ekli e-posta), ADR-159 (imza okuma), ADR-160 (rota önbelleği),
-  spec/11, spec/26, spec/23, GB-153
+  spec/11, spec/26, spec/23, GB-154, GB-155, GB-156
 
 ## Bağlam
 
@@ -135,12 +135,12 @@ olarak girer.
 - Kullanıcı kaynaklı dosya hiçbir koşulda origin'de belge/betik olarak
   yorumlanmaz (tür kaydı + sandbox CSP + `attachment` + `nosniff`).
 - IDOR (hangi dosyanın kime verildiği) ürün sorumluluğudur; dil yetki kararı
-  vermez (GB-153 bilinçli sınır).
+  vermez (GB-154 bilinçli sınır).
 - ZeeMail docx/xlsx/pptx/zip/txt/csv/ics ekli ileti gönderebilir; bildirimsiz
   projelerde dört tür kuralı aynıdır; yerel ek reddi artık ağ hatasından
-  ayırt edilir (GB-155).
+  ayırt edilir (GB-156).
 - ZeeMail JS'siz formla ek ve kişi dosyası yükleyebilir; bildirimsiz
-  projelerin multipart davranışı aynıdır. Sınırlar ve CSRF sırası GB-154.
+  projelerin multipart davranışı aynıdır. Sınırlar ve CSRF sırası GB-155.
 
 ## Değerlendirilen seçenekler
 

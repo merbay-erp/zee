@@ -535,3 +535,77 @@ pub fn erken_red_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
         (cikis, cikti)
     }
 }
+
+/// K-379 korpus kipi `native-web-csp`: `# web-istegi:` yanıtının gövdesindeki
+/// her öznitelikiz satır içi `<script>` için CSP `script-src` içinde SHA-256
+/// özetinin bulunup bulunmadığını gerçek native worker başlığından okur.
+/// Çıktı: durum kodu, ardından her betik için `izinli|engelli <içerik>`.
+/// Düzeltme öncesi runtime gövdedeki her betiği özetlediğinden yansıyan
+/// saldırgan betiği de `izinli` görünür.
+pub fn csp_calistir(kaynak_yolu: &Path) -> (i64, Vec<String>) {
+    #[cfg(not(unix))]
+    {
+        let _ = kaynak_yolu;
+        panic!("actual Unix owned socket capability unavailable; no synthetic pass");
+    }
+    #[cfg(unix)]
+    {
+        use sha2::{Digest, Sha256};
+        const ALFABE: &[u8; 64] =
+            b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let base64 = |girdi: &[u8]| {
+            let mut sonuc = String::new();
+            for parca in girdi.chunks(3) {
+                let sayi = (u32::from(parca[0]) << 16)
+                    | (u32::from(*parca.get(1).unwrap_or(&0)) << 8)
+                    | u32::from(*parca.get(2).unwrap_or(&0));
+                for i in 0..4 {
+                    if i <= parca.len() {
+                        sonuc.push(ALFABE[((sayi >> (18 - 6 * i)) & 63) as usize] as char);
+                    } else {
+                        sonuc.push('=');
+                    }
+                }
+            }
+            sonuc
+        };
+        let kaynak = std::fs::read_to_string(kaynak_yolu).expect("fixture kaynağı");
+        let istek = baslik_degeri(&kaynak, "# web-istegi: ");
+        let kapi = bos_kapi();
+        let mut worker = worker_baslat(kaynak_yolu, kapi, Stdio::piped);
+        dinlemeyi_bekle(kapi);
+        let yanit = tam_istek(kapi, istek, "198.51.100.9");
+        let cikis = match worker.try_wait().expect("worker durumu") {
+            Some(durum) => i64::from(durum.code().unwrap_or(-1)),
+            None => 0,
+        };
+        let _ = worker.kill();
+        let _ = worker.wait();
+        let Some(yanit) = yanit else {
+            return (cikis, vec!["yanıt yok".to_string()]);
+        };
+        let (basliklar, govde) = yanit.split_once("\r\n\r\n").unwrap_or((&yanit, ""));
+        let csp = basliklar
+            .lines()
+            .find_map(|satir| satir.strip_prefix("Content-Security-Policy: "))
+            .unwrap_or("");
+        let mut cikti = vec![yanit.split_whitespace().nth(1).unwrap_or("").to_string()];
+        let mut kalan = govde;
+        while let Some(acilis) = kalan.find("<script>") {
+            let sonrasi = &kalan[acilis + "<script>".len()..];
+            let Some(kapanis) = sonrasi.find("</script>") else {
+                break;
+            };
+            let betik = &sonrasi[..kapanis];
+            let ozet = format!("'sha256-{}'", base64(&Sha256::digest(betik.as_bytes())));
+            let karar = if csp.contains(&ozet) {
+                "izinli"
+            } else {
+                "engelli"
+            };
+            cikti.push(format!("{karar} {betik}"));
+            kalan = &sonrasi[kapanis + "</script>".len()..];
+        }
+        (cikis, cikti)
+    }
+}

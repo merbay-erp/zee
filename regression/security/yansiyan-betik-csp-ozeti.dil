@@ -1,0 +1,8 @@
+# web-istegi: GET /ara?q=%3Cscript%3Ealert(1)%3C%2Fscript%3E
+# K-379: kaçışsız yansıyan <script> CSP script-src özetini alamaz; yalnız kaynak dize değişmezindeki betik izinlidir.
+
+8080 kapısında sunucu başlat
+
+GET "/ara" adresine istek geldiğinde
+    q isteğin "q" değeri olsun
+    "<!doctype html><p>" ile q ile "</p><script>document.title='zee'</script>" yanıtını gönder

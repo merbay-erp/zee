@@ -25,7 +25,7 @@ katman C (dosyadan yanıt) ve RFC-0039 katman D'de tekrar ediyor.
 `GET /kisiler/disa-aktar` vCard/CSV'yi kayıtlı metin türüyle `attachment`
 yanıtı yapar. Değişiklik öncesi bu kaynak `S015` verir (kalıp yok); şimdi
 `denetle` temizdir ve gerçek yanıt `dosya_yaniti_testi.rs` ile sınanır.
-Ek yolunun kime ait olduğu ürün kararıdır (IDOR, GB-153).
+Ek yolunun kime ait olduğu ürün kararıdır (IDOR, GB-154).
 
 ## Katman B — JS'siz form yüklemesi
 

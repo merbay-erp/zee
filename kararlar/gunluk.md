@@ -5675,3 +5675,38 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-376 takibi — systemd ölçüm adımı kararlılığı (23 Kasım 2026)
+
+- CI'da `scripts/systemd-adli-soket-olcumu.py` aralıklı olarak soket birimini
+  başlatamadı. Yerelde yoğun loopback trafiğiyle yeniden üretildi (eski
+  0/12): geçici aralıktan seçip bırakılan kapı istemci bağlantılarına
+  verilebiliyor. Karar: kapı geçici aralığın dışından, her ailede boşluğu
+  doğrulanarak ve tekil seçilir; teşhis ve sınırlı yeniden deneme yalnız
+  soket kurulumunda (ölçüm sonucu yeniden denenmez, sahte yeşil olmasın).
+- Reddedilen: sabit kapı (paralel koşu ve runner süreçleriyle çakışır);
+  yalnız yeniden deneme (kök nedeni gizler, yük altında yine kırılır).
+
+## K-379 — Satır içi betik CSP özeti yalnız kaynak değişmezinden (23 Kasım 2026)
+
+- `urun-h` denetiminin kritik bulgusu depo içinde yeniden üretildi: gerçek
+  web adaptörü yanıt gövdesindeki her öznitelikiz `<script>` bloğunu
+  özetleyip CSP'ye ekliyordu; kaçışsız yansıyan `<script>alert(1)</script>`
+  özet aldı ve Chromium'da çalıştı. Karar: güvenilir özet kümesi derleme
+  sonrası ana kaynak ve yüklenen birimlerin dize değişmezlerinden (gerçek
+  lexer) bir kez kurulur; yanıtta yalnız kümedeki özetler; küme yokken hiç
+  satır içi betik yok; ilk engelde içeriksiz tek uyarı (spec/12 K-379,
+  ADR-164, GB-153).
+- Reddedilen: yanıt başına nonce (runtime etiketin kökenini bilmiyor,
+  açığı korur); `Metin` köken izi (birleştirme/IO/iz yollarının hepsine
+  dokunan semantic değişiklik, freeze altında orantısız); değişmez
+  parçalarından kurulabilen betiğe izin (kısa değişmezlerle yeni program
+  kurulabilir); satır içi betiği tamamen kapatmak (meşru değişmez betikleri
+  kırar).
+- `urun-h` oturumu ilk düzeltmede test bloğu değişmezlerinin (XSS vektörleri,
+  ör. `<script>alert(1)</script>`) de izin aldığını yakaladı; test blokları
+  parser'ın kuralıyla kümeden çıkarıldı. Yalnız rota/görünüm çıktısına akan
+  değişmezleri saymak veri akışı ister; freeze sonrası aday.
+- Tüketici kanıtı: resmî site 12 rota ve yerel ERP UI birimleri önce/sonra
+  birebir aynı CSP; tek kırılan kullanım çalışma zamanında parça parça
+  kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
+  değişmez ya da statik dosya).

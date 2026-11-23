@@ -210,6 +210,21 @@ fn dosya_yaniti_ikili_govdeyi_kayitli_tur_ve_ek_basligiyla_akitir() {
     );
     assert_eq!(govde, b"ad;e-posta\nZeynep;z@ornek.test\n");
 
+    // K-379 ile birleşim: kullanıcı kaynaklı `<script>` taşıyan dosya HTML
+    // CSP özet akışına girmez; her zaman sandbox CSP, betik özeti yok.
+    std::fs::write(proje.0.join("betik.txt"), "<script>alert(1)</script>").expect("betik");
+    let (basliklar, govde) = ek(kapi, "GET", "betik.txt", "text/plain", "betik.txt");
+    assert_eq!(
+        baslik(&basliklar, "Content-Type"),
+        ["text/plain; charset=utf-8"]
+    );
+    assert_eq!(
+        baslik(&basliklar, "Content-Security-Policy"),
+        ["default-src 'none'; sandbox"]
+    );
+    assert!(!basliklar.contains("sha256-"), "{basliklar}");
+    assert_eq!(govde, b"<script>alert(1)</script>");
+
     // İlk yanıt kazanır: önce metin yanıtı belirlendiyse dosya yanıtı
     // başarısız Sonuç'tur, metin yanıtı değişmez.
     let (basliklar, govde) = istek(kapi, "GET", "/iki");

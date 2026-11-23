@@ -1,0 +1,17 @@
+# web-istegi: GET /ara?q=%3Cscript%3Ealert(1)%3C%2Fscript%3E
+# K-379 eki: test bloğundaki XSS vektörü değişmezi CSP izin kümesine girmez; yansıyan aynı betik engelli kalır.
+# İkinci test bloğu urun-h'nin bildirdiği somut biçimdir (HTML çerçevesi testinde gömülü betik).
+
+8080 kapısında sunucu başlat
+
+GET "/ara" adresine istek geldiğinde
+    q isteğin "q" değeri olsun
+    "<!doctype html><p>" ile q ile "</p><script>document.title='zee'</script>" yanıtını gönder
+
+test "arama yansıması kaçışlanmalı"
+    vektör "<script>alert(1)</script>" olsun
+    vektör "alert" içermeli
+
+test "ileti çerçevesi betiği kaçışlar"
+    f "<p onclick=\"x()\">Merhaba <script>alert(1)</script></p>" olsun
+    f "Merhaba" içermeli

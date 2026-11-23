@@ -155,3 +155,16 @@ ana sürecin UID'i 0 değildir ve `CapEff` sıfırdır; `systemctl stop` temiz
 biter. Olumsuz iki koşu: bildirimde fazladan ad (devredilmeyen ad, çıkış 2)
 ve `BindIPv6Only=both` (V6ONLY kapalı, çıkış 2). Sonuç
 `<klasör>/systemd-adli-soket-olcumu.json`.
+
+Kapılar çekirdeğin geçici (ephemeral) aralığının dışından seçilir, her
+ailede (0.0.0.0 ve çift yığın `[::]`) boş olduğu doğrulanır ve aynı koşuda
+yinelenmez; birim adları koşu başına benzersizdir ve başlangıçta önceki
+kesilmiş koşudan kalan ölçüm birimleri temizlenir. Bir soket birimi
+başlatılamazsa `systemctl status`, birim günlüğü ve `ss -ltnp` (yoksa
+`/proc/net/tcp*`) stderr'e ve JSON'a (`kurulum_hatalari`) yazılır ve koşu
+yeni kapılarla en çok üç kez denenir; ölçümün kendi başarısızlığı yeniden
+denenmez. Gerekçe (K-376 takibi): geçici aralıktan seçip bırakılan kapı,
+runner'daki istemci bağlantılarına verilebiliyordu; yoğun loopback trafiği
+altında eski seçim 12 koşunun 12'sinde `systemctl start …socket` ya da HTTP
+bind hatası verdi, yeni seçim 12/12 geçti.
+

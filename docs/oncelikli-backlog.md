@@ -2570,7 +2570,7 @@ kodlaması, nosniff + no-store + sandbox CSP + CORP, 16 MiB, K-372 bütçesi,
 16 KiB akış, kısalan dosyada kesme, C013 Sonuç, IO izi ve hermetik adaptör.
 Kanıt: `compiler/tests/dosya_yaniti_testi.rs`, `icerik_turu::tests`,
 `web_profili_testleri::dosya_yaniti_parcali_akar_head_govdesiz_kisalan_dosya_kesilir`,
-`dogfood/urun-h/ek-akisi/`. spec/11 §4 “Dosya yanıtı”, GB-153.
+`dogfood/urun-h/ek-akisi/`. spec/11 §4 “Dosya yanıtı”, GB-154.
 
 Katman B (kapalı): `proje.dil` `çok_parçalı_yükleme doğru olsun`
 (web-oturumu, P015/P001); tek geçişli sınırlı ayrıştırıcı `web_cok_parcali`
@@ -2581,7 +2581,7 @@ ve eşleşmeli — aksi hâlde dosya baytı diske akmadan 403; dosya spec/26
 `yukleme_bildirilen_tur`. Kanıt: `compiler/tests/form_yukleme_testi.rs`
 (yavaş gönderim ortasında `.parca` yokluğu), `web_cok_parcali::tests`,
 `proje_testi`, `dogfood/urun-h/ek-akisi/`. spec/26 “Multipart form
-yüklemesi”, GB-154.
+yüklemesi”, GB-155.
 
 Katman C (kapalı): `proje.dil` `e_posta_ek_türleri` (P019, ağsız P015) tam
 küme; ortak kaydın 11 SMTP adayı, makro/yürütülebilir/betik yapısal yasak;
@@ -2590,10 +2590,44 @@ yerel ek reddi SMTP ayarından ve ağdan önce, sabit önekli ölçülebilir C02
 metniyle (K-236 maskesi diğer hatalar için aynen). Kanıt:
 `compiler/tests/smtp_ek_turu_testi.rs` (gerçek SMTP fixture docx/csv, yerel
 ret bağlantısız), `eposta::mime::tests`, `proje_testi`,
-`dogfood/urun-h/ek-akisi/smtp-ek.dil`. spec/23 “Proje ek türü kaydı”, GB-155.
+`dogfood/urun-h/ek-akisi/smtp-ek.dil`. spec/23 “Proje ek türü kaydı”, GB-156.
 
 Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi, çok dosya,
 literal ek listesi için `dil denetle` uyarısı, antivirüs (ürün/operatör).
+## K-379 — Satır içi betik CSP özeti yalnız kaynak değişmezinden
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) güvenlik
+denetiminin kritik bulgusu. Gerçek web adaptörü `text/html` yanıt
+gövdesindeki öznitelikiz her `<script>` bloğunu özetleyip CSP
+`script-src`'ye ekliyordu; tek bir kaçışsız yansımada saldırgan betiği de
+izinli oluyordu. Yeniden üretim (yerel Darwin, release, `--web-proxy` ve
+`--deneysel-web`, Chromium):
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| `?q=<script>alert(1)</script>` yansıması | özet CSP'de, betik çalıştı | özet yok, CSP ihlali |
+| Değişmez `<script>document.title='zee'</script>` | izinli | izinli |
+| Resmî site 12 rota | CSP referansı | birebir aynı |
+| Yerel ERP UI birimleri (23 değişmez betik) | 22 özet | birebir aynı 22 özet |
+| Yalnız değişmezlerden parça parça kurulan betik | izinli | engelli + tek uyarı |
+| `test` bloğunda değişmez `alert(1)` + aynı yansıma | izinli | engelli |
+
+Minimal kapsam (core freeze `security`): güvenilir küme derleme sonrası ana
+kaynak ve yüklenen birimlerin dize değişmezlerinden (gerçek lexer) kurulur;
+yanıtta yalnız bu özetler; küme yokken hiçbir satır içi betik. Yeni grammar,
+kalıp, CLI, tanı, `dil::api::v1` ya da bağımlılık yok. Nonce, değer köken
+izi ve parça birleştirme reddedildi (ADR-164).
+
+Kanıt: `main.rs::yansiyan_betik_csp_ozeti_alamaz`,
+`kaynak_betik_ozetleri_yalniz_tek_degismezi_sayar`, regression
+`yansiyan-betik-csp-ozeti` ve `test-blogu-betik-csp-ozeti` (kip `native-web-csp`),
+`test_blogundaki_betik_degismezi_guvenilmez`, spec/12 K-379 bölümü,
+ADR-164, GB-153. Envanter: 1.926 yerel `.dil` üzerinde gerçek lexer ile
+155 tam değişmez betik; tek değişmezde kapanmayan 55 adayın biri dışında
+hepsi test dizesi.
+
+Açık: kaynak değişmezindeki betiğin yeniden yansıtılması (özet CSP sınırı),
+`style-src 'unsafe-inline'` sertleştirmesi, değer köken izi (RFC adayı).
 
 ## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
 
@@ -2628,6 +2662,16 @@ K-376 maddesi, ADR-162, RFC-0039 Aşama A1, GB-152,
 Açık: bağlantı yüzeyi ve `ağ-dinleyici` yetkinliği (A2), çok işçiye adla
 aktarım, web dışı programda `READY=1`, HTTP dinleyicisinin adlı devirden
 alınması.
+
+Takip (CI kararlılığı): ölçüm adımı bir ubuntu koşusunda
+`systemctl start …-web_v4.socket` ile aralıklı kırıldı. Kök neden: ölçüm
+betiği kapıları geçici aralıktan seçip bırakıyordu; kapı runner'daki istemci
+bağlantılarına verilebiliyordu. Docker systemd 255'te yoğun loopback
+trafiği altında eski betik 0/12, yeni betik 12/12 (sessiz ortamda ikisi de
+12/12). Düzeltme yalnız betikte: geçici aralık dışı, her ailede doğrulanan,
+tekil kapılar; koşu başına benzersiz birim adı; başta eski birim temizliği;
+soket başlatma hatasında status/günlük/`ss` teşhisi ve en çok üç deneme.
+Ürün kodu değişmedi.
 
 ## K-374 — Erken red yanıtı okunmamış istekle RST'ye dönüşmesin
 
