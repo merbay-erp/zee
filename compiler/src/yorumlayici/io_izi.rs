@@ -481,8 +481,10 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
-        let sonuc = self.ic.postgresql_oku(sorgu, parametreler);
+        // K-375: son tarih bütçesi iz argümanı değildir; replay deterministik kalır.
+        let sonuc = self.ic.postgresql_oku(sorgu, parametreler, zaman_asimi_ms);
         let mut argumanlar = vec![sorgu.into()];
         argumanlar.extend(parametreler.iter().cloned());
         self.kaydet("postgresql_oku", argumanlar, veritabani_okuma_yaz(&sonuc));
@@ -493,8 +495,11 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         &mut self,
         sorgu: &str,
         parametreler: &[String],
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<i64, VeritabaniHatasi> {
-        let sonuc = self.ic.postgresql_degistir(sorgu, parametreler);
+        let sonuc = self
+            .ic
+            .postgresql_degistir(sorgu, parametreler, zaman_asimi_ms);
         let mut argumanlar = vec![sorgu.into()];
         argumanlar.extend(parametreler.iter().cloned());
         self.kaydet(

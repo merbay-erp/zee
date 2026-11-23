@@ -113,23 +113,23 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.ic.argumanlar()
     }
     http::yontemler!();
-
     fn postgresql_oku(
         &mut self,
-        sorgu: &str,
-        parametreler: &[String],
+        q: &str,
+        p: &[String],
+        sure: Option<i64>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         self.veritabani_gerektir()?;
-        self.ic.postgresql_oku(sorgu, parametreler)
+        self.ic.postgresql_oku(q, p, sure)
     }
-
     fn postgresql_degistir(
         &mut self,
-        sorgu: &str,
-        parametreler: &[String],
+        q: &str,
+        p: &[String],
+        sure: Option<i64>,
     ) -> Result<i64, VeritabaniHatasi> {
         self.veritabani_gerektir()?;
-        self.ic.postgresql_degistir(sorgu, parametreler)
+        self.ic.postgresql_degistir(q, p, sure)
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.web_gerektir()?;

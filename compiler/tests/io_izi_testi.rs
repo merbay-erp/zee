@@ -214,10 +214,10 @@ fn postgresql_okuma_yazma_ve_yapilandirilmis_hata_izden_aynen_oynatilir() {
         }));
     let mut kaydeden = IzKaydedenIo::yeni(taban);
     let okuma = kaydeden
-        .postgresql_oku("SELECT slug::text", &["anasayfa".into()])
+        .postgresql_oku("SELECT slug::text", &["anasayfa".into()], None)
         .expect("okuma kaydedilmeli");
     let hata = kaydeden
-        .postgresql_degistir("INSERT INTO sayfa VALUES ($1)", &["anasayfa".into()])
+        .postgresql_degistir("INSERT INTO sayfa VALUES ($1)", &["anasayfa".into()], None)
         .expect_err("hata kaydedilmeli");
     assert_eq!(okuma[0][0].1, "anasayfa");
     assert_eq!(hata.veri[0].1, "23505");
@@ -226,13 +226,13 @@ fn postgresql_okuma_yazma_ve_yapilandirilmis_hata_izden_aynen_oynatilir() {
     let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
     assert_eq!(
         oynatici
-            .postgresql_oku("SELECT slug::text", &["anasayfa".into()])
+            .postgresql_oku("SELECT slug::text", &["anasayfa".into()], None)
             .expect("okuma oynatılmalı"),
         okuma
     );
     assert_eq!(
         oynatici
-            .postgresql_degistir("INSERT INTO sayfa VALUES ($1)", &["anasayfa".into()])
+            .postgresql_degistir("INSERT INTO sayfa VALUES ($1)", &["anasayfa".into()], None)
             .expect_err("hata oynatılmalı"),
         hata
     );
