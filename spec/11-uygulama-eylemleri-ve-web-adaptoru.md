@@ -89,6 +89,56 @@ V1 bu cümleyle dinamik status/header builder, ham response nesnesi veya eylem
 içinden HTTP etkisi açmaz. Durumlu yanıt da yalnız rota gövdesindedir ve ilk
 yanıtın istek transaction'ını kapatma kurallarına tabidir.
 
+### Dosya yanıtı — K-378
+
+Normatif kaynak: [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md) katman A,
+[ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md). Rota proje
+içindeki bir dosyayı ek (indirme) olarak gönderebilir:
+
+```text
+GET "/ek" adresine istek geldiğinde
+    oturum gerekli
+    sonuç yol dosyasını "application/pdf" türünde "fatura.pdf" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "Ek bulunamadı." yanıtını 404 durumuyla gönder
+```
+
+- Kalıp `TamSayı sonucu` döndürür (gönderilecek bayt) ve `dosya-okuma` ile
+  `ağ-sunucusu` yetkinliklerini ister; eylem içinde T044, rota dışında başarısız
+  Sonuç'tur. Yol, tür ya da ad reddi yanıt başlığı yazılmadan **C013** başarısız
+  Sonuç'tur; rota bunu yakalayıp kendi durum yanıtını verebilir. Dosya yanıtı
+  isteğin ilk yanıtıdır: yanıtı zaten belirlenmiş istekte de başarısız Sonuç
+  olur ve önceki yanıt değişmez. Bu kurallar TANIMLIDIR.
+- İçerik türü yalnız kapalı `icerik_turu` kaydının dosya sınıfından exact,
+  küçük harf, parametresiz yazımla seçilmek ZORUNDADIR: `application/pdf`,
+  `image/png`, `image/jpeg`, `image/webp`, `text/plain`, `text/csv`,
+  `text/calendar`, `application/zip`, üç OOXML türü (docx/xlsx/pptx) ve
+  `application/octet-stream`. `text/html`, SVG, XHTML ve betik türleri dosya
+  sınıfında YASAKTIR; ürün bu dosyaları `application/octet-stream` ile verir.
+  `text/*` türlerine çalışma zamanı `charset=utf-8` ekler.
+- Başlık değerlerini yalnız çalışma zamanı kurar: `Content-Disposition:
+  attachment; filename="<ASCII geri düşüş>"; filename*=UTF-8''<RFC 8187>`.
+  Boş, `.`/`..`, yol ayracı, NUL/CR/LF dahil denetim karakteri, çift tırnak,
+  Unicode yön denetimi (U+061C, U+200E/F, U+202A–E, U+2066–9) taşıyan ya da 255
+  baytı aşan ad YASAKTIR. Ad yoldan türetilmez. `inline` biçimi, `ETag`,
+  `Range` ve koşullu GET bu sürümde AÇIK sınırdır.
+- Dosya yanıtı her zaman `X-Content-Type-Options: nosniff`, `Cache-Control:
+  no-store`, `Content-Security-Policy: default-src 'none'; sandbox` ve
+  `Cross-Origin-Resource-Policy: same-origin` taşımak ZORUNDADIR; rota önbellek
+  izni (K-335) dosya yanıtına uygulanmaz.
+- Yol spec/26 proje dosya sınırıyla çözülür (mutlak yol, `..`, kök dışına
+  çıkan bağ reddi); son bileşen sembolik bağ, dizin, FIFO ya da normal olmayan
+  dosya olamaz ve dosya readonly/`O_NOFOLLOW` açılır. Çağrı anındaki uzunluk
+  16 MiB'ı (`yukleme_bayti`) aşarsa C013'tür. Gövde 16 KiB parçalarla akar,
+  belleğe alınmaz ve heap zarfına girmez; yazım K-372 mutlak bütçesine
+  (`10 sn + bayt / 128 KiB/s`, 10 sn ilerlemesizlik) tabidir. Akış sırasında
+  dosya kısalır ya da son parçada uzunluğu değişirse bağlantı eksik
+  `Content-Length` ile kesilir; bu başarı sayılmaz. HEAD rotası aynı başlıkları
+  gövdesiz verir. Bu davranış ZORUNLUDUR.
+- IO izi `dosya_yaniti_gonder` olayına yol, tür, ad ve bayt sonucunu yazar;
+  dosya içeriği ize girmez. Hermetik adaptör (`dil dene`) aynı kayıt, ad ve
+  tavan kuralını uygular.
+
 Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`dir.
 Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; yeni kod
 yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla

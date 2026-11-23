@@ -3,7 +3,7 @@ use super::*;
 pub(super) fn alanlari_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
     yetkinlik_yazimlari: &[String],
-) -> Result<(Option<String>, Option<String>), Tani> {
+) -> Result<EpostaAlanlari, Tani> {
     let eposta_baglanti_degiskeni = match istege_bagli_sabit_metni_al(
         alanlar,
         "e_posta_bağlantı_değişkeni",
@@ -64,5 +64,14 @@ pub(super) fn alanlari_al(
             Some(degisken)
         }
     };
-    Ok((eposta_baglanti_degiskeni, gizli_anahtar_degiskeni))
+    // K-378: SMTP ek türü kümesi de e-posta bildirimidir.
+    let eposta_ek_turleri = super::eposta_ek::alani_al(alanlar, yetkinlik_yazimlari)?;
+    Ok((
+        eposta_baglanti_degiskeni,
+        gizli_anahtar_degiskeni,
+        eposta_ek_turleri,
+    ))
 }
+
+/// (bağlantı değişkeni, gizli anahtar değişkeni, ek türü kümesi)
+type EpostaAlanlari = (Option<String>, Option<String>, Option<Vec<String>>);

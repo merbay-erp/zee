@@ -830,6 +830,9 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         return Ok(Some(ifade));
     }
 
+    if let Some(ifade) = dosya::dosya_yaniti_kalibi(tokenlar)? {
+        return Ok(Some(ifade));
+    }
     if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)? {
         return Ok(Some(ifade));
     }

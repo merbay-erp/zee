@@ -225,6 +225,8 @@ fn bildirim_gecerli_zee_kaynagidir() {
             http_gizli_degiskenleri: Vec::new(),
             web_oturumu: None,
             dinleyiciler: Vec::new(),
+            cok_parcali_yukleme: false,
+            eposta_ek_turleri: None,
         }
     );
 }
@@ -1588,4 +1590,60 @@ fn dinleyici_bildirimi_adli_ve_aileye_bagli_okunur() {
     assert!(tani.mesaj.contains("en çok 64"));
     let tani = bildirimi_oku(&format!("{taban}dinleyiciler \"smtp\" olsun\n")).expect_err("tür");
     assert_eq!(tani.kod, "P018");
+}
+
+/// K-378: `çok_parçalı_yükleme` isteğe bağlıdır; açılınca `web-oturumu`
+/// ister (CSRF form alanından oturuma karşı doğrulanır), mantıksal olmalıdır.
+#[test]
+fn cok_parcali_yukleme_bildirimi_web_oturumu_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nağ_hedefleri boş liste olsun\n";
+    let oturumlu = format!("{taban}yetkinlikler \"ağ-sunucusu\", \"web-oturumu\" listesi olsun\n");
+    assert!(!bildirimi_oku(&oturumlu).unwrap().cok_parcali_yukleme);
+    assert!(
+        bildirimi_oku(&format!("{oturumlu}çok_parçalı_yükleme doğru olsun\n"))
+            .unwrap()
+            .cok_parcali_yukleme
+    );
+    assert!(
+        !bildirimi_oku(&format!("{oturumlu}çok_parçalı_yükleme yanlış olsun\n"))
+            .unwrap()
+            .cok_parcali_yukleme
+    );
+    let oturumsuz = format!(
+        "{taban}yetkinlikler \"ağ-sunucusu\" listesi olsun\nçok_parçalı_yükleme doğru olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&oturumsuz).unwrap_err().kod, "P015");
+    let metin = format!("{oturumlu}çok_parçalı_yükleme \"evet\" olsun\n");
+    assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P001");
+}
+
+/// K-378: `e_posta_ek_türleri` kanonik aday adlarla tam küme; `ağ` ister.
+#[test]
+fn eposta_ek_turleri_bildirimi_aday_kayittan_ve_ag_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let agli = format!(
+        "{taban}yetkinlikler \"ağ\" listesi olsun\nağ_hedefleri \"smtps://smtp.example.com:465\" listesi olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&agli).unwrap().eposta_ek_turleri, None);
+    assert_eq!(
+        bildirimi_oku(&format!(
+            "{agli}e_posta_ek_türleri \"pdf\", \"docx\" listesi olsun\n"
+        ))
+        .unwrap()
+        .eposta_ek_turleri,
+        Some(vec!["pdf".to_string(), "docx".to_string()])
+    );
+    for kotu in [
+        "boş liste",
+        "\"xlsm\" listesi",
+        "\"docx\", \"docx\" listesi",
+        "\"pdf\"",
+    ] {
+        let hata = bildirimi_oku(&format!("{agli}e_posta_ek_türleri {kotu} olsun\n")).unwrap_err();
+        assert_eq!(hata.kod, "P019", "{kotu}");
+    }
+    let agsiz = format!(
+        "{taban}yetkinlikler boş liste olsun\nağ_hedefleri boş liste olsun\ne_posta_ek_türleri \"pdf\" listesi olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&agsiz).unwrap_err().kod, "P015");
 }

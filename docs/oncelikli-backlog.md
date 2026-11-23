@@ -2557,6 +2557,43 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-378 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türleri (RFC-0041)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h`
+web arayüzü (ZeeMail, ZM-F022); 23 Kasım 2026 merkez kararı “Sırayla aç”,
+adım 1. RFC-0041 kabul, karar ADR-163, freeze sınıfı `dogfood-change`.
+
+Katman A (kapalı): `<yol> dosyasını <tür> türünde <ad> adıyla ek olarak
+göndermeyi dene` → `TamSayı sonucu`; ortak kapalı `icerik_turu` kaydı (12
+satır; HTML/SVG/betik/makro yok), yalnız `attachment` + RFC 6266/8187 ad
+kodlaması, nosniff + no-store + sandbox CSP + CORP, 16 MiB, K-372 bütçesi,
+16 KiB akış, kısalan dosyada kesme, C013 Sonuç, IO izi ve hermetik adaptör.
+Kanıt: `compiler/tests/dosya_yaniti_testi.rs`, `icerik_turu::tests`,
+`web_profili_testleri::dosya_yaniti_parcali_akar_head_govdesiz_kisalan_dosya_kesilir`,
+`dogfood/urun-h/ek-akisi/`. spec/11 §4 “Dosya yanıtı”, GB-154.
+
+Katman B (kapalı): `proje.dil` `çok_parçalı_yükleme doğru olsun`
+(web-oturumu, P015/P001); tek geçişli sınırlı ayrıştırıcı `web_cok_parcali`
+(≤ 8 parça, tek dosya, 8 KiB başlık/alan, strict boundary, CTE/katlama/
+bilinmeyen başlık 400); oturum gövdeden önce yüklenir, `_csrf` dosyadan önce
+ve eşleşmeli — aksi hâlde dosya baytı diske akmadan 403; dosya spec/26
+`.parca` modeline akar, red öncesi silinir; `yukleme_dosya_adi`,
+`yukleme_bildirilen_tur`. Kanıt: `compiler/tests/form_yukleme_testi.rs`
+(yavaş gönderim ortasında `.parca` yokluğu), `web_cok_parcali::tests`,
+`proje_testi`, `dogfood/urun-h/ek-akisi/`. spec/26 “Multipart form
+yüklemesi”, GB-155.
+
+Katman C (kapalı): `proje.dil` `e_posta_ek_türleri` (P019, ağsız P015) tam
+küme; ortak kaydın 11 SMTP adayı, makro/yürütülebilir/betik yapısal yasak;
+OOXML/zip imza ve metin UTF-8 denetimi; profil `zee-smtp-mime-1` değişmez;
+yerel ek reddi SMTP ayarından ve ağdan önce, sabit önekli ölçülebilir C029
+metniyle (K-236 maskesi diğer hatalar için aynen). Kanıt:
+`compiler/tests/smtp_ek_turu_testi.rs` (gerçek SMTP fixture docx/csv, yerel
+ret bağlantısız), `eposta::mime::tests`, `proje_testi`,
+`dogfood/urun-h/ek-akisi/smtp-ek.dil`. spec/23 “Proje ek türü kaydı”, GB-156.
+
+Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi, çok dosya,
+literal ek listesi için `dil denetle` uyarısı, antivirüs (ürün/operatör).
 ## K-379 — Satır içi betik CSP özeti yalnız kaynak değişmezinden
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) güvenlik
@@ -2929,7 +2966,8 @@ ayrı takip.
 
 ## K-373 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türü RFC taslağı
 
-**Durum: AÇIK (taslak).** [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md):
+**Durum: KAPALI (taslak tamamlandı; RFC-0041 K-378 ile kabul ve
+uygulamada).** [RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md):
 `urun-h` (ZM-F022) web arayüzünde ek indirme, JS'siz form yüklemesi ve
 PDF/görsel dışı SMTP eki istiyor. Üç eksik e63a439 kaynağıyla doğrulandı:
 yanıt taslağı yalnız `Metin` gövdeli üç biçim, tür ilk karakterden,

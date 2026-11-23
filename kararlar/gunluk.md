@@ -5646,6 +5646,35 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   SIGSYS; aynı sahipte çağrı kaldırıldı (GB-152). Linux belirli IPv6
   adresinde V6ONLY'yi kendisi açar; çift yığın olumsuz testi joker `[::]` ile.
 
+## K-378 — İkili dosya yanıtı, multipart yükleme, SMTP ek türleri; RFC-0041 kabul (23 Kasım 2026)
+
+- Merkez kararı (23 Kasım 2026, “Sırayla aç”): ZeeMail (`urun-h`, ZM-F022)
+  yüzeyleri `dogfood-change` istisnasıyla sırayla açılıyor; bu iş adım 1.
+  RFC-0041 kabul edildi, alt RFC açılmadı; karar ADR-163. Üç katman ayrı
+  kaynak commit'lerinde; ortak kapalı içerik türü kaydı `dil::icerik_turu`
+  (RFC-0040 katman C metin sınıfı ileride satır ekler).
+- Katman A: tek contextual Sonuç kalıbı `… dosyasını <tür> türünde <ad>
+  adıyla ek olarak göndermeyi dene` (`türünde`, `adıyla`), yalnız
+  `attachment`, sandbox CSP + CORP + nosniff, 16 MiB, K-372 bütçesi, C013.
+  Reddedilen: genel başlık builder'ı; `inline`/ETag/Range (ölçümsüz açılmaz);
+  ayrı dosya yazım bütçesi (K-372 formülü yeterli); C022 hata kodu (ürün tek
+  `başarısızsa` dalıyla C013 ailesini yakalar).
+- Ürün politikası (`dogfood/urun-h/proje.dil`) web arayüzünün kullandığı
+  `ağ-sunucusu`, `web-oturumu`, `dosya-okuma` yetkinlikleriyle genişletildi;
+  önceki korpus vakaları etkilenmez.
+- Katman B: açılış proje bildirimi `çok_parçalı_yükleme doğru olsun`
+  (web-oturumu); rota politikası cümlesi grammar istediği için reddedildi;
+  bildirimsiz projede 415 davranış değişikliği olacağından açılmadı.
+  Oturum yalnız multipart yolunda gövdeden önce yüklenir; `_csrf` dosyadan
+  önce ZORUNLU (dosyayı önce yazıp sonra doğrulamak K-332 değişmezini
+  bozardı). Ayrıştırıcı CLI adaptörü modülü `web_cok_parcali`.
+- Katman C: `e_posta_ek_türleri` tam küme (P019 yeni tanı); profil etiketi
+  değişmez; ek okuması SMTP ayarından öne alındı ki yerel ret ağdan ve SMTP
+  yapılandırmasından bağımsız ölçülsün; ret sabit önekle maskeden ayrılır.
+  Reddedilen: `zee-smtp-mime-2` (tel aynı), çağrı başına liste (dil yüzeyi),
+  varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
+  kancası. K-378 kapandı.
+
 ## K-376 takibi — systemd ölçüm adımı kararlılığı (23 Kasım 2026)
 
 - CI'da `scripts/systemd-adli-soket-olcumu.py` aralıklı olarak soket birimini

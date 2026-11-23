@@ -364,6 +364,10 @@ pub fn gonder(
 }
 
 /// K-236: server echo, URL/credential ve adaptör ayrıntısı dışarı çıkmaz.
+/// K-378: ağa çıkmadan verilen, sır taşımayan yerel MIME ek reddinin
+/// sabit öneki. Yalnız bu önekli ileti C029 maskesini aşar; ardından gelen
+/// neden `mime::ekleri_izinle_oku`nun sabit metinlerindendir.
+pub const MIME_EK_REDDI_ONEKI: &str = "MIME e-posta gönderilemedi: ek reddedildi (";
 pub(crate) const GONDERIM_HATASI: &str = "E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok";
 
 #[cfg(not(target_arch = "wasm32"))]

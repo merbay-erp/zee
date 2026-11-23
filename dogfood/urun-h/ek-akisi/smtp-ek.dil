@@ -1,0 +1,14 @@
+# K-378 (RFC-0041 C): ürün H webmail'i yazılan iletiye docx/xlsx/zip ekleyemiyordu
+# (`zee-smtp-mime-1` yalnız PDF/PNG/JPEG/WebP). Proje `e_posta_ek_türleri`
+# bildirimiyle kümeyi genişletir; ürün kurum politikası için gönderimden önce
+# kendi daha dar denetimini yapar. Ek yolu yüklemenin taşındığı depo yoludur.
+alici "alici@ornek.test" olsun
+konu "Teklif ve tablo" olsun
+duz "Teklif belgesi ve tablo ektedir." olsun
+ekler "veri/ekler/teklif.docx", "veri/ekler/tablo.xlsx", "veri/ekler/kisiler.csv" listesi olsun
+sonuc alici konu duz "" "" ekler "" ile ekli ileti göndermeyi dene olsun
+sonuc başarılıysa
+    "gönderildi" yaz
+değilse
+    hata sonucun hatası olsun
+    hatanın mesajı yaz

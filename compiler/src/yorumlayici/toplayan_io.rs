@@ -30,6 +30,9 @@ pub struct ToplayanIo {
     pub sunucu_durumlari: Vec<u16>,
     /// K-335: eşleşen rotanın bildirdiği önbellek izinleri (saniye).
     pub onbellek_izinleri: Vec<u32>,
+    /// K-378: hermetik dosya yanıtları — (Content-Type, Content-Disposition).
+    /// Gövde `sunucu_yanitlari`na dosya içeriği olarak yazılır.
+    pub dosya_yanitlari: Vec<(String, String)>,
     /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
     pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
@@ -104,6 +107,7 @@ impl ToplayanIo {
             sunucu_yanitlari: Vec::new(),
             sunucu_durumlari: Vec::new(),
             onbellek_izinleri: Vec::new(),
+            dosya_yanitlari: Vec::new(),
             istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
@@ -388,6 +392,32 @@ impl GirdiCikti for ToplayanIo {
         } else {
             self.sunucu_yanitini_uygula(taslak);
         }
+    }
+    fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
+        // Gerçek adaptörle aynı kayıt, ad ve tavan kuralı (K-378); sahte dosya
+        // sistemi metin taşıdığından içerik bayt olarak aynen gönderilir.
+        if self.web_istek_yedegi.is_none() {
+            return Err("dosya yanıtı yalnız web isteği içinde gönderilebilir".into());
+        }
+        let kayit = crate::icerik_turu::web_dosya_turu(tur)
+            .ok_or_else(|| format!("\"{tur}\" dosya yanıtı için kayıtlı içerik türü değil"))?;
+        let disposition = crate::icerik_turu::ek_disposition(ad).map_err(str::to_string)?;
+        let icerik = self
+            .dosyalar
+            .get(yol)
+            .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))?
+            .clone();
+        if icerik.len() as u64 > crate::icerik_turu::WEB_DOSYA_YANITI_BAYTI {
+            return Err("dosya yanıtı 16 MiB sınırını aşıyor".into());
+        }
+        if self.bekleyen_sunucu_yaniti.is_some() {
+            return Err("bu isteğin yanıtı zaten belirlendi".into());
+        }
+        self.dosya_yanitlari
+            .push((crate::icerik_turu::baslik_degeri(kayit), disposition));
+        let bayt = icerik.len() as i64;
+        self.bekleyen_sunucu_yaniti = Some(SunucuYanitTaslagi::Govde(icerik));
+        Ok(bayt)
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         let taslak = SunucuYanitTaslagi::Durum(durum, yanit.to_string());

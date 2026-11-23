@@ -45,6 +45,8 @@ pub mod hir;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod http_istegi;
 #[doc(hidden)]
+pub mod icerik_turu;
+#[doc(hidden)]
 pub mod intrinsic;
 #[doc(hidden)]
 pub mod invariant;
