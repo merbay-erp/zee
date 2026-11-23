@@ -1063,54 +1063,78 @@ fn grup_cikisini_bekle(grup: &mut Sunucu, sure: Duration) -> (std::process::Exit
 #[test]
 fn isci_grubu_art_arda_hizli_cokuste_durur_ve_saglik_ara_durumlarini_bildirir() {
     let gecici = GeciciKlasor::yeni();
-    let kapi = bos_kapi();
-    let saglik = bos_kapi();
     let yol = gecici.0.join("ana.dil");
-    std::fs::write(
-        &yol,
-        format!(
-            "sahip birincil süreç olsun\n\
-             sahip ise\n    toplam 0 olsun\n    1 den 1000000 e kadar her sayı için\n        \
-             toplamı sayıyla artır\n\
-             değilse\n    \"baslatma.log\" dosyasına \"ikincil\" ekle\n    programı 3 ile bitir\n\
-             {kapi} kapısında sunucu başlat\n\n\
-             GET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"
-        ),
-    )
-    .expect("kaynak");
     let gunluk = gecici.0.join("yonetici.log");
     use std::os::unix::process::CommandExt;
-    let mut grup = Sunucu(
-        Command::new(env!("CARGO_BIN_EXE_dil"))
-            .args([
-                "çalıştır",
-                "--web-proxy",
-                "https://panel.example",
-                "--web-worker-port",
-                &kapi.to_string(),
-                "--web-isci-sayisi",
-                "2",
-                "--web-saglik-port",
-                &saglik.to_string(),
-                yol.to_str().expect("UTF-8 kaynak yolu"),
-            ])
-            .current_dir(&gecici.0)
-            .stdout(Stdio::null())
-            .stderr(std::fs::File::create(&gunluk).expect("yönetici günlüğü"))
-            .process_group(0)
-            .spawn()
-            .expect("yönetici"),
-    );
-    let _bekci = Bekci::kur(grup.0.id(), Duration::from_secs(150));
+    // K-369: yönetici kapıları kendisi bağlar; `bos_kapi` sınayıp bıraktığı
+    // kapıyı paralel testin fork→exec penceresi kısa süre tutabilir (tam yükte
+    // "dinleyemedi: Address already in use", eskiden "sağlık portu
+    // açılmadı"). Yalnız bu bağlama reddinde taze kapılarla sınırlı kez
+    // yeniden başlatılır; başka her erken çıkış tanısıyla testi düşürür.
+    let mut deneme = 0;
+    let (saglik, mut grup, _bekci, basliyor) = loop {
+        deneme += 1;
+        let kapi = bos_kapi();
+        let saglik = bos_kapi();
+        std::fs::write(
+            &yol,
+            format!(
+                "sahip birincil süreç olsun\n\
+                 sahip ise\n    toplam 0 olsun\n    1 den 1000000 e kadar her sayı için\n        \
+                 toplamı sayıyla artır\n\
+                 değilse\n    \"baslatma.log\" dosyasına \"ikincil\" ekle\n    programı 3 ile bitir\n\
+                 {kapi} kapısında sunucu başlat\n\n\
+                 GET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"
+            ),
+        )
+        .expect("kaynak");
+        let mut grup = Sunucu(
+            Command::new(env!("CARGO_BIN_EXE_dil"))
+                .args([
+                    "çalıştır",
+                    "--web-proxy",
+                    "https://panel.example",
+                    "--web-worker-port",
+                    &kapi.to_string(),
+                    "--web-isci-sayisi",
+                    "2",
+                    "--web-saglik-port",
+                    &saglik.to_string(),
+                    yol.to_str().expect("UTF-8 kaynak yolu"),
+                ])
+                .current_dir(&gecici.0)
+                .stdout(Stdio::null())
+                .stderr(std::fs::File::create(&gunluk).expect("yönetici günlüğü"))
+                .process_group(0)
+                .spawn()
+                .expect("yönetici"),
+        );
+        let bekci = Bekci::kur(grup.0.id(), Duration::from_secs(150));
 
-    // Birincil açılışı sürerken: 503 basliyor; HEAD aynı başlığı gövdesiz verir.
-    let son = Instant::now() + Duration::from_secs(20);
-    let basliyor = loop {
-        if let Some(yanit) = saglik_ham(saglik, "GET /saglik HTTP/1.1") {
-            break yanit;
+        // Birincil açılışı sürerken: 503 basliyor; HEAD aynı başlığı gövdesiz verir.
+        let son = Instant::now() + Duration::from_secs(20);
+        let basliyor = loop {
+            if let Some(yanit) = saglik_ham(saglik, "GET /saglik HTTP/1.1") {
+                break Some(yanit);
+            }
+            let cikis = grup.0.try_wait().expect("yönetici durumu");
+            let metin = std::fs::read_to_string(&gunluk).unwrap_or_default();
+            if cikis.is_some()
+                && deneme < 8
+                && metin.contains("dinleyemedi")
+                && metin.contains("Address already in use")
+            {
+                break None;
+            }
+            assert!(
+                cikis.is_none() && Instant::now() < son,
+                "sağlık portu açılmadı; yönetici durumu {cikis:?}, günlük: {metin}"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        };
+        if let Some(basliyor) = basliyor {
+            break (saglik, grup, bekci, basliyor);
         }
-        assert!(Instant::now() < son, "sağlık portu açılmadı");
-        std::thread::sleep(Duration::from_millis(5));
     };
     assert_eq!(durum(&basliyor), 503, "{basliyor}");
     assert!(
@@ -1686,6 +1710,26 @@ fn systemd_yoneticisi(
     komut.spawn().expect("systemd yöneticisi")
 }
 
+/// K-369: systemd soket devri testleri dinleyiciyi kendisi bağlar. Kapıyı
+/// `bos_kapi` ile sınayıp bırakmak ve sonra yeniden bağlamak seç-bırak-bağla
+/// yarışıdır: paralel testin fork→exec penceresindeki çocuk bırakılan sınama
+/// soketini kısa süre tutabilir (tam yükte `AddrInUse`). Kapı yine kilitli
+/// aralıktan seçilir (geçici aralıktan kaçınılır); bağlama `AddrInUse` ile
+/// düşerse yeni kapıyla sınırlı kez denenir ve dinleyici devre dek bırakılmaz.
+#[cfg(unix)]
+fn bagli_dinleyici() -> (std::net::TcpListener, u16) {
+    let mut son_hata = None;
+    for _ in 0..32 {
+        let kapi = bos_kapi();
+        match std::net::TcpListener::bind(("127.0.0.1", kapi)) {
+            Ok(soket) => return (soket, kapi),
+            Err(hata) if hata.kind() == std::io::ErrorKind::AddrInUse => son_hata = Some(hata),
+            Err(hata) => panic!("soket: {hata}"),
+        }
+    }
+    panic!("32 kapıda dinleyici bağlanamadı: {son_hata:?}");
+}
+
 #[cfg(unix)]
 fn cikis_ve_stderr(mut cocuk: Child, sure: Duration) -> (Option<i32>, String) {
     let son = Instant::now() + sure;
@@ -1720,9 +1764,8 @@ fn isci_grubu_systemd_soketi_eksik_ya_da_gecersizse_oneriyle_reddeder() {
         "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n",
     )
     .expect("kaynak");
-    let kapi = bos_kapi();
-    let soket = std::net::TcpListener::bind(("127.0.0.1", kapi)).expect("soket");
-    let baska = std::net::TcpListener::bind(("127.0.0.1", bos_kapi())).expect("başka soket");
+    let (soket, kapi) = bagli_dinleyici();
+    let (baska, _) = bagli_dinleyici();
     let grup = ["--web-isci-sayisi", "2", "--web-systemd-soketi"];
     for (ad, fd, ortam, ek, ifade) in [
         (
@@ -1793,8 +1836,7 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
         "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n",
     )
     .expect("kaynak");
-    let kapi = bos_kapi();
-    let soket = std::net::TcpListener::bind(("127.0.0.1", kapi)).expect("soket");
+    let (soket, kapi) = bagli_dinleyici();
     let fd = soket.as_raw_fd();
     let grup = ["--web-isci-sayisi", "2", "--web-systemd-soketi"];
     let baslat = || systemd_yoneticisi(&yol, kapi, Some(fd), "LISTEN_PID=$$ LISTEN_FDS=1", &grup);
@@ -1804,7 +1846,11 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
     while !kopma::tam_istek(kapi, "GET /", "203.0.113.30")
         .is_some_and(|y| y.starts_with("HTTP/1.1 200"))
     {
-        assert!(Instant::now() < son, "ilk yönetici hizmete geçmedi");
+        if Instant::now() >= son {
+            // K-369: zaman aşımı tanısı yöneticinin kendi stderr'ini taşır.
+            let (kod, hata) = cikis_ve_stderr(yonetici, Duration::ZERO);
+            panic!("ilk yönetici hizmete geçmedi (çıkış {kod:?}): {hata}");
+        }
         std::thread::sleep(Duration::from_millis(50));
     }
     let dur = Arc::new(AtomicBool::new(false));
@@ -1833,9 +1879,26 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
             })
         })
         .collect();
-    std::thread::sleep(Duration::from_secs(1));
+    // K-369: yük ön koşulu sabit uyku değil, gözlenen istek sayısıdır. Tam
+    // `cargo test` yükünde istek başına süre ~10× uzar; 1 sn ısınma + toplam
+    // > 50 varsayımı 0 kayıplı koşuları "yetersiz yük" diye düşürüyordu. Her
+    // yeniden başlatmadan önce son tarihli yoklamayla yeni istekler beklenir;
+    // böylece her pencere sürmekte olan yükün ortasına düşer.
+    let yuku_bekle = |hedef: usize| {
+        let son = Instant::now() + Duration::from_secs(60);
+        while kayit.lock().unwrap().len() < hedef {
+            assert!(
+                Instant::now() < son,
+                "istemciler 60 sn'de {hedef} isteğe ulaşmadı"
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    };
+    yuku_bekle(20);
     let mut pencereler = Vec::new();
     for _ in 0..3 {
+        let onceki = kayit.lock().unwrap().len();
+        yuku_bekle(onceki + 12);
         let basla = Instant::now();
         // SAFETY: SIGTERM to the test-owned manager (KillMode=mixed eşi).
         unsafe { libc::kill(yonetici.id() as libc::pid_t, libc::SIGTERM) };
@@ -1846,7 +1909,11 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
         while !kopma::tam_istek(kapi, "GET /", "203.0.113.31")
             .is_some_and(|y| y.starts_with("HTTP/1.1 200"))
         {
-            assert!(Instant::now() < son, "yeni yönetici hizmete geçmedi");
+            if Instant::now() >= son {
+                // K-369: zaman aşımı tanısı yöneticinin kendi stderr'ini taşır.
+                let (kod, hata) = cikis_ve_stderr(yonetici, Duration::ZERO);
+                panic!("yeni yönetici hizmete geçmedi (çıkış {kod:?}): {hata}");
+            }
             std::thread::sleep(Duration::from_millis(20));
         }
         std::thread::sleep(Duration::from_millis(500));

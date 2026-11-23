@@ -17,9 +17,10 @@ class Cases(unittest.TestCase):
         self.credentials=self.root/'credentials';self.credentials.mkdir(mode=0o700);(self.credentials/'db').write_text('synthetic');(self.credentials/'db').chmod(0o600)
         self.ca=self.root/'ca.pem';self.ca.write_text('public fixture CA');self.ca.chmod(0o600)
         self.repo=self.root/'repo';self.repo.mkdir();self.file=self.root/'config.json'
-        ports=[]
-        for _ in range(2):
-            with socket.socket() as sock:sock.bind(('127.0.0.1',0));ports.append(sock.getsockname()[1])
+        # K-369: both probe sockets stay bound until both ports are read; a
+        # released ephemeral port may be handed out again (CI 'service refused').
+        with socket.socket() as first,socket.socket() as second:
+            first.bind(('127.0.0.1',0));second.bind(('127.0.0.1',0));ports=[first.getsockname()[1],second.getsockname()[1]]
         binary=Path(sys.executable).resolve()
         self.value={'schema':'zee-http-service-1','repo':str(self.repo),'source_sha':'1'*40,'dil':str(binary),'binary_sha256':self.sha(binary),'project':str(self.project),'project_files':{x.name:self.sha(x)for x in self.project.iterdir()if x.is_file()},'probe_project':str(self.probe),'probe_files':{x.name:self.sha(x)for x in self.probe.iterdir()},'contract':str(self.contract),'contract_sha256':self.sha(self.contract),'application_revision':'2'*40,'origin':'https://fixture.example','worker_ports':ports,'readiness_file':str(self.project/'.zee/ready.json'),'health_path':'/health','health_body':'ok','state':str(self.root/'state'),'watch_interval':2,'probe_deadline':1,'readiness_ttl':6,'credential_root':None,'credential_env':[],'probe_credential_root':str(self.credentials),'probe_credential_name':'db','probe_ca':str(self.ca),'probe_ca_sha256':self.sha(self.ca)}
         self.write();M.T.D.CANCELLED=False
