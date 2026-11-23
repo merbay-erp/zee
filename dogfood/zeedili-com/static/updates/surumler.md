@@ -12,17 +12,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
-- **Büyük istek reddi artık istemciye ulaşıyor (K-374):** 64 KiB sınırını
-  aşan bir form/gövde (ör. büyük multipart içe aktarma) ya da sınırı aşan
-  başlıklar gönderildiğinde sunucu 413/431 yanıtını yazıyor ama bağlantıyı
-  okunmamış veriyle kapattığından istemci yanıt yerine "bağlantı sıfırlandı"
-  görüyordu (curl `000`). Sunucu artık red yanıtından sonra yazma yönünü
-  kapatıp istemcinin gönderdiklerini en çok 2 sn ve 16 MiB boyunca okuyup
-  atıyor; istemci 413/431 yanıtını ve hata metnini görür. Kabul edilen
-  istekler etkilenmez.
-
-  **Göç:** Gerekmez.
-
+- **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
+  dene` artık ekli iletide olduğu gibi çevreleyen `… içinde` bloğunun ya da
+  web isteğinin kalan süresini kullanır. Önceden yanıt vermeyen bir SMTP
+  sunucusu `1 saniye içinde` bloğunu 20 saniye bekletebiliyor, web isteğinin
+  504 yanıtını da geciktirebiliyordu; şimdi süre dolunca `yetişmezse` kolu
+  zamanında çalışır, web'de 504 zamanında gönderilir. Süre bloğu olmayan
+  gönderimde 20 saniyelik üst sınır aynıdır; hata metni ve "otomatik tekrar
+  yok" kuralı değişmez. Ayrıca dış hataların (SMTP, HTTP, PostgreSQL) Zee
+  kodunda nasıl yakalandığı denetlendi; PostgreSQL sorgularının süre sınırına
+  bağlanması ayrı taslak olarak açık kaldı (RFC-0042).
 - **Yavaş okuyan istemci sunucu işçisini uzun süre tutamaz (K-372):**
   Yanıtını hiç okumayan ya da çok yavaş okuyan bir bağlantı, büyük bir yanıtın
   yazımı sırasında sunucu işçisini artık süresiz meşgul edemez. Yanıt yazımı

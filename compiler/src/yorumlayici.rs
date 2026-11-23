@@ -508,12 +508,15 @@ pub trait GirdiCikti {
     }
     /// K-210: SMTP ile düz metin e-posta gönderir; başarıda 1. `baglanti`
     /// verilmezse proje bildirimindeki ortam değişkeni kullanılır.
+    /// K-371: `zaman_asimi_ms` 20 sn tavanı ile dış son tarihin kalanının
+    /// küçüğüdür; native gönderim tek mutlak bütçeyi bunun içinde tutar.
     fn eposta_gonder(
         &mut self,
         _baglanti: Option<&str>,
         _alici: &str,
         _konu: &str,
         _govde: &str,
+        _zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
         Err("IO adaptörü e-posta göndermiyor".into())
     }
@@ -729,10 +732,11 @@ impl GirdiCikti for PaylasilanIo<'_> {
         alici: &str,
         konu: &str,
         govde: &str,
+        zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
         self.ic
             .borrow_mut()
-            .eposta_gonder(baglanti, alici, konu, govde)
+            .eposta_gonder(baglanti, alici, konu, govde, zaman_asimi_ms)
     }
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         self.ic.borrow_mut().gorsel_kucult(kaynak, hedef, azami)

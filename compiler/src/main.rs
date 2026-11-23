@@ -2717,25 +2717,22 @@ fn yanit_butcesiyle_yaz(akis: &mut impl WebTasima, veri: &[u8]) -> std::io::Resu
 /// boyunca tek bayt ilerlemezse keser (eski syscall başına socket zaman
 /// aşımının karşılığı). Socket zaman aşımı kısmi ilerlemeyle yenilendiği ve
 /// Darwin'de tek çağrı ilerledikçe süresini aşabildiği için yazım nonblocking
-/// yapılır; bekleme kısa uykuyla son tarihe kırpılır. Bağlantı yanıttan sonra
-/// kapandığından nonblocking kip geri alınmaz.
+/// yapılır; `WouldBlock` beklemesi (Unix'te `poll`) son tarihe kırpılır.
+/// Bağlantı yanıttan sonra kapandığından nonblocking kip geri alınmaz.
 fn son_tarihli_yaz(
     akis: &mut impl WebTasima,
     mut veri: &[u8],
     son_tarih: std::time::Instant,
     ilerlemesiz: std::time::Duration,
 ) -> std::io::Result<()> {
-    const EN_UZUN_UYKU: std::time::Duration = std::time::Duration::from_millis(10);
     akis.set_nonblocking(true)?;
     let mut son_ilerleme = std::time::Instant::now();
-    let mut uyku = std::time::Duration::from_millis(1);
     while !veri.is_empty() {
         match akis.write(veri) {
             Ok(0) => return Err(std::io::ErrorKind::WriteZero.into()),
             Ok(yazilan) => {
                 veri = &veri[yazilan..];
                 son_ilerleme = std::time::Instant::now();
-                uyku = std::time::Duration::from_millis(1);
                 if !veri.is_empty() && son_ilerleme >= son_tarih {
                     return Err(yanit_butcesi_doldu());
                 }
@@ -2753,9 +2750,7 @@ fn son_tarihli_yaz(
                         format!("yanıt yazımı {} sn ilerlemedi", ilerlemesiz.as_secs()),
                     ));
                 }
-                let kalan = son_tarih.min(durgun_son) - simdi;
-                std::thread::sleep(uyku.min(kalan));
-                uyku = (uyku * 2).min(EN_UZUN_UYKU);
+                akis.yazilabilir_bekle(son_tarih.min(durgun_son) - simdi)?;
             }
             Err(e) => return Err(e),
         }
@@ -4019,7 +4014,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         alici: &str,
         konu: &str,
         govde: &str,
+        zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
+        let baslangic = std::time::Instant::now();
         self.politika.gerektir(dil::yetkinlik::Yetkinlik::Ag)?;
         let url = match baglanti {
             Some(url) => url.to_string(),
@@ -4052,7 +4049,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 kimlik: &kimlik[..32],
                 tarih: &tarih,
             },
-            std::time::Duration::from_secs(20),
+            // K-371: 20 sn tavanı ve dış son tarihin kalanı; ortam/sır
+            // hazırlığına giden süre aynı mutlak bütçeden düşülür.
+            std::time::Duration::from_millis(
+                u64::try_from(zaman_asimi_ms).map_err(|_| "SMTP bütçesi geçersiz")?,
+            )
+            .checked_sub(baslangic.elapsed())
+            .ok_or("SMTP bütçesi doldu")?,
             &|ip| politika.cozulmus_ipyi_denetle(ip),
         )?;
         let _ = hedef;
@@ -5138,6 +5141,10 @@ mod web_profili_testleri {
         fn yazmayi_kapat(&self) -> std::io::Result<()> {
             Ok(())
         }
+        fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()> {
+            std::thread::sleep(en_cok.min(std::time::Duration::from_micros(200)));
+            Ok(())
+        }
     }
 
     #[test]
@@ -5198,8 +5205,9 @@ mod web_profili_testleri {
     /// WouldBlock ve Interrupted hata sayılmaz.
     #[test]
     fn butce_icindeki_yazim_tam_ve_sirali_biter() {
-        let mut akis = DamlaAkisi::yeni(7, 2);
-        let veri: Vec<u8> = (0..=255u8).cycle().take(5000).collect();
+        // Az tur: sahte bekleme gerçek uykudur; CI yavaşlığında da 10 sn'yi aşmaz.
+        let mut akis = DamlaAkisi::yeni(7, 1);
+        let veri: Vec<u8> = (0..=255u8).cycle().take(500).collect();
         let son_tarih = std::time::Instant::now() + std::time::Duration::from_secs(10);
         son_tarihli_yaz(
             &mut akis,
@@ -5211,7 +5219,9 @@ mod web_profili_testleri {
         assert_eq!(akis.yazilan, veri);
     }
 
-    /// K-372: gerçek soket üzerinde okunmayan büyük yanıt bütçede kesilir.
+    /// K-372: gerçek soket üzerinde okunmayan büyük yanıt son tarihten sonra
+    /// sürmez. Windows çekirdeği nonblocking gönderimi bütünüyle
+    /// tamponlayabilir (`Ok`); hata varsa yalnız zaman aşımıdır.
     #[test]
     fn okunmayan_gercek_soket_yazimi_son_tarihte_biter() {
         let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
@@ -5221,15 +5231,18 @@ mod web_profili_testleri {
         let veri = vec![b'x'; 64 << 20];
         let baslangic = std::time::Instant::now();
         let son_tarih = baslangic + std::time::Duration::from_millis(300);
-        let hata = son_tarihli_yaz(
+        let sonuc = son_tarihli_yaz(
             &mut sunucu,
             &veri,
             son_tarih,
             std::time::Duration::from_secs(10),
-        )
-        .unwrap_err();
+        );
         let gecen = baslangic.elapsed();
-        assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
+        match sonuc {
+            Err(hata) => assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut),
+            Ok(()) if cfg!(windows) => {}
+            Ok(()) => panic!("Unix çekirdeği 64 MiB'ı okunmadan tamponlamaz"),
+        }
         assert!(gecen < std::time::Duration::from_secs(3), "{gecen:?}");
     }
 
@@ -5340,6 +5353,9 @@ mod web_profili_testleri {
             }
             fn yazmayi_kapat(&self) -> std::io::Result<()> {
                 self.kapanis_konumu.set(Some(self.girdi.position()));
+                Ok(())
+            }
+            fn yazilabilir_bekle(&self, _: std::time::Duration) -> std::io::Result<()> {
                 Ok(())
             }
         }

@@ -157,8 +157,10 @@ pub(super) fn kaydet_eposta_gonder<T: GirdiCikti>(
     alici: &str,
     konu: &str,
     govde: &str,
+    zaman_asimi_ms: i64,
 ) -> Result<i64, String> {
-    let sonuc = io.ic.eposta_gonder(b, alici, konu, govde);
+    // K-371: süre bütçesi yürütme bağlamıdır; iz alanı değişmez.
+    let sonuc = io.ic.eposta_gonder(b, alici, konu, govde, zaman_asimi_ms);
     let alanlar = self::eposta(b, alici, konu, govde);
     io.kaydet("eposta_gonder", alanlar, tamsayi_sonuc_yaz(&sonuc));
     sonuc

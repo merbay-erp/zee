@@ -50,23 +50,28 @@ pub(super) fn intrinsic_degerlendir(
             io.totp_dogrula(&metne_sinirli(gizli, satir)?, &metne_sinirli(kod, satir)?),
         )),
         (EPOSTA_GONDER, [alici, konu, govde]) => {
-            let sonuc = io.eposta_gonder(
-                None,
-                &metne_sinirli(alici, satir)?,
-                &metne_sinirli(konu, satir)?,
-                &metne_sinirli(govde, satir)?,
+            let (alici, konu, govde) = (
+                metne_sinirli(alici, satir)?,
+                metne_sinirli(konu, satir)?,
+                metne_sinirli(govde, satir)?,
             );
+            let zaman_asimi_ms = eposta_butcesi(io, satir)?;
+            let sonuc = io.eposta_gonder(None, &alici, &konu, &govde, zaman_asimi_ms);
+            son_tarihi_denetle(io, satir)?;
             Ok(eposta_sonucu(
                 sonuc.map_err(|_| crate::eposta::GONDERIM_HATASI.into()),
             ))
         }
         (EPOSTA_GONDER_BAGLANTILI, [alici, konu, govde, baglanti]) => {
-            let sonuc = io.eposta_gonder(
-                Some(&metne_sinirli(baglanti, satir)?),
-                &metne_sinirli(alici, satir)?,
-                &metne_sinirli(konu, satir)?,
-                &metne_sinirli(govde, satir)?,
+            let (baglanti, alici, konu, govde) = (
+                metne_sinirli(baglanti, satir)?,
+                metne_sinirli(alici, satir)?,
+                metne_sinirli(konu, satir)?,
+                metne_sinirli(govde, satir)?,
             );
+            let zaman_asimi_ms = eposta_butcesi(io, satir)?;
+            let sonuc = io.eposta_gonder(Some(&baglanti), &alici, &konu, &govde, zaman_asimi_ms);
+            son_tarihi_denetle(io, satir)?;
             Ok(eposta_sonucu(
                 sonuc.map_err(|_| crate::eposta::GONDERIM_HATASI.into()),
             ))
@@ -80,11 +85,7 @@ pub(super) fn intrinsic_degerlendir(
                 })
                 .collect::<Result<_, _>>()?;
             let baglanti = metne_sinirli(baglanti, satir)?;
-            let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-                .eposta()
-                .zaman_asimi_ms();
-            let zaman_asimi_ms =
-                son_tarih_kalani(io, satir)?.map_or(azami, |(_, kalan)| kalan.min(azami));
+            let zaman_asimi_ms = eposta_butcesi(io, satir)?;
             let sonuc = io.eposta_mime_gonder(
                 (!baglanti.is_empty()).then_some(baglanti.as_str()),
                 &metne_sinirli(alici, satir)?,
@@ -148,6 +149,15 @@ pub(super) fn intrinsic_degerlendir(
         }
         _ => Err(ic_hata(satir)),
     }
+}
+
+/// K-232/K-371: düz metin ve ekli SMTP aynı bütçeyi kullanır: 20 sn tavanı
+/// ile varsa dış son tarihin kalanının küçüğü (spec/09 iptal noktaları).
+fn eposta_butcesi(io: &mut dyn GirdiCikti, satir: usize) -> Result<i64, Tani> {
+    let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .eposta()
+        .zaman_asimi_ms();
+    Ok(son_tarih_kalani(io, satir)?.map_or(azami, |(_, kalan)| kalan.min(azami)))
 }
 
 /// E-posta gönderimi `Sonuç` değeri: başarıda 1, hatada C029.

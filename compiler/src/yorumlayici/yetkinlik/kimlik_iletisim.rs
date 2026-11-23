@@ -31,9 +31,11 @@ macro_rules! yontemler {
             alici: &str,
             konu: &str,
             govde: &str,
+            zaman_asimi_ms: i64,
         ) -> Result<i64, String> {
             self.politika.gerektir(Yetkinlik::Ag)?;
-            self.ic.eposta_gonder(baglanti, alici, konu, govde)
+            self.ic
+                .eposta_gonder(baglanti, alici, konu, govde, zaman_asimi_ms)
         }
 
         fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {

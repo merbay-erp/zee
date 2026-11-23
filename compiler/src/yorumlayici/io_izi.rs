@@ -702,8 +702,9 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         alici: &str,
         konu: &str,
         govde: &str,
+        zaman_asimi_ms: i64,
     ) -> Result<i64, String> {
-        k181::kaydet_eposta_gonder(self, b, alici, konu, govde)
+        k181::kaydet_eposta_gonder(self, b, alici, konu, govde, zaman_asimi_ms)
     }
 
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {

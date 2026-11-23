@@ -16,7 +16,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/08-kalici-dosya.md` | 7 | 6 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
-| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 18 | 18 | 0 | 0 |
+| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 17 | 17 | 0 | 0 |
 | `spec/12-web-guvenlik-profili.md` | 44 | 41 | 0 | 3 |
 | `spec/13-surumlu-morfoloji-profili.md` | 9 | 8 | 0 | 1 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
@@ -28,15 +28,15 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/20-ifade-grameri.md` | 7 | 7 | 0 | 0 |
 | `spec/21-deterministik-io-izi.md` | 5 | 5 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
-| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 35 | 34 | 0 | 1 |
+| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 36 | 35 | 0 | 1 |
 | `spec/24-kaynak-guvenlik-profili.md` | 9 | 9 | 0 | 0 |
-| `spec/25-postgresql-veri-erisimi.md` | 9 | 8 | 0 | 1 |
+| `spec/25-postgresql-veri-erisimi.md` | 10 | 8 | 0 | 2 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 6 | 6 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **286** | **274** | **4** | **8** |
+| **Toplam** | **287** | **274** | **4** | **9** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -52,6 +52,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/12-web-guvenlik-profili.md#d0c68c44c7c98c4b` — AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek t… — K-335 kapsamı dışı; Vary/ETag/purge ve sorgu anahtarı ön kapının sorumluluğundadır.
 - `spec/13-surumlu-morfoloji-profili.md#8a414db8b5ca5b82` — AÇIK: `zee-tr-1` `â`, `î`, `û` harflerini ünlü saymaz. Bu harfleri taşıy… — K-367: düzeltme uyumluluk kaydını değiştirir (53.248 üretimin 10.306'sı, 2.865 çözüm kümesi); zee-tr-1 içinde yapılamaz, zee-tr-2 adayı (RFC + yeni kayıt + kilit geçişi + edition). Çözücü doğru yazımı kabul eder.
 - `spec/23-yetkinlik-ve-outbound-guvenligi.md#15b3c0c87713d1ae` — AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte ro… — K-339 kapsamı dışı; canlı systemd servis kabulü ve rotasyon ürün/işletim tarafında.
+- `spec/25-postgresql-veri-erisimi.md#c395a90f9132ccfa` — AÇIK: PostgreSQL okuma ve değişikliği dış `içinde` ya da web isteğinin 3… — K-371 ölçümü yerel PostgreSQL 16 ile: 1 sn son tarihte `pg_sleep(4)` 4,1 sn, web `pg_sleep(33)` 504'ü 33. saniyede; iptalin transaction/C027 etkisi tasarım ister, RFC-0042 taslağı ve GB-149.
 - `spec/25-postgresql-veri-erisimi.md#f94f82cb0245cf0a` — Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe … — K-169/K-173 release tatbikatı ve çok-worker toplam bütçe provası bekliyor; async driver, PostgreSQL dışı DB ve ORM vaat edilmiyor.
 - `spec/27-uyumluluk-ve-surumleme.md#285d87941dc0c3ba` — 1.0 sonrasında dondurulmuş yüzeylerde kırıcı değişiklik yalnız yeni ana … — Edition alanının `proje.dil` sözdizimi ayrı RFC ister; 1.0 öncesi bağlayıcı yalnız RFC-0028 çerçevesidir.
 - `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR ve genel gerçek ürün gecikmesi açık; tarihsel S3 66e4149e53451111d153f47283c219079a8d1cab kaynağındaki kabul korunur. S4 4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2 kaynağında ayrı 1800sn RSS ve lint açık/kapalı 1/41 belge stdio gözlemi vardır; 41 belge lint açık p95 223,698ms ile 200ms hedefi açıktır, UI/ürün SLA'sı değildir.

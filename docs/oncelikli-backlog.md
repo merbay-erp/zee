@@ -2613,6 +2613,45 @@ sınırında biter ve istemci gönderimi sürüyorsa yine RST görebilir; 2 sn
 içinde gövdesini bitiremeyen yavaş istemci de aynı. Boşaltma bağlantı
 başınadır; tek işçide art arda K damlatıcı işçiyi K × 2 sn ek bekletebilir.
 
+## K-371 — Dış etki hata eşlemesi; düz SMTP dış son tarihi
+
+**Durum: KAPALI (düzeltme); PostgreSQL sorgu son tarihi AÇIK.** Kaynak: K-370
+web içi oran/kaynak reddini denetledi; aynı soru dış etki tarafı için
+soruldu. SMTP, native HTTP istemcisi ve PostgreSQL adaptörünün bağlantı,
+DNS, TLS, kimlik, sunucu yanıtı, boyut sınırı, havuz, kilit ve son tarih
+hataları Zee yüzeyi/yakalanabilirlik/C-kodu/web HTTP kodu/CLI çıkışıyla
+tablolandı ([denetim kanıtı](k371-dis-etki-hata-eslemesi.md)). Yeni
+yüzeylerin hepsi yakalanabilir `Sonuç` (C029/C018/C025) döndürüyor; yanlış
+HTTP kodu bulunmadı.
+
+Bulunan hata: düz metin `ileti göndermeyi dene` (ve `… üzerinden` biçimi)
+native adaptöre sabit 20 sn bütçe veriyor, dönüşte son tarihi denetlemiyordu;
+ekli ileti yolu K-232'den beri dış son tarihin kalanıyla sınırlıydı. Gerçek
+loopback'te yanıt vermeyen sunucu ve `1 saniye içinde`: düz yol 20,0 sn, ekli
+yol 1,0 sn. Web'de isteğin son 20 saniyesinde başlayan düz gönderim 504'ü
+50. saniyeye kadar itebiliyordu (site çekirdeği onay akışı rotası bu yolu
+kullanır). Düzeltme: `GirdiCikti::eposta_gonder` yürütme bağlamından
+`zaman_asimi_ms` alır, intrinsic ekli yolla ortak bütçe yardımcısını kullanır
+ve dönüşte son tarihi denetler; native adaptör hazırlık süresini düşer. Sonrası
+1,04 sn; son tarihsiz çağrı 20 sn tavanını korur. IO izi, grammar, tanı, CLI ve
+`dil::api::v1` değişmez.
+
+Kanıt: regression `security/smtp-son-tarih` (kip `smtp`),
+`semantic_regresyon_korpusu_testi::smtp_son_tarih_fixture_dis_kalan_butceyi_kullanir`,
+spec/23 ZORUNLU maddesi, ADR-110 K-371 eki.
+
+Belge düzeltmesi: spec/25 havuz/TLS/bağlantı hatasını C026 sayıyordu; uygulama
+okuma/değişikliğinde bu hata yakalanabilir C025'tir, C026 yalnız `dil göçür`.
+
+Açık kalanlar: (1) PostgreSQL sorgusu son tarihe bağlanmaz — 1 sn son tarihte
+`pg_sleep(4)` 4,1 sn, web'de `pg_sleep(33)` 504'ü 33. saniyede verir; iptalin
+transaction/C027 etkisi tasarım ister → spec/25 AÇIK maddesi ve
+[RFC-0042 taslağı](../rfcs/0042-postgresql-sorgu-son-tarihi.md). (2) Düz SMTP
+yolu K-130 süreç-geneli bağlantı iznini almaz (ekli yol alır); işçi başına tek
+bloklayan çağrı olduğundan ölçülen hata yok, eski yolun "değişmez" kaydı
+spec/23'te sürer. (3) Eski `adresinden gelen yanıt` C018'i spec/11 §5 gereği
+yakalanamaz 500 kalır; ürün yeni `HTTP isteğini dene` kalıbıyla 503'e
+çevirebilir.
 ## K-372 — Mutlak yanıt yazım bütçesi
 
 **Durum: KAPALI.** Kaynak: K-369 test incelemesinin "okumayan istemci tek
@@ -2626,6 +2665,7 @@ işçiyi ~25 sn tutar" açık sınırı. Ölçüm (yerel Darwin, debug ikili, 2 
 | Tek işçi, 2 MiB okumayan 3 istemci | 74,9 sn | 29,8 sn |
 | Tek işçi, ~32 KiB/s okuyan 1 istemci | 41,5 sn | 25,8 sn (bütçe 26) |
 | 2 işçi, okumayan 1 / 2 istemci | etkisiz / 24,8 sn | — / 14,9 sn |
+| Linux (docker arm64), tek işçi, 8 MiB, ~40 KiB/s okuyan | >90 sn | 73,7 sn (bütçe 74) |
 
 Bekleyen istekler 503 almadı; kabul backlog'unda gecikti (bağlantı izni
 kabulde alınır, işçi yazımdayken kabul yapılmaz). Neden kodda: okuma
@@ -2634,12 +2674,14 @@ kabulde alınır, işçi yazımdayken kabul yapılmaz). Neden kodda: okuma
 `write_all` idi: süre her syscall'da yeniden başlar, kısmi ilerleme döngüyü
 sürdürür, Darwin'de tek çağrı ilerledikçe süresini aşar (sonda: 10 sn zaman
 aşımıyla 28 sn süren tek `send`). Linux'ta çağrı başına süre kısmi sayıyla
-döndüğünden tutma süresi yanıt/okuma hızıyla sınırsızdır. Spec/12 ve
+döndüğünden tutma süresi yanıt/okuma hızıyla sınırsızdır (8 MiB'da >90 sn
+ölçüldü); 2 MiB yanıt Linux'ta büyüyen gönderim tamponuna ~9 sn'de sığar. Spec/12 ve
 ADR-017 yalnız "10 saniye socket zaman aşımı" diyordu; ADR-113 bunun hard
 wall-clock olmadığını açıkça not etmişti. Mutlak bütçe yasak değil, açıktı.
 
 Düzeltme: `son_tarihli_yaz` yanıtı nonblocking yazar, `WouldBlock`
-beklemesini 1–10 ms uykuyla son tarihe kırpar; mutlak bütçe `10 sn +
+beklemesini Unix'te `poll(POLLOUT)`, diğer platformlarda ≤2 ms uykuyla son
+tarihe kırpar (`WebTasima::yazilabilir_bekle`); mutlak bütçe `10 sn +
 bayt / 128 KiB/s` (`HttpSinirlari::yanit_yazim_alt_hizi`), ayrıca 10 sn
 ilerlemesiz yazım kesilir. Rota yanıtı ve ham 4xx/5xx yanıtları aynı yoldan
 geçer. Aşımda bağlantı kapanır, mevcut yazım hatası metriği artar, K-327
@@ -2652,8 +2694,13 @@ Kanıt: regression `security/yanit-yazim-butcesi` (kip
 25,5 sn'de `bütçede serbest`), `web_profili_testleri` beş birim vakası
 (bütçe formülü, sürekli ilerleyen okuyucu son tarihte, ilerlemeyen okuyucu
 ilerlemesizlikte, bütçe içi tam yazım, gerçek okunmayan soket), spec/12
-ZORUNLU maddesi, ADR-017 K-372 eki, GB-150. Linux ölçümü yerel VM
-erişilemediği için koşulmadı; CI ubuntu aynı regresyonu koşar.
+ZORUNLU maddesi, ADR-017 K-372 eki, GB-150. İlk CI turunda üç test
+platform varsayımıyla düştü ve düzeltildi: Linux 2 MiB'ı tamponladı (kopma
+yok, 9,5 sn), macOS'ta 4 KiB alma penceresi TCP'yi duraklatıp 10 sn
+ilerlemesizlik kesmesini tetikledi, Windows 64 MiB nonblocking gönderimi
+tamponladı; sahte taşıma testi kaba CI uykusunda 10 sn'yi aştı. Regresyon artık
+bütçe formülünden türetilmiş sınır (+8 sn pay) ve kopma nedeninin yeni
+mekanizmalardan biri olmasını (eski kodun `os error 35/11`'i değil) sınar.
 
 Bilinçli sınır: bütçe bağlantı başınadır; tek işçide art arda K bağlantı
 işçiyi K × bütçe bekletebilir (okuma tarafıyla aynı). İnternet sınırındaki
