@@ -63,13 +63,24 @@ const HTTP_ISTEK_ARTIGI_BAYTI: usize = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_
     .http()
     .yukleme_bayti();
 /// K-332 eki: canlı `.parca`'nın son yazımından sonra yaşayabileceği en uzun
-/// süre — gövde okuma son tarihi, rota çalıştırma bütçesi, yanıt yazım zaman aşımı.
+/// süre. `IstekYuklemesi` yanıt yazımı bitene dek düşmediğinden ömür: gövde
+/// okuma son tarihi + rota çalıştırma bütçesi + en büyük yanıtın K-372 yazım
+/// bütçesi (metin sınırı + 64 KiB başlık payı; `yanit_yazim_butcesi` ile aynı
+/// formül) + K-374 istek artığı boşaltması. 10 + 30 + 139 + 2 = 181 sn.
 const CANLI_PARCA_AZAMI_SANIYE: u64 = {
-    let http = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
-    2 * http.istek_okuma_saniyesi() + (http.calistirma_zaman_asimi_ms() as u64).div_ceil(1000)
+    let sinirlar = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
+    let http = sinirlar.http();
+    let azami_yanit = (sinirlar.metin_bayti() + 64 * 1024) as u64;
+    http.istek_okuma_saniyesi()
+        + (http.calistirma_zaman_asimi_ms() as u64).div_ceil(1000)
+        + http.istek_okuma_saniyesi()
+        + azami_yanit.div_ceil(http.yanit_yazim_alt_hizi())
+        + HTTP_ISTEK_ARTIGI_SURESI.as_secs()
 };
-// Yetim eşiği canlı ömrün en az on katı olmalıdır; sınırlar büyürse derleme kırılır.
-const _: () = assert!(web_yukleme::YETIM_PARCA_YASI.as_secs() >= 10 * CANLI_PARCA_AZAMI_SANIYE);
+// Yetim eşiği canlı ömrün en az dört katı olmalıdır (ömür zaten en kötü
+// durumların toplamıdır; pay duvar saati düzeltmesine ve zamanlamaya karşı).
+// Sınırlar büyürse derleme kırılır.
+const _: () = assert!(web_yukleme::YETIM_PARCA_YASI.as_secs() >= 4 * CANLI_PARCA_AZAMI_SANIYE);
 const WEB_BIND_IP: std::net::Ipv4Addr = std::net::Ipv4Addr::LOCALHOST;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -5155,6 +5166,22 @@ mod web_profili_testleri {
         assert_eq!(yanit_yazim_butcesi(2 * 1024 * 1024), saniye(26));
         // Metin üst sınırı (16 MiB) yanıtı en çok 138 sn yazılabilir.
         assert_eq!(yanit_yazim_butcesi(16 * 1024 * 1024), saniye(138));
+    }
+
+    /// K-332 eki: canlı `.parca` ömrü derleme zamanı sabiti, yanıt yazımının
+    /// gerçek K-372 bütçesini (en büyük yanıt için) ve K-374 boşaltmasını
+    /// kapsar; yazım bütçesi formülü değişirse yetim eşiği güvencesi bayatlamaz.
+    #[test]
+    fn canli_parca_omru_yanit_yazim_butcesini_kapsar() {
+        let sinirlar = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
+        let http = sinirlar.http();
+        let gereken = HTTP_ISTEK_OKUMA_SURESI
+            + std::time::Duration::from_millis(http.calistirma_zaman_asimi_ms() as u64)
+            + yanit_yazim_butcesi(sinirlar.metin_bayti() + 64 * 1024)
+            + HTTP_ISTEK_ARTIGI_SURESI;
+        assert!(std::time::Duration::from_secs(CANLI_PARCA_AZAMI_SANIYE) >= gereken);
+        assert_eq!(CANLI_PARCA_AZAMI_SANIYE, 181);
+        assert!(web_yukleme::YETIM_PARCA_YASI >= 4 * gereken);
     }
 
     /// K-372: her çağrıda ilerleyen (syscall zaman aşımına hiç düşmeyen)
