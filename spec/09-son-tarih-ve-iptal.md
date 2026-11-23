@@ -61,6 +61,8 @@ Etkin son tarih en erken mutlak andır. Her son tarih benzersiz sahibini taşır
 İptal önleyici değildir. Tek bir kesintisiz yerel ifade ya da işletim
 sisteminin iptal edemediği çağrı, bir sonraki işbirlikli noktaya kadar son
 tarihi aşabilir; ardından gövde kesinlikle devam etmez. DNS çözümleme ve bazı
-dosya sistemi çağrıları bu platform sınırındadır. K-090 scheduler'ındaki çocuk
+dosya sistemi çağrıları bu platform sınırındadır. PostgreSQL sorgusu da
+şimdilik kalan süreyi almaz (spec/25 K-371, RFC-0041); HTTP ve
+SMTP adaptörleri kalan süreyi socket bütçesine taşır (K-371). K-090 scheduler'ındaki çocuk
 görevler dış son tarihi miras alır; `bekle` noktası görev ağacını birlikte
 iptal eder (spec/14). Çok çekirdekli önleyici paralellik verilmiş söz değildir.

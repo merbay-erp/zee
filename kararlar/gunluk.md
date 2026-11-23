@@ -5533,3 +5533,20 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   IO izi şeması değişir). Eski GET'in yakalanamaz C018'i spec/11 §5 gereği
   500 kalır; C025/C029 zaten yakalanabilir `Sonuç`tur. Denetim tablosu `docs/k370-web-oran-500-denetimi.md`.
 
+## K-371 — Dış etki hata eşlemesi; düz SMTP dış son tarihi (23 Kasım 2026)
+
+- SMTP, HTTP istemcisi ve PostgreSQL dış hataları tablolandı
+  (`docs/k371-dis-etki-hata-eslemesi.md`): yeni yüzeyler yakalanabilir
+  `Sonuç`; yakalanamaz dış hata yalnız eski GET C018 (500, spec/11 §5),
+  transaction sınırı C021/C027 (503) ve son tarih Ç001 (504). Yanlış HTTP kodu
+  yok.
+- Hata: düz metin SMTP dış `içinde`/web son tarihini gözetmiyordu (sabit
+  20 sn, dönüşte denetim yok); ekli yol gözetiyordu. Karar: ekli yolla aynı
+  bütçe — `GirdiCikti::eposta_gonder` `zaman_asimi_ms` alır, iz alanı
+  değişmez, dönüşte `son_tarihi_denetle`. Regression `security/smtp-son-tarih`.
+- Reddedilen: PostgreSQL'e aynı dalgada `statement_timeout` eklemek (iptal
+  açık transaction'ı abort eder, COMMIT/C027 ve otomatik tekrar yasağıyla
+  ilişkisi tasarım ister; minimal düzeltme değil) → spec/25 AÇIK + RFC-0041
+  taslağı. Eski GET C018'i 503 yapmak (spec/11 §5 kararı). Düz SMTP'ye
+  K-130 bağlantı izni eklemek (ölçülen hata yok; eski yol değişmez kaydı).
+- spec/25 C026 cümlesi gerçek davranışa göre düzeltildi (uygulama yolu C025).

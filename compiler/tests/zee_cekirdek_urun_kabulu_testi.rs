@@ -316,11 +316,18 @@ impl GirdiCikti for UrunIo {
         self.http_cagrilari += 1;
         self.http_sonucu.clone()
     }
-    fn eposta_gonder(&mut self, b: Option<&str>, a: &str, k: &str, g: &str) -> Result<i64, String> {
+    fn eposta_gonder(
+        &mut self,
+        b: Option<&str>,
+        a: &str,
+        k: &str,
+        g: &str,
+        ms: i64,
+    ) -> Result<i64, String> {
         if self.smtp_hatasi {
             return Err("sentetik SMTP reddi".into());
         }
-        self.ic.eposta_gonder(b, a, k, g)
+        self.ic.eposta_gonder(b, a, k, g, ms)
     }
 }
 

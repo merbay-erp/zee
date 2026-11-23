@@ -45,3 +45,16 @@ Read/Write öncesinde veya ağ hatasından sonra süre tüketebilir; TCP
 okuma/yazmaları tek kalan monoton son tarihi korur. IO iptal testi bu platform
 hazırlığını ölçülen sessiz peer sınamasından önce tamamlar. Bu gözlem toplam
 çağrı wall-time sınırı veya benchmark tarihçesi değildir.
+
+## K-371 eki — dış son tarih (23 Kasım 2026)
+
+Bu ADR düz metin yolun kendi 20 sn bütçesini mutlak yaptı, fakat bütçe
+yürütme bağlamından gelmiyordu: `1 saniye içinde` bloğunda yanıt vermeyen
+sunucu düz gönderimi 20 sn bloklarken MIME yolu (K-232) 1 sn'de iptal
+ediyordu. K-371 ile `GirdiCikti::eposta_gonder` intrinsic'in hesapladığı
+`zaman_asimi_ms` değerini alır (20 sn tavanı ile dış son tarihin kalanının
+küçüğü, MIME ile ortak yardımcı); native adaptör ortam/sır hazırlığında geçen
+süreyi düşer ve intrinsic dönüşte son tarihi yeniden denetler. IO izi alanları
+değişmez; public API, grammar, tanı, C029 maskesi ve otomatik tekrar yasağı
+aynıdır. Kanıt: regression `security/smtp-son-tarih`,
+[K-371 denetimi](../docs/k371-dis-etki-hata-eslemesi.md).

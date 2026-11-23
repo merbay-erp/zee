@@ -940,6 +940,24 @@ fn smtp_yavas_yanit_fixture_native_butce_ve_maskeyi_korur() {
     assert_eq!(cikti, vec!["E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok"]);
 }
 
+/// K-371: düz metin `ileti göndermeyi dene` dış `içinde` son tarihinin
+/// kalanını gerçek loopback SMTP bütçesine taşır; eski sabit 20 sn yoktur.
+#[test]
+fn smtp_son_tarih_fixture_dis_kalan_butceyi_kullanir() {
+    let kaynak = "# smtp-vaka: son-tarih\nyarım saniye içinde\n    sonuç \"ali@ornek.invalid\" \"Konu\" \"Gövde\" ile ileti göndermeyi dene olsun\n    \"ulaşılmaz\" yaz\nyetişmezse\n    \"yetişmedi\" yaz\n";
+    let mut yukleyici = |ad: &str| {
+        dil::gomulu_birim(ad)
+            .map(str::to_string)
+            .ok_or_else(|| "fixture birim yüklemez".to_string())
+    };
+    let program = dil::kaynagi_fazli_derle_birimlerle(kaynak, &mut yukleyici).unwrap();
+    let baslangic = std::time::Instant::now();
+    let (sonuc, cikti) = smtp_fixture::calistir(&program, kaynak);
+    assert_eq!(sonuc.unwrap(), 0);
+    assert_eq!(cikti, vec!["yetişmedi"]);
+    assert!(baslangic.elapsed() < std::time::Duration::from_secs(4));
+}
+
 #[test]
 fn cli_stdout_alt_turu_gercek_basariyi_stderr_startup_metadatasindan_ayirir() {
     let kaynak = "# cli-argumanlari: çalıştır --web-proxy https://fixture.example --web-oran-deposu bellek golden/28-cli-araci.dil APP_ARG\n# cli-cikti: stdout\n";
