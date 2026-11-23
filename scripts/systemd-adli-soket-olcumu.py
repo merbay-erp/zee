@@ -320,9 +320,15 @@ def tls_kimligi(kok):
     def ossl(*a):
         subprocess.run(["openssl", *a], cwd=d, check=True, capture_output=True)
     ossl("req", "-x509", *ec, "-keyout", "ca.key", "-out", "ca.pem", "-days", "2",
-         "-subj", "/CN=Zee K381 systemd CA", "-addext", "basicConstraints=critical,CA:TRUE")
+         "-subj", "/CN=Zee K381 systemd CA", "-addext", "basicConstraints=critical,CA:TRUE",
+         "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+         "-addext", "subjectKeyIdentifier=hash")
     ossl("req", *ec, "-keyout", "anahtar.pem", "-out", "y.csr", "-subj", "/CN=localhost")
-    (d / "ek.cnf").write_text("basicConstraints=CA:FALSE\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
+    # Python 3.13 VERIFY_X509_STRICT: CA'da kritik keyUsage, yaprakta EKU/SAN/AKI.
+    (d / "ek.cnf").write_text(
+        "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\n"
+        "extendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n"
+        "subjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n")
     ossl("x509", "-req", "-in", "y.csr", "-CA", "ca.pem", "-CAkey", "ca.key", "-CAcreateserial",
          "-out", "yaprak.pem", "-days", "2", "-extfile", "ek.cnf")
     (d / "zincir.pem").write_bytes((d / "yaprak.pem").read_bytes() + (d / "ca.pem").read_bytes())

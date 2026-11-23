@@ -101,7 +101,9 @@ fn kimlik_uret() -> Kimlik {
         "-addext",
         "basicConstraints=critical,CA:TRUE",
         "-addext",
-        "keyUsage=critical,keyCertSign",
+        "keyUsage=critical,keyCertSign,cRLSign",
+        "-addext",
+        "subjectKeyIdentifier=hash",
     ]);
     openssl(&kok, &ca);
     let mut istek = vec!["req"];
@@ -117,7 +119,7 @@ fn kimlik_uret() -> Kimlik {
     openssl(&kok, &istek);
     std::fs::write(
         kok.join("ek.cnf"),
-        "basicConstraints=CA:FALSE\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n",
+        "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n",
     )
     .unwrap();
     openssl(
