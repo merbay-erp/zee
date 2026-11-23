@@ -51,6 +51,24 @@ bilgisi taşımaz.
    `dil::api::v1` ya da bağımlılık yok; değişiklik yalnız `dil_cli`
    adaptöründedir (`sozcukleyici` okuması).
 
+## Değerlendirilen: yalnız HTML yanıtına akan değişmezler
+
+Kümeyi yalnız gerçekten bir HTML yanıtına giden ifadelerin değişmezleriyle
+sınırlamak (merkez ve `urun-h` incelemesinin ikinci önerisi) bu turda
+yapılmadı. Bir değişmezin yanıta ulaşıp ulaşmadığı yerel değil: değişken
+atamaları, işlem dönüşleri, birimler arası çağrılar, liste/sözlük ve
+`ile` birleştirmesi boyunca izlenmesi gerekir; güvenli (eksik saymayan)
+bir sürüm, HIR üzerinde birimler arası veri akışı analizi ister. Bu,
+core freeze altındaki bir güvenlik düzeltmesi için yeni bir derleyici
+geçişidir ve yanlış negatifte meşru betikleri kırar. Test blokları ise
+sözdiziminde kesin sınırlıdır, üretim çalıştırmasında hiç yürütülmez ve
+bilinen XSS yüklerinin pratikte durduğu yerdir; bu yüzden ilk tur onları
+kesin çıkarır. `dil dene` aynı giriş ve birimleri derler; zee'de yalnız
+test yürütücüsünün yüklediği birim yoktur ve küme yalnız `dil çalıştır`
+web yolunda kurulur. Regression ve örnek dosyaları programa `kullan` ile
+alınmadıkça yüklenmez. Kalan risk: üretim kodundaki geliştirici
+betiklerinin saldırganca yeniden yansıtılması (özet CSP'nin genel sınırı).
+
 ## Reddedilenler
 
 - **Yanıt başına nonce.** Çalışma zamanı gövdedeki hangi `<script>`
