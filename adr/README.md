@@ -166,3 +166,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-159 | [Yüklenen dosyanın ilk baytlarını sınırlı okuma (içerik imzası)](159-dosya-imzasi-okuma.md) | **kabul** (K-333/GB-130) |
 | ADR-160 | [Herkese açık rota için dar önbellek başlığı izni](160-rota-onbellek-basligi.md) | **kabul** (K-335/GB-132) |
 | ADR-161 | [Resmî çok işçi web profili ve açılış birincilliği](161-cok-isci-web-profili-ve-acilis-birincilligi.md) | **kabul** (K-336/K-337/GB-133) |
+| ADR-162 | [Adlı dinleyici devri ve systemd hizmet bildirimi](162-adli-dinleyici-devri-ve-hizmet-bildirimi.md) | **kabul** (K-376/GB-152) |

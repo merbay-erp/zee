@@ -224,6 +224,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             gizli_anahtar_degiskeni: None,
             http_gizli_degiskenleri: Vec::new(),
             web_oturumu: None,
+            dinleyiciler: Vec::new(),
         }
     );
 }
@@ -1515,4 +1516,76 @@ fn kabul_gerekcesi_gorunmez_bicim_karakteri_tasiyamaz() {
             RegistryCozumPolitikasi::yeni(false, None, Some(gerekce.into())).expect_err(gerekce);
         assert!(hata.contains("kritik duyuru kabul"), "{gerekce:?}: {hata}");
     }
+}
+
+/// K-376: `dinleyiciler` adlı devir bildirimi; çift yığın aile sonekli iki
+/// ayrı adla yazılır, bozuk öğe P018 ile reddedilir.
+#[test]
+fn dinleyici_bildirimi_adli_ve_aileye_bagli_okunur() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let bildirim = bildirimi_oku(&format!(
+        "{taban}dinleyiciler \"smtp_v4 0.0.0.0:25\", \"smtp_v6 [::]:25\", \"imaps_v6 [2001:db8::1]:993\" listesi olsun\n"
+    ))
+    .expect("dinleyiciler geçmeli");
+    let ozet: Vec<String> = bildirim
+        .dinleyiciler
+        .iter()
+        .map(|d| format!("{} {}", d.ad, d.adres))
+        .collect();
+    assert_eq!(
+        ozet,
+        [
+            "smtp_v4 0.0.0.0:25",
+            "smtp_v6 [::]:25",
+            "imaps_v6 [2001:db8::1]:993"
+        ]
+    );
+    assert!(
+        bildirimi_oku(&format!("{taban}dinleyiciler boş liste olsun\n"))
+            .expect("boş liste")
+            .dinleyiciler
+            .is_empty()
+    );
+    for (oge, ifade) in [
+        ("smtp 0.0.0.0", "adres:kapı değil"),
+        ("smtp0.0.0.0:25", "<ad> <adres>:<kapı>"),
+        ("Smtp_v4 0.0.0.0:25", "küçük harfle"),
+        ("smtp:v4 0.0.0.0:25", "küçük harfle"),
+        ("4smtp 0.0.0.0:25", "küçük harfle"),
+        ("a23456789012345678901234567890123 0.0.0.0:25", "en çok 32"),
+        ("smtp_v4 0.0.0.0:0", "kapı 0"),
+        ("smtp_v6 [fe80::1%2]:25", "kapsam"),
+        ("smtp_v6 [::ffff:127.0.0.1]:25", "IPv4 eşlemeli"),
+        ("smtp_v4 posta.example:25", "adres:kapı değil"),
+    ] {
+        let tani = bildirimi_oku(&format!("{taban}dinleyiciler \"{oge}\" listesi olsun\n"))
+            .expect_err(oge);
+        assert_eq!(tani.kod, "P018", "{oge}");
+        assert!(tani.mesaj.contains(ifade), "{oge}: {}", tani.mesaj);
+        assert_eq!(tani.satir, 4, "{oge}");
+    }
+    for (liste, ifade) in [
+        ("\"smtp 0.0.0.0:25\", \"smtp [::]:25\"", "birden çok kez"),
+        (
+            "\"a 0.0.0.0:25\", \"b 0.0.0.0:25\"",
+            "birden çok dinleyicide",
+        ),
+    ] {
+        let tani = bildirimi_oku(&format!("{taban}dinleyiciler {liste} listesi olsun\n"))
+            .expect_err(liste);
+        assert_eq!(tani.kod, "P018");
+        assert!(tani.mesaj.contains(ifade), "{liste}: {}", tani.mesaj);
+    }
+    let cok: Vec<String> = (0..65)
+        .map(|i| format!("\"d{i} 127.0.0.1:{}\"", 2000 + i))
+        .collect();
+    let tani = bildirimi_oku(&format!(
+        "{taban}dinleyiciler {} listesi olsun\n",
+        cok.join(", ")
+    ))
+    .expect_err("65 dinleyici");
+    assert_eq!(tani.kod, "P018");
+    assert!(tani.mesaj.contains("en çok 64"));
+    let tani = bildirimi_oku(&format!("{taban}dinleyiciler \"smtp\" olsun\n")).expect_err("tür");
+    assert_eq!(tani.kod, "P018");
 }

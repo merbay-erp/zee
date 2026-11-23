@@ -2557,6 +2557,40 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-376 — Adlı dinleyici devri ve systemd hizmet bildirimi (RFC-0039 A1)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) işletim
+sistemi tarafındaki Faz 2 çalışma zamanı kararı (ürün deposunda 23 Kasım
+2026'da kabul): uygulama gerçek Zee ile, ayrıcalıksız, capability olmadan,
+`Type=notify` ve adla devredilen dinleyicilerle çalışmalı; hizmet yüzeyi
+on adlı soket (beş kapı × IPv4/IPv6). Ürün ölçümü (systemd 257.13, iki koşu)
+fd sırasının `Sockets=` sırasından farklı geldiğini gösterdi. Bugün yalnız
+K-343 tek soketi vardı; `NOTIFY_SOCKET` okunmuyordu.
+
+Minimal kapsam (core freeze `dogfood-change`): `proje.dil` `dinleyiciler`
+alanı (P018), `dil çalıştır` öncesi adla devir doğrulaması (LISTEN_PID/
+LISTEN_FDS/LISTEN_FDNAMES, aile/adres/kapı, IPv6 V6ONLY; ihlal çıkış 2 +
+öneri), soketleri tutma; `NOTIFY_SOCKET` ile `READY=1`/`STOPPING=1` (tek
+süreç ve K-343 yöneticisi). Gerçek systemd ölçümü ayrıca atomik yazımda
+gereksiz `fchown`'ın `~@privileged` sandbox'ında SIGSYS verdiğini buldu;
+aynı sahipte çağrı kaldırıldı (GB-152). Yeni grammar, kalıp, intrinsic,
+yetkinlik, `dil::api::v1` ya da bağımlılık yok; Zee kodu adlı dinleyicilere
+erişmez (A2).
+
+Kanıt: `compiler/tests/adli_dinleyici_testi.rs` (karışık sıralı dört soket,
+dokuz olumsuz devir, bildirimsiz proje, çocuk modu),
+`web_cok_surec_testi.rs::isci_grubu_systemd_bildirimini_yalniz_yoneticiden_gonderir`,
+`adli_dinleyici::testler`, `proje_testi` P018, `kalici_dosya` sahiplik
+testleri; gerçek systemd 255 (`scripts/systemd-adli-soket-olcumu.py`, CI
+ubuntu-24.04 adımı): READY 82 ms, UID≠0, CapEff/CapBnd 0, dört soket +
+HTTP 200, fazla ad ve `BindIPv6Only=both` çıkış 2. spec/12 §8, spec/08
+K-376 maddesi, ADR-162, RFC-0039 Aşama A1, GB-152,
+[docs/adli-dinleyici-devri.md](adli-dinleyici-devri.md).
+
+Açık: bağlantı yüzeyi ve `ağ-dinleyici` yetkinliği (A2), çok işçiye adla
+aktarım, web dışı programda `READY=1`, HTTP dinleyicisinin adlı devirden
+alınması.
+
 ## K-374 — Erken red yanıtı okunmamış istekle RST'ye dönüşmesin
 
 **Durum: KAPALI.** Kaynak: RFC-0041 (K-373) incelemesi; ZeeMail (urun-h)

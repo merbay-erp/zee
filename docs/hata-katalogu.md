@@ -210,6 +210,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P015 | Yetkinlik listesi/hedefi geçersiz ya da paket üst projenin iznini aşıyor | Yetkinliği ve tam origin'i ana `proje.dil` içinde açıkça onayla; public ağda HTTPS kullan |
 | P016 | Registry HTTPS taşıması, içerik-adresli cache veya atomik kalıcı durum işlemi başarısız | Origin/root pin/cache yolunu denetle; bozuk nesneyi kullanma ve güvenilir aynadan yeniden doğrula |
 | P017 | Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz | Exact sürüm, HTTPS origin, pozitif root sürümü ve ağ dışı `sha256:` root özetini birlikte bildir |
+| P018 | `dinleyiciler` bildirimi `<ad> <adres>:<kapı>` değil; ad/adres yinelenmiş, kapı 0, IPv6 kapsamlı ya da IPv4 eşlemeli, 64'ten fazla öğe | Her dinleyiciyi `"smtp_v4 0.0.0.0:25"` biçiminde, systemd `FileDescriptorName=` ile aynı tekil adla yaz; çift yığında aileye ayrı ad ver |
 
 ## Ç — İç akış
 
@@ -231,6 +232,11 @@ Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
 K-330: `oturum_ömrü_saniye` 300–2592000 sn aralığı dışında ya da `web-oturumu` yetkinliği olmadan `oturum_ömrü_saniye`/`oturum_kayar` kullanımı P015, Sayı olmayan ömür ve Mantıksal olmayan `oturum_kayar` P001 verir; yeni tanı kodu yoktur. [Karar](../adr/158-proje-basina-oturum-omru-ve-kayar-yenileme.md).
 
 K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç değeridir; adaptör ayrıntısı gizlenir. T034 argüman türü, T048 eylemde geri alınamaz istek ve P015 proje ortam listesi tanıları mevcut kodları korur. Üst program deadline C020 kalır. [Sözleşme](../adr/091-http-post-baslik-ve-gizli-ortam.md).
+
+K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
+dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY
+kapalı) tanı kodu üretmeyen CLI başlangıç hatalarıdır: `dinleyici devri:`
+önekli ileti, `.socket` önerisi ve çıkış 2. [Karar](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md).
 
 K-234 `zee.ayar` okuma/şema/güvenlik hataları tanı kodu üretmeyen CLI
 exit 2 retleridir; anahtar/değer/yol veya JSON alıntısı yazılmaz.

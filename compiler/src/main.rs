@@ -26,8 +26,12 @@ mod dil_kapsam;
 #[path = "cli/web_test_kit.rs"]
 mod dil_web_test;
 
+#[path = "cli/adli_dinleyici.rs"]
+mod adli_dinleyici;
 #[path = "cli/registry.rs"]
 mod dil_registry;
+#[path = "cli/systemd_bildirim.rs"]
+mod systemd_bildirim;
 #[path = "cli/web_isci_grubu.rs"]
 mod web_isci_grubu;
 #[cfg(unix)]
@@ -287,7 +291,13 @@ fn main() -> ExitCode {
 /// SIGTERM ya da (K-336) yönetici kaybı yeni istek kabulünü durdurur.
 #[cfg(unix)]
 fn web_kapanisi_istendi(kapanis: &Option<web_kapanis::WebKapanis>) -> bool {
-    kapanis.as_ref().is_some_and(|k| k.istendi()) || web_isci_grubu::ebeveyn_kayboldu()
+    let istendi =
+        kapanis.as_ref().is_some_and(|k| k.istendi()) || web_isci_grubu::ebeveyn_kayboldu();
+    if istendi {
+        // K-376: yeni kabul durdu, boşaltma sürüyor (NOTIFY_SOCKET yoksa etkisiz).
+        systemd_bildirim::durduruluyor();
+    }
+    istendi
 }
 
 /// K-336: `--web-isci-sayisi` yalnız güvenli proxy + açık worker portu ile
@@ -393,6 +403,8 @@ fn test_araclarini_ayikla(argumanlar: &mut Vec<String>) -> Result<AracPlanlari, 
 }
 
 fn govde() -> ExitCode {
+    // K-376: NOTIFY_SOCKET yalnız ana süreçte kalır; işçilere sızmaz.
+    systemd_bildirim::al();
     let mut argumanlar: Vec<String> = std::env::args().skip(1).collect();
     if web_listener::quiet_preflight(&argumanlar).is_err() {
         return ExitCode::from(2);
@@ -1678,6 +1690,13 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().yetkinlik_politikasi())
             .unwrap_or_else(dil::yetkinlik::YetkinlikPolitikasi::gelistirici)
+    }
+
+    fn dinleyiciler(&self) -> &[dil::proje::DinleyiciBildirimi] {
+        self.proje
+            .as_ref()
+            .map(|proje| proje.ana_bildirim().dinleyiciler.as_slice())
+            .unwrap_or(&[])
     }
 
     fn dosya_siniri_koku(&self) -> &std::path::Path {
@@ -3479,6 +3498,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             control.announce()?;
         }
         web_isci_grubu::hazir_bildir();
+        // K-376: açılış bitti, dinleyici(ler) hazır (NOTIFY_SOCKET yoksa etkisiz).
+        systemd_bildirim::hazir();
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
@@ -4322,6 +4343,10 @@ fn calistir_guvenli_web_komutu(
 
 /// Çocuk modu (K-047): ağ/sunucu kapalı, dosyalar çalışma klasörüyle sınırlı.
 fn calistir_guvenli_komutu(girdi: &KaynakGirdisi) -> ExitCode {
+    if !girdi.dinleyiciler().is_empty() {
+        eprintln!("--güvenli çocuk modu adlı dinleyici devralamaz; projenin `dinleyiciler` bildirimini kaldırın ya da --güvenli olmadan çalıştırın");
+        return ExitCode::from(2);
+    }
     calistir_gercek_io_ile(
         girdi,
         WebModu::Kapali,
@@ -4336,6 +4361,11 @@ fn calistir_gercek_io_ile(
     politika: dil::yetkinlik::YetkinlikPolitikasi,
     metrik: Option<std::sync::Arc<web_metrikleri::Sink>>,
 ) -> ExitCode {
+    // K-376: adlı dinleyici devri kaynak derlenip yürütülmeden önce doğrulanır.
+    if let Err(hata) = adli_dinleyici::hazirla(girdi.dinleyiciler(), web_isci_grubu::isci_mi()) {
+        eprintln!("{hata}");
+        return ExitCode::from(2);
+    }
     let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
     taban.metrik = metrik;
     let mut io = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());

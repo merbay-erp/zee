@@ -268,6 +268,7 @@ profil	db-readiness-rounds	aktif	0.8.0-dev	scripts/db-hazirlik.py	--rounds
 profil	dene-unit-native-semasi	aktif	0.8.0-dev	compiler/src/cli/web_test_kit.rs	"zee-dene-unit-before-native-1"
 profil	derleyici-yerel-import	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'import'
 profil	derleyici-yerel-launcher	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'launcher'
+profil	dinleyiciler-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dinleyiciler"
 profil	dispatcher-service-calendar	aktif	0.8.0-dev	scripts/dispatcher-service.py	--calendar
 profil	dispatcher-service-run	aktif	0.8.0-dev	scripts/dispatcher-service.py	--run
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
@@ -290,6 +291,7 @@ profil	rc-kanit-sha256	aktif	0.8.0-dev	scripts/guvenlik-kapisi.sh	--rc-kanit-sha
 profil	readiness-ttl-seconds	aktif	0.8.0-dev	scripts/worker-supervisor.py	--readiness-ttl-seconds
 profil	runtime-ayar-v1	aktif	0.8.0-dev	compiler/src/cli/ayar.rs	pub(super) const SEMA: &str = "zee-ayar-1";
 profil	runtime-metrics	aktif	0.8.0-dev	scripts/worker-supervisor.py	--runtime-metrics
+profil	systemd-bildirimi-v1	aktif	1.0.0-dev	compiler/src/cli/systemd_bildirim.rs	gonder("READY=1");
 profil	web-activate-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-activate-fd"
 profil	web-generation	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-generation"
 profil	web-listener-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-listener-fd"

@@ -352,6 +352,24 @@ ZORUNLU: systemd soketiyle çalışan grubun yöneticisi SIGTERM ile boşaltıl�
 
 AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` Windows'ta çıkış 2 ile reddedilir ve eşzamanlılık ayrı `--web-worker-port` süreçleri ile önlerindeki proxy dengelemesiyle kurulur. Bağlantıların işçilere dağılımı çekirdeğe bağlıdır (macOS'ta eşit değildir); ayrı portlu süreçlerde birincillik yalnız `birincil süreç`i değerlendiren süreçler arasında ve yerel dosya kilidinin (Unix `flock`, Windows `LockFileEx`) geçerli olduğu tek makinede sağlanır, ağ dosya sistemi ve çok hostlu kurulum kapsam dışıdır.
 
+## 8. Adlı dinleyici devri ve hizmet bildirimi (K-376)
+
+RFC-0039 Aşama A1; karar [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md), işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
+
+TANIMLI: `proje.dil` `dinleyiciler` alanı Metin listesidir; her öğe `<ad> <adres>:<kapı>` biçimindedir. Ad `^[a-z][a-z0-9_]{0,31}$` ve systemd `FileDescriptorName=` değeridir; adres IPv4 ya da köşeli parantezli IPv6'dır, kapı 1..65535. Ad ve adres:kapı tekildir, en çok 64 öğe. Çift yığın aile başına ayrı adla bildirilir. Biçim, ad, kapı 0, IPv6 kapsam kimliği, IPv4 eşlemeli IPv6, yinelenen ad/adres ve 64 üstü sayı P018 ile reddedilir. Alan yoksa ya da boş listeyse davranış değişmez.
+
+ZORUNLU: Boş olmayan `dinleyiciler` bildirimli proje `dil çalıştır` ile açıldığında kaynak derlenip yürütülmeden önce systemd soket devri doğrulanır: `LISTEN_PID` sürecin kendi PID'i, `LISTEN_FDS` bildirim sayısı (1..64), `LISTEN_FDNAMES` `LISTEN_FDS` kadar geçerli ve yinelenmeyen ad taşır ve gelen ad kümesi bildirim kümesine eşittir. fd `3+i`'nin adı `LISTEN_FDNAMES`'in i'nci adıdır; eşleme yalnız adla yapılır, gelen sıra bildirim sırasıyla karşılaştırılmaz.
+
+ZORUNLU: Her devralınan fd dinleyen TCP akış soketidir ve yerel adresi adının bildirimindeki aile, adres ve kapıya tam eşittir; IPv6 soketinde `IPV6_V6ONLY` açıktır. Doğrulanan soketler `FD_CLOEXEC` ve engellemeyen kipe alınır ve süreç ömrü boyunca açık tutulur; `LISTEN_PID`, `LISTEN_FDS` ve `LISTEN_FDNAMES` doğrulamadan önce silinir.
+
+YASAK: Devir yoksa ya da herhangi bir koşul tutmazsa (eksik/fazla/yinelenen/geçersiz ad, sayı/ad uyuşmazlığı, başka PID, yanlış tür/aile/adres/kapı, V6ONLY kapalı IPv6) süreç bind'e geri dönemez ve kaynak yürütülemez: çıkış 2'dir, ileti ilgili adı ve `.socket` düzeltme önerisini taşır. Çok işçi grubu işçisi, `--güvenli` çocuk modu ve Unix dışı platform adlı devri çıkış 2 ile reddeder.
+
+AÇIK: Zee kodu adlı dinleyicilerden bağlantı kabul edemez; bağlantı yüzeyi, `ağ-dinleyici` yetkinliği ve çok işçi grubuna adla aktarım RFC-0039 A2'dedir. HTTP dinleyicisi bugünkü `--web-worker-port`/K-343 yolundan açılır.
+
+TANIMLI: `NOTIFY_SOCKET` her `dil` sürecinin başında okunur ve ortamdan silinir; mutlak yol ve Linux soyut ad (`@`) desteklenir. Değişken yoksa hiçbir bildirim gönderilmez. Gönderim hatası günlüklenir, süreci durdurmaz.
+
+ZORUNLU: `NOTIFY_SOCKET` verilmişse tek süreç web çalışma zamanı `sunucu başlat` dinleyiciyi açtıktan sonra, çok işçi yöneticisi birincil işçi açılışı bitip işçiler başlatıldıktan sonra bir kez `READY=1` gönderir; SIGTERM ile yeni kabul durduğunda (yöneticide kapanışın başında) bir kez `STOPPING=1` gönderir. İşçi süreçleri bildirim göndermez (`NotifyAccess=main`).
+
 ## K-335 — Önbelleklenebilir herkese açık rota
 
 TANIMLI: Rota önsözünün politika cümlesi `herkese açık önbelleklenebilir N saniye` biçiminde yazılabilir; N 1–86400 arası sabit TamSayıdır. Bu cümle erişim bakımından `herkese açık` ile aynıdır ve önsözün ilk ve tek politika cümlesi kuralına (T050) uyar. Başka sayı, birim ya da eksik parça S043'tür.

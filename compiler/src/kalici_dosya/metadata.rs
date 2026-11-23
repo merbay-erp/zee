@@ -74,12 +74,28 @@ fn unix_tabanini_koru(eski: &File, gecici: &File) -> io::Result<()> {
     use std::os::unix::fs::MetadataExt;
 
     let bilgi = eski.metadata()?;
-    // SAFETY: Her iki değer de yaşamda olan File nesnelerinden gelir.
-    if unsafe { libc::fchown(gecici.as_raw_fd(), bilgi.uid(), bilgi.gid()) } != 0 {
-        return Err(io::Error::last_os_error());
+    let yeni = gecici.metadata()?;
+    // K-376: sahip zaten aynıysa (ayrıcalıksız hizmetin olağan durumu)
+    // fchown çağrılmaz; systemd `SystemCallFilter=~@privileged` (@chown)
+    // altında atomik yazım SIGSYS ile öldürülmez. Sonuç sahipliği aynıdır.
+    if sahiplik_degismeli((bilgi.uid(), bilgi.gid()), (yeni.uid(), yeni.gid())) {
+        // SAFETY: Her iki değer de yaşamda olan File nesnelerinden gelir.
+        if unsafe { libc::fchown(gecici.as_raw_fd(), bilgi.uid(), bilgi.gid()) } != 0 {
+            return Err(io::Error::last_os_error());
+        }
     }
     gecici.set_permissions(bilgi.permissions())
 }
+
+/// Geçici dosyanın sahibi/grubu eski dosyadan farklıysa sahiplik taşınır.
+#[cfg(unix)]
+fn sahiplik_degismeli(eski: (u32, u32), gecici: (u32, u32)) -> bool {
+    eski != gecici
+}
+
+#[cfg(all(test, unix))]
+#[path = "metadata_sahiplik_testleri.rs"]
+mod sahiplik_testleri;
 
 #[cfg(target_os = "macos")]
 fn platform_metadata_koru(eski: &File, gecici: &File) -> io::Result<()> {

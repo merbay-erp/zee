@@ -356,6 +356,11 @@ pub(crate) fn hazir_bildir() {
     }
 }
 
+/// K-376: bu süreç bir grup işçisi mi (yönetici devriyle başlatıldı).
+pub(crate) fn isci_mi() -> bool {
+    EBEVEYN.load(std::sync::atomic::Ordering::Relaxed) != 0
+}
+
 /// Yönetici kaybolduysa (SIGKILL) işçi yeni istek kabul etmeyi bırakır;
 /// sahipsiz işçi paylaşılan dinleyiciyi tutmaya devam etmez.
 #[cfg_attr(not(unix), allow(dead_code))]
@@ -446,6 +451,8 @@ mod unix {
     }
 
     fn kapanis(cocuklar: &mut [Yuva], saglik: &Mutex<Saglik>) -> ExitCode {
+        // K-376: ana süreç (yönetici) systemd'ye boşaltmayı bildirir.
+        super::super::systemd_bildirim::durduruluyor();
         if let Ok(mut s) = saglik.lock() {
             s.kapaniyor = true;
         }
@@ -890,6 +897,8 @@ mod unix {
         if let Ok(mut s) = saglik.lock() {
             s.hazir = true;
         }
+        // K-376: birincil açılışı bitirdi, işçiler başlatıldı.
+        super::super::systemd_bildirim::hazir();
         loop {
             saglik_guncelle(&saglik, &yuvalar);
             if SINYAL.load(Ordering::Relaxed) {

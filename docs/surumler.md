@@ -10,7 +10,38 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **systemd'den adla devralınan dinleyiciler ve hazır bildirimi (K-376):**
+  Bir proje, systemd'nin kendisi adına açtığı soketleri `proje.dil` içinde
+  adla bildirebilir:
+  `dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun`.
+  `dil çalıştır` program çalışmadan önce systemd'nin verdiği soketleri
+  sıraya değil **ada** göre eşler (systemd soketleri bildirim sırasıyla
+  vermiyor), her soketin adres ve kapısını, IPv6'da yalnız IPv6 dinlediğini
+  denetler. Eksik ya da fazla ad, yanlış adres veya başka sürece ait devir
+  programı başlatmaz (çıkış 2) ve `.socket` dosyası için öneri yazar.
+  Süreç kapı 25 gibi ayrıcalıklı kapılar için yetki istemez. Bu sürümde
+  Zee kodu bu soketlerden bağlantı alamaz; süreç onları açık tutar
+  (bağlantı yüzeyi sonraki adımdır). Ayrıca systemd `Type=notify`
+  hizmetlerinde web sunucusu açılınca `READY=1`, durdurulurken `STOPPING=1`
+  gönderilir; çok işçi grubunda bildirimi yalnız yönetici yapar. Birim
+  şablonları: `docs/adli-dinleyici-devri.md`. Yeni tanı: P018 (bozuk
+  `dinleyiciler` bildirimi).
+
+  **Göç:** Gerekmez. `dinleyiciler` alanı olmayan projeler ve `Type=simple`
+  birimler (`NOTIFY_SOCKET` yok) eskisi gibi çalışır.
+
 ### Düzeltilenler
+
+- **Sıkı sandbox'ta web sunucusu ilk istekte düşmüyor (K-376):** systemd
+  `SystemCallFilter=~@privileged` ile çalışan ayrıcalıksız bir hizmette web
+  sunucusu, kalıcı durum dosyasını güncellerken dosya sahibini gereksiz yere
+  yeniden atadığı için ilk istekte sistem tarafından sonlandırılıyordu.
+  Sahip zaten aynıysa bu çağrı artık yapılmıyor; dosya sahipliği ve izinleri
+  aynı kalır.
+
+  **Göç:** Gerekmez.
 
 - **Büyük istek reddi artık istemciye ulaşıyor (K-374):** 64 KiB sınırını
   aşan bir form/gövde (ör. büyük multipart içe aktarma) ya da sınırı aşan

@@ -18,12 +18,15 @@
 //! veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
 //! veritabanı_göçleri "göçler" olsun
 //! veritabanı_istek_bağlamı "platform.session_context" olsun
+//! dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun
 //! ```
 
+mod dinleyici;
 mod http_istek;
 mod kimlik_iletisim;
 mod web_oturumu;
 
+pub use dinleyici::{gecerli_dinleyici_adi, DinleyiciBildirimi, DINLEYICI_AZAMI};
 pub use web_oturumu::{
     WebOturumuBildirimi, OTURUM_OMRU_ALT_SANIYE, OTURUM_OMRU_UST_SANIYE,
     OTURUM_OMRU_VARSAYILAN_SANIYE,
@@ -65,6 +68,8 @@ pub struct ProjeBildirimi {
     pub http_gizli_degiskenleri: Vec<String>,
     /// K-330: kimlikli web oturumunun ömrü ve kayar yenilemesi; yoksa 30 dakika mutlak.
     pub web_oturumu: Option<WebOturumuBildirimi>,
+    /// K-376: dış yöneticiden (systemd) adla devralınacak dinleyiciler.
+    pub dinleyiciler: Vec<DinleyiciBildirimi>,
 }
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
@@ -168,12 +173,13 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "http_gizli_değişkenleri"
                 | "oturum_ömrü_saniye"
                 | "oturum_kayar"
+                | "dinleyiciler"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -206,6 +212,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         kimlik_iletisim::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let http_gizli_degiskenleri = http_istek::gizli_adlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let web_oturumu = web_oturumu::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
+    let dinleyiciler = dinleyici::alanlari_al(&mut alanlar)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -348,6 +355,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         gizli_anahtar_degiskeni,
         http_gizli_degiskenleri,
         web_oturumu,
+        dinleyiciler,
     })
 }
 
