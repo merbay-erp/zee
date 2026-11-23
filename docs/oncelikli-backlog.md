@@ -2596,7 +2596,7 @@ Kanıt: regression `security/yanit-yazim-butcesi` (kip
 25,5 sn'de `bütçede serbest`), `web_profili_testleri` beş birim vakası
 (bütçe formülü, sürekli ilerleyen okuyucu son tarihte, ilerlemeyen okuyucu
 ilerlemesizlikte, bütçe içi tam yazım, gerçek okunmayan soket), spec/12
-ZORUNLU maddesi, ADR-017 K-372 eki, GB-148. Linux ölçümü yerel VM
+ZORUNLU maddesi, ADR-017 K-372 eki, GB-150. Linux ölçümü yerel VM
 erişilemediği için koşulmadı; CI ubuntu aynı regresyonu koşar.
 
 Bilinçli sınır: bütçe bağlantı başınadır; tek işçide art arda K bağlantı

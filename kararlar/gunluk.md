@@ -5545,7 +5545,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   ADR-113 "write10s hard wall-clock değil" diye açık bırakmıştı. Karar:
   nonblocking yazım, mutlak `10 sn + bayt/128 KiB/s`, ayrıca 10 sn
   ilerlemesizlik kesmesi; aşımda bağlantı kapanır, mevcut yazım hatası
-  metriği sayar (GB-148).
+  metriği sayar (GB-150).
 - Reddedilen: socket zaman aşımını kalan süreye kırpmak (Darwin'de tek çağrı
   süresini aşıyor); sabit 10 sn mutlak bütçe (büyük yanıtı dürüst ama yavaş
   istemciye tamponsuz proxy üzerinden kesiyor); yeni metrik alanı (K-257

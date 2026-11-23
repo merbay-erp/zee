@@ -101,4 +101,4 @@ sınırındaki koruma proxy tamponlaması ve proxy zaman aşımlarıdır
 (`docs/web-production-profili.md`). Kanıt:
 `regression/security/yanit-yazim-butcesi.dil` (kip
 `native-web-yazim-butcesi`; düzeltme öncesi Darwin'de işçi 34 sn tutuldu,
-sonrası 25,5 sn), `web_profili_testleri` yazım birim vakaları, GB-148.
+sonrası 25,5 sn), `web_profili_testleri` yazım birim vakaları, GB-150.
