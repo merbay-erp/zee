@@ -77,8 +77,11 @@ Ek bulgular (ürün listesinde yoktu):
   A'nın web `Content-Disposition` kodlaması aynı fonksiyonu paylaşmalıdır.
 - Yanıt yazma soketi 10 sn ile sınırlıdır (spec/11 §5). 16 MiB'lık bir eki
   yavaş bağlantıda 10 sn'de yazmak her zaman mümkün değildir; katman A'nın
-  yazma bütçesi ayrıca tanımlanmalıdır (Açık sorular).
-- **64 KiB üstü gövdede yanıtsız kapanma (önceden var olan, içerik türünden bağımsız).** `govde_zarfini_denetle` `Content-Length` sınırı aşınca 413'ü yazar ve bağlantıyı gövdeyi okumadan/boşaltmadan kapatır. Alım tamponunda okunmamış bayt varken kapanan TCP soketi RST gönderir; gövdenin tamamını hemen yollayan istemci 413'ü okuyamadan `Connection reset by peer` alır. Yerelde (`--deneysel-web`, curl 8.7.1, 70 KB gövde) multipart ve urlencoded gövdenin ikisi de `000` verdi; yalnız `Expect: 100-continue` gönderen istemci 413'ü gördü. ZeeMail'deki “urlencoded 413, multipart yanıtsız” farkı bu `Expect` davranışından gelir. Bu bir spec/11 §5 correctness boşluğudur (“413 döner” sözü istemcide gözlenemiyor) ve bu RFC'den bağımsız ayrı fix adayıdır: sınırlı süre/bayt boyunca gövdeyi boşaltıp atma (lingering close) ya da yazma yönünü önce kapatma.
+  yazma bütçesi ayrıca tanımlanmalıdır (Açık sorular). *K-372 sonrası:*
+  sabit 10 sn yerine mutlak `10 sn + bayt / 128 KiB/s` bütçesi (16 MiB için
+  138 sn) ve 10 sn ilerlemesizlik kesmesi geçerlidir; katman A ek hız
+  gereksinimini bu bütçeyle karşılaştırır.
+- **64 KiB üstü gövdede yanıtsız kapanma (önceden var olan, içerik türünden bağımsız).** `govde_zarfini_denetle` `Content-Length` sınırı aşınca 413'ü yazar ve bağlantıyı gövdeyi okumadan/boşaltmadan kapatır. Alım tamponunda okunmamış bayt varken kapanan TCP soketi RST gönderir; gövdenin tamamını hemen yollayan istemci 413'ü okuyamadan `Connection reset by peer` alır. Yerelde (`--deneysel-web`, curl 8.7.1, 70 KB gövde) multipart ve urlencoded gövdenin ikisi de `000` verdi; yalnız `Expect: 100-continue` gönderen istemci 413'ü gördü. ZeeMail'deki “urlencoded 413, multipart yanıtsız” farkı bu `Expect` davranışından gelir. Bu bir spec/11 §5 correctness boşluğudur (“413 döner” sözü istemcide gözlenemiyor) ve bu RFC'den bağımsız ayrı fix adayıdır: sınırlı süre/bayt boyunca gövdeyi boşaltıp atma (lingering close) ya da yazma yönünü önce kapatma. *K-374 ile kapandı:* yazma yönü kapatılır, artık en çok 2 sn / 16 MiB boşaltılır (spec/11 §5).
 - `dil dene` hermetik web adaptörü de aynı üç biçimli yanıt modelini kullanır;
   yeni yüzey orada gerçek çalışma zamanıyla aynı kurallarla uygulanmalıdır.
 
