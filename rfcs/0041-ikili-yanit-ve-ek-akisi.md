@@ -66,8 +66,8 @@ Sonuç sütunu **yok / kısmi / var** biçimindedir.
 | # | İddia | Sonuç | Kanıt |
 |---|---|---|---|
 | 1 | Rota yalnız metin/HTML yanıt verebiliyor; ikili/akışlı dosya yanıtı, izinli içerik türü, `Content-Disposition`, boyut sınırı yok | **Doğrulandı — yok.** Yanıt taslağı kapalı üç biçimdir: `Govde(String)`, `Durum(u16, String)`, `Yonlendirme(String)`; gövde her zaman UTF-8 `Metin`dir. İçerik türü gövdenin ilk karakterinden seçilir (`<` → `text/html`, aksi `text/plain`), `charset=utf-8` sabittir. `Content-Disposition` hiçbir web yanıtında yazılmaz; rota başlık yazamaz ("dinamik status/header builder … açmaz"). Dosya içeriğini yanıta akıtan bir yüzey yoktur; ikili bir dosyanın içeriği `Metin` olarak kurulamaz (UTF-8 dışı bayt, spec/24 heap zarfı). `X-Content-Type-Options: nosniff` **zaten** her yanıtta vardır (`Cache-Control: no-store` ile birlikte); eksik olan tür ve ek başlığıdır. spec/11 §7 K-163/F032 maddesi "Bu ürün kanıtı dynamic response API gerekçesi değildir" der; yani bugünkü durum bilinçli bir sınırdır. | spec/11 §4 (içerik türü kuralı; dinamik builder yok), §7; `compiler/src/main.rs` `enum WebYanitTaslagi`, `web_yanit_taslagini_yaz`, `guvenlik_basliklari`, `html_guvenlik_basliklari` |
-| 2 | Tarayıcıdan JS'siz yükleme yok: spec/26 yalnız ham `application/octet-stream` + `X-Zee-CSRF` kabul ediyor; HTML formu ikisini gönderemez; multipart/form-data gerekiyor | **Doğrulandı — yok.** Binary yol yalnız tam `Content-Type: application/octet-stream` ile açılır; CSRF tek `X-Zee-CSRF` başlığından okunur ve K-332 ön kapısı bu başlık + oturum çerezi yoksa gövdeyi okumadan 403 verir. HTML formu `enctype` olarak yalnız `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain` gönderebilir ve özel başlık ekleyemez. `multipart/form-data` gövdesi octet-stream olmadığı için 64 KiB gövde tavanına düşer (çoğu dosyada 413) ve sığarsa `Content-Type`'tan bağımsız olarak URL-form olarak çözülür (`%` içeren gövde 400, aksi anlamsız alanlar). Multipart ayrıştırıcı yoktur; spec/26 "Açık sınır" bölümü multipart'ı açıkça "bu bölümün sözü değil" sayar. | spec/26 (Binary HTTP gövdesi, K-332, Açık sınır); spec/11 §4–5; spec/12 §3; `compiler/src/main.rs` `binary_yukleme` seçimi, `tek_http_basligi(baslik, "X-Zee-CSRF")`, yükleme sonrası `_csrf=` sentezi; `compiler/src/yorumlayici.rs` `istek_govdesiyle` |
-| 3 | `zee-smtp-mime-1` PDF/PNG/JPEG/WebP dışındaki ekleri yasaklıyor; docx/xlsx/pptx/zip/txt/csv/ics gerekiyor; kurum/ürün ayarıyla genişlemeli | **Doğrulandı — var (yasak), genişletme yolu yok.** spec/23 "PDF/PNG/JPEG/WebP dışında ek tipi YASAKTIR. Bu etiket whitelist'idir; içerik/antivirüs doğrulaması AÇIKTIR." Kodda `EkTuru` kapalı dört değerli enum'dur; tür **yalnız dosya adı uzantısından** seçilir (`pdf`, `png`, `jpg`/`jpeg`, `webp`), aksi "MIME ek türü PDF/PNG/JPEG/WebP olmalı" hatası → C029. Proje bildiriminde ek türü alanı yoktur (geçerli alanlar listesinde yalnız `e_posta_bağlantı_değişkeni`). İçerik imzası (magic bytes) denetlenmez; RFC-0036'nın `ilk N baytını onaltılık okuma` yüzeyi ürüne bu denetimi yaptırabilir ama MIME katmanına bağlı değildir. | spec/23 "Ekli SMTP e-posta (K-232)"; `compiler/src/eposta/mime.rs` `enum EkTuru`, `EkTuru::dosya_adindan`, `ekleri_oku`; `compiler/src/proje.rs` geçerli alan listesi |
+| 2 | Tarayıcıdan JS'siz yükleme yok: spec/26 yalnız ham `application/octet-stream` + `X-Zee-CSRF` kabul ediyor; HTML formu ikisini gönderemez; multipart/form-data gerekiyor | **Doğrulandı — yok.** Binary yol yalnız tam `Content-Type: application/octet-stream` ile açılır; CSRF tek `X-Zee-CSRF` başlığından okunur ve K-332 ön kapısı bu başlık + oturum çerezi yoksa gövdeyi okumadan 403 verir. HTML formu `enctype` olarak yalnız `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain` gönderebilir ve özel başlık ekleyemez. `multipart/form-data` gövdesi octet-stream olmadığı için 64 KiB gövde tavanına düşer ve sığarsa `Content-Type`'tan bağımsız olarak URL-form olarak çözülür; `_csrf` parça başlıklarının içinde kaldığı için alan bulunamaz ve küçük multipart form **403** alır (ürün ölçümü, ZeeMail `POST /kisiler/ice-aktar`; yerelde `--deneysel-web` ile yeniden üretildi). 64 KiB üstü gövdede 413 yazılır ama bağlantı gövde okunmadan kapatıldığından istemci çoğunlukla **yanıt almaz** (aşağıdaki ek bulgu). Multipart ayrıştırıcı yoktur; spec/26 "Açık sınır" bölümü multipart'ı açıkça "bu bölümün sözü değil" sayar. | spec/26 (Binary HTTP gövdesi, K-332, Açık sınır); spec/11 §4–5; spec/12 §3; `compiler/src/main.rs` `binary_yukleme` seçimi, `tek_http_basligi(baslik, "X-Zee-CSRF")`, yükleme sonrası `_csrf=` sentezi; `compiler/src/yorumlayici.rs` `istek_govdesiyle` |
+| 3 | `zee-smtp-mime-1` PDF/PNG/JPEG/WebP dışındaki ekleri yasaklıyor; docx/xlsx/pptx/zip/txt/csv/ics gerekiyor; kurum/ürün ayarıyla genişlemeli | **Doğrulandı — var (yasak), genişletme yolu yok.** spec/23 "PDF/PNG/JPEG/WebP dışında ek tipi YASAKTIR. Bu etiket whitelist'idir; içerik/antivirüs doğrulaması AÇIKTIR." Kodda `EkTuru` kapalı dört değerli enum'dur; tür **yalnız dosya adı uzantısından** seçilir (`pdf`, `png`, `jpg`/`jpeg`, `webp`), aksi "MIME ek türü PDF/PNG/JPEG/WebP olmalı" hatası → C029. Proje bildiriminde ek türü alanı yoktur (geçerli alanlar listesinde yalnız `e_posta_bağlantı_değişkeni`). Yasak yalnız çalışma zamanındadır: `dil denetle` `.docx` ekli çağrıyı temiz geçer. Tür reddi ağa çıkmadan (`ekleri_oku`, SMTP bağlantısından önce) verilir, ama bütün hatalar aynı maskeli C029 metnine (“MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi…”) çevrildiği için kullanıcı düzeyinde **tür reddi, SMTP ayarı eksikliği ve ağ hatası ayırt edilemez** (ürün ölçümü: `.docx` ve SMTP sunucusu yokken `.pdf` aynı sonucu verir). İçerik imzası (magic bytes) denetlenmez; RFC-0036'nın `ilk N baytını onaltılık okuma` yüzeyi ürüne bu denetimi yaptırabilir ama MIME katmanına bağlı değildir. | spec/23 "Ekli SMTP e-posta (K-232)"; `compiler/src/eposta/mime.rs` `enum EkTuru`, `EkTuru::dosya_adindan`, `ekleri_oku`; `compiler/src/proje.rs` geçerli alan listesi |
 
 Ek bulgular (ürün listesinde yoktu):
 
@@ -78,6 +78,7 @@ Ek bulgular (ürün listesinde yoktu):
 - Yanıt yazma soketi 10 sn ile sınırlıdır (spec/11 §5). 16 MiB'lık bir eki
   yavaş bağlantıda 10 sn'de yazmak her zaman mümkün değildir; katman A'nın
   yazma bütçesi ayrıca tanımlanmalıdır (Açık sorular).
+- **64 KiB üstü gövdede yanıtsız kapanma (önceden var olan, içerik türünden bağımsız).** `govde_zarfini_denetle` `Content-Length` sınırı aşınca 413'ü yazar ve bağlantıyı gövdeyi okumadan/boşaltmadan kapatır. Alım tamponunda okunmamış bayt varken kapanan TCP soketi RST gönderir; gövdenin tamamını hemen yollayan istemci 413'ü okuyamadan `Connection reset by peer` alır. Yerelde (`--deneysel-web`, curl 8.7.1, 70 KB gövde) multipart ve urlencoded gövdenin ikisi de `000` verdi; yalnız `Expect: 100-continue` gönderen istemci 413'ü gördü. ZeeMail'deki “urlencoded 413, multipart yanıtsız” farkı bu `Expect` davranışından gelir. Bu bir spec/11 §5 correctness boşluğudur (“413 döner” sözü istemcide gözlenemiyor) ve bu RFC'den bağımsız ayrı fix adayıdır: sınırlı süre/bayt boyunca gövdeyi boşaltıp atma (lingering close) ya da yazma yönünü önce kapatma.
 - `dil dene` hermetik web adaptörü de aynı üç biçimli yanıt modelini kullanır;
   yeni yüzey orada gerçek çalışma zamanıyla aynı kurallarla uygulanmalıdır.
 
@@ -350,6 +351,16 @@ Kurallar:
   sahteciliğini (ör. `.pdf` adlı yürütülebilir) daraltır.
 - Boyut sınırları (`KaynakSinirlari.eposta()`: 8 ek, tek ek 8 MiB, toplam
   16 MiB) değişmez.
+- **Ölçülebilir ret.** Tür, imza, boyut ve ad reddi bugün de ağdan önce
+  verilir ama ağ hatasıyla aynı maskeli C029 metnine düşer; bu yüzden ne
+  ürün ne de reproducer “ek türü reddedildi”yi kanıtlayabilir. Katman C,
+  ağa çıkmadan verilen yerel ek reddini sır içermeyen ayrı bir sınıfla
+  ayırmak ZORUNDADIR (ör. aynı C029 kodu altında sabit “ek türü izinli
+  değil” / “ek boyutu sınırı aşıyor” metinleri ya da `Hata` değerinde ayrı
+  bir neden alanı). SMTP yanıtı, URL ve kimlik bilgisi maskesi (K-236)
+  değişmez; yalnız yerel, sır taşımayan ret nedenleri görünür olur. Mümkünse
+  sabit bir ek ifadesi (literal liste) için aynı ret `dil denetle`de uyarı
+  olarak da verilir.
 
 **İçerik/antivirüs sınırı.** Allowlist etiket ve imza düzeyindedir; içerik
 güvenliği sözü vermez (spec/23 "AÇIKTIR" korunur). Alt RFC iki seçenekten
@@ -397,9 +408,16 @@ RFC'nin hiçbir katmanı şu zincir kurulmadan uygulanmaz:
    doğrulanmıştır; ama **depo içi reproducer henüz yok**. Her katman
    açılmadan önce ürün, eksik yetkinliğe çarpan gerçek Zee kaynağını
    `dogfood/urun-h/korpus/` altına exact beklentiyle koyar ve K-164
-   kataloğuyla karşılaştırır (ör. ekin `Metin` yanıtta UTF-8 hatası ya da
-   `text/plain` gitmesi; multipart formun 413/400 alması; `.docx` ekinin C029
-   alması).
+   kataloğuyla karşılaştırır. Ürünün 23 Kasım 2026 ölçümü: (A) ZeeMail
+   dışa aktarımı `text/plain` gidiyor, vCard/CSV `<a download>` ile
+   geçiştiriliyor, ek indirme “yakında”; `%PDF` gövdeli `Metin` yanıt
+   `text/plain` gelir. (B) Küçük multipart form 403, 64 KiB üstü yanıtsız
+   kapanma. (C) `.docx` eki C029 — ama aynı maske ağ hatasında da çıktığı
+   için `calistir basarisiz C029` beklentisi türü **kanıtlamaz**; bu vaka ya
+   ağ hedefi olmayan derleyici test fikstürü olarak ya da katman C'nin
+   ölçülebilir ret metniyle yazılmalıdır. (B) Zee `proje` testinden HTTP
+   isteği atılamadığı için adaptör entegrasyon testi ya da kayıtlı curl
+   ölçümü olarak tutulur.
 3. **Tekrar sinyali.** Dosyadan yanıt ihtiyacı RFC-0040 katman C ("dosyadan
    yanıta akıtma … ayrı ikinci adım") ve RFC-0039 katman D'de de geçer; aynı
    ürün içinde üç protokol yolunda tekrar eden sınıf K-164 kimliğiyle anılır.
@@ -484,7 +502,13 @@ Bu taslak ancak şunlar kanıtlandığında "geçici kabul"e aday olur:
 4. Olumsuz testler: CR/LF/`"`/yön karakterli dosya adı, `..`/symlink yanıt
    yolu, `text/html` dosya yanıtı denemesi, yanıt sırasında dosya
    kısalması, yavaş istemcide yazma bütçesi.
-5. Aynı oturum IO izinden replay edilir ve aynı yanıt başlıklarını ve
+5. Yerel ek reddi (tür/imza/boyut/ad) ağ hatasından ayrı ve SMTP bağlantısı
+   açılmadan gözlenir; reproducer bunu ağ hedefi olmadan (ör.
+   `compiler/tests/fixtures/native-effect-consumer` kalıbında) kanıtlar.
+6. 64 KiB (ve multipart için katman B tavanı) üstündeki gövdede istemci,
+   `Expect: 100-continue` göndermese de 413'ü okuyabilir; bağlantı RST ile
+   kopmaz (ayrı fix adayı kapanmış olmalı).
+7. Aynı oturum IO izinden replay edilir ve aynı yanıt başlıklarını ve
    gövde özetini üretir; `dil dene` hermetik adaptör aynı sonucu verir.
 
 ## Alternatifler

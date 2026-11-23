@@ -2681,6 +2681,11 @@ akan sınırlı tek dosyalı multipart ve dosya parçasından önce ZORUNLU `_cs
 bildirimli SMTP ek türleri (makro/yürütülebilir yapısal yasak, imza denetimi,
 antivirüs ürün/operatör sınırı). Core freeze altında uygulama yok; depo içi
 reproducer katman açılmadan önce ürünün işi. V1 kapısı değildir.
+Ürün ölçümüyle (23 Kasım 2026) iki ek bulgu: maskeli C029 yerel ek reddini
+ağ hatasından ayırmıyor (katman C “ölçülebilir ret” şartı); 64 KiB üstü
+gövdede 413 yazılıp gövde boşaltılmadan kapanıldığı için istemci RST alıp
+yanıtı göremiyor (içerik türünden bağımsız, spec/11 §5 correctness boşluğu,
+ayrı fix adayı).
 
 ## K-364 — WebDAV/CalDAV/CardDAV web adaptörü RFC taslağı
 
