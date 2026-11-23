@@ -8,6 +8,25 @@ pub struct ToplayanVeritabani {
     pub okuma_sonuclari: VecDeque<VeritabaniOkumaSonucu>,
     pub degistirme_sonuclari: VecDeque<Result<i64, VeritabaniHatasi>>,
     pub istekler: Vec<(String, Vec<String>, bool)>,
+    /// K-375: adaptöre verilen son tarih bütçeleri (ms), çağrı sırasıyla.
+    pub sureler: Vec<Option<i64>>,
+    /// K-375: hermetik sunucunun her sorguda harcadığı sanal süre. Bütçe bundan
+    /// kısaysa sorgu bütçe kadar sürer ve `57014` son tarih iptaliyle döner.
+    pub sorgu_suresi_ms: Option<i64>,
+}
+
+/// Gerçek adaptörün `statement_timeout`/`lock_timeout` iptaliyle aynı yapı.
+pub(super) fn son_tarih_iptali(sqlstate: &str) -> VeritabaniHatasi {
+    VeritabaniHatasi {
+        mesaj: "PostgreSQL sorgusu son tarih dolduğu için sunucuda iptal edildi".into(),
+        veri: vec![
+            ("sqlstate".into(), sqlstate.into()),
+            (
+                "hata_sinifi".into(),
+                crate::veritabani_modeli::SON_TARIH_IPTALI_SINIFI.into(),
+            ),
+        ],
+    }
 }
 
 impl ToplayanVeritabani {
@@ -62,36 +81,53 @@ pub(super) fn intrinsic_degerlendir(
         .iter()
         .map(|deger| metne_sinirli(deger, satir))
         .collect::<Result<Vec<_>, _>>()?;
-    son_tarihi_denetle(io, satir)?;
-    if yazma {
-        Ok(match io.postgresql_degistir(sorgu, &parametreler) {
-            Ok(adet) => Deger::Sonuc {
-                basarili: true,
-                icerik: Box::new(Deger::TamSayi(adet)),
-            },
-            Err(hata) => hata_sonucu(hata),
-        })
+    // K-375/RFC-0042: kalan son tarih adaptöre sorgu bütçesi olarak gider;
+    // son tarih yoksa `None` ve adaptör davranışı (round trip sayısı) değişmez.
+    let son = son_tarih_kalani(io, satir)?;
+    let zaman_asimi_ms = son.map(|(_, kalan)| kalan);
+    let sonuc = if yazma {
+        io.postgresql_degistir(sorgu, &parametreler, zaman_asimi_ms)
+            .map(VeritabaniSonucu::Adet)
     } else {
-        Ok(match io.postgresql_oku(sorgu, &parametreler) {
-            Ok(satirlar) => Deger::Sonuc {
-                basarili: true,
-                icerik: Box::new(Deger::Liste(
-                    satirlar
-                        .into_iter()
-                        .map(|satir| {
-                            Deger::Sozluk(
-                                satir
-                                    .into_iter()
-                                    .map(|(ad, deger)| (ad, Deger::Metin(deger)))
-                                    .collect(),
-                            )
-                        })
-                        .collect(),
-                )),
-            },
-            Err(hata) => hata_sonucu(hata),
-        })
+        io.postgresql_oku(sorgu, &parametreler, zaman_asimi_ms)
+            .map(VeritabaniSonucu::Satirlar)
+    };
+    // Süre dolmuş sorgu değere dönüşmez (HTTP/SMTP modeli): sunucu iptali
+    // `db.deadline` ya da dönüşte dolmuş son tarih, sahibine Ç001 olarak gider.
+    if let (Err(hata), Some((son, _))) = (&sonuc, son) {
+        if hata.son_tarih_iptali_mi() {
+            return Err(son_tarih_tanisi(son, satir));
+        }
     }
+    son_tarihi_denetle(io, satir)?;
+    match sonuc {
+        Err(hata) => Ok(hata_sonucu(hata)),
+        Ok(VeritabaniSonucu::Adet(adet)) => Ok(Deger::Sonuc {
+            basarili: true,
+            icerik: Box::new(Deger::TamSayi(adet)),
+        }),
+        Ok(VeritabaniSonucu::Satirlar(satirlar)) => Ok(Deger::Sonuc {
+            basarili: true,
+            icerik: Box::new(Deger::Liste(
+                satirlar
+                    .into_iter()
+                    .map(|satir| {
+                        Deger::Sozluk(
+                            satir
+                                .into_iter()
+                                .map(|(ad, deger)| (ad, Deger::Metin(deger)))
+                                .collect(),
+                        )
+                    })
+                    .collect(),
+            )),
+        }),
+    }
+}
+
+enum VeritabaniSonucu {
+    Adet(i64),
+    Satirlar(Vec<Vec<(String, String)>>),
 }
 
 fn hata_sonucu(hata: VeritabaniHatasi) -> Deger {

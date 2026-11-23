@@ -6,11 +6,22 @@ pub struct VeritabaniHatasi {
     pub veri: Vec<(String, String)>,
 }
 
+/// K-375/RFC-0042: adaptör, etkin son tarihten türettiği `statement_timeout`
+/// ya da `lock_timeout` sorguyu iptal ettiğinde bu sınıfı taşır. Yorumlayıcı
+/// bu hatayı `C025` değerine değil, son tarihin sahibine `Ç001` olarak çevirir.
+pub const SON_TARIH_IPTALI_SINIFI: &str = "db.deadline";
+
 impl VeritabaniHatasi {
     pub fn commit_sonucu_belirsiz_mi(&self) -> bool {
         self.veri
             .iter()
             .any(|(ad, deger)| ad == "hata_sinifi" && deger == "db.commit_unknown")
+    }
+
+    pub fn son_tarih_iptali_mi(&self) -> bool {
+        self.veri
+            .iter()
+            .any(|(ad, deger)| ad == "hata_sinifi" && deger == SON_TARIH_IPTALI_SINIFI)
     }
 }
 

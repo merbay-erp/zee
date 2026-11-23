@@ -1,6 +1,23 @@
 # Hermetik gerçek PostgreSQL TLS kabulü
 
-## K-313 — Güncel kapı: on native vaka ve 15 kontrol modeli
+## K-375 — Güncel kapı: on bir native vaka
+
+Kanonik koşucu on vakaya ek olarak
+`izole_tls_son_tarih_iptali_savepoint_commit_tekrarsiz_ve_havuz_sagligi`
+vakasını zorunlu seçer ve tek `K375 deadline …` gözlem satırını ister
+(RFC-0042). Vaka gerçek sunucuda transaction dışı okumanın `57014` ile
+son tarihte kesildiğini ve tekrar edilmediğini, havuz bağlantılarında
+`statement_timeout`/`lock_timeout`'un `0/0` kaldığını, eylem içi iptalin
+yalnız ifadeyi geri alıp transaction'ı sağlıklı bıraktığını, geri almadan
+sonra kalıcı satır olmadığını, kilit bekleyen INSERT'in son tarihte
+kesildiğini, süresi dolmadan gelen `NOWAIT` 55P03'ün C025 kaldığını ve
+0,8 sn'lik ertelenmiş tetikleyicili COMMIT'in 300 ms bütçeden sonra
+başarılı olduğunu sınar. 15 kontrol modeli artık on bir vaka ister; eksik
+gözlem, `retry=1`, `durable_rows=1` ya da sızan ayar reddedilir. Yerel
+`--engine local` (Homebrew PostgreSQL 16, kirli çalışma ağacı) 11/11 geçti;
+temiz kaynak kabulü sürekli kapıdadır.
+
+## K-313 — Önceki kapı: on native vaka ve 15 kontrol modeli
 
 Kanonik koşucu artık önceki sekiz vakaya ek iki same-backend testi zorunlu
 seçer. Tenant A'nın transaction-local bağlamı COMMIT veya gerçek statement

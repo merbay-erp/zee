@@ -131,3 +131,19 @@ COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
 okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
 GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
 sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.
+
+## K-375 eki — sorgu son tarihi (23 Kasım 2026)
+
+[RFC-0042](../rfcs/0042-postgresql-sorgu-son-tarihi.md) kabul edildi. Adaptör
+sınırı genişler ama sahiplik değişmez: yorumlayıcı etkin son tarihin kalanını
+`GirdiCikti::postgresql_oku/degistir`'e `zaman_asimi_ms` olarak verir; native
+adaptör onu monoton bitişe çevirip her ifadeden hemen önce `SET LOCAL
+statement_timeout`/`lock_timeout` olarak yeniden hesaplar. Ayar yalnız
+transaction-local'dir: açık transaction'da sorgu savepoint'iyle, yoksa tek
+okumalık `BEGIN … COMMIT` ile; oturum düzeyinde `SET` ve havuza sızıntı yoktur.
+Kendi bitişimiz geçtikten sonra gelen `57014`/`55P03` `hata_sinifi=db.deadline`
+taşır ve C025 değeri yerine Ç001 olur. COMMIT bütçeyle iptal edilmez (zaman
+aşımları COMMIT öncesi varsayılana döner); C027 sınıfı ve otomatik tekrar yasağı
+korunur, iptal edilen okuma tekrar edilmez (`postgresql-recovery-v1.tsv`).
+Son tarih yoksa ek round trip yoktur. Bilinçli sınır: ağ bölünmesinde istemci
+socket okuması bütçelenmez. GB-149 kapandı.
