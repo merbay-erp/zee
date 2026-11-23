@@ -1,0 +1,10 @@
+# web-istegi: GET /totp
+# K-368 (ZM-F021): TOTP giriş kovasını (300 sn/5) aşan 6. doğrulama kod denetlenmeden 429 döner; rotanın "hatalı" yanıtı gönderilmez.
+
+8080 kapısında sunucu başlat
+
+GET "/totp" adresine istek geldiğinde
+    6 kez tekrarla
+        "000000" "JBSWY3DPEHPK3PXP" anahtarıyla doğrulanıyorsa
+            "olmamalı" yanıtını gönder
+    "hatalı" yanıtını gönder

@@ -2557,6 +2557,50 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-368 — TOTP doğrulamasında giriş kovası aşımı 429 döner
+
+**Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F021 (ZeeMail uçtan uca
+MFA betiği: 6. doğrulamada doğru kod da "hatalı"). `kod gizli anahtarıyla
+doğrulanıyorsa` web isteğinde giriş kovasının `totp` anahtarını (istemci
+başına 300 sn/5) artırıyor, aşımda yanıt yazmadan `yanlış` dönüyordu; doğru
+kod reddediliyor, rota "hatalı" yanıtını 200 ile gönderiyordu (gerçek native
+sunucuda 6. ve 7. doğru kod "hatalı 200"). spec/12 oran tablosunda TOTP satırı
+yoktu.
+
+Düzeltme: aşımda kod denetlenmeden parola doğrulamasıyla aynı sabit 429
+`çok fazla giriş denemesi` (depo hatasında 503) bekleyen ilk yanıt olur ve
+native `rate_reject` metriği sayılır (K-365 sabitleri). Web dışında kova
+yoktur. Yeni grammar, tanı, CLI ya da `dil::api::v1` yok.
+
+Kanıt: `urun_e_yetkinlik_testi::totp_web_giris_kovasi_asiminda_dogru_kod_da_429_doner`
+(eski kod 6. istekte 200), `totp_web_disinda_oran_kovasina_tabi_degildir`,
+regression `security/totp-oran-asimi` (kip `web`), spec/12 tablo satırı ve
+§5 ZORUNLU maddesi.
+
+Açık: doğrulama aşımda rotaya `yanlış` döndürmeye devam eder; rota kendi
+hesap kilidi sayacını artırabilir ve aşımı yanlış koddan ayıramaz (spec/12 §5
+AÇIK maddesi). Ayrı değer ya da rota kesme `GirdiCikti` bool sözleşmesini ve
+IO izi şemasını değiştirir; core freeze altında ürün kanıtıyla ayrıca karar
+gerekir.
+
+## K-367 — Şapkalı ünlülü köklerde kanonik üretim (zee-tr-2 adayı)
+
+**Durum: AÇIK (zee-tr-2 adayı, V1 sonrası).** `compiler/src/morfoloji.rs`
+içindeki `unludur`, `dar_unlu`, `genis_unlu` ve `kok_bicimleri` ünlü denetimi
+`â/î/û` harflerini ünlü saymaz: son ünlü yoksa varsayılan `e` (`kâr` → `kâri`),
+şapkalı ünlü atlanınca önceki ünlü (`rüzgâr` → `rüzgârü`), eksik hece sayısıyla
+yumuşama yok (`kâğıt` → `kâğıtı`) ve çözücüde sahte ünlü-türemesi adayı
+(`rüzgârı` → `rüzgâür`). Çözücü doğru yazımı (`kârı`) zaten aynı köke çözer.
+Ölçülen etki (geçici yama, commit yok): uyumluluk kaydı `e6034e73…` →
+`ede9b18a…`, 53.248 kanonik üretimin 10.306'sı ve ortak yüzeylerin 2.865
+çözüm kümesi değişir, bağımsız conformance korpusu kırılır; yerel 120 Zee
+projesinde `dil denetle` farkı yok. spec/13 ve RFC-0018 bunu `zee-tr-1`
+içinde YASAK kırıcı değişiklik sayar; sınır spec/13'te AÇIK maddedir.
+Basit "â→a sınıfı" düzeltmesi de yanlıştır (`hâl` → `hâlı`); doğru kural
+şapkanın k/g/l inceltme işlevini ayrıca ele almalıdır (`kârı` ama `hâli`,
+`usulü`). Bağımlılık: RFC + `zee-tr-2` gerçeklemesi + yeni uyumluluk kaydı +
+proje/kilit geçişi + edition kararı. V1 kapısı değildir.
+
 ## K-365 — Parola özeti üretiminde giriş kovası aşımı 429 döner
 
 **Durum: KAPALI.** Kaynak: `urun-h` sürtünmesi ZM-F020 (K-364 taslağı

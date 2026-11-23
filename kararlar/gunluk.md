@@ -5492,3 +5492,29 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   adını tüketicinin tek P007 metniyle denetler (ayrı ikinci kural yazmak
   reddedildi). Yeni tanı kodu, grammar, CLI ya da dil::api::v1 değişikliği
   yok. spec/07, spec/18, ADR-028 eki 8, RFC-0020 §3, GB-147.
+
+## K-367 — Şapkalı ünlüler: zee-tr-1'de düzeltilmez, zee-tr-2 adayı (21 Kasım 2026)
+
+- K-363 sırasında gözlendi: `Kâr` kökü için kanonik belirtme `Kâri` üretiliyor.
+  Kök neden: morfoloji ünlü işlevleri `â/î/û`'yu ünlü saymıyor; üretimde uyum
+  ve yumuşama, çözücüde ünlü-türemesi adayları sapıyor.
+- Etki geçici yamayla ölçüldü: uyumluluk kaydı değişir, 53.248 üretimin
+  10.306'sı ve 2.865 çözüm kümesi farklılaşır; yerel 120 projede `dil denetle`
+  farkı yok. Pratik etkinin sıfır olması kuralı gevşetmez; spec/13 ve
+  RFC-0018 sözleşmesi kayda bağlıdır.
+- Karar: `zee-tr-1`e dokunulmaz; spec/13'e AÇIK bilinen sınır maddesi,
+  K-367 backlog'a `zee-tr-2` adayı olarak girer. Naif "â→a" düzeltmesi
+  reddedildi (`hâli`yi `hâlı`ya bozar); doğru kural k/g/l inceltmesini ayrıca
+  modeller. Kod, test, tanı, fixture ve dil yüzeyi değişikliği yok.
+
+## K-368 — TOTP doğrulaması giriş kovası aşımı 429 (21 Kasım 2026)
+
+- ZM-F021 (`urun-h`): TOTP doğrulaması giriş kovası (`totp`, 300 sn/5)
+  aşımında yanıt yazmadan `yanlış` dönüyor, doğru kod "hatalı" sayılıyordu.
+  Karar: K-365 ile tutarlı olarak aşım kod denetlenmeden parola
+  doğrulamasıyla aynı 429/503 ilk yanıtıdır; spec/12 tablosuna TOTP satırı.
+  Reddedilen: `totp_dogrula`yı `Result` yapmak ya da aşımda rotayı kesmek
+  (GirdiCikti bool sözleşmesi, IO izi `totp_dogrula` olay şeması ve kayıt/
+  oynatma determinizmi değişir; core freeze). Rotanın aşımda `yanlış` görmesi
+  spec/12 §5 AÇIK maddesidir. Yeni grammar, tanı, CLI ya da dil::api::v1 yok.
+  Regression `security/totp-oran-asimi`.

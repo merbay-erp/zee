@@ -55,7 +55,8 @@ Argon2id v19 (kitaplık varsayılan parametreleri, CSPRNG tuz) döndürür;
 (aşım yanıtı §5, K-365), playground'da C028'dir. İki adımlı doğrulama `yeni totp anahtarı` (160 bit
 Base32, CSPRNG) ve `kod gizli anahtarıyla doğrulanıyorsa` (RFC 6238, 30 s adım,
 6 hane, HMAC-SHA1, ±1 adım pencere, sabit zamanlı karşılaştırma) ile kurulur;
-saat adaptörden gelir. Gizli anahtar sunucuda parola özeti gibi saklanır,
+saat adaptörden gelir; web isteğinde ayrı TOTP giriş kovasına tabidir (aşım
+yanıtı §5, K-368). Gizli anahtar sunucuda parola özeti gibi saklanır,
 istemciye yalnız kayıt anında otpauth bağlantısı olarak verilir.
 
 Başarılı `oturuma al` cümlesi:
@@ -216,8 +217,13 @@ ZORUNLUDUR:
 | istemci + yöntem + sorgusuz path | 60 saniye | 100 | 429 |
 | CSRF doğrulaması | 60 saniye | 60 | 429 |
 | Argon2id/bcrypt parola doğrulaması | 300 saniye | 5 | Parola doğrulaması çalışmadan 429 |
+| TOTP kod doğrulaması | 300 saniye | 5 | Kod doğrulaması çalışmadan 429 |
 
 ZORUNLU: `parolanın argon2 özeti` web isteğinde parola doğrulamasıyla aynı giriş kovasını (aynı istemci ve kapsam, 300 saniye/5) artırır. Kova aşılmışsa özet üretilmez, rota o cümlede kesilir, isteğin bekleyen oturum/çerez mutation'ı ve istek transaction'ı rota hatasındaki gibi geri alınır ve yanıt parola doğrulamasıyla aynı sabit 429 `çok fazla giriş denemesi` gövdesidir; oran deposuna erişilemezse aynı biçimde 503 `giriş oran sınırı deposuna erişilemedi` döner. Bu ret kullanıcı tanısı değildir (C028 ya da 500 değildir), Zee kodu onu yakalamaz ve işçi sonraki isteği alır. Web isteği dışında (CLI `dil çalıştır` akışı, açılış bloğu) giriş kovası yoktur; yetkinlik kapalılığı ve adaptör üretim hatası C028 kalır (K-365).
+
+ZORUNLU: `kod gizli anahtarıyla doğrulanıyorsa` web isteğinde parola kovasından ayrı TOTP giriş kovasını (aynı istemci, 300 saniye/5) artırır. Kova aşılmışsa kod denetlenmez; doğru kod da yanlış kod da aynı sabit 429 `çok fazla giriş denemesi` yanıtını alır, oran deposuna erişilemezse 503 `giriş oran sınırı deposuna erişilemedi` döner. Yanıt parola doğrulamasındaki gibi isteğin ilk yanıtıdır; rotanın sonradan gönderdiği yanıt bu durumu değiştirmez ve işçi sonraki isteği alır. Web isteği dışında TOTP kovası yoktur, doğru kod `doğru` kalır (K-368).
+
+AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı sürdürür; rota bu dalda kendi hesap kilidi sayacını artırabilir ve aşımı yanlış koddan ayıramaz. Aşımın Zee koduna ayrı bir değerle görünmesi ya da rotanın kesilmesi grammar/IO izi genişlemesidir, core freeze altında açık kalır.
 
 Özet üretimine ayrı kova ya da yakalanabilir `Sonuç` biçimi vermek grammar/API genişlemesidir; V1 core freeze altında K-364 CalDAV/CardDAV taslağının açık sorusudur.
 

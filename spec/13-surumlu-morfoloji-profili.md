@@ -60,6 +60,18 @@ tek düzenli kanonik biçimi üretir. Normatif property şudur:
 Bu property profil tablosundaki bütün tek ekler ve bütün geçerli iki katmanlı
 zincirler için kök korpusu üzerinde test edilir.
 
+### Bilinen sınır: şapkalı ünlüler (K-367)
+
+AÇIK: `zee-tr-1` `â`, `î`, `û` harflerini ünlü saymaz. Bu harfleri taşıyan
+köklerde kanonik üretim Türkçe ünlü uyumuna ve yumuşamaya uymayabilir:
+`kâr` → `kâri`, `rüzgâr` → `rüzgârü`, `kâğıt` → `kâğıtı` üretilir (Türkçede
+`kârı`, `rüzgârı`, `kâğıdı`). Çözücü yüzey tablosunu ünlüden bağımsız
+uyguladığı için doğru yazım (`kârı`, `rüzgârı`) aynı köke çözülür; sınır
+kanonik üretimi (editörde yeniden adlandırma) ve aday kümesini etkiler.
+Düzeltme profilin uyumluluk kaydını değiştirdiği için `zee-tr-1` içinde
+yapılamaz; `zee-tr-2` adayıdır. Doğru kural şapkanın k/g/l inceltme işlevini
+ayrıca ele almalıdır (`kârı` ama `hâli`, `usulü`).
+
 ## Editör ve araçlar (TANIMLI)
 
 - LSP tanıma-git/hover/rename aynı profil modülünü kullanır. Definition ve
