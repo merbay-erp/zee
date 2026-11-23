@@ -12,7 +12,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/04-turler.md` | 13 | 13 | 0 | 0 |
 | `spec/05-degerlendirme.md` | 9 | 9 | 0 | 0 |
 | `spec/06-hata-modeli.md` | 7 | 7 | 0 | 0 |
-| `spec/07-birimler.md` | 10 | 10 | 0 | 0 |
+| `spec/07-birimler.md` | 15 | 13 | 1 | 1 |
 | `spec/08-kalici-dosya.md` | 8 | 7 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
@@ -36,10 +36,11 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **314** | **299** | **4** | **11** |
+| **Toplam** | **319** | **302** | **5** | **12** |
 
 ## Kısmi kanıtlı maddeler
 
+- `spec/07-birimler.md#533cdfd1a42d5de3` — TANIMLI: Çalışan programın göreli dosya IO kökü giriş kaynağının klasörü… — K-382: çalıştır <proje>/<giriş dosyası> ve başka çağıran klasörde veri giriş klasöründe; proje kökü dokunulmaz. Worker/işçi grubu/systemd soketi aynı KaynakGirdisi::gercek_io yolundan geçer ama alt klasör girişli gerçek worker yükleme testi yok.
 - `spec/08-kalici-dosya.md#532a9e61aa1fe70f` — - Dayanıklılık/kilit primitive'leri bulunmayan platform işlemi reddetmek… — Primitive'siz platform reddi yalnız desteklenen üç platformda derlenen koda bağlı; böyle bir platform CI matrisinde yok.
 - `spec/18-paket-yayini.md#2af407978947e1d4` — Üretici dört dosyayı yazmadan önce bütün kümeyi tüketici doğrulayıcıyla … — Yazmadan önce tam doğrulama ve yarım küme reddi kanıtlı; süreç çökmesi ortasında yarım küme senaryosu enjekte edilmiyor (söz de verilmiyor).
 - `spec/22-deterministik-io-profili.md#d68db0760744fd45` — Profilin bu gözlemlerinden birini kıran değişiklik yeni profil kimliği, … — Snapshot gözlem değişikliğini yakalar; yeni profil kimliği/RFC zorunluluğu süreç kuralıdır, makinece yalnız snapshot farkıyla görünür.
@@ -47,6 +48,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 ## Açık maddeler
 
+- `spec/07-birimler.md#4133d3a7031d4b3d` — AÇIK: Kökü proje klasörüne taşıyan ya da proje başına ayrı veri kökü aça… — K-382 takip önerisi veri_kökü: ayrı dogfood-change; iki ürün tekrarı ya da ikinci tüketici kanıtı bekler.
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.
 - `spec/12-web-guvenlik-profili.md#5d930da7687a2f1e` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım, ağ dosya sistemi ve çok hostlu birincillik açık (K-340 `zee.ayar` alanını, K-341 tek makinede elle kurulumda tek birincili bu maddeden çıkardı); Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.
 - `spec/12-web-guvenlik-profili.md#e2499f058abb0fd9` — AÇIK: Zee kodu adlı dinleyicilerden bağlantı kabul edemez; bağlantı yüze… — RFC-0039 A2: bağlantı yüzeyi, ağ-dinleyici yetkinliği ve çok işçiye adla aktarım açık.

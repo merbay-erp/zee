@@ -10,6 +10,24 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Düzeltilenler
+
+- **Eksik klasör artık "güvenle çözülemedi" diye bildirilmiyor (K-382):**
+  Proje kipinde (`proje.dil` ile) hedef klasörü olmayan bir yola yazma ya da
+  taşıma ve olmayan bir dosyayı okuma, `dosya yolu güvenle çözülemedi: No
+  such file` iletisiyle bir güvenlik reddi gibi görünüyordu. Artık ileti
+  neyin eksik olduğunu söyler: `"depo/ekler/x" için hedef klasör "depo/ekler"
+  yok; göreli yollar giriş dosyasının klasöründen çözülür, klasörü önce
+  oluşturun` ya da `"yok.txt" bulunamadı; …`. Tanı kodu (C013) ve
+  `… dene` kalıplarının başarı/başarısızlık davranışı değişmedi.
+
+  **Hatırlatma (davranış değişmedi):** Göreli dosya yolları ve
+  `.zee/yuklemeler` geçici dizini proje kökünden değil **giriş dosyasının
+  klasöründen** çözülür (`giriş "kaynak/ana.dil"` → `kaynak/`). Proje
+  kökündeki bir klasörü kullanmak isteyen uygulama onu giriş klasörü içinde
+  tutar ya da giriş klasörüne proje kökündeki klasörü gösteren bir sembolik
+  bağ koyar. Göç gerekmez.
+
 ### Güvenlik
 
 - **Yansıyan betik artık CSP iznini alamıyor (K-379):** Web sunucusu HTML

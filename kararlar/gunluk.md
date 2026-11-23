@@ -5710,3 +5710,32 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   birebir aynı CSP; tek kırılan kullanım çalışma zamanında parça parça
   kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
   değişmez ya da statik dosya).
+
+## K-382 — Göreli dosya IO kökü giriş klasörüdür; yokluk iletisi düzeltildi (23 Kasım 2026)
+
+- Etkin dogfood ürünü `urun-h` sürtünmesi (ZM-F029): girişi `kaynak/ana.dil`
+  olan projede dosya taşıma/okuma ve `yukleme_gecici_yolu` proje kökünden
+  değil `kaynak/`ten çözülüyor, eksik hedef klasörü
+  `dosya yolu güvenle çözülemedi: No such file` diye bildiriliyordu.
+- İnceleme: spec/07 K-076 maddesi (TANIMLI başlık altında) göreli IO
+  yolunun giriş dosyasının klasöründen çözüldüğünü zaten söylüyordu; kod
+  (`KaynakGirdisi::klasor` → `GercekIo::kok`) buna uyuyor. spec/26
+  `.zee/yuklemeler` için "proje kökü", spec/23 yetkinlik tablosu "proje
+  kökündeki dosya" diyordu: bunlar çözüm kökü değil sınır anlamında gevşek
+  ifadeydi. Kod sapması yok; ifadeler spec/07 K-382 bölümüne bağlandı.
+- Karar: kök değişmez. Yerel envanterde girişi `kaynak/` altında ve dosya
+  yetkinlikli 23 tekil proje (çekirdek, müşteri siteleri, `urun-h`, iki
+  depo içi dogfood ürünü) ile ~70 dağıtım dosyası (`ExecStartPre` mkdir,
+  `ReadWritePaths`, rsync dışlamaları, çalışma zamanı denetim betikleri)
+  `kaynak/.zee/yuklemeler`, `kaynak/medya`, `kaynak/dosya` yollarına
+  dayanıyor; `kanit-ozeti` ürünü `../../../` yollarını giriş klasörüne göre
+  sayıyor. Kök kayması bunların hepsini sessizce kırardı.
+- Düzeltme (correctness, tanı kodu değişmedi): proje dosya sınırında yol
+  çözümü `NotFound` ile biterse ileti eksik hedef klasörü ya da bulunamayan
+  dosyayı programın verdiği göreli yolla ve çözüm kökünü anarak söyler;
+  yokluk dışı hatalar eski metni korur.
+- Ürüne bugünkü yol: kalıcı veriyi giriş klasöründe tutmak ya da giriş
+  klasörü içinde proje kökündeki klasöre sembolik bağ (canonical hedef
+  proje kökünde kaldıkça sınır içi).
+- Takip önerisi (açık, ayrı `dogfood-change`): `proje.dil` `veri_kökü`
+  alanı. Bkz. backlog K-382.
