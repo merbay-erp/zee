@@ -121,8 +121,15 @@ ile sınırlıdır. Kalıcı depo okunamaz/bozuksa veya kapasite güvenle
 yönetilemiyorsa istek fail-closed 503 olur.
 
 Reverse proxy buffering Slowloris etkisini internet sınırında keser; backend
-ayrıca bağlantı kabulünden başlayan 10 saniyelik mutlak request okuma ve 30
-saniyelik Zee request çalışma deadline'ı taşır. Benchmark sonuçları process
+ayrıca bağlantı kabulünden başlayan 10 saniyelik mutlak request okuma, 30
+saniyelik Zee request çalışma deadline'ı ve yazım başlangıcından itibaren mutlak
+`10 sn + yanıt baytı / 128 KiB/s` yanıt yazım bütçesi (10 sn ilerlemesiz yazım
+da kesilir) taşır (K-372). Yanıtı okumayan ya da çok yavaş okuyan istemci bir
+işçiyi en çok bu bütçe kadar tutar; tek işçili sitede art arda bağlantılar
+yine sırayla bekletir, bu yüzden proxy yanıt tamponlaması (nginx varsayılanı)
+ve proxy'nin kendi istemci zaman aşımları açık kalmalıdır. 16 MiB'a yaklaşan
+yanıtları 1 Mbit/s altındaki istemcilere tamponsuz proxy üzerinden veren site
+bütçe aşımında yarım yanıt görür. Benchmark sonuçları process
 başına tek worker gerçeğiyle yorumlanmalı; `-c 100` tek bir process'te 100
 paralel uygulama yürütümü vaat etmez.
 

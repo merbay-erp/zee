@@ -207,9 +207,18 @@ HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, byte tabanlı
 yalnız-CRLF parser, tek `Content-Length`, origin-form hedef ve
 `Transfer-Encoding` reddi request-smuggling/yığın korkuluklarıdır. Başlık ile
 gövdenin tamamı bağlantı kabulünden başlayan
-10 saniyelik mutlak okuma bütçesini aşarsa 408 döner; yanıt yazımı da 10 saniye
-socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
-ayrıca geçerlidir.
+10 saniyelik mutlak okuma bütçesini aşarsa 408 döner. Spec/11'in 100 alan ve
+30 saniye uygulama sınırı ayrıca geçerlidir.
+
+ZORUNLU: Yanıt yazımı (durum satırı, başlıklar ve gövde; ham 4xx/5xx
+yanıtları dahil) yazım başlangıcından itibaren mutlak bir bütçe içinde biter:
+`10 sn + yanıt baytı / 128 KiB/s` (boş yanıt 10 sn, 2 MiB 26 sn, 16 MiB metin
+üst sınırı 138 sn). Ayrıca 10 saniye boyunca tek bayt ilerlemeyen yazım da
+kesilir. Kısmi ilerleme bütçeyi yenilemez; okuyucunun her pencerede biraz
+okuması işçiyi bütçeden uzun tutamaz. Aşımda bağlantı kapanır, yanıt teslim
+edilemedi olarak sayılır (metrikte yazım hatası, günlükte `yanıt yazım
+bütçesi doldu`), isteğin oturum/çerez mutation'ı aşağıdaki yazım hatası
+kuralıyla geri alınır ve işçi sonraki isteği alır (K-372).
 
 Doğrulanmış kanonik istemci kimliğiyle varsayılan ortak kalıcı depoda (K-218 explicit bellek seçiminde süreç başına depoda, K-219 uç nokta eşiği ayarı dışında) şu pencereler
 ZORUNLUDUR:

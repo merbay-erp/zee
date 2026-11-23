@@ -1,8 +1,7 @@
 //! Derleyici, runtime ve araçlar için tek değişmez kaynak politikası.
 //!
-//! Değerler kullanıcı girdisinden değiştirilemez. Daha geniş bir profil ancak
-//! ayrı, açık ve sürümlü bir ürün kararıyla eklenebilir; sessiz sınırsız geri
-//! dönüş yoktur.
+//! Değerler kullanıcı girdisinden değiştirilemez. Daha geniş bir profil ancak ayrı,
+//! açık ve sürümlü bir ürün kararıyla eklenebilir; sessiz sınırsız geri dönüş yoktur.
 
 mod baglanti;
 pub(crate) mod degistirme_penceresi;
@@ -205,6 +204,7 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         istek_govde_bayti: 64 * 1024,
         yukleme_bayti: 16 * 1024 * 1024,
         istek_alani: 100,
+        yanit_yazim_alt_hizi: 128 * 1024,
     },
     web: WebSinirlari {
         oturum_omru_saniye: 30 * 60,

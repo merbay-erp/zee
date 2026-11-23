@@ -84,6 +84,7 @@ const KIPLER: &[&str] = &[
     "native-listener-deadline",
     "native-metric-stdio",
     "native-web-kopma",
+    "native-web-yazim-butcesi",
     "native-dosya-exdev",
     "native-web-yukleme",
     "native-dosya-okuma-penceresi",
@@ -278,6 +279,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "smtp"
                 | "native-listener-deadline"
                 | "native-web-kopma"
+                | "native-web-yazim-butcesi"
                 | "native-web-yukleme"
                 | "native-web-depo-cekismesi"
                 | "native-web-oturum-deposu"
@@ -377,6 +379,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-kopma" {
         let (cikis, cikti) = native_web_kopma_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-web-yazim-butcesi" {
+        let (cikis, cikti) = native_web_kopma_fixture::butce_calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -863,6 +873,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
             "native-listener-deadline"
                 | "native-metric-stdio"
                 | "native-web-kopma"
+                | "native-web-yazim-butcesi"
                 | "native-dosya-exdev"
                 | "native-web-yukleme"
                 | "native-dosya-okuma-penceresi"
@@ -1100,6 +1111,43 @@ fn native_web_kopma_regresyonu_gercek_worker_ile_korunur() {
     assert!(
         !vakalar.is_empty(),
         "native web kopma regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(
+            gozlem.cikis, vaka.cikis,
+            "{}: worker ayakta kalmalı",
+            vaka.ad
+        );
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: sonraki istek", vaka.ad);
+    }
+}
+
+#[test]
+fn native_web_yazim_butcesi_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-web-yazim-butcesi"));
+    assert!(faz_kipi_kabul_eder("security", "native-web-yazim-butcesi"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-web-yazim-butcesi"));
+    }
+}
+
+/// K-372: sürekli ama yavaş okuyan istemci tek işçiyi yalnız mutlak yanıt
+/// yazım bütçesi kadar tutar; sonraki istek bütçe sonunda 200 alır.
+/// ToplayanIo socket akış denetimini taklit edemediği için toplu replay bu
+/// kipi atlar; Unix dışında sahte başarı yoktur.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix owned socket capability unavailable")]
+fn native_web_yazim_butcesi_regresyonu_gercek_worker_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-web-yazim-butcesi")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native web yazım bütçesi regresyonu gerçek manifest vakası olmadan geçemez"
     );
     for vaka in vakalar {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");

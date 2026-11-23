@@ -2281,8 +2281,6 @@ impl GercekIo {
     /// metrikte final write hatası sayılır ve `IstemciKoptu` döner; worker
     /// süreci bu yüzden SONLANMAZ. `Err` yalnız iç tutarlılık hatasıdır.
     fn web_yanit_taslagini_yaz(&mut self, taslak: WebYanitTaslagi) -> Result<YanitTeslimi, String> {
-        use std::io::Write;
-
         let mut akis = self
             .bekleyen_akis
             .take()
@@ -2353,7 +2351,7 @@ impl GercekIo {
         if !head {
             yanit.extend_from_slice(govde.as_bytes());
         }
-        let result = akis.write_all(&yanit);
+        let result = yanit_butcesiyle_yaz(&mut akis, &yanit);
         akis.metrik_yanit(status, result.is_ok());
         match result {
             Ok(()) => Ok(YanitTeslimi::Yazildi),
@@ -2650,16 +2648,83 @@ fn ham_http_hatasi_gonder(
     let aciklama = http_durum_aciklamasi(durum);
     let govde = mesaj.as_bytes();
     let basliklar = guvenlik_basliklari(https);
-    let header_ok = write!(
-        akis,
+    let mut yanit = format!(
         "HTTP/1.1 {} {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
         durum,
         aciklama,
         govde.len(),
         basliklar
-    ).is_ok();
-    let body_ok = head || akis.write_all(govde).is_ok();
-    akis.metrik_yanit(durum, header_ok && body_ok);
+    )
+    .into_bytes();
+    if !head {
+        yanit.extend_from_slice(govde);
+    }
+    let ok = yanit_butcesiyle_yaz(akis, &yanit).is_ok();
+    akis.metrik_yanit(durum, ok);
+}
+
+/// K-372: `bayt` uzunluğundaki yanıtın yazılabileceği mutlak süre:
+/// `istek_okuma_saniyesi` artı `yanit_yazim_alt_hizi` ile aktarım süresi.
+fn yanit_yazim_butcesi(bayt: usize) -> std::time::Duration {
+    let http = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
+    let aktarim_us =
+        (bayt as u128).saturating_mul(1_000_000) / u128::from(http.yanit_yazim_alt_hizi());
+    HTTP_ISTEK_OKUMA_SURESI
+        + std::time::Duration::from_micros(u64::try_from(aktarim_us).unwrap_or(u64::MAX))
+}
+
+fn yanit_butcesiyle_yaz(akis: &mut impl WebTasima, veri: &[u8]) -> std::io::Result<()> {
+    let son_tarih = std::time::Instant::now() + yanit_yazim_butcesi(veri.len());
+    son_tarihli_yaz(akis, veri, son_tarih, HTTP_ISTEK_OKUMA_SURESI)
+}
+
+/// K-372: yanıtı mutlak `son_tarih` içinde yazar; ayrıca `ilerlemesiz`
+/// boyunca tek bayt ilerlemezse keser (eski syscall başına socket zaman
+/// aşımının karşılığı). Socket zaman aşımı kısmi ilerlemeyle yenilendiği ve
+/// Darwin'de tek çağrı ilerledikçe süresini aşabildiği için yazım nonblocking
+/// yapılır; `WouldBlock` beklemesi (Unix'te `poll`) son tarihe kırpılır.
+/// Bağlantı yanıttan sonra kapandığından nonblocking kip geri alınmaz.
+fn son_tarihli_yaz(
+    akis: &mut impl WebTasima,
+    mut veri: &[u8],
+    son_tarih: std::time::Instant,
+    ilerlemesiz: std::time::Duration,
+) -> std::io::Result<()> {
+    akis.set_nonblocking(true)?;
+    let mut son_ilerleme = std::time::Instant::now();
+    while !veri.is_empty() {
+        match akis.write(veri) {
+            Ok(0) => return Err(std::io::ErrorKind::WriteZero.into()),
+            Ok(yazilan) => {
+                veri = &veri[yazilan..];
+                son_ilerleme = std::time::Instant::now();
+                if !veri.is_empty() && son_ilerleme >= son_tarih {
+                    return Err(yanit_butcesi_doldu());
+                }
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                let simdi = std::time::Instant::now();
+                let durgun_son = son_ilerleme + ilerlemesiz;
+                if simdi >= son_tarih {
+                    return Err(yanit_butcesi_doldu());
+                }
+                if simdi >= durgun_son {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::TimedOut,
+                        format!("yanıt yazımı {} sn ilerlemedi", ilerlemesiz.as_secs()),
+                    ));
+                }
+                akis.yazilabilir_bekle(son_tarih.min(durgun_son) - simdi)?;
+            }
+            Err(e) => return Err(e),
+        }
+    }
+    Ok(())
+}
+
+fn yanit_butcesi_doldu() -> std::io::Error {
+    std::io::Error::new(std::io::ErrorKind::TimedOut, "yanıt yazım bütçesi doldu")
 }
 
 fn http_durum_aciklamasi(durum: u16) -> &'static str {
@@ -4990,6 +5055,159 @@ mod web_profili_testleri {
         assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
     }
 
+    /// K-372: yazım sınamaları için her `write` çağrısında en çok `adim`
+    /// bayt kabul eden, araya `bos_tur` kadar WouldBlock koyan taşıma.
+    struct DamlaAkisi {
+        adim: usize,
+        bos_tur: usize,
+        sayac: usize,
+        yazilan: Vec<u8>,
+        nonblocking: std::cell::Cell<bool>,
+    }
+    impl DamlaAkisi {
+        fn yeni(adim: usize, bos_tur: usize) -> Self {
+            Self {
+                adim,
+                bos_tur,
+                sayac: 0,
+                yazilan: Vec::new(),
+                nonblocking: std::cell::Cell::new(false),
+            }
+        }
+    }
+    impl Read for DamlaAkisi {
+        fn read(&mut self, _: &mut [u8]) -> std::io::Result<usize> {
+            Ok(0)
+        }
+    }
+    impl Write for DamlaAkisi {
+        fn write(&mut self, baytlar: &[u8]) -> std::io::Result<usize> {
+            assert!(self.nonblocking.get(), "yanıt yazımı nonblocking olmalı");
+            self.sayac += 1;
+            if self.adim == 0 || !self.sayac.is_multiple_of(self.bos_tur + 1) {
+                return Err(std::io::ErrorKind::WouldBlock.into());
+            }
+            let n = baytlar.len().min(self.adim);
+            self.yazilan.extend_from_slice(&baytlar[..n]);
+            Ok(n)
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    impl WebTasima for DamlaAkisi {
+        fn set_read_timeout(&self, _: Option<std::time::Duration>) -> std::io::Result<()> {
+            Ok(())
+        }
+        fn set_nonblocking(&self, deger: bool) -> std::io::Result<()> {
+            self.nonblocking.set(deger);
+            Ok(())
+        }
+        fn yazilabilir_bekle(&self, en_cok: std::time::Duration) -> std::io::Result<()> {
+            std::thread::sleep(en_cok.min(std::time::Duration::from_micros(200)));
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn yanit_yazim_butcesi_taban_ve_alt_hizdan_olusur() {
+        let saniye = std::time::Duration::from_secs;
+        assert_eq!(yanit_yazim_butcesi(0), saniye(10));
+        assert_eq!(yanit_yazim_butcesi(128 * 1024), saniye(11));
+        assert_eq!(yanit_yazim_butcesi(2 * 1024 * 1024), saniye(26));
+        // Metin üst sınırı (16 MiB) yanıtı en çok 138 sn yazılabilir.
+        assert_eq!(yanit_yazim_butcesi(16 * 1024 * 1024), saniye(138));
+    }
+
+    /// K-372: her çağrıda ilerleyen (syscall zaman aşımına hiç düşmeyen)
+    /// yavaş okuyucu mutlak son tarihte kesilir; yanıtın tamamı yazılmaz.
+    #[test]
+    fn surekli_ilerleyen_yavas_okuyucu_mutlak_son_tarihte_kesilir() {
+        let mut akis = DamlaAkisi::yeni(1, 1);
+        let veri = vec![b'x'; 1 << 20];
+        let baslangic = std::time::Instant::now();
+        let son_tarih = baslangic + std::time::Duration::from_millis(150);
+        let hata = son_tarihli_yaz(
+            &mut akis,
+            &veri,
+            son_tarih,
+            std::time::Duration::from_secs(10),
+        )
+        .unwrap_err();
+        let gecen = baslangic.elapsed();
+        assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
+        assert_eq!(hata.to_string(), "yanıt yazım bütçesi doldu");
+        assert!(!akis.yazilan.is_empty() && akis.yazilan.len() < veri.len());
+        assert!(gecen >= std::time::Duration::from_millis(150), "{gecen:?}");
+        assert!(gecen < std::time::Duration::from_secs(2), "{gecen:?}");
+    }
+
+    /// K-372: hiç ilerlemeyen okuyucu bütçe dolmadan ilerlemesizlik
+    /// süresinde kesilir (eski syscall başına zaman aşımının karşılığı).
+    #[test]
+    fn ilerlemeyen_okuyucu_ilerlemesizlik_suresinde_kesilir() {
+        let mut akis = DamlaAkisi::yeni(0, 0);
+        let baslangic = std::time::Instant::now();
+        let son_tarih = baslangic + std::time::Duration::from_secs(30);
+        let hata = son_tarihli_yaz(
+            &mut akis,
+            b"HTTP/1.1 200 OK\r\n\r\n",
+            son_tarih,
+            std::time::Duration::from_millis(100),
+        )
+        .unwrap_err();
+        let gecen = baslangic.elapsed();
+        assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
+        assert!(hata.to_string().contains("ilerlemedi"), "{hata}");
+        assert!(gecen >= std::time::Duration::from_millis(100), "{gecen:?}");
+        assert!(gecen < std::time::Duration::from_secs(2), "{gecen:?}");
+    }
+
+    /// K-372: bütçe içinde biten yazım verinin tamamını sırasıyla yazar;
+    /// WouldBlock ve Interrupted hata sayılmaz.
+    #[test]
+    fn butce_icindeki_yazim_tam_ve_sirali_biter() {
+        // Az tur: sahte bekleme gerçek uykudur; CI yavaşlığında da 10 sn'yi aşmaz.
+        let mut akis = DamlaAkisi::yeni(7, 1);
+        let veri: Vec<u8> = (0..=255u8).cycle().take(500).collect();
+        let son_tarih = std::time::Instant::now() + std::time::Duration::from_secs(10);
+        son_tarihli_yaz(
+            &mut akis,
+            &veri,
+            son_tarih,
+            std::time::Duration::from_secs(10),
+        )
+        .unwrap();
+        assert_eq!(akis.yazilan, veri);
+    }
+
+    /// K-372: gerçek soket üzerinde okunmayan büyük yanıt son tarihten sonra
+    /// sürmez. Windows çekirdeği nonblocking gönderimi bütünüyle
+    /// tamponlayabilir (`Ok`); hata varsa yalnız zaman aşımıdır.
+    #[test]
+    fn okunmayan_gercek_soket_yazimi_son_tarihte_biter() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let _istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        let veri = vec![b'x'; 64 << 20];
+        let baslangic = std::time::Instant::now();
+        let son_tarih = baslangic + std::time::Duration::from_millis(300);
+        let sonuc = son_tarihli_yaz(
+            &mut sunucu,
+            &veri,
+            son_tarih,
+            std::time::Duration::from_secs(10),
+        );
+        let gecen = baslangic.elapsed();
+        match sonuc {
+            Err(hata) => assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut),
+            Ok(()) if cfg!(windows) => {}
+            Ok(()) => panic!("Unix çekirdeği 64 MiB'ı okunmadan tamponlamaz"),
+        }
+        assert!(gecen < std::time::Duration::from_secs(3), "{gecen:?}");
+    }
+
     /// K-362 / GB-109: native okuyucu başlık sınırı exact baytta keser.
     /// Tam sınırda biten başlık kabul edilir; bir bayt fazlası ayrıştırıcıya
     /// ulaşmadan 431 alır. Bağımsız kâhin (`http_kahini_testi`) aynı boyuttaki
@@ -5015,6 +5233,12 @@ mod web_profili_testleri {
         }
         impl WebTasima for BellekAkisi {
             fn set_read_timeout(&self, _: Option<std::time::Duration>) -> std::io::Result<()> {
+                Ok(())
+            }
+            fn set_nonblocking(&self, _: bool) -> std::io::Result<()> {
+                Ok(())
+            }
+            fn yazilabilir_bekle(&self, _: std::time::Duration) -> std::io::Result<()> {
                 Ok(())
             }
         }

@@ -5572,3 +5572,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   taslağı. Eski GET C018'i 503 yapmak (spec/11 §5 kararı). Düz SMTP'ye
   K-130 bağlantı izni eklemek (ölçülen hata yok; eski yol değişmez kaydı).
 - spec/25 C026 cümlesi gerçek davranışa göre düzeltildi (uygulama yolu C025).
+## K-372 — Mutlak yanıt yazım bütçesi (23 Kasım 2026)
+
+- K-369 test incelemesinin bıraktığı açık sınır ölçüldü: okuma tarafı
+  bağlantı kabulünden mutlak 10 sn taşırken yazım tarafı yalnız syscall
+  başına 10 sn socket zaman aşımı taşıyordu; kısmi ilerleme süreyi
+  yeniliyordu, Darwin'de tek `send` ilerledikçe 28 sn sürdü. Tek işçide
+  2 MiB yanıtı okumayan 3 istemci işçiyi 75 sn, ~32 KiB/s okuyan istemci
+  41,5 sn tuttu; bekleyen istekler 503 değil backlog gecikmesi gördü.
+  Spec/12 ve ADR-017 mutlak yazım bütçesini ne istiyor ne yasaklıyordu,
+  ADR-113 "write10s hard wall-clock değil" diye açık bırakmıştı. Karar:
+  nonblocking yazım, mutlak `10 sn + bayt/128 KiB/s`, ayrıca 10 sn
+  ilerlemesizlik kesmesi; aşımda bağlantı kapanır, mevcut yazım hatası
+  metriği sayar (GB-150).
+- Reddedilen: socket zaman aşımını kalan süreye kırpmak (Darwin'de tek çağrı
+  süresini aşıyor); sabit 10 sn mutlak bütçe (büyük yanıtı dürüst ama yavaş
+  istemciye tamponsuz proxy üzerinden kesiyor); yeni metrik alanı (K-257
+  şeması değişir; yazım hatası sayacı yeterli). İlk sürümdeki 1–10 ms uyku
+  döngüsü CI'da kaba zamanlayıcıda yavaşladığı için Unix'te `poll(POLLOUT)`'a
+  geçildi (Windows ≤2 ms uyku).
+
