@@ -10,6 +10,10 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Site
+
+- **zeedili.com 23 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-365/K-368/K-370 sınır aşımında 429/503 yanıtları, K-371/K-372 yavaş istemci ve SMTP süre sınırı, RFC-0040/RFC-0041 takvim/kişi eşitleme ve dosya eki taslakları ve K-366 Windows'ta taşınabilir paketler haberleri eklendi. Dil davranışı değişmedi.
+
 ### Düzeltilenler
 
 - **Düz e-posta gönderimi süre sınırına uyar (K-371):** `ileti göndermeyi
