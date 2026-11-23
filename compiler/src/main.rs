@@ -795,9 +795,10 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
         let program_argumanlari = argumanlar[4..].to_vec();
         let politika = girdi.politikasi();
         let taban = girdi.gercek_io(WebModu::Kapali, program_argumanlari, politika.clone());
+        let guvenilir_betikler = taban.guvenilir_betikler.clone();
         let korumali = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());
         let mut io = dil::yorumlayici::IzKaydedenIo::yeni(korumali);
-        let cikis = calistir_io_ile(&girdi, &politika, &mut io);
+        let cikis = calistir_io_ile(&girdi, &politika, &mut io, Some(&guvenilir_betikler));
         let olay_sayisi = io.olay_sayisi();
         let iz = match io.iz_metni() {
             Ok(iz) => iz,
@@ -850,7 +851,7 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let cikis = calistir_io_ile(&girdi, &girdi.politikasi(), &mut io);
+    let cikis = calistir_io_ile(&girdi, &girdi.politikasi(), &mut io, None);
     let cikti = std::mem::take(&mut io.cikti);
     if let Err(hata) = io.bitir() {
         eprintln!("IO replay uyuşmazlığı: {}", hata);
@@ -1955,7 +1956,14 @@ struct GercekIo {
     http_gizli_degiskenleri: Vec<String>,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
+    /// K-379: derlenen kaynak birimlerinin dize değişmezlerindeki satır içi
+    /// betiklerin CSP özetleri; program derlendikten sonra bir kez dolar.
+    guvenilir_betikler: GuvenilirBetikler,
 }
+
+/// K-379: CSP `script-src` yalnız bu kümedeki `sha256-` özetlerine izin
+/// verir. Küme dolmadıysa (derleme bitmeden) hiçbir satır içi betik izinli değildir.
+type GuvenilirBetikler = std::sync::Arc<std::sync::OnceLock<std::collections::BTreeSet<String>>>;
 
 #[derive(Clone)]
 struct BekleyenCerez {
@@ -2072,6 +2080,7 @@ impl GercekIo {
             bekleyen_yukleme: None,
             son_parca_supurmesi: None,
             bekleyen_head: false,
+            guvenilir_betikler: GuvenilirBetikler::default(),
             son_istek: None,
             eylem_yedekleri: Vec::new(),
             web_guvenligi,
@@ -2338,7 +2347,11 @@ impl GercekIo {
                     "text/plain"
                 };
                 let guvenlik_basliklari = if tur == "text/html" {
-                    html_guvenlik_basliklari(self.guvenli_proxy_origin().is_some(), &govde)
+                    html_guvenlik_basliklari(
+                        self.guvenli_proxy_origin().is_some(),
+                        &govde,
+                        self.guvenilir_betikler.get(),
+                    )
                 } else {
                     self.guvenlik_basliklari()
                 };
@@ -2542,23 +2555,76 @@ fn onbellek_basligini_uygula(basliklar: String, saniye: Option<u32>) -> String {
     }
 }
 
-fn html_guvenlik_basliklari(https: bool, govde: &str) -> String {
-    use sha2::{Digest, Sha256};
-
-    let mut script_kaynaklari = String::from(" 'self'");
-    let mut kalan = govde;
+/// Bir HTML/dize parçasındaki öznitelik taşımayan satır içi `<script>`
+/// gövdeleri. Tarayıcı gibi ilk `</script>` kapanışında biter; derleme
+/// zamanı değişmez taraması ile yanıt gövdesi taraması aynı kuralı kullanır.
+fn satir_ici_betikler(metin: &str) -> Vec<&str> {
+    let mut betikler = Vec::new();
+    let mut kalan = metin;
     while let Some(acilis) = kalan.find("<script>") {
-        let script_basi = acilis + "<script>".len();
-        let script_sonrasi = &kalan[script_basi..];
+        let script_sonrasi = &kalan[acilis + "<script>".len()..];
         let Some(kapanis) = script_sonrasi.find("</script>") else {
             break;
         };
-        let script = &script_sonrasi[..kapanis];
-        let ozet = Sha256::digest(script.as_bytes());
-        script_kaynaklari.push_str(" 'sha256-");
-        script_kaynaklari.push_str(&base64_kodla(&ozet));
-        script_kaynaklari.push('\'');
+        betikler.push(&script_sonrasi[..kapanis]);
         kalan = &script_sonrasi[kapanis + "</script>".len()..];
+    }
+    betikler
+}
+
+fn betik_ozeti(betik: &str) -> String {
+    use sha2::{Digest, Sha256};
+    base64_kodla(&Sha256::digest(betik.as_bytes()))
+}
+
+/// K-379: derlenen her kaynak birimindeki her dize değişmezinin (lexer'ın
+/// kaçışları çözülmüş değeri) içinde tam duran satır içi betiklerin özetleri.
+/// Çalışma zamanı değerleri (istek alanı, dosya, veritabanı, birleştirme
+/// sonucu) bu kümeye giremez; yansıyan betik bu yüzden CSP iznini alamaz.
+fn kaynak_betik_ozetleri<'a>(
+    kaynaklar: impl IntoIterator<Item = &'a str>,
+) -> std::collections::BTreeSet<String> {
+    let mut ozetler = std::collections::BTreeSet::new();
+    for kaynak in kaynaklar {
+        // Derlenen birim sözcüklenebilmiştir; okunamayan bir kaynak izin vermez.
+        let Ok(tokenlar) = dil::faz::KaynakMetni::yeni(kaynak).sozcukle() else {
+            continue;
+        };
+        for token in tokenlar.tokenlar() {
+            if let dil::sozcukleyici::TokenTur::Metin(metin) = &token.tur {
+                ozetler.extend(satir_ici_betikler(metin).into_iter().map(betik_ozeti));
+            }
+        }
+    }
+    ozetler
+}
+
+/// K-379: yalnız `guvenilir` kümesindeki (kaynak değişmezi) betik özetleri
+/// `script-src`'ye girer; gövdedeki öteki satır içi betikler CSP ile engellenir.
+/// İlk engellenen betikte operatöre içeriksiz tek bir uyarı yazılır.
+fn html_guvenlik_basliklari(
+    https: bool,
+    govde: &str,
+    guvenilir: Option<&std::collections::BTreeSet<String>>,
+) -> String {
+    static UYARILDI: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    let mut script_kaynaklari = String::from(" 'self'");
+    let mut eklenen = std::collections::BTreeSet::new();
+    for betik in satir_ici_betikler(govde) {
+        let ozet = betik_ozeti(betik);
+        if !guvenilir.is_some_and(|kume| kume.contains(&ozet)) {
+            if !UYARILDI.swap(true, std::sync::atomic::Ordering::Relaxed) {
+                eprintln!(
+                    "UYARI K-379: yanıtta kaynak dize değişmezinden gelmeyen satır içi <script> var; CSP çalıştırmaz (betiği tek bir değişmeze ya da statik dosyaya taşıyın)."
+                );
+            }
+            continue;
+        }
+        if eklenen.insert(ozet.clone()) {
+            script_kaynaklari.push_str(" 'sha256-");
+            script_kaynaklari.push_str(&ozet);
+            script_kaynaklari.push('\'');
+        }
     }
 
     let mut basliklar = guvenlik_basliklari(https);
@@ -4390,14 +4456,19 @@ fn calistir_gercek_io_ile(
     }
     let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
     taban.metrik = metrik;
+    let guvenilir_betikler = taban.guvenilir_betikler.clone();
     let mut io = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());
-    calistir_io_ile(girdi, &politika, &mut io)
+    calistir_io_ile(girdi, &politika, &mut io, Some(&guvenilir_betikler))
 }
 
+/// `guvenilir_betikler` verilirse (gerçek web adaptörü) program derlendikten
+/// sonra ve ilk istekten önce derlenen birimlerin değişmez betik özetleriyle
+/// bir kez doldurulur (K-379).
 fn calistir_io_ile(
     girdi: &KaynakGirdisi,
     politika: &dil::yetkinlik::YetkinlikPolitikasi,
     io: &mut dyn dil::yorumlayici::GirdiCikti,
+    guvenilir_betikler: Option<&GuvenilirBetikler>,
 ) -> ExitCode {
     let _derleme_kapsami = dil::test_kapsami::derleme_baslat(girdi.kapsam.is_some());
     let mut kaynaklar = if girdi.kapsam.is_some() {
@@ -4411,10 +4482,14 @@ fn calistir_io_ile(
             return ExitCode::FAILURE;
         }
     }
+    let mut birim_kaynaklari = Vec::new();
     let mut yukleyici = |istek: dil::BirimIstegi<'_>| {
         let birim = girdi.birim_yukle(istek)?;
         if let Some(m) = &mut kaynaklar {
             dil_kapsam::kaynak_ekle(m, &birim.koken, &birim.kaynak)?;
+        }
+        if guvenilir_betikler.is_some() {
+            birim_kaynaklari.push(birim.kaynak.clone());
         }
         Ok(birim)
     };
@@ -4426,6 +4501,13 @@ fn calistir_io_ile(
                 return ExitCode::FAILURE;
             }
         };
+    if let Some(kume) = guvenilir_betikler {
+        let ozetler = kaynak_betik_ozetleri(
+            std::iter::once(girdi.kaynak.as_str())
+                .chain(birim_kaynaklari.iter().map(String::as_str)),
+        );
+        let _ = kume.set(ozetler);
+    }
     if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, politika) {
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
@@ -4884,8 +4966,14 @@ mod web_profili_testleri {
 
     #[test]
     fn html_scriptleri_icerige_bagli_csp_ozetiyle_calisir() {
-        let basliklar =
-            html_guvenlik_basliklari(false, "<!doctype html><script>console.log('zee')</script>");
+        let guvenilir = kaynak_betik_ozetleri([
+            "x \"<!doctype html><script>console.log('zee')</script>\" olsun",
+        ]);
+        let basliklar = html_guvenlik_basliklari(
+            false,
+            "<!doctype html><script>console.log('zee')</script>",
+            Some(&guvenilir),
+        );
         assert!(basliklar
             .contains("script-src 'self' 'sha256-8VHn0UwRo0MmaR7ebsXpVTH6AA4wJBSlghouXTG/w50='"));
         let csp = basliklar
@@ -4897,6 +4985,37 @@ mod web_profili_testleri {
             .find(|parca| parca.trim_start().starts_with("script-src "))
             .expect("script-src yönergesi");
         assert!(!script_src.contains("'unsafe-inline'"));
+    }
+
+    /// K-379: yanıt gövdesinde yansıyan betik kaynak değişmezi değilse CSP
+    /// özetini alamaz; derleme öncesi (boş küme) hiçbir satır içi betik izinli değildir.
+    #[test]
+    fn yansiyan_betik_csp_ozeti_alamaz() {
+        let kaynak = "GET \"/\" adresine istek geldiğinde\n    q isteğin \"q\" değeri olsun\n    \"<p>\" ile q ile \"</p><script>document.title='zee'</script>\" yanıtını gönder\n";
+        let guvenilir = kaynak_betik_ozetleri([kaynak]);
+        let govde = "<p><script>alert(1)</script></p><script>document.title='zee'</script>";
+        let basliklar = html_guvenlik_basliklari(true, govde, Some(&guvenilir));
+        let csp = basliklar
+            .lines()
+            .find(|satir| satir.starts_with("Content-Security-Policy:"))
+            .expect("CSP başlığı");
+        assert!(csp.contains(&format!("'sha256-{}'", betik_ozeti("document.title='zee'"))));
+        assert!(!csp.contains(&betik_ozeti("alert(1)")), "{csp}");
+        let bos = html_guvenlik_basliklari(true, govde, None);
+        assert!(bos.contains("script-src 'self';"), "{bos}");
+    }
+
+    /// K-379: değişmez kaçışları lexer'ın çözdüğü değerle özetlenir; birleştirme
+    /// sonucu ya da yorum içindeki betik güvenilir sayılmaz.
+    #[test]
+    fn kaynak_betik_ozetleri_yalniz_tek_degismezi_sayar() {
+        let kaynak = "# \"<script>yorum()</script>\"\nx \"<script>a(\\\"b\\\")</script><script>ikinci()</script>\" olsun\ny \"<script>par\" ile \"ca()</script>\" olsun\n";
+        let ozetler = kaynak_betik_ozetleri([kaynak]);
+        assert!(ozetler.contains(&betik_ozeti("a(\"b\")")), "{ozetler:?}");
+        assert!(ozetler.contains(&betik_ozeti("ikinci()")));
+        assert!(!ozetler.contains(&betik_ozeti("parca()")));
+        assert!(!ozetler.contains(&betik_ozeti("yorum()")));
+        assert_eq!(ozetler.len(), 2);
     }
 
     #[test]

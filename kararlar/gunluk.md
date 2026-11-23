@@ -5646,3 +5646,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   SIGSYS; aynı sahipte çağrı kaldırıldı (GB-152). Linux belirli IPv6
   adresinde V6ONLY'yi kendisi açar; çift yığın olumsuz testi joker `[::]` ile.
 
+## K-379 — Satır içi betik CSP özeti yalnız kaynak değişmezinden (23 Kasım 2026)
+
+- `urun-h` denetiminin kritik bulgusu depo içinde yeniden üretildi: gerçek
+  web adaptörü yanıt gövdesindeki her öznitelikiz `<script>` bloğunu
+  özetleyip CSP'ye ekliyordu; kaçışsız yansıyan `<script>alert(1)</script>`
+  özet aldı ve Chromium'da çalıştı. Karar: güvenilir özet kümesi derleme
+  sonrası ana kaynak ve yüklenen birimlerin dize değişmezlerinden (gerçek
+  lexer) bir kez kurulur; yanıtta yalnız kümedeki özetler; küme yokken hiç
+  satır içi betik yok; ilk engelde içeriksiz tek uyarı (spec/12 K-379,
+  ADR-164, GB-153).
+- Reddedilen: yanıt başına nonce (runtime etiketin kökenini bilmiyor,
+  açığı korur); `Metin` köken izi (birleştirme/IO/iz yollarının hepsine
+  dokunan semantic değişiklik, freeze altında orantısız); değişmez
+  parçalarından kurulabilen betiğe izin (kısa değişmezlerle yeni program
+  kurulabilir); satır içi betiği tamamen kapatmak (meşru değişmez betikleri
+  kırar).
+- Tüketici kanıtı: resmî site 12 rota ve yerel ERP UI birimleri önce/sonra
+  birebir aynı CSP; tek kırılan kullanım çalışma zamanında parça parça
+  kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
+  değişmez ya da statik dosya).

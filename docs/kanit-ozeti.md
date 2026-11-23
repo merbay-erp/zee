@@ -39,12 +39,12 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | Önem | Kapalı | Kabul | Açık | Toplam |
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
-| yuksek | 17 | 0 | 0 | 17 |
+| yuksek | 18 | 0 | 0 | 18 |
 | orta | 41 | 16 | 2 | 59 |
 | dusuk | 44 | 30 | 1 | 75 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 152.
+Toplam bulgu: 153.
 
 ## Spec maddeleri
 
@@ -63,7 +63,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 18 | 0 | 0 | 18 | 100 |
-| spec/12-web-guvenlik-profili.md | 47 | 0 | 4 | 51 | 92 |
+| spec/12-web-guvenlik-profili.md | 49 | 0 | 5 | 54 | 90 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |
@@ -82,7 +82,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 284 | 4 | 9 | 297 | 95 |
+| **Toplam** | 286 | 4 | 10 | 300 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
