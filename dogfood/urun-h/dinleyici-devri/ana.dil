@@ -1,0 +1,5 @@
+# K-376: Aşama A1'de posta dinleyicileri devralınır, doğrulanır ve tutulur;
+# Zee kodu onlara henüz erişmez (bağlantı kabulü RFC-0039 A2). Ürünün bugünkü
+# saf SMTP durum makinesi gibi bu kesit de soketsiz karşılama satırı üretir.
+karsilama "220 mx.ornek.test ESMTP" olsun
+karsilama yaz

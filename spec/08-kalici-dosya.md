@@ -31,6 +31,11 @@ Var olan hedef normal dosya olmak ZORUNDADIR. Sembolik bağ veya başka dosya
 türü `InvalidInput` ile, eski nesne değiştirilmeden reddedilir.
 
 - Linux/macOS mode, uid ve gid'yi korumak ZORUNDADIR.
+- ZORUNLU (K-376): Geçici dosyanın uid/gid'i eski hedefinkiyle zaten aynıysa
+  sahiplik değiştirme çağrısı (`fchown`) yapılmaz; farklıysa eski sahiplik
+  taşınır. Sonuç sahipliği aynıdır; ayrıcalıksız hizmet `@chown` sistem
+  çağrılarını yasaklayan sandbox'ta (systemd `SystemCallFilter=~@privileged`)
+  atomik yazımda öldürülmez.
 - Linux görünür xattr namespace'lerini descriptor üzerinden taşımalıdır;
   POSIX ACL/security label bir xattr olarak görünüyorsa bu kümeye dâhildir.
   Ad listesi ve tek değer 64 KiB, bütün değerler 1 MiB'ı AŞAMAZ.

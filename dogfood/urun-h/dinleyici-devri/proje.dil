@@ -1,0 +1,9 @@
+# K-376: ürün H hizmet yüzeyinin anonim kesiti. Beş posta kapısı IPv4/IPv6
+# ayrı adlarla systemd'den devralınır (FileDescriptorName= ile aynı adlar).
+proje "dinleyici-devri" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler boş liste olsun
+ağ_hedefleri boş liste olsun
+dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25", "gonderim_v4 0.0.0.0:587", "gonderim_v6 [::]:587", "smtps_v4 0.0.0.0:465", "smtps_v6 [::]:465", "imap_v4 0.0.0.0:143", "imap_v6 [::]:143", "imaps_v4 0.0.0.0:993", "imaps_v6 [::]:993" listesi olsun

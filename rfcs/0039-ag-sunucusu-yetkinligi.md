@@ -2,6 +2,9 @@
 
 - **Durum:** taslak — 21 Kasım 2026. Core freeze (K-160A/ADR-059) altında
   uygulanmaz; her katman ayrı alt RFC ve dogfood kanıt kapısıyla açılır.
+  **Aşama A1 (adlı dinleyici devri + hizmet bildirimi) kabul edildi ve
+  uygulandı — 23 Kasım 2026, K-376, [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md);**
+  katmanın geri kalanı (bağlantı yüzeyi, A2) taslaktır.
 - **Tarih:** 21 Kasım 2026
 - **İş:** K-354
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
@@ -57,8 +60,8 @@ yetkinliği olarak tasarlanır.
 | Gerekli | Bugün | Kaynak |
 |---|---|---|
 | Port dinleme | Zee kodu port açamaz. Native adaptör yalnız `--deneysel-web` ile loopback'e bağlanır ya da devralınan dinleyiciyi kullanır; devralınan soket tam `AF_INET`/`127.0.0.1`/bildirilen kapı olarak doğrulanır | `compiler/src/web_listener.rs` (`endpoint`, `adopt_group`), spec/11 K-259 |
-| systemd soket devri | Var ama dar: yalnız çok işçi grubu yöneticisi, `LISTEN_FDS=1`, fd 3, `127.0.0.1:worker-port`; bind'e geri dönüş yok | `compiler/src/cli/web_isci_grubu.rs` (`systemd_soketini_al`), K-343, ADR-161 eki |
-| IPv6, ayrıcalıklı kapı, birden çok dinleyici | Yok | aynı |
+| systemd soket devri | Var ama dar: yalnız çok işçi grubu yöneticisi, `LISTEN_FDS=1`, fd 3, `127.0.0.1:worker-port`; bind'e geri dönüş yok. **K-376 (A1) sonrası:** `proje.dil` `dinleyiciler` bildirimiyle adla çoklu devir ve sd_notify | `compiler/src/cli/web_isci_grubu.rs` (`systemd_soketini_al`), K-343, ADR-161 eki; `compiler/src/cli/adli_dinleyici.rs`, ADR-162 |
+| IPv6, ayrıcalıklı kapı, birden çok dinleyici | Yok. **K-376 sonrası:** devralınır, doğrulanır ve tutulur; Zee'den bağlantı kabulü yok (A2) | aynı |
 | Bağlantı/akış değeri | Yok. Tek ağ sunucusu yüzeyi HTTP rota modelidir; Zee bağlantıya ya da bayt akışına dokunamaz | spec/11 |
 | Bayt değeri | Yok. Tür envanteri `TamSayı · Ondalık · Metin · Mantıksal · Liste · Sözlük · Seçenek ...`; binary yalnız diske akıtılan yükleme dosyası (yol + SHA-256 + bayt sayısı) olarak görünür | spec/04, spec/26 |
 | Sunucu TLS'i | Yok. TLS yalnız istemci yollarında: SMTP istemcisi `native-tls` (465 implicit, 587 STARTTLS, TLS 1.2 alt sınır), HTTP istemcisi `ureq`+`rustls` | `compiler/src/eposta.rs` (K-210/K-232), `compiler/src/ag_istemcisi.rs` |
@@ -457,6 +460,26 @@ Bu sözleşme bugünkü K-343 tek-soket devrinin (`LISTEN_FDS=1`, fd 3,
 soket aldığı için sıra bulgusundan etkilenmez; ad tabanlı eşleme yalnız
 çok soketli devirde (bu sözleşme) gerekir.
 
+## Aşama A1 — adlı dinleyici devri (uygulandı, K-376)
+
+23 Kasım 2026'da ürünün Faz 2 çalışma zamanı kararı (ürün deposunda kabul)
+gerçek Zee çalışma zamanını `Type=notify`, ayrıcalıksız ve adla devredilen
+dinleyicilerle kabul ölçütü yaptı. Katman A bu yüzden iki adıma bölündü:
+
+- **A1 (uygulandı):** `proje.dil` `dinleyiciler "<ad> <adres>:<kapı>", …`
+  bildirimi (P018); `dil çalıştır` yürütmeden önce `LISTEN_PID`/
+  `LISTEN_FDS`/`LISTEN_FDNAMES`'i yalnız adla eşler, aile/adres/kapı ve
+  IPv6 V6ONLY'yi doğrular, ihlalde çıkış 2; soketleri tutar. `NOTIFY_SOCKET`
+  varsa `READY=1`/`STOPPING=1`. Atomik dosya değiştirmede gereksiz `fchown`
+  kaldırıldı (`~@privileged` sandbox uyumu). Normatif maddeler
+  [spec/12 §8](../spec/12-web-guvenlik-profili.md), karar
+  [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md),
+  işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
+  Yukarıdaki FD devri sözleşmesinin "Zee çalışma zamanı garanti eder"
+  maddelerinden boşaltma (Katman C) ve çok işçiye adla aktarım A1'de yoktur.
+- **A2 (taslak):** bağlantı kabulü, satır/blok okuma, yazma, geri basınç,
+  `ağ-dinleyici` yetkinliği; Katman C ile birlikte.
+
 ## Freeze ve kanıt kapısı
 
 Core freeze altında yeni compiler özelliği varsayılan olarak reddedilir. Bu
@@ -563,14 +586,16 @@ RFC'leri kabul edildiğinde S036/S040 vakaları ret/çözüm çiftine dönüşü
   istemci yollarının geleceği.
 - Posta deposu proje kökü içinde mi kalır (ZeeOS önerisi), yoksa ayrı
   bağlama + EXDEV kanıtı mı gerekir?
-- Dinleyici bildiriminde çift yığın: aile sonekli iki ayrı ad mı
+- ~~Dinleyici bildiriminde çift yığın: aile sonekli iki ayrı ad mı
   (`smtp_v4`, `smtp_v6`), yoksa tek mantıksal ad + ailelere göre
-  `LISTEN_FDNAMES` eşlemesi mi (alt RFC A)?
+  `LISTEN_FDNAMES` eşlemesi mi (alt RFC A)?~~ **Kapandı (K-376/ADR-162):**
+  aile sonekli iki ayrı ad.
 - Sertifika yenilemede süreç içi yeniden yükleme.
 - Uzun oturumlu sunucularda yorumlayıcı başarımı Stage 0'da yeterli mi;
   değilse self-hosting/backend aşamalarıyla (ADR-008) ilişkisi.
 
 ## İlgili kayıt
 
-K-354 (backlog ve karar günlüğü). Uygulama yok; bu belge yalnız sorunu,
-katmanları, FD devri sözleşmesini ve kabul ölçütlerini önden bağlar.
+K-354 (backlog ve karar günlüğü). Çatı belge sorunu, katmanları, FD devri
+sözleşmesini ve kabul ölçütlerini önden bağlar. Uygulanan tek dilim Aşama
+A1'dir (K-376).

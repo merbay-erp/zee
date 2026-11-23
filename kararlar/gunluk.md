@@ -5627,3 +5627,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yolunda havuza sızma riski); yalnız belge (seçenek 3; 17 canlı işçinin
   çoğu PostgreSQL'li, işçi tutma sorunu ürün rolüne bırakılmaz).
 
+## K-376 — Adlı dinleyici devri ve hizmet bildirimi (23 Kasım 2026)
+
+- Ürün H'nin işletim sistemi tarafındaki Faz 2 kararı gerçek Zee çalışma
+  zamanını `Type=notify`, ayrıcalıksız ve adlı soketlerle kabul ölçütü yaptı.
+  RFC-0039 Katman A iki adıma bölündü: A1 devir + bildirim (uygulandı), A2
+  bağlantı yüzeyi (taslak). Freeze sınıfı `dogfood-change` (urun-h).
+- Karar: bildirim `proje.dil` `dinleyiciler "<ad> <adres>:<kapı>"`; çift
+  yığın aile sonekli iki ad (RFC-0039 açık sorusu kapandı). Eşleme yalnız
+  adla; systemd 255 ölçümünde de fd sırası bildirim dışıydı (`web_v6` fd 3).
+- Reddedilen: konumla eşleme (geçerli devri reddeder ya da yanlış bağlar);
+  tek `[::]` çift yığın soketi (ad fd başına, V6ONLY şart); CLI bayrağı ile
+  bildirim (uygulamanın sözleşmesi proje dosyasında durmalı); `ağ-sunucusu`
+  anlamını genişletmek (RFC-0039 G: anlamı değişmez); A1'de yetkinlik
+  (Zee etkisi yok, A2 ile gelir); web dışı programda kaynak başında
+  `READY=1` (açılış işi bitmeden hazır demek olur).
+- Bulgu: `SystemCallFilter=~@privileged` altında atomik yazım `fchown` ile
+  SIGSYS; aynı sahipte çağrı kaldırıldı (GB-152). Linux belirli IPv6
+  adresinde V6ONLY'yi kendisi açar; çift yığın olumsuz testi joker `[::]` ile.
+

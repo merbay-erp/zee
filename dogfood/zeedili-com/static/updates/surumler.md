@@ -10,11 +10,42 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **systemd'den adla devralınan dinleyiciler ve hazır bildirimi (K-376):**
+  Bir proje, systemd'nin kendisi adına açtığı soketleri `proje.dil` içinde
+  adla bildirebilir:
+  `dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun`.
+  `dil çalıştır` program çalışmadan önce systemd'nin verdiği soketleri
+  sıraya değil **ada** göre eşler (systemd soketleri bildirim sırasıyla
+  vermiyor), her soketin adres ve kapısını, IPv6'da yalnız IPv6 dinlediğini
+  denetler. Eksik ya da fazla ad, yanlış adres veya başka sürece ait devir
+  programı başlatmaz (çıkış 2) ve `.socket` dosyası için öneri yazar.
+  Süreç kapı 25 gibi ayrıcalıklı kapılar için yetki istemez. Bu sürümde
+  Zee kodu bu soketlerden bağlantı alamaz; süreç onları açık tutar
+  (bağlantı yüzeyi sonraki adımdır). Ayrıca systemd `Type=notify`
+  hizmetlerinde web sunucusu açılınca `READY=1`, durdurulurken `STOPPING=1`
+  gönderilir; çok işçi grubunda bildirimi yalnız yönetici yapar. Birim
+  şablonları: `docs/adli-dinleyici-devri.md`. Yeni tanı: P018 (bozuk
+  `dinleyiciler` bildirimi).
+
+  **Göç:** Gerekmez. `dinleyiciler` alanı olmayan projeler ve `Type=simple`
+  birimler (`NOTIFY_SOCKET` yok) eskisi gibi çalışır.
+
 ### Site
 
 - **zeedili.com 23 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-365/K-368/K-370/K-374 sınır aşımında 413/429/503 yanıtları, K-371/K-372/K-375 yavaş istemci, SMTP ve PostgreSQL süre sınırı, RFC-0040/RFC-0041 takvim/kişi eşitleme ve dosya eki taslakları ve K-366 Windows'ta taşınabilir paketler haberleri eklendi. Dil davranışı değişmedi.
 
 ### Düzeltilenler
+
+- **Sıkı sandbox'ta web sunucusu ilk istekte düşmüyor (K-376):** systemd
+  `SystemCallFilter=~@privileged` ile çalışan ayrıcalıksız bir hizmette web
+  sunucusu, kalıcı durum dosyasını güncellerken dosya sahibini gereksiz yere
+  yeniden atadığı için ilk istekte sistem tarafından sonlandırılıyordu.
+  Sahip zaten aynıysa bu çağrı artık yapılmıyor; dosya sahipliği ve izinleri
+  aynı kalır.
+
+  **Göç:** Gerekmez.
 
 - **PostgreSQL sorguları süre sınırına uyar (K-375):** `… okumayı dene` ve
   `… değiştirmeyi dene` artık çevreleyen `… içinde` bloğunun ya da web

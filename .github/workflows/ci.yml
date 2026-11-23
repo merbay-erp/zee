@@ -90,6 +90,19 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           exit "$kod"
+      - name: Adlı dinleyici devri ve sd_notify gerçek systemd ölçümü (K-376)
+        if: matrix.os == 'ubuntu-24.04'
+        shell: bash
+        run: |
+          kod=0
+          python3 scripts/systemd-adli-soket-olcumu.py --dil compiler/target/debug/dil --cikti compiler/target/k376-systemd || kod=$?
+          {
+            echo "### K-376 adlı dinleyici devri ölçümü"
+            echo '```json'
+            python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); print(json.dumps({k:(v.get("gecti") if isinstance(v,dict) else v) for k,v in r.items()}, ensure_ascii=False, indent=2))' compiler/target/k376-systemd/systemd-adli-soket-olcumu.json || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$kod"
       - name: Hermetik gerçek PostgreSQL TLS CA hostname ve NULL kapısı
         if: matrix.os == 'ubuntu-24.04'
         shell: bash
@@ -124,6 +137,7 @@ jobs:
             compiler/target/credential-metrik-native-*/proof.json
             compiler/target/credential-metrik-native-*/olaylar-basarisiz.jsonl
             compiler/target/k343-systemd/systemd-soket-olcumu.json
+            compiler/target/k376-systemd/systemd-adli-soket-olcumu.json
           if-no-files-found: warn
       - name: Uyarı yok
         working-directory: compiler

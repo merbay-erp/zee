@@ -170,7 +170,12 @@ sunucu TLS'i, binlerce uzun oturum için engellemeyen IO, DNS MX/TXT, imza
 intrinsic'leri) **açık iştir**: bugün Zee yalnız devralınmış loopback HTTP
 dinleyicisi arkasında rota yazar. K-354/[RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md)
 taslağı katmanları, FD devri sözleşmesini ve kabul ölçütlerini bağlar; core
-freeze altında uygulanmaz, V1 sözü değildir.
+freeze altında uygulanmaz, V1 sözü değildir. **Gerçekleşen tek dilim Aşama
+A1'dir (K-376, ADR-162):** `proje.dil` `dinleyiciler` bildirimiyle systemd
+soketleri adla (sıra varsayımsız) devralınır, aile/adres/kapı/V6ONLY
+doğrulanır ve tutulur; `NOTIFY_SOCKET` varsa `READY=1`/`STOPPING=1`;
+ayrıcalıksız `~@privileged` sandbox'ta çalışır (gerçek systemd 255 ölçümü,
+CI adımı). Zee'den bağlantı kabulü (A2) ve diğer katmanlar açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV
 yöntemleri, kapalı istek başlığı okuma listesi, XML/iCalendar/vCard yanıt

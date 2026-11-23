@@ -59,7 +59,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/main.rs::dene_komutu#1` | 80→80 (+0/+8) | 11→11 (+0/+3) | SABİT |
 | `compiler/src/main.rs::denetle_yolu#1` | 69→69 (+0/+8) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
-| `compiler/src/main.rs::govde#1` | 150→164 (+14/+15) | 17→18 (+1/+4) | PAY İÇİNDE |
+| `compiler/src/main.rs::govde#1` | 150→165 (+15/+15) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→108 (+0/+11) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::istek_al#1` | 113→120 (+7/+12) | 12→12 (+0/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::istek_govdesini_oku#1` | 79→85 (+6/+8) | 12→13 (+1/+3) | PAY İÇİNDE |
@@ -71,7 +71,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/paket.rs::ziyaret_et#1` | 186→186 (+0/+19) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/paket/uzak.rs::paketleri_hazirla#1` | 171→171 (+0/+18) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/postgresql.rs::migration_ust_seviye_kelimeleri#1` | 77→77 (+0/+8) | 19→19 (+0/+4) | SABİT |
-| `compiler/src/proje.rs::bildirimi_oku#1` | 209→222 (+13/+21) | 4→4 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/proje.rs::bildirimi_oku#1` | 209→225 (+16/+21) | 4→4 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/proje.rs::uzak_bagimliliklari_guncelle#1` | 94→94 (+0/+10) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/proje.rs::veritabani_bildirimini_al#1` | 92→92 (+0/+10) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/registry.rs::targets_yapisini_dogrula#1` | 95→95 (+0/+10) | 5→5 (+0/+2) | SABİT |

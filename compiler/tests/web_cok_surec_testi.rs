@@ -1819,6 +1819,57 @@ fn isci_grubu_systemd_soketi_eksik_ya_da_gecersizse_oneriyle_reddeder() {
     assert_eq!(soket.local_addr().expect("adres").port(), kapi);
 }
 
+/// K-376: K-343 grubu `Type=notify` altında: yönetici (ana süreç) birincil
+/// açılışı bitirince bir kez `READY=1`, SIGTERM'de `STOPPING=1` gönderir;
+/// NOTIFY_SOCKET işçilere sızmaz (işçi bildirimi kuyruğa düşmez).
+#[cfg(unix)]
+#[test]
+fn isci_grubu_systemd_bildirimini_yalniz_yoneticiden_gonderir() {
+    use std::os::fd::AsRawFd;
+    use std::os::unix::net::UnixDatagram;
+    let gecici = GeciciKlasor::yeni();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n",
+    )
+    .expect("kaynak");
+    let notify_yolu =
+        std::path::PathBuf::from("/tmp").join(format!("zk376-g-{}.sock", std::process::id()));
+    let _ = std::fs::remove_file(&notify_yolu);
+    let bildirim = UnixDatagram::bind(&notify_yolu).expect("notify soketi");
+    bildirim
+        .set_read_timeout(Some(Duration::from_secs(60)))
+        .unwrap();
+    let al = || {
+        let mut t = [0u8; 64];
+        bildirim
+            .recv(&mut t)
+            .ok()
+            .map(|n| String::from_utf8_lossy(&t[..n]).into_owned())
+    };
+    let (soket, kapi) = bagli_dinleyici();
+    let grup = ["--web-isci-sayisi", "2", "--web-systemd-soketi"];
+    let ortam = format!(
+        "NOTIFY_SOCKET={} LISTEN_PID=$$ LISTEN_FDS=1",
+        notify_yolu.display()
+    );
+    let yonetici = systemd_yoneticisi(&yol, kapi, Some(soket.as_raw_fd()), &ortam, &grup);
+    assert_eq!(al().as_deref(), Some("READY=1"));
+    assert!(kopma::tam_istek(kapi, "GET /", "203.0.113.31")
+        .is_some_and(|y| y.starts_with("HTTP/1.1 200")));
+    // SAFETY: SIGTERM to the test-owned manager.
+    unsafe { libc::kill(yonetici.id() as libc::pid_t, libc::SIGTERM) };
+    assert_eq!(al().as_deref(), Some("STOPPING=1"));
+    let (kod, hata) = cikis_ve_stderr(yonetici, Duration::from_secs(60));
+    assert_eq!(kod, Some(0), "{hata}");
+    bildirim
+        .set_read_timeout(Some(Duration::from_millis(300)))
+        .unwrap();
+    assert_eq!(al(), None, "işçi ya da ikinci bildirim olmamalı");
+    let _ = std::fs::remove_file(&notify_yolu);
+}
+
 /// K-343: soket systemd'deyken (burada testte) yönetici üç kez SIGTERM ile
 /// boşaltılıp yeniden başlatılır; dört istemcinin sürekli istekleri hiç
 /// başarısız olmaz, yeniden başlatma aralığındaki bağlantılar soket

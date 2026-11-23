@@ -387,6 +387,18 @@ mod unix {
         // SAFETY: validated inherited listener, ownership transferred exactly once.
         Ok(unsafe { TcpListener::from_raw_fd(fd) })
     }
+    /// K-376: devralınan adlı dinleyicinin dinleyen TCP akış soketi olduğunu
+    /// ödünç descriptor üzerinde doğrular (aile/adres denetimi çağıranda).
+    pub(crate) fn listening_tcp(fd: i32) -> Result<(), String> {
+        if fd < 3 || aliases_stdio(fd) {
+            return Err(fail());
+        }
+        if option(fd, libc::SOL_SOCKET, libc::SO_TYPE)? != libc::SOCK_STREAM || !listening(fd)? {
+            return Err(fail());
+        }
+        option(fd, libc::IPPROTO_TCP, libc::TCP_NODELAY)?;
+        Ok(())
+    }
     pub(crate) fn install(p: &Profile, port: u16) -> Result<(TcpListener, Control), String> {
         preflight(p)?;
         if option(p.listener, libc::SOL_SOCKET, libc::SO_TYPE)? != libc::SOCK_STREAM
@@ -509,7 +521,7 @@ mod unix {
     }
 }
 #[cfg(unix)]
-pub(crate) use unix::{adopt_group, install, preflight, Control};
+pub(crate) use unix::{adopt_group, install, listening_tcp, preflight, Control};
 
 pub(crate) fn quiet_preflight(args: &[String]) -> Result<(), String> {
     #[cfg(unix)]
