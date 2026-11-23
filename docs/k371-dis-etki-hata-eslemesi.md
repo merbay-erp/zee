@@ -115,7 +115,7 @@ request-bound tenant bağlamı, `dil göçür`.
 | Tenant bağlamı kurulamaz / çözücü reddi | yakalanamaz (rota çalışmaz) | WebReddi | 503 | — | spec/25 "fail-closed 503" | ✓ |
 | İstek transaction'ı commit edilemez | yakalanamaz | — | 503 | — | ADR-077 | ✓ |
 | Göç planı / uygulama hatası | — | C026 (`dil göçür`) | — | çıkış 1 | spec/25 Migration | ✓ |
-| **Sorgu dış `içinde` / web 30 sn son tarihini aşar** | iptal yalnız sonraki cümle sınırında | Ç001 | 504 ama sorgu bitene kadar bekler (ölçüm: `pg_sleep(33)` → **504, 33,0 sn**) | `yetişmezse` geç (ölçüm: `1 saniye içinde` + `pg_sleep(4)` → **4,1 sn**) | spec/09 iptal noktaları; spec/25 sorgu son tarihi söylemez | **açık sınır** → RFC-0041 taslağı |
+| **Sorgu dış `içinde` / web 30 sn son tarihini aşar** | iptal yalnız sonraki cümle sınırında | Ç001 | 504 ama sorgu bitene kadar bekler (ölçüm: `pg_sleep(33)` → **504, 33,0 sn**) | `yetişmezse` geç (ölçüm: `1 saniye içinde` + `pg_sleep(4)` → **4,1 sn**) | spec/09 iptal noktaları; spec/25 sorgu son tarihi söylemez | **açık sınır** → RFC-0042 taslağı |
 
 **Belge sapması (davranış değişmedi).** spec/25 "Havuz tükenmesi ve
 TLS/bağlantı kurma hatası C026'dır" diyor; uygulama okuma/değişiklik
@@ -131,7 +131,7 @@ web işçisini 30 sn son tarihin ötesinde tutar ve 504 ancak sorgu döndükten
 sonra gelir. Düzeltmek server-side iptalin açık transaction'ı ve savepoint'i
 abort etmesi, COMMIT sırasında iptalin C027 sınıfıyla ilişkisi, otomatik
 tekrar yasağı ve iz şeması kararlarını ister; bu bir minimal düzeltme değildir.
-[RFC-0041 taslağı](../rfcs/0041-postgresql-sorgu-son-tarihi.md) seçenekleri ve
+[RFC-0042 taslağı](../rfcs/0042-postgresql-sorgu-son-tarihi.md) seçenekleri ve
 kabul kanıtını yazar; spec/25'e AÇIK maddesi eklendi.
 
 ## 4. Ürün kullanımı
@@ -141,7 +141,7 @@ kabul kanıtını yazar; spec/25'e AÇIK maddesi eklendi.
 | Site çekirdeği, onay akışı rotası | düz `ileti göndermeyi dene` ve `… üzerinden` | `Sonuç`; başarısızlıkta yönlendirme kodu | yavaş SMTP artık isteğin 30 sn son tarihini aşamaz (504 zamanında) |
 | Site çekirdeği, e-posta ayarları | ekli ileti (logo), başarısızsa eksiz ikinci deneme | `Sonuç`; ikinci deneme kalan bütçeyle | değişmez (MIME zaten bağlıydı) |
 | Site çekirdeği, Google yorumları | `HTTP isteğini dene` 4000 ms | başarısızlıkta boş sonuç | değişmez |
-| Site çekirdeği, panel/modüller (286 sorgu satırı) | `sorgusunu … okumayı/değiştirmeyi dene` | `Sonuç` + eylem C021/C027 503 | sorgu son tarihi açık sınırı (RFC-0041) |
+| Site çekirdeği, panel/modüller (286 sorgu satırı) | `sorgusunu … okumayı/değiştirmeyi dene` | `Sonuç` + eylem C021/C027 503 | sorgu son tarihi açık sınırı (RFC-0042) |
 | ZeeMail (`urun-h`) | depo içi aynada dış etki yüzeyi yok; ürün SMTP **sunucusu**dur (RFC-0039), Zee'nin SMTP istemcisini kullanmaz; web tarafı ZM-F020/F021 ile parola/TOTP kullanır | — | yok; ürün kaynağı özel depoda, bu denetim depo içi aynayla sınırlıdır |
 
 ## 5. Sonuç
@@ -152,5 +152,5 @@ kabul kanıtını yazar; spec/25'e AÇIK maddesi eklendi.
   bulunmadı.
 - Tek gerçek hata: düz metin SMTP dış son tarihi gözetmiyordu (K-371 düzeltmesi).
 - Belge sapması: spec/25 C026 cümlesi (düzeltildi).
-- Açık sınır: PostgreSQL sorgusu son tarihe bağlanmıyor (RFC-0041 taslağı,
+- Açık sınır: PostgreSQL sorgusu son tarihe bağlanmıyor (RFC-0042 taslağı,
   spec/25 AÇIK).

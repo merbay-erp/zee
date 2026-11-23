@@ -1,4 +1,4 @@
-# RFC-0041 — PostgreSQL sorgusunun son tarihe bağlanması
+# RFC-0042 — PostgreSQL sorgusunun son tarihe bağlanması
 
 - **Durum:** taslak — 23 Kasım 2026. Core freeze (K-160A/ADR-059) altında
   uygulanmaz; gerçek ürün kanıtı ya da correctness kararıyla ayrı iş açılır.

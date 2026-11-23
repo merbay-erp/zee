@@ -67,4 +67,5 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 | RFC-0038 | [Resmî çok işçi web profili ve açılış birincilliği](0038-cok-isci-web-profili.md) | **kabul** (K-336/K-337; ADR-161) |
 | RFC-0039 | [Zee ağ sunucusu yetkinliği (çatı RFC)](0039-ag-sunucusu-yetkinligi.md) | **taslak** (K-354; core freeze sonrası, katman başına dogfood kapısı) |
 | RFC-0040 | [Web adaptöründe WebDAV/CalDAV/CardDAV senkron istemci yüzeyi](0040-webdav-caldav-carddav-adaptoru.md) | **taslak** (K-364; core freeze sonrası, katman başına dogfood kapısı) |
-| RFC-0041 | [PostgreSQL sorgusunun son tarihe bağlanması](0041-postgresql-sorgu-son-tarihi.md) | **taslak** (K-371; spec/25 AÇIK maddesi, correctness adayı) |
+| RFC-0041 | [Web adaptöründe ikili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı](0041-ikili-yanit-ve-ek-akisi.md) | **taslak** (K-373; core freeze sonrası, katman başına dogfood kapısı) |
+| RFC-0042 | [PostgreSQL sorgusunun son tarihe bağlanması](0042-postgresql-sorgu-son-tarihi.md) | **taslak** (K-371; spec/25 AÇIK maddesi, correctness adayı) |

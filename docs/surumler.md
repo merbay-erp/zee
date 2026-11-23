@@ -21,7 +21,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   gönderimde 20 saniyelik üst sınır aynıdır; hata metni ve "otomatik tekrar
   yok" kuralı değişmez. Ayrıca dış hataların (SMTP, HTTP, PostgreSQL) Zee
   kodunda nasıl yakalandığı denetlendi; PostgreSQL sorgularının süre sınırına
-  bağlanması ayrı taslak olarak açık kaldı (RFC-0041).
+  bağlanması ayrı taslak olarak açık kaldı (RFC-0042).
 
   **Göç:** Gerekmez.
 

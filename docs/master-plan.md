@@ -179,6 +179,14 @@ dar CSRF muafiyeti, well-known keşif) **açık iştir**; mevcut HTTP adaptörü
 içinde kalır, yeni dinleyici istemez. K-364/[RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md)
 taslağı katmanları ve kabul ölçütlerini bağlar; core freeze altında
 uygulanmaz, V1 sözü değildir.
+
+Web arayüzünde ek indirme ve JS'siz yükleme ile genişletilmiş SMTP ek türleri
+(dosyadan akışlı ikili yanıt + kapalı içerik türü/`Content-Disposition`
+kaydı, spec/26 parça modeline akan sınırlı `multipart/form-data` ve form
+alanından CSRF, varsayılanı değişmeyen proje bildirimli ek türü kaydı)
+**açık iştir**. K-373/[RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
+taslağı yanıt kaydını RFC-0040 katman C ile tek model olarak bağlar; core
+freeze altında uygulanmaz, V1 sözü değildir.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

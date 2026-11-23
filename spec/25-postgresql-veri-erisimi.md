@@ -98,7 +98,7 @@ iş anahtarıyla sonucu okumalı; kayıt varsa başarılı sonucu benimsemeli, y
 yan etkinin iki kez oluşmasını engelleyebilir; bu genel otomatik retry izni
 değildir.
 
-AÇIK: PostgreSQL okuma ve değişikliği dış `içinde` ya da web isteğinin 30 saniyelik son tarihine bağlanmaz; adaptöre kalan süre verilmez, sürücü çağrısı sürerken iptal edilmez ve iptal ancak sorgu döndükten sonraki ilk cümle sınırında gözlenir. Kilit bekleyen sorgu web işçisini son tarihin ötesinde tutar; 504 doğru kodla ama sorgu bittiğinde gelir (K-371 ölçümü: 1 sn son tarihte `pg_sleep(4)` 4,1 sn; web'de `pg_sleep(33)` 504'ü 33. saniyede). `statement_timeout`/iptal isteği, iptalin transaction ve C027 ile ilişkisi [RFC-0041](../rfcs/0041-postgresql-sorgu-son-tarihi.md) taslağındadır; o zamana dek ürün `lock_timeout` ve `statement_timeout`'u rol ya da göç ayarıyla kendisi sınırlar.
+AÇIK: PostgreSQL okuma ve değişikliği dış `içinde` ya da web isteğinin 30 saniyelik son tarihine bağlanmaz; adaptöre kalan süre verilmez, sürücü çağrısı sürerken iptal edilmez ve iptal ancak sorgu döndükten sonraki ilk cümle sınırında gözlenir. Kilit bekleyen sorgu web işçisini son tarihin ötesinde tutar; 504 doğru kodla ama sorgu bittiğinde gelir (K-371 ölçümü: 1 sn son tarihte `pg_sleep(4)` 4,1 sn; web'de `pg_sleep(33)` 504'ü 33. saniyede). `statement_timeout`/iptal isteği, iptalin transaction ve C027 ile ilişkisi [RFC-0042](../rfcs/0042-postgresql-sorgu-son-tarihi.md) taslağındadır; o zamana dek ürün `lock_timeout` ve `statement_timeout`'u rol ya da göç ayarıyla kendisi sınırlar.
 
 ## Migration
 

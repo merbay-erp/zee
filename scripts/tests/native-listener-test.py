@@ -27,7 +27,7 @@ def main():
   with (project/'ana.dil').open('a') as stream:stream.write('GET "/csrf" adresine istek geldiğinde\n    csrf belirteci yanıtını gönder\nPOST "/login" adresine istek geldiğinde\n    herkese açık\n    "owned" kullanıcısını "test" rolüyle oturuma al\n    "logged" yanıtını gönder\nGET "/panel" adresine istek geldiğinde\n    oturum gerekli\n    "panel" yanıtını gönder\nPOST "/logout" adresine istek geldiğinde\n    oturum gerekli\n    oturumu kapat\n    "revoked" yanıtını gönder\nGET "/limited" adresine istek geldiğinde\n    "limited" yanıtını gönder\n')
   check=subprocess.run([str(binary),'denetle',str(project)],capture_output=True,timeout=10);require(check.returncode==0,'fixture denetle '+check.stderr.decode())
   proof['fixture_hashes']={name:sha(project/name) for name in ['ana.dil','proje.dil']}
-  host=HOST.Host(binary,project,build,revision,sha(binary));gens=[];foreign=subprocess.Popen(['python3','-I','-c','import time;time.sleep(60)'],start_new_session=True)
+  host=HOST.Host(binary,project,build,revision,sha(binary));gens=[];foreign=subprocess.Popen(['python3','-I','-c','import time;time.sleep(3600)'],start_new_session=True)
   def connect(path='/hazir',client='127.0.0.1'):
    s=socket.create_connection(('127.0.0.1',host.port),timeout=5);s.settimeout(5);s.sendall(('GET '+path+' HTTP/1.1\r\nHost: fixture.example\r\nForwarded: for='+client+';proto=https;host=fixture.example\r\nConnection: close\r\n\r\n').encode());return s
   def response(s):
@@ -120,7 +120,18 @@ def main():
    try:os.read(owned.stdout.fileno(),1)
    except BlockingIOError:persisted=True
    require(persisted,'actual native descendant remains alive with inherited group pipe')
-   started=time.monotonic();host.owner.stop_child(owned);require(owned not in host.owner.children and foreign.poll() is None,'owned group cleaned before wait foreign survived')
+   probe=os.dup(owned.stdout.fileno());os.set_blocking(probe,False)
+   started=time.monotonic();host.owner.stop_child(owned);require(owned not in host.owner.children,'owned leader released only after group cleanup')
+   # K-369: cleanup is proven by the descendant's inherited pipe reaching EOF
+   # (every group writer gone) under a deadline, not by an instant check; the
+   # foreign process sleeps far beyond any loaded run and its exit code tells
+   # a natural expiry apart from an ownership violation.
+   deadline=time.monotonic()+10;eof=False
+   while not eof:
+    require(time.monotonic()<deadline,'owned native descendant still holds group pipe after cleanup')
+    try:eof=os.read(probe,4096)==b''
+    except BlockingIOError:time.sleep(.02)
+   os.close(probe);require(foreign.poll() is None,'foreign session survived owned cleanup; exit='+str(foreign.returncode))
    passed('exited_owned_leader_real_native_descendant_cleanup_wnowait_foreign_survives',{'leader_exit':9,'unreaped_until_cleanup':True,'actual_native_descendant_pipe_persisted':True,'owned_group_cleaned':True,'foreign_survived':True,'cleanup_seconds':round(time.monotonic()-started,3)})
    if ARGS.metrics_composition:
     for first in [True,False]:
