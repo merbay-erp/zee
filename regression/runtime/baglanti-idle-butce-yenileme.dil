@@ -1,0 +1,20 @@
+# K-388 (ZM-F035): IDLE yoklamasının zaman aşımı birim sınırıdır; bütçe yenilenir.
+# bağlantı-dinleyici: imap_v4
+# bağlantı-satırı: A1 IDLE
+# bağlantı-sessiz
+işlem çalkala
+    adı al
+    blok "0123456789" olsun
+    7 kez tekrarla
+        blok blok ile blok olsun
+    sayaç ad olsun
+    20000 kez tekrarla
+        geçici blok ile sayaç olsun
+    sayacı döndür
+
+"imap_v4" dinleyicisinde bağlantı geldiğinde
+    ilk bağlantıdan satır okumayı dene olsun
+    3 kez tekrarla
+        yoklama bağlantıdan satır okumayı 1 saniye içinde dene olsun
+        t "x" için çalkala olsun
+    bağlantıya "A1 OK bitti" satırını yaz
