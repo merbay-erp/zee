@@ -89,6 +89,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Uzun bağlantı oturumları artık bellek sınırına yürümüyor (K-388):** adlı
+  dinleyici bağlantısında (K-381) çalışma bütçesi yalnız başarılı okumada
+  yenileniyordu; IMAP IDLE yoklamasının zaman aşımı ya da çok uzun satıra
+  verilen ret aynı bütçeyi taşıdığı için uzun oturum, canlı değer küçükken
+  "Çalışma değeri yaklaşık … bayt" (C024) ile kapanabiliyordu. Artık girdi
+  tüketen ya da süresini dolduran her okuma (başarı, `zaman_aşımı`,
+  `satır_uzun`, `satır_sonu`, `kodlama`) yeni bir komut gibi taze bütçe
+  açar. Tek komut içindeki 64 MiB sınırı aynen geçerlidir: büyük gövdeyi
+  bellekte işlemek yerine dosyaya al (K-384). Kapalı bağlantıda dönen
+  `kapandı` bütçeyi yenilemez; bu sonucu yok sayan döngü eskisi gibi
+  durdurulur. Web istekleri değişmedi. Göç gerekmez.
 - **Döngüde çağrılan işlemin aynı adlı listesi artık T053 vermiyor (K-380):**
   `her harf için` gövdesinden çağrılan bir işlem kendi içinde `harfler` adlı
   bir liste kurup değiştirdiğinde (doğrudan, başka bir işlem üzerinden ya da
