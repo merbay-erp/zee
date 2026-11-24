@@ -88,6 +88,9 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
     if let Some(ifade) = kodlanmis_icerik_kalibi(tokenlar)? {
         return Ok(Some(ifade));
     }
+    if let Some(ifade) = dosya_akisi_kalibi(tokenlar)? {
+        return Ok(Some(ifade));
+    }
 
     Ok(None)
 }
@@ -97,12 +100,10 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
 /// - `YOL dosyasının KONUM baytından N baytını metin olarak okumayı dene`
 /// - `YOL dosyasının KONUM baytından N baytını base64 okumayı dene`
 /// - `İÇERİK base64|quoted_printable çözerek YOL dosyasına yazmayı|eklemeyi dene`
-/// - K-395: `YOL dosyasının A baytından N baytını base64 çözerek HEDEF dosyasına
-///   eklemeyi dene` ve `YOL dosyasında KONUM baytından İĞNE aramayı dene`
 fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     use crate::intrinsic::{
-        DOSYADAN_BASE64_EKLE, DOSYADA_BAYT_ARA, DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN,
-        DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ, DOSYA_QP_EKLE, DOSYA_QP_YAZ,
+        DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN, DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ,
+        DOSYA_QP_EKLE, DOSYA_QP_YAZ,
     };
     let kelime = |i: usize| -> Option<&str> {
         match &tokenlar.get(i)?.tur {
@@ -139,6 +140,40 @@ fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
             ],
         }));
     }
+    if n != 7 || kelime(2) != Some("çözerek") || kelime(4) != Some("dosyasına") {
+        return Ok(None);
+    }
+    let kimlik = match (kelime(1), kelime(5), kelime(6)) {
+        (Some("base64"), Some("yazmayı"), Some("dene")) => DOSYA_BASE64_YAZ,
+        (Some("base64"), Some("eklemeyi"), Some("dene")) => DOSYA_BASE64_EKLE,
+        (Some("quoted_printable"), Some("yazmayı"), Some("dene")) => DOSYA_QP_YAZ,
+        (Some("quoted_printable"), Some("eklemeyi"), Some("dene")) => DOSYA_QP_EKLE,
+        _ => return Ok(None),
+    };
+    Ok(Some(Ifade::Intrinsic {
+        kimlik: kimlik.into(),
+        argumanlar: vec![
+            tekil_ifade(tokenlar[0].clone())?,
+            tekil_ifade(tokenlar[3].clone())?,
+        ],
+    }))
+}
+
+/// K-395 (RFC-0043 Dilim 2 kısmi, ADR-171): dosyadan dosyaya akışlı çözme ve
+/// bayt arama kalıpları.
+///
+/// - `YOL dosyasının A baytından N baytını base64 çözerek HEDEF dosyasına
+///   eklemeyi dene`
+/// - `YOL dosyasında KONUM baytından İĞNE aramayı dene`
+fn dosya_akisi_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
+    use crate::intrinsic::{DOSYADAN_BASE64_EKLE, DOSYADA_BAYT_ARA};
+    let kelime = |i: usize| -> Option<&str> {
+        match &tokenlar.get(i)?.tur {
+            TokenTur::Kelime(k) => Some(k.as_str()),
+            _ => None,
+        }
+    };
+    let n = tokenlar.len();
     // K-395: YOL dosyasının A baytından N baytını base64 çözerek HEDEF
     // dosyasına eklemeyi dene — dosyadan dosyaya akışlı çözme.
     if n == 12
@@ -174,23 +209,7 @@ fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
                 .collect::<Result<_, _>>()?,
         }));
     }
-    if n != 7 || kelime(2) != Some("çözerek") || kelime(4) != Some("dosyasına") {
-        return Ok(None);
-    }
-    let kimlik = match (kelime(1), kelime(5), kelime(6)) {
-        (Some("base64"), Some("yazmayı"), Some("dene")) => DOSYA_BASE64_YAZ,
-        (Some("base64"), Some("eklemeyi"), Some("dene")) => DOSYA_BASE64_EKLE,
-        (Some("quoted_printable"), Some("yazmayı"), Some("dene")) => DOSYA_QP_YAZ,
-        (Some("quoted_printable"), Some("eklemeyi"), Some("dene")) => DOSYA_QP_EKLE,
-        _ => return Ok(None),
-    };
-    Ok(Some(Ifade::Intrinsic {
-        kimlik: kimlik.into(),
-        argumanlar: vec![
-            tekil_ifade(tokenlar[0].clone())?,
-            tekil_ifade(tokenlar[3].clone())?,
-        ],
-    }))
+    Ok(None)
 }
 
 /// K-378: `YOL dosyasını TÜR türünde AD adıyla ek olarak göndermeyi dene`.
