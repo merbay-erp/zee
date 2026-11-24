@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 
-TARGETS = {'lexer_parser':65536,'morfoloji':128,'http_istegi':81920,'wasm_abi':4097}
+TARGETS = {'lexer_parser':65536,'morfoloji':128,'http_istegi':81920,'dns_yaniti':65536,'wasm_abi':4097}
 MIRI = ('ondalik','zaman')
 MAX_FILE = 64 * 1024 * 1024
 MAX_TOTAL = 256 * 1024 * 1024
@@ -229,7 +229,7 @@ def validate(root,current,m,data):
     require(integer(environment['ram_bytes']) and environment['ram_bytes']>0,'RAM missing')
     require(p.get('tools',{}).get('toolchain')=='nightly-2026-08-31' and 'host: aarch64-apple-darwin' in p['tools']['rustc'],'toolchain/host differs')
     require(type(p.get('maximum_concurrent_fuzz_targets')) is int and p['maximum_concurrent_fuzz_targets']==2,'producer concurrency')
-    records=p.get('targets',[]);require(len(records)==4 and {x.get('target') for x in records}==set(TARGETS),'four exact targets required')
+    records=p.get('targets',[]);require(len(records)==len(TARGETS) and {x.get('target') for x in records}==set(TARGETS),'exact RC fuzz target set required')
     campaign_root=None
     for record in records:
         t=record['target'];prefix='targets/'+t+'/'
@@ -270,7 +270,7 @@ def validate(root,current,m,data):
         totals=re.findall(rb'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',log)
         require(len(totals)==1 and int(totals[0][0])>0 and totals[0][1:]==(b'0',b'0') and rec.get('actual_tests')==int(totals[0][0]),'Miri actual results')
     require(identity(root)==current,'source changed during validation')
-    return {'schema':'zee-rc-evidence-check-1','source':current,'origin':'owned-local-reviewed-not-authenticated','targets':4,'miri_groups':2,'status':'validated-integrity-and-policy'}
+    return {'schema':'zee-rc-evidence-check-1','source':current,'origin':'owned-local-reviewed-not-authenticated','targets':len(TARGETS),'miri_groups':2,'status':'validated-integrity-and-policy'}
 
 def export(root,campaign,output):
     current=identity(root);require(output.resolve(strict=False)==output,'output ancestor symlink rejected');require(not output.exists() and output.is_absolute() and not output.is_relative_to(root),'fresh external bundle required')

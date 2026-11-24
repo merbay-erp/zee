@@ -1,5 +1,6 @@
 use super::*;
 mod baglanti;
+mod dns;
 mod dosya;
 mod http;
 mod sira;
@@ -9,7 +10,6 @@ pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
     matches!(harfler.next(), Some('A'..='Z'))
         && harfler.all(|k| k.is_ascii_uppercase() || k.is_ascii_digit() || k == '_')
 }
-
 // ---- yardımcılar ----
 
 pub(super) fn son_kelime(tokenlar: &[Token]) -> Option<String> {
@@ -834,7 +834,7 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     {
         return Ok(Some(ifade));
     }
-    if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)? {
+    if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)?.or(dns::dns_kalibi(tokenlar)?) {
         return Ok(Some(ifade));
     }
 

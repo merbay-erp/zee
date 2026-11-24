@@ -8,7 +8,7 @@ if [[ -z "$hedef" || -z "$artefakt" ]]; then
     exit 2
 fi
 case "$hedef" in
-    lexer_parser|morfoloji|http_istegi|wasm_abi) ;;
+    lexer_parser|morfoloji|http_istegi|dns_yaniti|wasm_abi) ;;
     *)
         echo "Bilinmeyen fuzz hedefi: $hedef" >&2
         exit 2

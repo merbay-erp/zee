@@ -19,10 +19,12 @@ pub enum Yetkinlik {
     WebOturumu,
     Kriptografi,
     Veritabani,
+    /// K-390: bildirilmiş loopback doğrulayıcı çözücüye DNS sorgusu (RFC-0044 B1).
+    Dns,
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 10] = [
+    pub const TUMU: [Self; 11] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
@@ -33,6 +35,7 @@ impl Yetkinlik {
         Self::WebOturumu,
         Self::Kriptografi,
         Self::Veritabani,
+        Self::Dns,
     ];
 
     pub const fn yazimi(self) -> &'static str {
@@ -47,6 +50,7 @@ impl Yetkinlik {
             Self::WebOturumu => "web-oturumu",
             Self::Kriptografi => "kriptografi",
             Self::Veritabani => "veritabanı",
+            Self::Dns => "dns",
         }
     }
 
@@ -193,7 +197,8 @@ impl YetkinlikPolitikasi {
 
     /// Bildirimsiz tek dosya geliştirici akışı. Dosya ve yerel adaptörler açık
     /// kalır; K-387 ile dış ağ (`ağ`) varsayılan kapalıdır. Açmak için açık
-    /// `--izin ağ` bayrağı [`Self::gelistirici_agli`] profilini seçer.
+    /// `--izin ağ` bayrağı [`Self::gelistirici_agli`] profilini seçer. `dns`
+    /// çözücü bildirimi ister (K-390), bildirimsiz akışta hep kapalıdır.
     pub fn gelistirici() -> Self {
         let mut politika = Self::gelistirici_agli();
         politika.izinler.remove(&Yetkinlik::Ag);
@@ -207,7 +212,12 @@ impl YetkinlikPolitikasi {
     pub fn gelistirici_agli() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
-            .filter(|yetkinlik| !matches!(yetkinlik, Yetkinlik::YerelAg | Yetkinlik::Veritabani))
+            .filter(|yetkinlik| {
+                !matches!(
+                    yetkinlik,
+                    Yetkinlik::YerelAg | Yetkinlik::Veritabani | Yetkinlik::Dns
+                )
+            })
             .collect();
         Self {
             izinler,
