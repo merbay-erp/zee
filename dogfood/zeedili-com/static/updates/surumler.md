@@ -34,6 +34,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   Geçici dosyalar `.zee/baglanti-bloklari/` altında `0600` izinlidir,
   taşınmazsa bağlantı bitince silinir.
 
+### Site
+
+- **zeedili.com 24 Kasım haberi:** ana sayfa Gelişmeler'deki "Zee ile web dışı ağ hizmetleri" haberi K-384 ile genişletildi: büyük gövdenin ve IMAP literal'inin dosyaya akıtılması, bayt-kesin okuma, satır sonusuz yazma ve IMAP IDLE için kısa zaman aşımlı okuma. Dil davranışı değişmedi.
+
 ### Değişenler
 
 - **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
