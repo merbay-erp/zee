@@ -121,6 +121,10 @@ impl Denetleyici<'_> {
                 self.ifadeyi_dogrula(sozluk, &format!("{yol}.sözlük"), satir, false)?;
                 self.ifadeyi_dogrula(anahtar, &format!("{yol}.anahtar"), satir, false)?;
             }
+            Ifade::ListeOgesi { liste, sira } | Ifade::ListeOgesiDene { liste, sira } => {
+                self.ifadeyi_dogrula(liste, &format!("{yol}.liste"), satir, false)?;
+                self.ifadeyi_dogrula(sira, &format!("{yol}.sıra"), satir, false)?;
+            }
             Ifade::GunSonrasi { tarih, miktar } => {
                 self.ifadeyi_dogrula(tarih, &format!("{yol}.tarih"), satir, false)?;
                 self.ifadeyi_dogrula(miktar, &format!("{yol}.miktar"), satir, false)?;

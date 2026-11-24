@@ -619,6 +619,14 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::OndaligiDene(ic)
         | Ifade::AlanErisim { nesne: ic, .. } => ifade_bilgisi(ic, bilgi),
         Ifade::SozlukDegeri { sozluk, anahtar }
+        | Ifade::ListeOgesi {
+            liste: sozluk,
+            sira: anahtar,
+        }
+        | Ifade::ListeOgesiDene {
+            liste: sozluk,
+            sira: anahtar,
+        }
         | Ifade::SozlukteVar {
             sozluk, anahtar, ..
         } => {

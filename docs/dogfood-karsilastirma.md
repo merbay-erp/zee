@@ -49,8 +49,10 @@ satırında okunur, Linux satırı yalnız süre için anlamlıdır.
   sayıma dahildir (Rust/Go 6'şar).
 - Çalışma süresi ve tepe RSS: yorumlayıcı derle+yürüt, derlenmiş ikilinin
   ~30 katı; RSS 2,6–5×. V1 sözü değildir.
-- Sıra ile öğe erişimi yok (F010) ve `\t` kaçışı yok (F011): TSV işleme
-  Rust/Go'dan daha dolaylı yazılıyor.
+- `\t` kaçışı yok (F011): TSV işleme Rust/Go'dan daha dolaylı yazılıyor.
+  Sıra ile öğe erişimi (F010) K-386/RFC-0029 ile kapandı: başlık→alan
+  eşlemesi ve çift birleştirme artık `alanların sıra. öğesi` ile, iç içe
+  sayaç döngüsü olmadan yazılıyor (çıktı bayt bayt aynı).
 - Morfoloji kökü seçimi (F006/F007/F008/F013) ad seçimini kısıtlıyor;
   `zee-tr-2` adayı.
 - Çağrı argümanında birleştirme (F003) ve postfix zinciri (F014) ara ad

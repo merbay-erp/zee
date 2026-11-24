@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 133] = [
+const KALIP_KELIMELERI: [&str; 135] = [
     "yaz",
     "olsun",
     "ise",
@@ -167,12 +167,14 @@ const KALIP_KELIMELERI: [&str; 133] = [
     "bayt",
     "parçasını",
     "aktarmayı",
+    "öğesi",
+    "öğesini",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 75] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -242,6 +244,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
     ("baytı", "IMAP literal'inin tam n baytını geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); n `bağlantı_blok_sınırı`nı aşarsa hiç bayt okunmadan `boyut_aşımı`.\n\n`ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun`"),
     ("parçasını", "O anki bağlantıya satır sonu EKLEMEDEN yazar (ör. IMAP `+ `); CR/LF/NUL reddedilir, satır sonunu yalnız `satırını yaz` üretir. Cümle biçiminde hata görevi bitirir, `… yazmayı dene` Sonuç verir.\n\n`bağlantıya \"+ \" parçasını yaz`"),
     ("aktarmayı", "Dosyayı belleğe almadan bağlantıya akıtır → TamSayı Sonucu (kuyruğa alınan bayt); `dosya-okuma` da ister, `bağlantı_blok_sınırı`nı aşan dosya `boyut_aşımı`.\n\n`sonuç bağlantıya yol dosyasını aktarmayı dene olsun`"),
+    ("öğesi", "Listede 1 tabanlı sıra ile öğenin kopyası (RFC-0029); sıra tek ad ya da TamSayı sabitidir, aralık dışı C031. Olmayabilecek öğe için `… öğesini almayı dene` → Sonuç (`SIRA_DISI`).\n\n`harf harflerin sıra. öğesi olsun`"),
     ("bağlantıya", "O anki bağlantıya bir satır yazar; CRLF'yi çalışma zamanı ekler, CR/LF/NUL içeren metin reddedilir. Cümle biçiminde hata bağlantı görevini C030 ile bitirir, `... yazmayı dene` Sonuç verir.\n\n`bağlantıya \"220 hazır\" satırını yaz`"),
     ("türünde", "Dosya yanıtının kayıtlı içerik türü (application/pdf, image/png, text/csv, application/zip, OOXML, application/octet-stream …); kayıtta olmayan tür C013 Sonucu.\n\n`sonuç yol dosyasını \"application/pdf\" türünde \"fatura.pdf\" adıyla ek olarak göndermeyi dene olsun`"),
     ("adıyla", "Dosya yanıtında tarayıcıya önerilen ad; çalışma zamanı `Content-Disposition: attachment` + RFC 6266 `filename*` kurar, CR/LF, tırnak, yol ve yön karakterli ad C013.\n\n`sonuç yol dosyasını \"text/csv\" türünde \"kişiler.csv\" adıyla ek olarak göndermeyi dene olsun`"),

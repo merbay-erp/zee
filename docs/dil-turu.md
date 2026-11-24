@@ -170,6 +170,23 @@ her sayı için
     sayıyı yaz
 ```
 
+Belirli bir sıradaki öğeyi sayaç yazmadan okursun; sayım **1'den** başlar
+ve nokta sayıya (ya da sırayı tutan ada) bitişiktir (RFC-0029):
+
+```dil
+"İkinci: " ile sayıların 2. öğesi yaz      # İkinci: 7
+sıra 4 olsun
+"Dördüncü: " ile sayıların sıra. öğesi yaz # Dördüncü: 9
+
+sonuç sayıların 9. öğesini almayı dene olsun
+sonuç başarısızsa
+    "Dokuzuncu öğe yok" yaz
+```
+
+Olmayan sıra (`0.`, ya da listenin adedinden büyük sıra) programı durdurur;
+olmayabilecek öğe için `… öğesini almayı dene` bir Sonuç verir. Gelen değer
+öğenin kopyasıdır. Sıra ile öğe yazma yoktur; öğeyi gezerken değiştir.
+
 `her sayı için` gezerken listeyi **örtük çoğuldan** bulur: `sayı` → `sayılar`
 (K-013). Döngü adı öğenin yazılabilir imlecidir; yeniden bağlarsan kaynak
 listedeki aynı sıra değişir (K-093):

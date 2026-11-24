@@ -12,6 +12,24 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Listede sıra ile öğe erişimi (K-386, RFC-0029):** artık listenin N'inci
+  öğesini sayaç döngüsü yazmadan okursun:
+  `üçüncü harflerin 3. öğesi olsun`, `değer sayıların orta. öğesi olsun`.
+  Sayım **1'den başlar** (`1. öğe` `ilki`, `adet. öğe` `sonu` ile aynıdır),
+  sıra tek bir ad ya da tam sayıdır ve nokta sayıya/ada bitişik yazılır.
+  Gelen değer öğenin kopyasıdır; onu değiştirmek listeyi değiştirmez.
+  Listede olmayan sıra programı `C031` ile durdurur ("Listenin 7. öğesi yok:
+  liste 5 öğeli."); olmayabilecek öğe için
+  `sonuç sayıların sıra. öğesini almayı dene olsun` bir Sonuç verir
+  (hata kodu `SIRA_DISI`). Okuma liste uzunluğundan bağımsız hızdadır:
+  sıralı listede ikili arama artık gerçekten O(log n). Yeni tanılar `S049`
+  (kalıba uymayan sıra; hesaplanan sırayı önce bir ada ver), `T058` (sıra
+  tam sayı değil ya da nesne liste değil), `T059` (`0.` ya da negatif sabit
+  sıra). `harfler[0]` yazınca öneri artık `harflerin 1. öğesi` der. Sıra ile
+  öğe **yazma** bu sürümde yoktur; öğeyi gezme içinde değiştir. Göç: eski
+  sayaç döngüleri çalışmaya devam eder; dilersen `listenin sıra. öğesi` ile
+  sadeleştir (kanıt özeti ve kelime avı ürünleri böyle sadeleşti, çıktıları
+  aynı kaldı).
 - **Bağlantıda büyük gövde, literal ve bayt-kesin akış (K-384):** adlı
   dinleyici bağlantısında (K-381) SMTP `DATA` gövdesi ve IMAP literal'i artık
   belleğe alınmadan geçici dosyaya akar:

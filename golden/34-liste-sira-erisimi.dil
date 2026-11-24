@@ -1,0 +1,32 @@
+# 34 — Liste sıra erişimi (RFC-0029, K-386)
+# Sınanan: "harflerin 3. öğesi" (sabit sıra), "sayıların orta. öğesi"
+# (değişken sıra), 1 tabanlı sayım, "… öğesini almayı dene" → Sonuç ve
+# sıra erişimli ikili arama (her yoklama O(1), arama O(log n)).
+
+harfler "z", "e", "e" listesi olsun
+"Üçüncü harf: " ile harflerin 3. öğesi yaz
+
+sayılar 3, 8, 15, 21, 34, 42, 57, 63, 70, 88 listesi olsun
+aranan 57 olsun
+alt 1 olsun
+üst sayıların adedi olsun
+bulunan 0 olsun
+adım 0 olsun
+alt üstten büyük olana kadar tekrarla
+    adımı 1 artır
+    toplam alt ile üst ün toplamı olsun
+    orta toplamın 2 ye bölümü olsun
+    değer sayıların orta. öğesi olsun
+    değer aranana eşitse
+        bulunan orta olsun
+        alt üst ile 1 in toplamı olsun
+    değilse değer aranandan küçükse
+        alt orta ile 1 in toplamı olsun
+    değilse
+        üst orta ile 1 in farkı olsun
+aranan ile " → " ile bulunan ile ". sırada, " ile adım ile " adımda" yaz
+
+deneme sayıların 11. öğesini almayı dene olsun
+deneme başarısızsa
+    hata denemenin hatası olsun
+    "Yok: " ile hatanın mesajı yaz

@@ -143,7 +143,8 @@ yetkinliklerini tanımlar. Dosyayı doğrudan çalıştırmak da mümkündür:
 
 - **Türkçe cümleler:** `olsun`, `yaz`, koşullar, döngüler ve Türkçe eklerle ad çözümleme.
 - **Veri ve işlemler:** tam sayılar, keyfî hassasiyetli ondalıklar, metin,
-  listeler, sözlükler, yapılar, işlemler ve desen eşleştirme.
+  listeler (1 tabanlı sıra erişimi: `harflerin 3. öğesi`), sözlükler, yapılar,
+  işlemler ve desen eşleştirme.
 - **Hata yönetimi:** `Seçenek`, `Sonuç`, kaynak konumlu Türkçe tanılar ve öneriler.
 - **Uygulamalar:** dosya, JSON/CSV, tarih/saat, HTTP istemcisi,
   deneysel web sunucusu ve PostgreSQL adaptörü.
@@ -199,11 +200,11 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
-| Golden program | **33/33** |
-| Rust + doctest vakası | **1323** |
-| Tanı kimliği | **171 etkin + 3 ayrılmış** |
+| Golden program | **34/34** |
+| Rust + doctest vakası | **1345** |
+| Tanı kimliği | **175 etkin + 3 ayrılmış** |
 | RFC | **42** (6 kabul, 30 geçici kabul, 6 taslak) |
-| ADR | **160** (160 kabul) |
+| ADR | **161** (161 kabul) |
 | Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

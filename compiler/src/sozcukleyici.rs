@@ -23,6 +23,10 @@ pub enum TokenTur {
     },
     /// Tanımlayıcı ya da kalıp kelimesi (yaz, olsun, ise, ile...).
     Kelime(String),
+    /// Sıra eki noktası (RFC-0029, K-386): `listenin 3. öğesi`. Yalnız bir
+    /// sayıya ya da ada BİTİŞİK, ardından boşluk ve `öğe…` kelimesi gelen
+    /// nokta bu tokendir; başka her nokta S001 olarak kalır.
+    SiraEki,
     Virgul,
     SatirSonu,
     Girinti,
@@ -366,9 +370,20 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     Token::yeni(TokenTur::Virgul, satir_no, sutun, 1),
                 )?;
                 sutun += 1;
+            } else if k == '.' && sira_eki_mi(&tokenlar, bosluktan_sonra, satir_no, &kalanlar) {
+                kalanlar.next();
+                token_ekle(
+                    &mut tokenlar,
+                    Token::yeni(TokenTur::SiraEki, satir_no, sutun, 1),
+                )?;
+                sutun += 1;
             } else {
                 let oneri = if k == '.' {
-                    "Ondalık ayracı Türkçede virgüldür: 3.14 değil 3,14 yaz (RFC-0013)."
+                    "Ondalık ayracı Türkçede virgüldür: 3.14 değil 3,14 yaz (RFC-0013). \
+                     Sıra erişiminde nokta sayıya bitişik, ardından boşluk gelir: listenin 3. öğesi"
+                } else if k == '[' || k == ']' {
+                    "Köşeli parantezle indeks yoktur; liste öğesine sıra ile eriş: \
+                     listenin 1. öğesi (sayım 1'den başlar, RFC-0029)."
                 } else {
                     "Bu dilde noktalama en azdadır: süslü parantez, noktalı virgül ve \
                      sembolik işleçler kullanılmaz. Kalıpları kelimelerle yaz."
@@ -405,6 +420,38 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
         Token::yeni(TokenTur::DosyaSonu, son_satir, 1, 1),
     )?;
     Ok(tokenlar)
+}
+
+/// RFC-0029 sıra eki: nokta bir önceki tokene (TamSayı, Kelime ya da Metin —
+/// Metin sıra T058 ile öğretici biçimde reddedilir) bitişik,
+/// aynı satırda, ardından en az bir boşluk ve `öğe` ile başlayan kelime gelir.
+/// `3.14`, `x.y`, cümle sonu noktası ve boşluklu `3 .` bu kurala girmez.
+fn sira_eki_mi(
+    tokenlar: &[Token],
+    bosluktan_sonra: bool,
+    satir_no: usize,
+    kalanlar: &std::iter::Peekable<std::str::Chars<'_>>,
+) -> bool {
+    if bosluktan_sonra {
+        return false;
+    }
+    let onceki_uygun = tokenlar.last().is_some_and(|t| {
+        t.satir == satir_no
+            && matches!(
+                t.tur,
+                TokenTur::TamSayi(_) | TokenTur::Kelime(_) | TokenTur::Metin(_)
+            )
+    });
+    if !onceki_uygun {
+        return false;
+    }
+    let mut ileri = kalanlar.clone();
+    ileri.next(); // '.'
+    if ileri.peek() != Some(&' ') {
+        return false;
+    }
+    let kalan: String = ileri.skip_while(|k| *k == ' ').take(3).collect();
+    kalan == "öğe"
 }
 
 fn token_ekle(tokenlar: &mut Vec<Token>, token: Token) -> Result<(), Tani> {
