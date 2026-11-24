@@ -100,6 +100,8 @@ pub(crate) struct HirOlusturmaBilgisi {
     pub(crate) sembol_tanimlari: HashMap<SymbolId, HirKaynakAraligi>,
     pub(crate) sembol_yazimlari: Vec<HirSembolKullanimi>,
     pub(crate) islem_adlari: HashMap<IslemId, String>,
+    /// K-392: gövdesi checker'dan geçen işlemler (çağrısız çıkarımlı gövde bağlanmaz).
+    pub(crate) dogrulanan_islemler: std::collections::HashSet<String>,
     pub(crate) yapi_konumlari: HashMap<YapiId, usize>,
 }
 
@@ -115,6 +117,7 @@ pub struct HirProgram {
     sembol_tanimlari: HashMap<SymbolId, HirKaynakAraligi>,
     sembol_yazimlari: Vec<HirSembolKullanimi>,
     islem_adlari: HashMap<IslemId, String>,
+    dogrulanan_islemler: std::collections::HashSet<String>,
     yapi_konumlari: HashMap<YapiId, usize>,
 }
 
@@ -127,6 +130,7 @@ impl HirProgram {
             sembol_tanimlari: bilgi.sembol_tanimlari,
             sembol_yazimlari: bilgi.sembol_yazimlari,
             islem_adlari: bilgi.islem_adlari,
+            dogrulanan_islemler: bilgi.dogrulanan_islemler,
             yapi_konumlari: bilgi.yapi_konumlari,
         }
     }
@@ -146,6 +150,10 @@ impl HirProgram {
     pub fn islem(&self, kimlik: IslemId) -> Option<&Islem> {
         let ad = self.islem_adlari.get(&kimlik)?;
         self.program.islemler.get(ad)
+    }
+
+    pub(crate) fn islem_govdesi_dogrulandi(&self, ad: &str) -> bool {
+        self.dogrulanan_islemler.contains(ad)
     }
 
     pub fn yapi(&self, kimlik: YapiId) -> Option<&Yapi> {

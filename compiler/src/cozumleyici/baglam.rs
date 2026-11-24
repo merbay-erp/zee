@@ -99,6 +99,16 @@ impl Baglam {
                 .iter()
                 .map(|(ad, kimlik)| (*kimlik, ad.clone()))
                 .collect(),
+            dogrulanan_islemler: self
+                .islem_kimlikleri
+                .iter()
+                .filter(|(_, kimlik)| {
+                    self.imzalar
+                        .get(kimlik)
+                        .is_some_and(|imza| imza.govde_dogrulandi)
+                })
+                .map(|(ad, _)| ad.clone())
+                .collect(),
             yapi_konumlari: self.yapi_konumlari.clone(),
         }
     }
