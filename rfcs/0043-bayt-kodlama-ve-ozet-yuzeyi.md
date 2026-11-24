@@ -157,6 +157,14 @@ eksik olan **Zee yüzeyi ve tür modeli kararıdır**.
 | **C. Kodlanmış bayt metni** (`onaltılık`/`base64` `Metin`) | Taşıma temsili; protokoller zaten bu biçimleri ister (DKIM `b=`, `bh=`, `p=`; AUTH PLAIN; MIME) | Düşük: yeni tür yok; yalnız yeni kalıp kelimeleri ve bir tanı/neden kümesi (K-167 kaydı) | **Seçilen** |
 | **D. Dosya tutamağı** (yol + SHA-256 + bayt) | Büyük ikili veri (ek, ileti gövdesi) diskte | Zaten var (spec/26, RFC-0041, RFC-0039 A2c) | **Büyük veri için korunur** |
 
+**Ölçülmüş girdi (ürün, 24 Kasım 2026):** güvenli profilin 64 MiB heap
+sınırı MB ölçeğinde metin birleştirmeyi C024 ile kesiyor — 1 MB'lık gövdeyi
+satır satır `Metin` olarak kurmak ~67 MB çalışma değeri üretiyor. `DATA`/
+`APPEND` gövdesini bellekte biriktirmek bu yüzden yapısal olarak mümkün
+değildir; büyük veri için D (dosya tutamağı + aralıklı okuma) zorunludur ve
+§5 aralık tavanı (≤ 1 MiB/çağrı) bu bütçeyle uyumludur. Ürün 25 MB `DATA`
+sınırını bu açıdan canlı ölçüyor; sonuç uygulama ADR'sine girer.
+
 Karar (taslak): **C + D**. Küçük bayt verisi kodlanmış `Metin`, büyük bayt
 verisi dosya tutamağıdır. `Baytlar` türü ancak C+D ile yazılmış gerçek ürün
 kodunda ölçülmüş sürtünme (ör. kodlanmış metin üzerinde dilimleme ihtiyacı
@@ -392,10 +400,15 @@ ayrılıştır ve spec/21 ile uygulama ADR'sinde kayda geçer.
    Zee kaynağını (AUTH PLAIN çözümü, SMTP `SIZE`/satır oktet sınırı, DKIM
    `bh=` hesabı) `dogfood/urun-h/korpus/` altına exact beklentiyle koyar.
    Elle base64 döngüsünün ASCII dışı girdide yanlış sonucu ve `uzunluğu`nun
-   oktet saymaması iki ayrı reproducer'dır. Ürün korpusunda (24 Kasım
-   2026, henüz depo içine aynalanmadı) `zm-r004-uzunluk-oktet-saymaz.dil`
-   (bugün geçer: `"ğ"` uzunluğu 1; Dilim 2'de oktet sayısı 2) ve
-   `zm-r005-bellekte-sha256-yok.dil` (bugün S015) hazırdır. ZM-F034 için: A2c ile alınmış
+   oktet saymaması iki ayrı reproducer'dır. Ürün korpusunda hazır (ürün
+   commit'i `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac`, 24 Kasım 2026; depo
+   içine aşama açılırken aynalanır):
+   `korpus/zm-r004-uzunluk-oktet-saymaz.dil` (blob `60e565e7…`, SHA-256
+   `77adcdc0e727bf1f56dace255f337b70182f16ff450a4c795ee2571950acaa4c`;
+   bugün geçer: `"ğ"` uzunluğu 1, Dilim 2'de oktet sayısı 2) ve
+   `korpus/zm-r005-bellekte-sha256-yok.dil` (blob `f994eaab…`, SHA-256
+   `cd268588fe23277b5a8adc541ded1a5776e4d75dfee178ddb2734b3bd400a1db`;
+   bugün S015). ZM-F034 için: A2c ile alınmış
    base64 ekli ileti dosyasından eki çıkaramayan ürün kodu (bugün
    `dosyasını okumayı dene` 8bit içerikte başarısız, eki bayt yazacak kalıp
    yok) ve ekli gönderimin `554`'e düşen yolu.

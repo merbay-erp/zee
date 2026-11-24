@@ -347,7 +347,7 @@ kimliğinin özetinden deterministik — açık soru), yerel istisna listesi
 | DKIM algoritma | `rsa-sha256`, `ed25519-sha256`; `rsa-sha1` geçersiz | RFC 8301 §3.1, RFC 8463 |
 | Başlık bölümü | ≤ 256 KiB, ≤ 1000 alan | ayrıştırıcı DoS |
 | ARC örneği | ≤ 50 (RFC 8617 üst sınırı); pratikte daha az | RFC 8617 §4.2.1 |
-| İleti başına DNS bütçesi | SPF + DKIM + DMARC + ARC toplamı ≤ ~30 sorgu (açık soru) | amplifikasyon |
+| İleti başına DNS bütçesi | SPF kendi RFC 7208 sınırıyla; DKIM + DMARC + ARC ayrıca ≤ 10 sorgu | amplifikasyon; ürün görüşü |
 
 ### Ayrıştırıcı tutarlılığı
 
@@ -652,11 +652,15 @@ alanı satırları ve RFC-0024 ile aynı committe yapılır.
    Zee kaynağını (`dogfood/urun-h/korpus/`) exact beklentiyle koyar: B1 MX
    sorgusu yokluğu, B2 sahte `From:` iletisinin teslim edilmesi, B3 imzasız
    giden iletinin alıcıda reddi, B4 düz metne düşen teslim.
-   **Ürün durumu (24 Kasım 2026):** ürün deposunun korpusunda (henüz depo
-   içine aynalanmadı) `zm-r006-mx-sorgusu-yok.dil` (bugün S015) ve
-   `zm-r007-dnssiz-sahte-gonderen.md` (DMARC `p=reject` yayımlayan iş
-   ortağı alanının taklidi DNS'siz teslim ediliyor; yalnız kurumun kendi
-   alanı reddediliyor) hazır. Aşama açılırken `dogfood/urun-h/korpus/`
+   **Ürün durumu (24 Kasım 2026):** ürün commit'i
+   `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac` korpusunda
+   `korpus/zm-r006-mx-sorgusu-yok.dil` (blob `4af3d1b1…`, SHA-256
+   `b645c2230562c1cd37e4eae221b916ad75a69f801946038753036e5a50f97d08`;
+   bugün S015) ve `korpus/zm-r007-dnssiz-sahte-gonderen.md` (blob
+   `161816a4…`, SHA-256
+   `cbfe3b4235180401d208b82dc0bac9bde6c4f220922c74e857a1a2f03e5f2e35`;
+   DMARC `p=reject` yayımlayan iş ortağı alanının taklidi DNS'siz teslim
+   ediliyor, yalnız kurumun kendi alanı reddediliyor) hazır. Aşama açılırken `dogfood/urun-h/korpus/`
    altına exact beklentiyle aynalanır.
 3. **Güvenlik önceliği.** B2 olmadan ZeeMail kimlik avına açık bir posta
    kutusu sunucusudur; B3 olmadan giden posta teslim edilemez. Bu iki aşama
@@ -758,8 +762,8 @@ aşama ADR'lerinde karar girdisidir, bu taslağı bağlamaz:
   aynı mantık). Not: SPF tek başına RFC 7208 §4.6.4 uyarınca 10 sorgu
   mekanizmasına ve `mx` başına 10 adres sorgusuna izin verdiği için toplam
   bütçe SPF + DKIM (≤ 5 anahtar) + DMARC (≤ 2) + ARC'yi kapsamalıdır;
-  B2 ADR'si "SPF kendi RFC sınırı + diğerleri ≤ 10" ayrımını
-  değerlendirir.
+  ürün "SPF kendi RFC 7208 sınırıyla, DKIM + DMARC + ARC ayrıca ≤ 10"
+  ayrımına katıldı; B2 ADR'sinin önerilen bütçesi budur.
 - Önerilen sıraya katıldı.
 
 1. **Doğrulayıcı çözücü:** ZeeOS hangisini sağlar (unbound mı
@@ -775,8 +779,8 @@ aşama ADR'lerinde karar girdisidir, bu taslağı bağlamaz:
    raporlamak mı?
 7. **DMARC `pct`** deterministik örnekleme kaynağı (ileti kimliği özeti?).
 8. **DMARCbis ağaç yürüyüşü** PSL'in yanında ne zaman?
-9. **İleti başına DNS bütçesi** sayısı (öneri ~30) ve SMTP oturumu başına
-   bütçe.
+9. **İleti başına DNS bütçesi:** öneri SPF RFC 7208 sınırıyla + DKIM/DMARC/
+   ARC ≤ 10 (ürün katıldı); SMTP oturumu başına bütçe açık.
 10. **CLI:** `dil dkim-denetle` (yayımlı anahtar ↔ credential eşleşmesi) ve
     anahtar üretici komutu açılsın mı (K-167 yüzeyi)?
 11. **Aktarıcıya gönderim yolu** (K-210 `native-tls`) da `rustls`'e taşınsın
