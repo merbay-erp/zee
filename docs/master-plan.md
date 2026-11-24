@@ -204,8 +204,11 @@ tek model; sandbox CSP, 16 MiB, K-372 bütçesi). Katman B — proje bildirimiyl
 açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytından
 önce, spec/26 `.parca` modeli). Katman C — proje bildirimli SMTP ek türleri
 (`e_posta_ek_türleri`, makro/yürütülebilir yapısal yasak, imza/UTF-8,
-ölçülebilir yerel ret). **Açık:**
-`inline`/Range/ETag sonrası. V1 sözü değildir.
+ölçülebilir yerel ret). K-385 (ADR-163 eki) e-posta istemcisi
+yapılandırma XML'i ve Apple profili için `application/xml` ile
+`application/x-apple-aspen-config` türlerini yalnız web dosya sınıfına
+ekledi. **Açık:** `inline`/Range/ETag sonrası; Outlook POX Autodiscover
+(POST + CSRF muafiyeti, RFC-0040 ile); `sandbox allow-downloads`. V1 sözü değildir.
 
 Bayt/kodlama/özet yapı taşları (UTF-8 bayt sayısı, katı UTF-8 çözme,
 RFC 4648 base64/onaltılık, kod noktası, bellekte SHA-256) ile DNS ve posta
@@ -220,6 +223,7 @@ yazma, ZM-F034),
 [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
 B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar; core freeze
 altında uygulanmaz, V1 sözü değildir.
+
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

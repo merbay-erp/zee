@@ -406,6 +406,67 @@ fn gezilen_koleksiyonun_bicimi_sabittir() {
 }
 
 #[test]
+fn cagrilan_islemin_ayni_adli_yereli_gezilen_kaynak_degildir() {
+    // K-380: T053 çağıranın gezilen kaynağına bağlıdır; çağrılan işlemin kendi
+    // kapsamındaki aynı adlı liste (doğrudan, geçişli ya da kendi gezmesiyle)
+    // başka semboldür ve değer semantiğinde dış listeye dokunamaz.
+    let cogalt = "\
+işlem harfi çoğalt
+    işareti al
+    harfler boş liste olsun
+    harflere işareti ekle
+    harflere işareti ekle
+    harflerin adedini döndür
+";
+    let sar = "\
+işlem harfi sar
+    işareti al
+    adet işaret için harfi çoğalt olsun
+    adedi döndür
+";
+    let say = "\
+işlem harfi say
+    işareti al
+    harfler işaret, işaret listesi olsun
+    adet 0 olsun
+    her harf için
+        adedi 1 artır
+    adedi döndür
+";
+    for (islemler, cagri) in [
+        (cogalt.to_string(), "harfi çoğalt"),
+        (format!("{cogalt}\n{sar}"), "harfi sar"),
+        (say.to_string(), "harfi say"),
+    ] {
+        let kaynak = format!(
+            "{islemler}\nharfler \"a\", \"b\" listesi olsun\ntoplam 0 olsun\nher harf için\n    adet harf için {cagri} olsun\n    toplamı adetle artır\ntoplamı yaz\nharflerin json metni yaz\n"
+        );
+        assert_eq!(
+            kaynagi_calistir(&kaynak).expect(cagri),
+            vec!["4", "[\"a\",\"b\"]"],
+            "{cagri}"
+        );
+    }
+}
+
+#[test]
+fn gezilen_kaynagi_islem_sonucuyla_degistirmek_t053_kalir() {
+    // K-380 olumsuz eşi: işlem aracılığıyla gelen değer gezilen sembolün
+    // kendisine bağlanırsa ya da ona eklenirse biçim yine değişir.
+    let buyut = "işlem listeyi büyüt\n    listeyi al\n    listeye \"z\" ekle\n    listeyi döndür\n";
+    let ver = "işlem harfi ver\n    işareti al\n    işareti döndür\n";
+    for (islem, satir) in [
+        (buyut, "    harfler harfler için listeyi büyüt olsun\n"),
+        (ver, "    harflere harf için harfi ver ekle\n"),
+    ] {
+        let kaynak = format!("{islem}\nharfler \"a\", \"b\" listesi olsun\nher harf için\n{satir}");
+        let hata = kaynagi_calistir(&kaynak).expect_err(satir);
+        assert_eq!(hata.kod, "T053", "{satir}");
+        assert!(hata.mesaj.contains("\"harfler\""), "{}", hata.mesaj);
+    }
+}
+
+#[test]
 fn gezmede_deger_sonuc_ozelligi_uzunluktan_bagimsizdir() {
     // Küçük property korpusu: boş olmayan farklı liste uzunluklarında her
     // sıra tam bir kez ve aynı değer-sonuç kuralıyla değiştirilir.

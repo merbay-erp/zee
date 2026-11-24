@@ -12,6 +12,20 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **E-posta istemcisi otomatik yapılandırması ve Apple profili (K-385):**
+  Rotadan dosya indirme kalıbı (K-378) iki yeni türü kabul eder:
+  `application/xml` (Thunderbird'ün `/.well-known/autoconfig/mail/config-v1.1.xml`
+  dosyası gibi XML) ve `application/x-apple-aspen-config` (iPhone/iPad'de
+  Safari'nin kurulum önerdiği `.mobileconfig` yapılandırma profili):
+  `sonuç "yapilandirma/posta.mobileconfig" dosyasını "application/x-apple-aspen-config" türünde "posta.mobileconfig" adıyla ek olarak göndermeyi dene olsun`.
+  Yanıt öteki dosya türleri gibi indirme olarak gider, tarayıcıda sayfa
+  olarak açılmaz ve önbelleğe alınmaz; sunucu dosyayı okumaz/yorumlamaz.
+  `text/xml` yazımı kabul edilmez (`application/xml` kullanın); bu iki tür
+  e-posta eki olarak seçilemez. Outlook'un POST ile çalışan autodiscover
+  isteği henüz karşılanamaz.
+
+  **Göç:** Gerekmez; mevcut türler ve kalıbı kullanmayan rotalar değişmez.
+
 - **Bağlantıda büyük gövde, literal ve bayt-kesin akış (K-384):** adlı
   dinleyici bağlantısında (K-381) SMTP `DATA` gövdesi ve IMAP literal'i artık
   belleğe alınmadan geçici dosyaya akar:
@@ -34,6 +48,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   Geçici dosyalar `.zee/baglanti-bloklari/` altında `0600` izinlidir,
   taşınmazsa bağlantı bitince silinir.
 
+### Site
+
+- **zeedili.com 24 Kasım haberi:** ana sayfa Gelişmeler'deki "Zee ile web dışı ağ hizmetleri" haberi K-384 ile genişletildi: büyük gövdenin ve IMAP literal'inin dosyaya akıtılması, bayt-kesin okuma, satır sonusuz yazma ve IMAP IDLE için kısa zaman aşımlı okuma. Dil davranışı değişmedi.
+
 ### Değişenler
 
 - **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
@@ -43,6 +61,23 @@ Bu kayıt yeni sürüm etiketi değildir.
   verirse öneri, örtük `bağlantı` Sözlüğünün yalnız bağlantı bloğunda
   göründüğünü ve alanın parametre olarak geçirilmesini söyler. Tanı kodları
   ve kabul/ret davranışı değişmedi.
+
+### Düzeltilenler
+
+- **Döngüde çağrılan işlemin aynı adlı listesi artık T053 vermiyor (K-380):**
+  `her harf için` gövdesinden çağrılan bir işlem kendi içinde `harfler` adlı
+  bir liste kurup değiştirdiğinde (doğrudan, başka bir işlem üzerinden ya da
+  o listeyi gezerek) derleyici dış döngü için yanlışlıkla
+  `"harfler" gezilirken koleksiyonun kendisi değiştirilemez` diyordu. Çağrılan
+  işlem çağıranın listesini göremez; artık kural yalnız gezilen listenin
+  kendisine uygulanır. Gezilen listeyi işlem sonucuyla yeniden bağlamak ya da
+  ona eklemek yine T053'tür.
+- **Seçenek daraltması işlem sınırını aşmıyor (K-380):** `bulunan varsa`
+  dalında çağrılan bir işlem kendi `bulunan` yerelini kontrol etmeden
+  açınca derleme geçiyor, çalışma zamanında C008 ile duruyordu; artık
+  derlemede T036 verilir. Ters yönde, işlemin kendi `varsa` dalı çağıranın
+  daraltmasını artık silmez. Göç: T036 alan program değeri işlem içinde
+  `varsa` ile açmalıdır (öncesinde bu yol çalışınca C008 ile düşerdi).
 
 ## 23 Kasım 2026 — Geliştirme güncellemeleri
 

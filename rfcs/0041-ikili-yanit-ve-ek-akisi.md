@@ -579,6 +579,9 @@ edildi; alt RFC açılmadı, karar ADR-163'te. Yanıtlar:
   önizleme etkisi bu sürümde yok; `inline` açılırken ölçülür.
 - **Ortak kayıt ve DAV türleri:** `dil::icerik_turu` tek tablodur; DAV
   türleri RFC-0040 işinde satır olarak eklenir.
+- **K-385 eki (24 Kasım 2026):** `application/xml` ve
+  `application/x-apple-aspen-config` yalnız web dosya sınıfına satır olarak
+  girdi (ZM-F033; ADR-163 eki). `attachment` korunur; `inline` yine açık.
 
 ## Açık sorular (taslak dönemi, tarihsel)
 

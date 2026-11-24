@@ -112,10 +112,18 @@ GET "/ek" adresine istek geldiğinde
 - İçerik türü yalnız kapalı `icerik_turu` kaydının dosya sınıfından exact,
   küçük harf, parametresiz yazımla seçilmek ZORUNDADIR: `application/pdf`,
   `image/png`, `image/jpeg`, `image/webp`, `text/plain`, `text/csv`,
-  `text/calendar`, `application/zip`, üç OOXML türü (docx/xlsx/pptx) ve
+  `text/calendar`, `application/zip`, üç OOXML türü (docx/xlsx/pptx),
+  `application/xml`, `application/x-apple-aspen-config` ve
   `application/octet-stream`. `text/html`, SVG, XHTML ve betik türleri dosya
   sınıfında YASAKTIR; ürün bu dosyaları `application/octet-stream` ile verir.
   `text/*` türlerine çalışma zamanı `charset=utf-8` ekler.
+- K-385 (ADR-163 eki): `application/xml` (e-posta istemcisi otomatik
+  yapılandırma XML'i) ve `application/x-apple-aspen-config` (Apple
+  yapılandırma profili) yalnız web dosya sınıfındadır; SMTP eki olarak
+  seçilemez ve dosya gövdesi ayrıştırılmaz. `text/xml` takma adı ile
+  `+xml` sonekli öteki türler kayıtta yoktur. Bu iki türe `charset`
+  parametresi eklenmez; `Content-Disposition`, `nosniff` ve sandbox CSP
+  öteki dosya türleriyle aynıdır. Bu kurallar TANIMLIDIR.
 - Başlık değerlerini yalnız çalışma zamanı kurar: `Content-Disposition:
   attachment; filename="<ASCII geri düşüş>"; filename*=UTF-8''<RFC 8187>`.
   Boş, `.`/`..`, yol ayracı, NUL/CR/LF dahil denetim karakteri, çift tırnak,

@@ -1,0 +1,8 @@
+# K-385: ürün H web arayüzünün (ZeeMail) e-posta istemcisi otomatik
+# yapılandırma rotalarının anonim kesiti.
+proje "istemci-yapilandirma" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma" listesi olsun
+ağ_hedefleri boş liste olsun

@@ -5675,6 +5675,24 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-385 — İstemci yapılandırma dosya türleri; ADR-163 eki (24 Kasım 2026)
+
+- Kaynak ZM-F033 (`urun-h`, ZeeMail): autoconfig XML'i ve `.mobileconfig`
+  kayıtlı türle sunulamıyordu. Freeze sınıfı `dogfood-change`; yalnız
+  `dil::icerik_turu` tablosuna iki web-yalnız satır. K-164 sınıfı “web
+  adaptörü yüzeyi eksik” (ZM-F022 ile aynı sınıf; RFC-0040 katman C tür
+  kaydı da aynı tabloya satır ekler, ADR-163 kararı).
+- Birincil kaynak: Thunderbird `FetchHTTP.sys.mjs` `text/xml`/`application/xml`
+  önekini kabul eder, `Content-Disposition` okumaz; RFC 7303 `application/xml`
+  önerir; Apple OTA rehberi `application/x-apple-aspen-config`; MS-OXDSCLI
+  POX Autodiscover POST'tur.
+- Reddedilen: `text/xml` (takma ad; kayıt tek yazım tutar, `text/*`
+  `charset=utf-8` eki XML bildirimini ezerdi), `inline` (ölçülen istemci
+  istemiyor; XML'i belge olarak oluşturur), SMTP adaylığı (ürün ihtiyacı
+  yok), `sandbox allow-downloads` (bütün dosya yanıtlarını değiştirir; ayrı
+  iş), Outlook için CSRF muafiyeti (RFC-0040 #5(c) ile tek model). K-385
+  kapandı.
+
 ## K-376 takibi — systemd ölçüm adımı kararlılığı (23 Kasım 2026)
 
 - CI'da `scripts/systemd-adli-soket-olcumu.py` aralıklı olarak soket birimini
@@ -5866,3 +5884,25 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   base64/onaltılık, kod noktası. `message/rfc822` dosya yanıtı türü ayrı
   küçük iş. RFC-0039 ilke 1 ve katman E'ye "RFC-0044 ile güncellenecek"
   çapraz notu.
+
+## K-380 — Çağrılan işlem çağıranın akış bilgisini görmez; T053/T036 yanlış eşleme (24 Kasım 2026)
+
+- Etkin dogfood ürünü `urun-h` sürtünmesi: döngü gövdesinden çağrılan işlemin
+  kendi yerelindeki aynı adlı liste (`her harf için` içinde callee'nin
+  `harfler`i) dış döngü için T053 üretiyordu; geçişli çağrıda da.
+- Kök neden: işlem gövdesi ilk çağrıda çağıranın denetim bağlamında
+  denetlenir; sembol tablosu ayrı, ama ad anahtarlı akış kümeleri (gezilen
+  kaynaklar ve üç daraltma kümesi) paylaşılıyordu. Kimlik SymbolId değil
+  yüzey adıydı.
+- Karar: işlem gövdesi kendi akışında denetlenir (`akis::ayri_akista`);
+  kümeler denetim boyunca boşaltılıp geri konur. Akış kümelerini SymbolId'ye
+  taşımak daha geniş bir değişiklikti; çağrı sınırında ayırmak aynı
+  doğruluğu minimal sağlar çünkü işlem kapsamı çağıranın yerellerini zaten
+  göremez (değer semantiği, spec/17).
+- Aynı kök nedenin daraltma yüzü ses açığıydı (callee yerelinde T036
+  kaçıyor, çalışma zamanında C008) ve ters yönde yanlış T036 üretiyordu;
+  aynı düzeltmeyle kapandı, spec/04'e madde eklendi.
+- Gerçek ihlaller korunur: gezilen kaynağı işlem sonucuyla yeniden bağlamak
+  ya da kaynağa eklemek T053.
+- Ayrı açık hata kaydedildi: türsüz ve çağrılmayan işlem C000 iç hatası
+  (backlog K-380 "Açık").
