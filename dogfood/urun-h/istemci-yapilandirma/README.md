@@ -13,7 +13,7 @@ adres ve yerel yol taşınmaz (ADR-087).
 
 K-378 dosya türü kaydında `application/xml` ve
 `application/x-apple-aspen-config` yoktu. Thunderbird otomatik yapılandırma
-XML'i (`/.well-known/autoconfig/mail/config-v1.1.xml`) sunulamıyor, Apple
+XML'i (`/.well-known/autoconfig/mail/config-v1.1.xml`) sunulamıyordu (ürün bu rotayı tür yokluğu yüzünden hiç yazmadı; kesitteki iki autoconfig rotası ürünün hedeflediği biçimdir), Apple
 profili `application/octet-stream` olarak iniyor ve iOS Safari kurulum
 akışını başlatmıyordu (ürün geçici olarak Dosyalar'dan açtırıyor). K-164
 kataloğunda karşılığı “web adaptörü yüzeyi eksik” (ZM-F022 ile aynı sınıf).
