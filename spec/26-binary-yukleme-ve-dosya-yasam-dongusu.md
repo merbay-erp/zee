@@ -37,7 +37,7 @@ süpürmeye düşer.
 Native web worker, `sunucu başlat` dinleyiciyi kurduktan sonra ve çalışırken
 en sık 5 dakikada bir, `.zee/yuklemeler` altında yalnız runtime adlandırmasına
 (64 küçük onaltılık karakter + `.parca`) uyan, sembolik bağ olmayan ve son
-değişikliği 15 dakikadan eski normal dosyaları silmek ZORUNDADIR. Eşik, canlı
+değişikliği 30 dakikadan (K-391 öncesi 15) eski normal dosyaları silmek ZORUNDADIR. Eşik, canlı
 bir yüklemenin son yazımından sonra yaşayabileceği en uzun sürenin (gövde okuma
 son tarihi, rota çalıştırma bütçesi ve yanıt yazımı) en az on katıdır; aynı
 kökü paylaşan başka worker'ın canlı yüklemesi kilit olmadan korunur ve
@@ -65,22 +65,36 @@ alanından önce) tek dosya yükleyebilir.
   `Content-Disposition: form-data; name=…[; filename=…|filename*=UTF-8''…]` ve
   isteğe bağlı `Content-Type` tanınır. `Content-Transfer-Encoding`, bilinmeyen
   başlık ya da parametre, başlık katlaması, yinelenen alan adı, `yukleme_` ile
-  başlayan alan adı, 8 KiB'ı aşan ya da UTF-8 olmayan metin alanı, 1 KiB'ı aşan
-  önsöz/sonsöz, sınırdan sonra CRLF/`--` dışı bayt, sıfır ya da iki dosya ve
+  başlayan alan adı, UTF-8 olmayan metin alanı, 1 KiB'ı aşan
+  önsöz/sonsöz, sınırdan sonra CRLF/`--` dışı bayt, iki dosya ve
   kapanış sınırı olmadan biten gövde YASAKTIR (400). 16 MiB'ı aşan dosya 413.
+- K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)):
+  metin alanları sıradan form alanıdır. Dosya parçası isteğe bağlıdır;
+  yalnız metin alanlı form kabul edilir ve rotaya urlencoded formla aynı
+  `istek` alanlarını verir. Alan başına tavan yoktur; bütün metin alanı
+  değerlerinin ham UTF-8 bayt toplamı isteğin form bütçesini (64 KiB ya da
+  spec/11 §5 rota bazlı geniş bütçe) aşarsa
+  akış 413 ile durur. Türkçe metin bu yolda yüzde kaçışıyla şişmez. Dosyasız
+  formda CSRF yorumlayıcının olağan `_csrf` form denetimindedir. Bu sözleşme
+  ZORUNLUDUR.
 - `_csrf` metin alanı dosya parçasından önce gelmek ve oturumun belirteciyle
   sabit zamanlı eşleşmek ZORUNDADIR; aksi hâlde dosya baytı diske hiç
   yazılmadan 403 döner (oturum gövdeden önce yüklenir; başarısız deneme CSRF
   oran sınırına sayılır). Bu yolda `X-Zee-CSRF` başlığı yok sayılır.
 - Dosya parçası yukarıdaki binary gövdeyle aynı yükleyiciye akar (`.parca`,
-  `0600`, SHA-256, istek sonu silme, yaş süpürmesi); red yanıtından önce kısmi
-  dosya silinir. Rota bugünkü üç alana ek olarak `yukleme_dosya_adi`
+  `0600`, SHA-256, istek sonu silme, yaş süpürmesi); red yanıtından ve
+  spec/11 §5 gövde aşımı rotasından önce kısmi dosya silinir. Dosya
+  parçası varsa rota bugünkü üç alana ek olarak `yukleme_dosya_adi`
   (doğrulanmış basename; geçersizse boş — CR/LF, tırnak, yön karakteri, `..`)
   ve `yukleme_bildirilen_tur` (beyan edilen tür; güvenilmez, ASCII ≤ 127 bayt
   ya da boş) alanlarını ve diğer metin alanlarını `istek` sözlüğünde görür.
   Dosya adı hiçbir koşulda disk yoluna girmez. Bu sözleşme ZORUNLUDUR.
-- Okuma 10 sn mutlak istek son tarihine (spec/11 §5) tabidir; orantılı okuma
-  bütçesi bu sürümde AÇIK sınırdır.
+- K-391 Dilim 2: multipart gövdesinin okuma son tarihi bağlantı kabulünden
+  `10 sn + alınan bayt / 128 KiB/s`'dir. Bütçe yalnız gerçekten alınan baytla
+  büyür (bayt damlatan istemci süre kazanamaz) ve `10 sn + Content-Length /
+  128 KiB/s` ile (en çok 146 sn) sınırlıdır; başlık bloğu 10 sn mutlak kalır.
+  Bu kural ZORUNLUDUR. Urlencoded ve `application/octet-stream` gövdesi 10 sn
+  mutlak kalır (spec/11 §5).
 
 ## Beklenen dosya işlemleri
 

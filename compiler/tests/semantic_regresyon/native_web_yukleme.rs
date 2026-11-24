@@ -79,17 +79,17 @@ fn parca_sayisi(proje: &Path) -> usize {
 /// dosyalar dikilir, açılış süpürmesinden sonra kalanlar sayılır.
 const YETIM_ISARETI: &str = "# yetim-parca-supurmesi";
 
-/// Süreç ölümü taklidi: worker'dan önce `.zee/yuklemeler` altına 16 dakikalık
-/// runtime adlı yetim, 1 dakikalık canlı (başka worker'ın akışı) ve 16
-/// dakikalık ürün adlı dosya bırakılır. Çıktı her dosyanın kalıp kalmadığıdır.
+/// Süreç ölümü taklidi: worker'dan önce `.zee/yuklemeler` altına 31 dakikalık
+/// runtime adlı yetim (K-391: eşik 30 dk), 1 dakikalık canlı (başka worker'ın
+/// akışı) ve 31 dakikalık ürün adlı dosya bırakılır. Çıktı her dosyanın kalıp kalmadığıdır.
 fn yetim_calistir(proje: &Path, ana: &Path) -> (i64, Vec<String>) {
     let dizin = proje.join(".zee/yuklemeler");
     std::fs::create_dir_all(&dizin).expect("yükleme dizini");
     let simdi = std::time::SystemTime::now();
     let dosyalar = [
-        ("yetim", format!("{}.parca", "a".repeat(64)), 16 * 60),
+        ("yetim", format!("{}.parca", "a".repeat(64)), 31 * 60),
         ("canli", format!("{}.parca", "b".repeat(64)), 60),
-        ("urun", "eski-medya.parca".to_string(), 16 * 60),
+        ("urun", "eski-medya.parca".to_string(), 31 * 60),
     ];
     for (_, ad, yas) in &dosyalar {
         let dosya = std::fs::File::create(dizin.join(ad)).expect("dikilen dosya");

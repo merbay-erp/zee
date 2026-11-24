@@ -220,7 +220,8 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P019 | `e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür | Listeyi kanonik adlarla yaz (pdf, png, jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip); liste kümeyi tam belirler, varsayılanları da yaz; makro taşıyan ve yürütülebilir türler açılamaz |
 | P020 | Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`, `bağlantı_blok_sınırı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok | Aralıkları tanıdaki gibi yaz; uzak adres sınırı genel sınırı aşamaz; ret satırını en çok 512 baytlık yazdırılabilir ASCII yaz |
 | P021 | TLS bildirimi bozuk: `tls_sertifika_değişkeni` / `tls_anahtar_değişkeni` eksik, aynı ya da A-Z/0-9/_ dışı ad; `tls_dinleyicileri` kimliksiz, `dinleyiciler`de olmayan ya da yinelenen ad | Zincir ve anahtar için iki ayrı credential/ortam adı yaz (değerin kendisini değil); implicit TLS dinleyicilerini `dinleyiciler`deki adlarla yaz |
-| P023 | Paylaşılan veri kökü bildirimi bozuk: `veri_kökü` A-Z/0-9/_ dışı ya da 128 baytı aşan ad, `veri-okuma`/`veri-yazma` yetkinliği olmadan `veri_kökü` ya da `veri_kökü` olmadan `veri-*` yetkinliği | Yolu değil kökün mutlak yolunu taşıyan ortam değişkeninin / systemd credential'ın adını yaz (`veri_kökü "UYGULAMA_DEPO" olsun`); yalnız okuyan hizmete `veri-okuma`, yazan hizmete ayrıca `veri-yazma` ekle |
+| P022 | Boyut ayarı geçersiz: `gövde_aşımı_rotası` ya da `geniş_gövde_rotaları` ögesi `/` ile başlamıyor, 256 baytı aşıyor, sorgu/parça/yüzde/boşluk/denetim karakteri taşıyor ya da yinelenmiş; `geniş_gövde_rotaları` ile `geniş_gövde_sınırı` birlikte değil ya da sınır 65 537–1 048 576 dışında; `veritabanı_parametre_sınırı` 65 536–4 194 304 dışında ya da veritabanı bildirimi yok | Sorgusuz mutlak yol yaz (`gövde_aşımı_rotası "/ileti/cok-buyuk" olsun`; `/` ile biten geniş rota öneklidir); geniş rotaları ve sınırı birlikte, SQL tavanını veritabanı bildirimiyle yaz |
+| P023 | Paylaşılan veri kökü bildirimi bozuk: `veri_kökü` A-Z/0-9/_ dışı ya da 128 baytı aşan ad, `veri-okuma`/`veri-yazma` yetkinliği olmadan `veri_kökü`, ana projede `veri_kökü` olmadan `veri-*` yetkinliği ya da paketin `veri_kökü` bildirmesi (kök yalnız ana projeden gelir) | Yolu değil kökün mutlak yolunu taşıyan ortam değişkeninin / systemd credential'ın adını yaz (`veri_kökü "UYGULAMA_DEPO" olsun`); yalnız okuyan hizmete `veri-okuma`, yazan hizmete ayrıca `veri-yazma` ekle |
 
 ## Ç — İç akış
 
@@ -261,6 +262,11 @@ bağlantı hataları C030'dur: beklenen okuma/yazma reddi yakalanabilir `Sonuç`
 `tür` Hata verisiyle; görev hatası yalnız o bağlantıyı kapatır ve nedeni
 operatör günlüğüne `Zee bağlantı #N … kapandı:` satırıyla düşer.
 [Karar](../adr/165-ag-dinleyici-baglanti-yuzeyi.md).
+
+K-391: web isteği ve SQL parametresi boyut ayarı hataları P022'dir ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)).
+Gövde boyutu 413'ü tanı değildir; `gövde_aşımı_rotası` bildirimli projede
+salt okuma GET rotasının sayfası 413 durumuyla gider, rota yoksa ya da 200
+metin vermezse ham `istek gövdesi … KiB sınırını aşıyor` iletisi kalır.
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY
