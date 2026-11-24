@@ -6024,3 +6024,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - spec/04'e TANIMLI madde: çağrısız çıkarımlı gövde denetlenmez, hatası ilk
   çağrıyla raporlanır; çağrısız denetim için açık imza.
 
+
+## K-393 — C024 heap zarfı iadesi (24 Kasım 2026)
+
+- Karşılaştırma v2 B4: kabarcık sıralama 1.000 öğe ve 700×5.000 işlem
+  çağrısı ~15 MB RSS'te "~67 MB" C024. Kök neden: zarf yalnız düşüyordu
+  (çerçeve, gezme kopyası, üzerine yazma, kapsam sonu kalıcı tüketim).
+- Seçenekler: (a) yalnız tanı/spec dili — programlar yine iş miktarıyla
+  düşer; (b) düşen değerin iadesi; (c) kopyaları saymamak — üst sınır
+  sözünü bozar. Karar (b), ADR-168.
+- Güvenlik: ölçü ≤ tüketim değişmezi; yerinde büyüme gerçek kapasite
+  artışını tüketir, gezme geri yazımı artık tüketir, iade 64 MiB'a kırpılır.
+  Çerçeve iadesi bütçe farkıyla değil ölçüyle (eşzamanlı görevler ortak
+  bütçe paylaşır). Negatif testler canlı birikimin C024 ile durduğunu sınar.
+- K-388 testleri geçici çöple değil canlı birikimle yenilemeyi sınar.

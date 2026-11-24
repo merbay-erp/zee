@@ -218,7 +218,9 @@ toplamı `bağlantı_ömrü`, eşzamanlılık bağlantı sınırlarıyla sınır
 tek birimde 64 MiB/10 M adım/16 MiB çıktı aynen geçerlidir. Açık: birimler
 arası yaşayan değerler yeni bütçeye yeniden sayılmaz (K-381'den beri);
 birim içi atılan değer iadesi yoktur, büyük gövdeyi tek birimde Zee metni
-olarak işlemek C024'tür (RFC-0043 aralıklı okuma).
+olarak işlemek C024'tür (RFC-0043 aralıklı okuma). K-393 (ADR-168) ile birim
+içinde düşen değer artık iade edilir; tek birimde **canlı** 64 MiB aşımı
+C024 olarak kalır.
 
 Kanıt: `compiler/tests/baglanti_butce_yenileme_testi.rs` (IDLE zaman aşımı,
 girdi tüketen ret ve çok komut olumlu; tek birim zarf aşımı, `kapandı`

@@ -125,3 +125,52 @@ fn baska_adla_baslayan_birlestirme_eski_anlamini_korur() {
     let cikti = dil::kaynagi_calistir(kaynak).expect("çalışmalı");
     assert_eq!(cikti, ["<<<"]);
 }
+
+/// K-393: ~1 KiB'lık parçadan 1.000 öğelik (~1 MiB) liste kuran önek.
+const MIB_LISTE: &str = "parça \"0123456789abcdef\" olsun\n6 kez tekrarla\n    parça parça ile parça olsun\ndizi boş liste olsun\n1000 kez tekrarla\n    diziye parçayı ekle\n";
+
+#[test]
+fn atilan_degerin_zarf_payi_iade_edilir() {
+    // Her yol eskiden iade edilmeyen zarfta birikip 64 MiB'da C024 veriyordu.
+    let vakalar = [
+        // İşlem çerçevesi: parametre kopyası çağrı bitince düşer.
+        "işlem say\n    öğeleri Metin listesi olarak al\n    TamSayı döndürür\n    öğelerin adedi döndür\n\nVAKA_ONEK\nk 0 olsun\n200 kez tekrarla\n    k dizi için say olsun\nk yaz\n",
+        // Değişkenin üzerine yazma.
+        "VAKA_ONEK\nkopya boş liste olsun\n200 kez tekrarla\n    kopya dizi olsun\nkopyanın adedi yaz\n",
+        // Blok kapsamında doğup düşen ad.
+        "VAKA_ONEK\n200 kez tekrarla\n    doğru ise\n        geçici dizi olsun\ndizinin adedi yaz\n",
+        // Gezme kopyası döngü bitince düşer.
+        "VAKA_ONEK\nn 0 olsun\n200 kez tekrarla\n    dizideki her öğe için\n        n 1 artır\nn yaz\n",
+        // Sözlük öğesi ve yapı alanının üzerine yazma.
+        "yapı Kutu\n    içerik Metin\n\nVAKA_ONEK\nkutu yeni Kutu olsun\nönbellek boş sözlük olsun\n100000 kez tekrarla\n    önbelleğin \"son\" değeri parça olsun\n    kutunun içeriği parça olsun\nson kutunun içeriği olsun\nsonun uzunluğu yaz\n",
+        // Silinen öğe.
+        "VAKA_ONEK\nkutu boş liste olsun\n100000 kez tekrarla\n    kutuya parçayı ekle\n    kutudan parçayı sil\nkutunun adedi yaz\n",
+    ];
+    for vaka in vakalar {
+        let kaynak = vaka.replace("VAKA_ONEK\n", MIB_LISTE);
+        let cikti = dil::kaynagi_calistir(&kaynak)
+            .unwrap_or_else(|hata| panic!("iade beklenirdi: {hata:?}\n{kaynak}"));
+        assert_eq!(cikti.len(), 1, "{kaynak}");
+    }
+}
+
+#[test]
+fn iade_canli_birikimi_zarftan_kacirmaz() {
+    // Canlı biriktirme iade almaz; düşen değerlerin iadesi sınırı genişletmez.
+    let vakalar = [
+        // Düz canlı birikim.
+        "VAKA_ONEK\ndepo boş liste olsun\n200 kez tekrarla\n    depoya diziyi ekle\n",
+        // Çerçeve, kapsam, sözlük ve silme iadeleriyle karışık canlı birikim.
+        "işlem çöp\n    s Metin olarak al\n    TamSayı döndürür\n    kutu boş liste olsun\n    100 kez tekrarla\n        kutuya s ekle\n    kutudan s yi sil\n    sözlük boş sözlük olsun\n    sözlüğün \"a\" değeri s olsun\n    sözlüğün \"a\" değeri \"\" olsun\n    1 döndür\n\nVAKA_ONEK\ndepo boş liste olsun\nk 0 olsun\n100000 kez tekrarla\n    depoya parçayı ekle\n    k parça için çöp olsun\n    doğru ise\n        yerel parça ile \"x\" olsun\n",
+        // Gezme imleci geri yazımı kaynağı büyütür; kopya tüketilmek zorunda.
+        "VAKA_ONEK\nsatırlar boş liste olsun\n2000 kez tekrarla\n    satırlara \"a\" ekle\n200 kez tekrarla\n    her satır için\n        satır satır ile dizinin ilki olsun\n",
+        // Dönen değer çağıranda yeniden tüketilir.
+        "işlem ver\n    l Metin listesi olarak al\n    Metin listesi döndürür\n    l döndür\n\nVAKA_ONEK\ndepo boş liste olsun\n200 kez tekrarla\n    depoya dizi için ver ekle\n",
+    ];
+    for vaka in vakalar {
+        let kaynak = vaka.replace("VAKA_ONEK\n", MIB_LISTE);
+        let hata = dil::kaynagi_calistir(&kaynak).expect_err(&kaynak);
+        assert_eq!(hata.kod, "C024", "{hata:?}\n{kaynak}");
+        assert!(hata.mesaj.contains("heap sınırını"), "{hata:?}");
+    }
+}

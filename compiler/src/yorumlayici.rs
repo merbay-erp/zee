@@ -1338,30 +1338,44 @@ fn kapsam_baslat(ortam: &HashMap<String, Deger>) -> std::collections::HashSet<St
     ortam.keys().cloned().collect()
 }
 
+/// K-393: kapsamda doğup düşen adların zarf payı iade edilir.
 fn kapsam_bitir(ortam: &mut HashMap<String, Deger>, kapsam: &std::collections::HashSet<String>) {
-    ortam.retain(|ad, _| kapsam.contains(ad));
+    let mut iade = 0usize;
+    ortam.retain(|ad, deger| {
+        let kalir = kapsam.contains(ad);
+        if !kalir {
+            iade = iade.saturating_add(ortam_girdisi_iade_bayti(ad, deger));
+        }
+        kalir
+    });
+    heap_butcesini_iade_et(iade);
 }
 
 /// K-093 değer-sonuç gezme imleci: turun son döngü değerini kaynak listenin
 /// aynı sırasına kopyalar. Kaynağın biçimi denetleyicide T053 ile sabitlenir;
 /// bu yüzden sıra kayması ya da başka bir listeye sessiz yazma mümkün değildir.
+/// K-393: kopya zarftan tüketilir, yerinden çıkan eski öğe iade edilir.
 fn gezme_ogesini_geri_yaz(
     ortam: &mut HashMap<String, Deger>,
     kaynak_adi: Option<&str>,
     dongu_adi: &str,
     sira: usize,
-) {
+    satir: usize,
+) -> Result<(), Tani> {
     let Some(kaynak_adi) = kaynak_adi else {
-        return;
+        return Ok(());
     };
     let Some(guncel) = ortam.get(dongu_adi).cloned() else {
-        return;
+        return Ok(());
     };
     if let Some(Deger::Liste(ogeler)) = ortam.get_mut(kaynak_adi) {
         if let Some(yer) = ogeler.get_mut(sira) {
-            *yer = guncel;
+            heap_butcesini_tuket(deger_olcusu(&guncel, satir)?, satir)?;
+            let eski = std::mem::replace(yer, guncel);
+            heap_butcesini_iade_et(deger_iade_bayti(&eski));
         }
     }
+    Ok(())
 }
 
 fn blok_calistir(
@@ -1410,8 +1424,7 @@ async fn islem_cagir(
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
         let deger = parametre_degerini_genislet(deger, param.tur_yazimi.as_deref());
-        ortama_yazma_butcesini_tuket(&yerel, &param.ad, &deger, satir)?;
-        yerel.insert(param.ad.clone(), deger);
+        ortama_yaz(&mut yerel, &param.ad, deger, satir)?;
     }
     if eylem {
         son_tarihi_denetle(io, satir)?;
@@ -1431,6 +1444,10 @@ async fn islem_cagir(
             Some(koken) => tani.kokenle(koken),
             None => tani,
         });
+    // K-393: çerçeve düşer; parametre ve yerel adların zarf payı iade edilir.
+    // Dönüş değeri yereldeki değerin kopyasıdır ve çağıranın yazımında tüketilir.
+    heap_butcesini_iade_et(ortam_iade_bayti(&yerel));
+    drop(yerel);
     if eylem {
         GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = askidaki_gorev_sinyali);
     }
@@ -1584,8 +1601,7 @@ async fn guncelle(
         AritmetikIslec::Cikar
     };
     let yeni = sayisal_islem(&islec, &eski, &miktar, satir)?;
-    ortama_yazma_butcesini_tuket(ortam, &ad, &yeni, satir)?;
-    ortam.insert(ad, yeni);
+    ortama_yaz(ortam, &ad, yeni, satir)?;
     Ok(())
 }
 

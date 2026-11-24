@@ -454,8 +454,8 @@ fn kaydet(
             satir,
         )
     })?;
-    ortam.insert(anahtar, Deger::TamSayi(omur));
-    ortam.insert("(bağlantı)".into(), Deger::Mantiksal(true));
+    ortama_yaz(ortam, &anahtar, Deger::TamSayi(omur), satir)?;
+    ortama_yaz(ortam, "(bağlantı)", Deger::Mantiksal(true), satir)?;
     Ok(())
 }
 
