@@ -214,7 +214,9 @@ sorgusu ve DNSSEC durumu, sürümlü PSL ile kurumsal alan, gelen SPF/DKIM/
 DMARC/ARC değerlendirmesi ve sahte `Authentication-Results` temizliği,
 giden DKIM imzası ve anahtar döndürme, MTA-STS/DANE/TLS-RPT ile zorunlu
 teslim TLS'i) **açık iştir**. K-383/[RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md)
-yeni `Baytlar` türü açmadan kodlanmış `Metin` + dosya tutamağı modelini,
+yeni `Baytlar` türü açmadan kodlanmış `Metin` + dosya tutamağı modelini
+(ilk dilim: A2c blok dosyasından aralıklı okuma ve base64/QP çözerek bayt
+yazma, ZM-F034),
 [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
 B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar; core freeze
 altında uygulanmaz, V1 sözü değildir.

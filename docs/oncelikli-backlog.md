@@ -2579,6 +2579,15 @@ politikası Zee'de, sahte A-R silme; B3 credential'dan anahtar, alan eşleşmeli
 imza, çoklu seçiciyle döndürme; B4 `smtp-teslim` önkoşulu, DANE > MTA-STS
 (TOFU önbelleği) > fırsatçı TLS, TLS-RPT. Önerilen sıra: RFC-0043 → B1a →
 B1b → B2a (A-R temizliği, güvenlik önceliği) → B2b–d → B3 → B2e → B4a–d.
+Ek (24 Kasım 2026, ZM-F034): A2c blok dosyaları ürün tarafında
+ayrıştırılamıyor (ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
+64 KB). Mevcut `dosyasını okumayı dene` 16 MiB katı UTF-8 ve CRLF korur ama
+8bit içerikte başarısız, aralık okuyamaz ve içeriği IO izine yazar; spec/08
+yazımı yalnız satır + `\n`. RFC-0043'ün önerilen ilk dilimi bu yüzden:
+aralıklı metin/base64 okuma, base64/QP çözerek no-clobber bayt yazma (+akışlı
+ekleme), bellekte SHA-256; iz içeriksiz. Sonraki küçük iş: `message/rfc822`
+dosya yanıtı türü. RFC-0039 ilke 1 ve katman E'ye RFC-0044 çapraz notu
+düşüldü (kabul ayrı).
 Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
 her aşama ayrı `dogfood-change` K-işi ve depo içi reproducer ister. V1 kapısı
 değildir.

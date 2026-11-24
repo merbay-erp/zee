@@ -21,7 +21,8 @@
   [RFC-0039](0039-ag-sunucusu-yetkinligi.md) (katman D),
   [RFC-0041](0041-ikili-yanit-ve-ek-akisi.md),
   [RFC-0044](0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
-- **Freeze sınıfı adayı:** tek `dogfood-change` (`urun-h`, ZM-F023/ZM-F024).
+- **Freeze sınıfı adayı:** iki dilimli `dogfood-change` (`urun-h`):
+  Dilim 1 ZM-F034 + ZM-F024, Dilim 2 ZM-F023.
 
 ## Özet
 
@@ -38,6 +39,15 @@ UTF-7 posta kutusu adları, RFC 2047 encoded-word, ASCII denetimleri);
 zaman ya geçerli UTF-8 `Metin` ya da adı konmuş bir **kodlanmış bayt
 metni** (küçük harf onaltılık veya RFC 4648 base64) olarak görünür. Büyük
 ikili veri RFC-0039 katman D'nin dosya tutamağı ilkesinde kalır.
+
+24 Kasım 2026'da ürün dördüncü bir somut engel bildirdi (ZM-F034): A2c'nin
+`nokta bloğunu dosyaya al` / `n baytı dosyaya al` çıktıları Zee'de
+ayrıştırılamıyor, MIME parçasının base64/quoted-printable içeriği bayt
+olarak dosyaya yazılamıyor. Bu yüzden **önerilen ilk uygulama dilimi**
+(Dilim 1) yalnız şunları kapsar: dosyayı sınırlı ve katı UTF-8 `Metin`
+olarak okuma (çoğu zaten var; eksikleri kapatılır), base64/QP içeriğini
+**çözerek dosyaya bayt-kesin yazma** ve bellekte SHA-256. Bayt sayısı,
+metin↔base64/onaltılık, kod noktası Dilim 2'dir.
 
 ## Motivasyon
 
@@ -57,6 +67,14 @@ kaydı) iki maddeyi bu RFC'ye bağlar:
   özetini almayı dene` yalnız diskteki dosyayı özetler; küçük kanonik metni
   özetlemek için geçici dosyaya yazıp okumak hem `dosya-yazma` yetkinliği
   hem IO izi gürültüsü getirir.
+- **ZM-F034 dosya ↔ kodlanmış içerik (24 Kasım 2026):** A2c bloğu dosyaya
+  alındıktan sonra ürün (1) dosyayı `Metin` olarak geri okuyup MIME
+  sınırlarını ayrıştırmak, (2) parçanın base64/QP gövdesini çözüp **bayt
+  olarak** ek dosyasına yazmak istiyor. Ürünün bildirdiği etki: SMTP/IMAP
+  ile gelen ekler webmail'e çıkarılamıyor, istemciden ekli gönderim `554`
+  ile düşüyor, IMAP `APPEND` 64 KB'ta takılıyor. Ürün ayrıca ham iletinin
+  `.eml` olarak indirilebilmesi için dosya yanıtı tür kaydına
+  `message/rfc822` istiyor (bkz. "RFC-0041 ile ilişki").
 
 ### Bugünkü durum (bd8d44f üzerinde doğrulandı)
 
@@ -68,6 +86,8 @@ kaydı) iki maddeyi bu RFC'ye bağlar:
 | base64 | **Kısmi, yalnız iç yardımcı.** Üç ayrı özel kodlayıcı (SMTP AUTH/MIME `eposta.rs::base64`, `main.rs::base64_kodla`, gizli değer `guvenlik/gizli.rs::base64_yaz/oku`); Zee yüzeyi yok | `compiler/src/eposta.rs:124`, `compiler/src/main.rs:2846`, `compiler/src/guvenlik/gizli.rs:76` |
 | SHA-256 | **Kısmi.** Dosya özeti var (`dosya-okuma`, ≤ 16 MiB akış, `Metin` 64 hex); yükleme/blok tutamağında `sha256` alanı var; bellekteki metin için yok. İç yardımcı `guvenlik::sha256_hex` mevcut | spec/26 §Beklenen dosya işlemleri; spec/12 §9 A2c; `compiler/src/guvenlik.rs:78` |
 | Onaltılık | **Kısmi.** Dosyanın ilk 1–64 baytı küçük harf onaltılık (RFC-0036); metin için yok | spec/26 K-333 |
+| Dosyayı `Metin` olarak okuma | **Var, kısmi.** `"yol" dosyasını okumayı dene` → `Sonuç<Metin>`; `dosya-okuma`, proje dosya sınırı, 16 MiB tavan (`dosya_okuma_bayti`), katı UTF-8 (`String::from_utf8`, onarım yok), baytlar olduğu gibi (CRLF korunur); `"yol" dosyasının satırları` ayrıca var. **Eksik:** geçerli UTF-8 olmayan içerik (8bit gövde, ikili ek) tümüyle başarısız olur; dosyanın bir bölümünü (başlık bölümü, MIME parçası aralığı) okuma yok; okunan içeriğin **tamamı** IO izine `dosya_oku` sonucu olarak yazılır — A2c'nin "blok baytı IO izi içeriği olmaz" sözüyle çelişir ve 16 MiB'lık izler üretir | `compiler/src/agac.rs` `DosyaOkumayiDene`; `compiler/src/kaynak_sinirlari/okuma.rs::sinirli_metin_oku`; `compiler/src/yorumlayici/io_izi.rs` `dosya_oku`; spec/12 §9 A2c |
+| Dosyaya bayt-kesin yazma | **Yok.** `"yol" dosyasına değer yaz/ekle` yalnız değerin metin gösterimini ve ardından **tek `\n`** yazar (spec/08 §Satır yazma); kodlanmış içerikten bayt yazma ya da satır sonusuz yazma yok | spec/08; `compiler/src/kalici_dosya.rs::atomik_satir_yaz` |
 | Kripto/kodlama crate'leri | `sha2 0.11.0` doğrudan; `base64 0.23.1` geçişli (ureq, bcrypt) ve `0.22.1` geçişli (postgres-protocol); `ring 0.17.14` geçişli (rustls) | `compiler/Cargo.toml`, `compiler/Cargo.lock` |
 
 Sonuç: ihtiyaç duyulan algoritmaların hepsi derleyici ağacında zaten var;
@@ -84,6 +104,10 @@ eksik olan **Zee yüzeyi ve tür modeli kararıdır**.
    da base64 çıktı).
 5. Bunların hepsi saf, deterministik, yetkinliksiz, IO izine girmeyen ve
    sınırlı kaynaklı işlemler olsun.
+6. (ZM-F034) Dosya tutamağındaki içeriği sınırlı `Metin` olarak okumak ve
+   base64/QP kodlu `Metin`i çözerek dosyaya **bayt-kesin** yazmak; bunlar
+   etkili işlemlerdir, `dosya-okuma`/`dosya-yazma` ister ve IO izine içerik
+   değil yol + bayt + SHA-256 olarak girer.
 
 ## Kapsam dışı
 
@@ -91,9 +115,10 @@ eksik olan **Zee yüzeyi ve tür modeli kararıdır**.
   çıkarsa ayrı RFC).
 - HMAC, PBKDF2, SCRAM-SHA-256, MD5, SHA-1, SHA-512. SCRAM ihtiyacı çıkarsa
   ayrı madde; MD5/SHA-1 güvenlik amaçlı hiç açılmaz.
-- Quoted-printable ve RFC 2047 encoded-word kodlaması/çözümü: MIME alt
-  RFC'si (RFC-0039 katman D/MIME). Bu RFC yalnız onların yapı taşı olan kod
-  noktası ve base64'ü verir.
+- Quoted-printable **kodlaması**, RFC 2047 encoded-word kodlaması/çözümü ve
+  MIME yapı ayrıştırması: MIME alt RFC'si (RFC-0039 katman D/MIME). Bu RFC
+  yalnız QP'yi **çözerek dosyaya yazmayı** (Dilim 1) ve yapı taşlarını
+  (kod noktası, base64) verir; MIME sınırlarını Zee kodu bulur.
 - Akışlı (parça parça beslenen) özet bağlamı ve büyük gövde kanonikleştirmesi:
   DKIM gövde özeti dosya üzerinde RFC-0044 B2/B3 host işlemidir.
 - Sıkıştırma, şifreleme, imza, rastgele bayt üretimi.
@@ -113,9 +138,10 @@ eksik olan **Zee yüzeyi ve tür modeli kararıdır**.
    kodlanmış) her girdi için tanımlıdır ve doğrudan değer döner; çözme
    (kodlanmış → metin) geçersiz alfabe/dolgu/UTF-8'de yakalanabilir
    başarısız `Sonuç` verir (RFC-0008).
-4. **Saflık.** İşlemler etkisizdir: yetkinlik istemez, IO izine olay yazmaz,
+4. **Saflık (Dilim 2 ve bellekte özet).** Metin işlemleri etkisizdir: yetkinlik istemez, IO izine olay yazmaz,
    replay'de aynı girdiye aynı çıktıyı verir. `json metni`, `html güvenli`
-   gibi mevcut dönüşümlerle aynı sınıftadır.
+   gibi mevcut dönüşümlerle aynı sınıftadır. Dosya işlemleri (§5) etkilidir
+   ve mevcut dosya yetkinlik/sınır kurallarına tabidir.
 5. **Algoritma yazılmaz.** base64 ve SHA-256 ağaçtaki doğrulanmış
    crate'lerden gelir; üç iç base64 yardımcısı tek uygulamada toplanır
    (bakım borcu da kapanır).
@@ -219,6 +245,69 @@ ikili gösterimin onaltılıktan sha256 özetini almayı dene olsun  # Sonuç<Me
   (DKIM özetleri kamusaldır); gizli değer karşılaştırması bu RFC'nin işi
   değildir ve parola/TOTP yüzeylerinde zaten host'tadır.
 
+### 5. Dosya ↔ kodlanmış içerik (ZM-F034, Dilim 1)
+
+**(a) Dosyayı `Metin` olarak okuma.** Mevcut `"yol" dosyasını okumayı dene`
+korunur (16 MiB, katı UTF-8, CRLF korunur) ve A2c blok dosyalarında
+kullanılabildiği spec'te açıkça yazılır ve testlenir. Üç eksik kapatılır:
+
+```text
+bölüm yol dosyasının konum baytından n baytını metin olarak okumayı dene olsun   # Sonuç<Metin>
+ham yol dosyasının konum baytından n baytını base64 okumayı dene olsun          # Sonuç<Metin>
+```
+
+- **Aralıklı okuma** (konum + uzunluk, bayt): başlık bölümünü ya da tek bir
+  MIME parçasını okumak için; `n` ≤ 1 MiB (açık soru), dosya sonu aşılırsa
+  olan kadarı. Metin kipinde aralık UTF-8 dizisini ortadan bölerse
+  başarısız `Sonuç` (`tür: utf8`, `konum`); ürün sınırı CRLF'ye hizalar.
+- **base64 okuma:** UTF-8 olmayan içerik (8bit gövde, ikili ek) Zee'ye
+  kodlanmış `Metin` olarak gelir; tasarım ilkesi 1 korunur.
+- **IO izi:** bu iki yeni okuma izde **yol + konum + n + okunan bayt +
+  SHA-256** olarak yer alır, içerik olarak değil; replay için içerik, iz
+  yanındaki içerik-adresli dosyadan ya da hermetik test dosyasından gelir
+  (spec/21 ayrıntısı uygulama ADR'sinde). Mevcut `dosyasını okumayı dene`
+  izi değişmez (uyumluluk); büyük blok dosyalarında aralıklı okuma önerilir.
+
+**(b) Çözerek dosyaya bayt-kesin yazma.**
+
+```text
+tutamak parçayı base64 çözerek yol dosyasına yazmayı dene olsun              # Sonuç<Sözlük>
+tutamak parçayı quoted-printable çözerek yol dosyasına yazmayı dene olsun    # Sonuç<Sözlük>
+tutamak satırı base64 çözerek yol dosyasına eklemeyi dene olsun              # akışlı ekleme
+```
+
+- Sonuç, A2c/spec/26 ile **aynı tutamak biçimidir**: `{yol, sha256, bayt}`;
+  böylece çıktı doğrudan RFC-0041 dosya yanıtına (`… türünde … adıyla ek
+  olarak göndermeyi dene`) ve SMTP ekine bağlanır.
+- **base64:** MIME gövdesindeki satır sonları (CRLF) ve satır sonu
+  boşlukları çözümde atlanır (RFC 2045 §6.8); bunun dışında katı: alfabe
+  dışı karakter, kanonik olmayan son bitler, ortada dolgu başarısız `Sonuç`.
+  (§2'deki tek satır protokol çözümünden farkı yalnız CRLF/boşluk atlamadır;
+  iki kip ayrı adla.)
+- **Quoted-printable:** RFC 2045 §6.7; `=XY` (büyük/küçük onaltılık), yumuşak
+  satır sonu `=` + CRLF birleştirilir, sert CRLF aynen yazılır, satır sonu
+  boşlukları atılır. Bozuk `=` dizisi: katı ret mi, RFC 2045'in önerdiği
+  "olduğu gibi bırak" mı — açık soru; öneri **katı ret + `konum`**, çünkü
+  gevşek çözme filtre/MUA ayrıştırma farkı üretir.
+- **Yazma semantiği:** `yazmayı dene` hedefin bütün yeni içeriğidir;
+  geçici dosyaya yazılır, `fsync`, var olan hedef **ezilmez** (spec/26
+  no-clobber taşıma ile aynı; ezme gerekiyorsa ürün önce siler), dizin
+  eşzamanlanır. `eklemeyi dene` akışlı çözüm içindir: satır satır gelen
+  base64'te her çağrı tam 4'lük gruplardan oluşmalı (dolgu yalnız son
+  çağrıda); QP'de her çağrı tam satırdır. Ekleme hedefi yalnız aynı
+  bağlantı/istek içinde açılmış `.parca` çalışma dosyası olabilir mi, yoksa
+  her proje dosyası mı — açık soru; öneri: ekleme yalnız `.zee/` altındaki
+  çalışma dosyasına, bitince atomik taşıma.
+- **Bütçe:** çıktı boyutu ayırmadan önce kestirilir; hedefin toplam boyutu
+  bağlantı/istek blok tavanını (`bağlantı_blok_sınırı`, spec/26 yükleme
+  tavanı) aşamaz. Aşım: hedef yarım kalmaz, geçici dosya silinir.
+- **Yetkinlik:** `dosya-yazma` (ve kaynak okunursa `dosya-okuma`), proje
+  dosya sınırı (spec/07 K-382) aynı.
+- **IO izi:** `{yol, bayt, sha256}` ve çözme türü; içerik yok.
+
+**(c) Bellekte SHA-256:** §4 aynen Dilim 1'e alınır (DKIM ve parça bütünlüğü
+için `metnin sha256 özeti`).
+
 ### Sınırlar
 
 | Sınır | Önerilen değer | Gerekçe |
@@ -226,6 +315,8 @@ ikili gösterimin onaltılıktan sha256 özetini almayı dene olsun  # Sonuç<Me
 | Kodlama/özet girdisi | 1 MiB UTF-8 bayt (açık soru) | Kanonik başlık bloğu, AUTH, DKIM alanları KiB düzeyinde; büyük gövde dosya yolundan geçer |
 | Çözme girdisi | çıktı 1 MiB'ı aşmayacak uzunluk; ayırmadan önce hesaplanır | Bellek amplifikasyonu yok |
 | Kod noktası | tek skaler değer | — |
+| Aralıklı okuma `n` | ≤ 1 MiB/çağrı (açık soru) | Parça parça işleme; bellek |
+| Çözerek yazma | hedef ≤ blok/yükleme tavanı; çağrı girdisi ≤ 1 MiB | Amplifikasyon yok (base64 çıktısı girdinin ¾'ü) |
 
 Sınır aşımı spec/24 kaynak bütçesi sınıfında yakalanabilir başarısız
 `Sonuç` (çözme) ya da çalışma hatasıdır (toplam işlemler); ayrıntı
@@ -250,6 +341,10 @@ uygulama K-işinin kararıdır.
 | Gizli değerin (AUTH PLAIN parolası) hata mesajına, IO izine ya da günlüğe sızması | Saf işlemler izde yer almaz; hata mesajı girdi taşımaz; `gizli` değer modeli (spec/23 K-339) ayrıca değer içeriğini korur |
 | Bellek/CPU tüketimi (dev girdi, çözmede amplifikasyon) | Ayırmadan önce boyut; 1 MiB tavan; tek geçişli crate uygulaması |
 | Zamanlama yan kanalı | base64/hex çözme gizli anahtar için kullanılmaz (anahtar Zee değeri olmaz — RFC-0039 ilke 2); kamu verisi |
+| Ek dosyasının yarım/bozuk kalması ya da var olan dosyanın ezilmesi | Geçici dosya + `fsync` + no-clobber; hatada geçici silinir |
+| Gevşek QP/base64 çözümünün filtre ile MUA arasında farklı içerik üretmesi | Katı çözme + `konum`; gevşeklik yalnız RFC 2045'in açıkça istediği CRLF/boşluk atlaması |
+| Büyük blok içeriğinin IO izine (ve oradan yedeklere/günlüklere) sızması | Yeni okuma/yazma işlemleri izde yalnız yol + bayt + SHA-256 |
+| Yol enjeksiyonu (ek adı dosya yoluna) | Hedef yol Zee'nin kurduğu göreli yol; spec/26 kuralı: gönderilen dosya adı hiçbir koşulda disk yoluna girmez — ürün kendi adlandırır |
 | `Metin` uzunluğu ile oktet sınırının karışması (SMTP satır/boyut sınırının aşılması) | Ayrı `utf8 bayt sayısı`; spec/23 SMTP istemcisi ve A2 sunucu sınırları zaten bayt sayar |
 
 Güvenlik bulgusu kaydı: bu taslak yeni bulgu açmaz. Uygulama K-işinde katı
@@ -272,7 +367,9 @@ sınırı" satırı (GB-NNN) olarak kaydedilir.
 
 ## Yetkinlik etkisi
 
-Yok. İşlemler saf hesaplamadır; `kriptografi` yetkinliği istemez (özet
+Dilim 1 §5 dosya işlemleri mevcut `dosya-okuma`/`dosya-yazma`
+yetkinliklerine bağlıdır; yeni yetkinlik yoktur. Diğer işlemler saf
+hesaplamadır; `kriptografi` yetkinliği istemez (özet
 gizli değil, anahtar yok). `dosya-okuma` gerektiren dosya özeti spec/26'da
 olduğu gibi kalır. Açık soru: SHA-256'nın "kriptografi" sınıfında sayılıp
 sayılmayacağı — öneri hayır, çünkü yetkinlik modeli (spec/23) **dış etki**
@@ -281,6 +378,9 @@ sınırıdır, algoritma sınıfı değildir.
 ## Deterministik IO
 
 Saf işlemler IO izine olay yazmaz; replay aynı sonucu kendiliğinden üretir.
+§5 dosya işlemleri izde yol/konum/bayt/SHA-256 ile yer alır (içerik yok);
+bu, mevcut `dosya_oku` olayının içerik taşıyan şemasından bilinçli bir
+ayrılıştır ve spec/21 ile uygulama ADR'sinde kayda geçer.
 `dil dene` hermetik çalışmada da aynıdır.
 
 ## Core freeze gerekçesi ve kanıt kapısı
@@ -292,7 +392,10 @@ Saf işlemler IO izine olay yazmaz; replay aynı sonucu kendiliğinden üretir.
    Zee kaynağını (AUTH PLAIN çözümü, SMTP `SIZE`/satır oktet sınırı, DKIM
    `bh=` hesabı) `dogfood/urun-h/korpus/` altına exact beklentiyle koyar.
    Elle base64 döngüsünün ASCII dışı girdide yanlış sonucu ve `uzunluğu`nun
-   oktet saymaması iki ayrı reproducer'dır.
+   oktet saymaması iki ayrı reproducer'dır. ZM-F034 için: A2c ile alınmış
+   base64 ekli ileti dosyasından eki çıkaramayan ürün kodu (bugün
+   `dosyasını okumayı dene` 8bit içerikte başarısız, eki bayt yazacak kalıp
+   yok) ve ekli gönderimin `554`'e düşen yolu.
 3. **Tekrar sinyali.** base64 ihtiyacı derleyicinin kendi içinde üç kez
    yazılmıştır (SMTP, gizli değer, CLI); Zee tarafında SMTP istemcisi
    (spec/23), A2 sunucusu ve RFC-0044 DKIM/DNS yolları aynı yapı taşını
@@ -321,7 +424,14 @@ V1 kapı listesine eklenmez; V1 sözü değildir.
 - **RFC-0039 A2c** blok dosyası tutamağı (`yol`, `sha256`, `bayt`) değişmez;
   bu RFC'nin `metnin sha256 özeti` çıktısı o alanla aynı biçimdedir.
 - **RFC-0041** dosya yanıtı ve SMTP eki ikili veriyi dosya tutamağıyla taşır;
-  base64 MIME kodlaması orada host'ta kalır. Bu RFC onu Zee'ye açmaz.
+  base64 MIME **kodlaması** orada host'ta kalır. Dilim 1'in çözerek yazma
+  çıktısı aynı `{yol, sha256, bayt}` tutamağıdır; gelen ek webmail'e RFC-0041
+  A dosya yanıtıyla, istemciye yeniden gönderim RFC-0041 C ek kaydıyla gider.
+- **`message/rfc822` (sonraki küçük iş, bu RFC'nin dışında):** ham iletiyi
+  `.eml` olarak indirmek için RFC-0041 katman A / ADR-163 dosya yanıtı tür
+  kaydına `message/rfc822` satırı (yalnız `attachment`, `nosniff`, sandbox
+  CSP; K-385 `application/xml` ekiyle aynı desen). Ayrı K-işi adayı;
+  ürün reproducer'ı ile açılır.
 
 ## Dört soru süzgeci
 
@@ -348,13 +458,20 @@ V1 kapı listesine eklenmez; V1 sözü değildir.
 3. `"ç"` için `utf8 bayt sayısı` 2, `uzunluğu` 1; U+1F600 (😀) için 4 ve 1.
 4. SHA-256 NIST FIPS 180-4 örnek vektörleri; boş metin
    `e3b0c442…b855`; aynı içerikli dosya ile metin özeti eşit.
-5. Boş gövdenin `simple` kanonik biçimi (`CRLF`) için DKIM `bh=` değeri
+5. (Dilim 1) A2c ile alınmış, base64 ve QP ekli örnek ileti dosyasından
+   aralıklı okuma + çözerek yazma ile çıkarılan ekin SHA-256'sı özgün ekle
+   eşleşir; ek RFC-0041 dosya yanıtıyla indirilir. 8bit gövdeli dosya
+   `metin olarak` okumada `utf8` hatası, `base64 okuma`da başarı verir.
+   Bozuk QP `=G1`, ortada dolgu, 4'e bölünmeyen ekleme çağrısı, var olan
+   hedef, tavan üstü çıktı → başarısız `Sonuç` ve hedefte yarım dosya yok.
+   IO izinde içerik yok, yol/bayt/SHA-256 var.
+6. Boş gövdenin `simple` kanonik biçimi (`CRLF`) için DKIM `bh=` değeri
    (`frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY=`) ve bağımsız bir DKIM
    uygulamasının (ör. OpenDKIM) ürettiği vektör Zee'de kanonik gövde
    metninden yeniden üretilir.
-6. AUTH PLAIN reproducer'ı (`\0kullanıcı\0parola`) base64 gidiş-dönüşüyle
+7. AUTH PLAIN reproducer'ı (`\0kullanıcı\0parola`) base64 gidiş-dönüşüyle
    geçer; hata yolunda parola hiçbir çıktıda görünmez.
-7. 1 MiB + 1 bayt girdi ayırmadan reddedilir.
+8. 1 MiB + 1 bayt girdi ayırmadan reddedilir.
 
 ## Alternatifler
 
@@ -386,20 +503,43 @@ Golden değişmez. Uygulama K-işinde bir golden (kodlama turu) ve
 5. Üç iç base64 yardımcısı `base64` crate'ine mi taşınır, yoksa tek iç
    uygulama mı kalır?
 6. Yeni tanı kodu mu, yoksa C013/C029 benzeri mevcut bir koda `tür` ile mi
-   eklenir? (Öneri: yeni kod; IO ya da ağ değildir.)
+   eklenir? (Öneri: kodlama hataları için yeni kod; §5 dosya işlemlerinin
+   IO arızaları C013.)
+7. (ZM-F034) QP bozuk dizide katı ret mi, RFC 2045 "olduğu gibi bırak" mı?
+8. (ZM-F034) Akışlı `eklemeyi dene` hedefi yalnız `.zee/` çalışma dosyası
+   mı, her proje dosyası mı? Çözme durumu (yarım 4'lük grup) çalışma
+   zamanında tutulsun mu (öneri: hayır; çağrı başına tam grup)?
+9. (ZM-F034) Aralıklı okuma tavanı 1 MiB mı; mevcut `dosyasını okumayı
+   dene`nin izine içerik yazması blok dosyaları için ayrıca daraltılsın mı
+   (uyumluluk yüzeyi, K-167)?
 
 ## Önerilen uygulama sırası ve K-işi bölümlemesi
 
-Tek K-işi (numara açılışta verilir), RFC-0044'ten **önce**:
+İki K-işi (numaralar açılışta verilir), RFC-0044'ten **önce**:
 
-1. ADR + spec maddeleri (bayt sayısı, katı UTF-8, base64/hex, kod noktası,
-   bellekte SHA-256), K-167 satırları, tanı kodu ve katalog.
-2. Uygulama: saf `Ozellik` dalları + iç base64 birleştirmesi; fuzz hedefi.
-3. Olumlu/olumsuz test, golden, `urun-h` reproducer'ları, `surumler.md`.
+**Dilim 1 — önerilen ilk uygulama (ZM-F034 + ZM-F024).** Ürünün bugünkü
+engelini (gelen ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
+64 KB) doğrudan kapatır:
 
-Bağımlılığı yoktur; RFC-0044 B2/B3 bunun üstüne kurulur.
+1. ADR + spec/26 (ya da spec/08) maddeleri: mevcut `dosyasını okumayı dene`
+   nin blok dosyalarında kullanımı; aralıklı metin/base64 okuma; base64 ve
+   QP çözerek no-clobber bayt yazma ve akışlı ekleme; bellekte SHA-256;
+   spec/21 iz şeması (içeriksiz). K-167 satırları, tanı/katalog.
+2. Uygulama: tek base64 uygulaması (iç yardımcıların birleştirilmesi
+   dahil), QP çözücü, fuzz hedefi `kodlama` (base64/QP çözme).
+3. Olumlu/olumsuz test, `urun-h` reproducer'ı (ekli ileti → ek dosyası →
+   dosya yanıtı), GB satırı (katı çözme sınırı), `surumler.md`.
+
+**Dilim 2 (ZM-F023).** UTF-8 bayt sayısı, metin ↔ base64/onaltılık, kod
+noktası; saf `Ozellik` dalları, golden, reproducer'lar.
+
+**Sonraki küçük iş (ayrı):** `message/rfc822` dosya yanıtı türü (RFC-0041
+A kaydı).
+
+Bağımlılığı yoktur; RFC-0044 B2/B3 bunların üstüne kurulur.
 
 ## İlgili kayıt
 
-- K-383 (bu taslak), K-355 (`urun-h`), K-354/RFC-0039 katman D,
+- K-383 (bu taslak; ZM-F034 24 Kasım 2026 eki), K-355 (`urun-h`), K-384
+  (A2c blok dosyası), K-385 (dosya yanıtı tür eki deseni), K-354/RFC-0039 katman D,
   K-333/RFC-0036 (onaltılık biçim), K-339 (gizli değer kaynağı).

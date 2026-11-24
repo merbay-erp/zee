@@ -5855,3 +5855,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
   her aşama ayrı `dogfood-change` ve depo içi reproducer ister. K-383 açık
   kalır.
+- Ek (aynı gün, ZM-F034): A2c `nokta bloğunu dosyaya al` / `n baytı dosyaya
+  al` çıktıları ürün tarafında ayrıştırılamıyor. Doğrulama: `dosyasını
+  okumayı dene` var (16 MiB, katı UTF-8, CRLF korunur) ama 8bit içerikte
+  başarısız, aralık yok, içerik IO izine yazılıyor; spec/08 yazımı satır +
+  `\n`, bayt-kesin yazma yok. Karar (taslak): RFC-0043 iki dilim — Dilim 1
+  (önerilen ilk uygulama) aralıklı metin/base64 okuma, base64/QP çözerek
+  no-clobber bayt yazma ve akışlı ekleme (tutamak `{yol, sha256, bayt}`,
+  izde içerik yok), bellekte SHA-256; Dilim 2 bayt sayısı, metin ↔
+  base64/onaltılık, kod noktası. `message/rfc822` dosya yanıtı türü ayrı
+  küçük iş. RFC-0039 ilke 1 ve katman E'ye "RFC-0044 ile güncellenecek"
+  çapraz notu.
