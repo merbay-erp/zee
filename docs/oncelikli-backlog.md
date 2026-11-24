@@ -2686,6 +2686,37 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-385 — İstemci yapılandırma dosya türleri (ADR-163 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F033. Webmail Thunderbird autoconfig XML'ini ve Apple yapılandırma
+profilini sunamıyordu: K-378 dosya sınıfında `application/xml` ve
+`application/x-apple-aspen-config` yoktu (XML rotası C013 → 404, profil
+`application/octet-stream` iniyor, iOS Safari kurulum akışını başlatmıyor).
+Freeze sınıfı `dogfood-change`; yeni kalıp, tanı, alan ya da başlık yok.
+
+Karar (ADR-163 eki, birincil kaynak ölçümüyle): iki satır yalnız web dosya
+sınıfına girdi; `text/xml` değil `application/xml` (RFC 7303 önerisi;
+Thunderbird iki yazımı eşit kabul eder, `text/*` satırlarının `charset`
+eki XML bildirimini ezerdi); `charset` eklenmez; `attachment` korunur,
+`inline` açılmadı (Thunderbird XHR'ı `Content-Disposition` okumaz, Apple tür
+ve uzantıya bakar). Sandbox CSP, `nosniff`, CORP, `no-store` aynı. GB-160.
+
+Kanıt: `icerik_turu.rs::web_turu_yalniz_exact_kucuk_harf_ve_parametresiz_eslesir`,
+`dosya_yaniti_testi.rs::dosya_yaniti_autoconfig_xml_ve_apple_profili_kayitli_turle_gider`
+(gerçek `dil` web süreci; XXE taşıyan XML ve UTF-8 olmayan profil bayt bayt
+akar, başlıklar exact), olumsuz vakalar `text/xml`, `application/xslt+xml`,
+parametreli profil türü; K-167 `bicim icerik-turu.xml|mobileconfig`;
+dogfood `urun-h-istemci-yapilandirma` (`dogfood/urun-h/istemci-yapilandirma/`).
+
+Açık: (1) Outlook POX Autodiscover POST ister; `_csrf` ve `--web-proxy`
+`Origin` kuralı 403 verir — dar CSRF muafiyeti RFC-0040 #5(c) ile tek model,
+ayrı iş. (2) HTML standardı yanıt CSP'sindeki `sandbox`'ı gezinme
+bayraklarına katıp `allow-downloads` olmadan `attachment` indirmesini
+engelleyebilir; Chromium/WebKit bugün uygulamıyor. Bütün dosya yanıtlarını
+etkileyen `sandbox allow-downloads` önerisi ayrı iştir. (3) iOS cihazda
+profil kurulumunun insan ölçümü (simülatör erişimi bu oturumda verilmedi).
+
 ## K-378 — İkili dosya yanıtı, multipart yükleme ve SMTP ek türleri (RFC-0041)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h`
