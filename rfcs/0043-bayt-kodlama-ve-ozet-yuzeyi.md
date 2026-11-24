@@ -162,8 +162,33 @@ sınırı MB ölçeğinde metin birleştirmeyi C024 ile kesiyor — 1 MB'lık g�
 satır satır `Metin` olarak kurmak ~67 MB çalışma değeri üretiyor. `DATA`/
 `APPEND` gövdesini bellekte biriktirmek bu yüzden yapısal olarak mümkün
 değildir; büyük veri için D (dosya tutamağı + aralıklı okuma) zorunludur ve
-§5 aralık tavanı (≤ 1 MiB/çağrı) bu bütçeyle uyumludur. Ürün 25 MB `DATA`
-sınırını bu açıdan canlı ölçüyor; sonuç uygulama ADR'sine girer.
+§5 aralık tavanı (≤ 1 MiB/çağrı) tek çağrı için bu bütçeyle uyumludur.
+
+**Ürün ölçümü (24 Kasım 2026, bd8d44f, macOS arm64, güvenli profil):**
+gövdeyi bellekte biriktiren eski SMTP alıcısı 1 MB, 5 MB ve 12 MB `DATA`'da
+C024 ile kesildi (çalışma değeri ~67 MB; bağlantı yanıtsız kapanır, süreç
+ayakta); eşik 1 MB'ın altında. Kök neden **bütçe modelidir (ZM-F035):**
+spec/24 64 MiB zarfı "iade edilmeyen tahsis zarfı" olarak TANIMLAR
+(`compiler/src/yorumlayici/kaynak.rs::heap_butcesini_tuket` yalnız düşer)
+ve web'de her istek taze bütçe alır; ama A2 bağlantı görevi bütün oturum
+boyunca **tek** bütçe taşır. Ölçümde 2 000 000 × ~48 baytlık atılan geçici
+metin ve 4 800 küçük QP kodlama çağrısı da C024 verdi. Ürünün geçici çözümü
+(yalnız ilk 256 KB'ı işlemek, kalanı saymak) ile 12 MB 1,4 sn'de kabul,
+26 MB `552`, C024 yok. Ayrı bir sınır: tek SQL parametresi 64 KiB (64 KB
+üstü gövde `451`; spec/25, bu RFC'nin dışında).
+
+**Sonuç — Dilim 1'in önkoşulu:** 25 MB'lık dosyayı 1 MiB'lık aralıklarla
+okuyup ayrıştırmak da bugünkü modelde birikimle C024'e yürür. Bu yüzden
+Dilim 1 ZM-F035 kararıyla birlikte (ya da ondan sonra) uygulanır. Seçenekler:
+(a) bağlantı görevinde bütçenin protokol birimi sınırında (blok/komut,
+örn. her `bağlantıdan … almayı dene` dönüşünde) yenilenmesi — web
+isteğinin taze bütçesinin bağlantı karşılığı, en küçük değişiklik;
+(b) canlı değer ölçümü (atılan değerin zarfa iadesi) — spec/24
+"iade edilmeyen" sözünü değiştirir, ölçüm maliyeti ve muhafazakârlık
+kanıtı ister; (c) MIME yapısını host intrinsic'ine taşıyıp Zee'nin daha az
+metin görmesi — RFC-0039 MIME alt RFC'si, tek başına yetmez. Öneri (a);
+spec/24 normatif değişikliği olduğu için ayrı correctness K-işi (merkezde
+ZM-F035) ve aynı committe spec/24 + K-173 soak koşusu.
 
 Karar (taslak): **C + D**. Küçük bayt verisi kodlanmış `Metin`, büyük bayt
 verisi dosya tutamağıdır. `Baytlar` türü ancak C+D ile yazılmış gerçek ürün
@@ -481,6 +506,8 @@ V1 kapı listesine eklenmez; V1 sözü değildir.
    Bozuk QP `=G1`, ortada dolgu, 4'e bölünmeyen ekleme çağrısı, var olan
    hedef, tavan üstü çıktı → başarısız `Sonuç` ve hedefte yarım dosya yok.
    IO izinde içerik yok, yol/bayt/SHA-256 var.
+   25 MB'lık blok dosyası 1 MiB'lık aralıklarla okunup ekleri çıkarılır;
+   tek bağlantıda art arda üç ileti C024 vermez (ZM-F035 kararıyla).
 6. Boş gövdenin `simple` kanonik biçimi (`CRLF`) için DKIM `bh=` değeri
    (`frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY=`) ve bağımsız bir DKIM
    uygulamasının (ör. OpenDKIM) ürettiği vektör Zee'de kanonik gövde
@@ -528,10 +555,18 @@ Golden değişmez. Uygulama K-işinde bir golden (kodlama turu) ve
 9. (ZM-F034) Aralıklı okuma tavanı 1 MiB mı; mevcut `dosyasını okumayı
    dene`nin izine içerik yazması blok dosyaları için ayrıca daraltılsın mı
    (uyumluluk yüzeyi, K-167)?
+10. (ZM-F035) Bağlantı görevinde heap bütçesi hangi sınırda yenilenir
+   (blok/komut dönüşü mü, açık bir `tur` kalıbı mı) ve bu web'deki istek
+   başına bütçe ile nasıl aynı dile getirilir?
 
 ## Önerilen uygulama sırası ve K-işi bölümlemesi
 
 İki K-işi (numaralar açılışta verilir), RFC-0044'ten **önce**:
+
+**Önkoşul — ZM-F035 (ayrı correctness K-işi):** bağlantı görevinde heap
+bütçesinin protokol birimi sınırında yenilenmesi (bkz. tür modeli, ürün
+ölçümü). Dilim 1 bununla aynı dalgada ya da sonra kabul edilir; aksi hâlde
+aralıklı okuma büyük iletide birikimle C024'e yürür.
 
 **Dilim 1 — önerilen ilk uygulama (ZM-F034 + ZM-F024).** Ürünün bugünkü
 engelini (gelen ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`

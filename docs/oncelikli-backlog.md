@@ -2587,7 +2587,10 @@ yazımı yalnız satır + `\n`. RFC-0043'ün önerilen ilk dilimi bu yüzden:
 aralıklı metin/base64 okuma, base64/QP çözerek no-clobber bayt yazma (+akışlı
 ekleme), bellekte SHA-256; iz içeriksiz. Sonraki küçük iş: `message/rfc822`
 dosya yanıtı türü. RFC-0039 ilke 1 ve katman E'ye RFC-0044 çapraz notu
-düşüldü (kabul ayrı).
+düşüldü (kabul ayrı). Ürün ölçümü (ZM-F035): bağlantı görevi oturum
+boyunca tek, iade edilmeyen 64 MiB heap zarfı taşıdığı için 1 MB `DATA`
+bile C024; Dilim 1'in önkoşulu bağlantıda bütçenin protokol birimi
+sınırında yenilenmesidir (ayrı correctness K-işi, spec/24).
 Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
 her aşama ayrı `dogfood-change` K-işi ve depo içi reproducer ister. V1 kapısı
 değildir.
