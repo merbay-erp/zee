@@ -5825,3 +5825,33 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   proje kökünde kaldıkça sınır içi).
 - Takip önerisi (açık, ayrı `dogfood-change`): `proje.dil` `veri_kökü`
   alanı. Bkz. backlog K-382.
+
+## K-383 — RFC-0043 ve RFC-0044 taslakları: bayt/kodlama/özet; DNS, posta kimlik doğrulama ve teslim güvenliği (24 Kasım 2026)
+
+- `urun-h` (ZeeMail) RFC-0039 A2 ile SMTP/IMAP sunucusu olarak çalışıyor;
+  internete açık posta sunucusu için kalan eksikler ZM-F023 (bayt↔metin),
+  ZM-F024 (bellekte SHA-256), ZM-F025 (sürümlü PSL) ve motor güvenlik
+  kapsamıdır (SPF/DKIM/DMARC/ARC, A-R temizliği, DKIM imzası + döndürme,
+  DNSSEC'li çözücü, MTA-STS/DANE/TLS-RPT).
+- bd8d44f doğrulaması: `Metin` her zaman geçerli UTF-8; bayt sayısı, base64,
+  kod noktası ve bellekte özet Zee yüzeyinde yok (base64 üç iç yardımcıda);
+  DNS yalnız sistem çözücüsüyle A/AAAA; posta kimlik doğrulamasının hiçbir
+  parçası ve uzak MX teslimi yok; giden SMTP TLS'i `native-tls` (DANE için
+  uygun değil). `ring`, `sha2`, `base64`, `flate2` ağaçta; DNS crate'i yok.
+- Kararlar (taslak): RFC-0043 yeni `Baytlar` türü açmaz — küçük bayt verisi
+  kodlaması adıyla yazılı `Metin`, büyük veri dosya tutamağıdır; çözme
+  `Sonuç`, katı RFC 4648 ve katı UTF-8 (U+FFFD onarımı yok); işlemler saf ve
+  yetkinliksiz. RFC-0044 DNSSEC doğrulamasını süreç içine almaz, loopback
+  doğrulayıcı çözücünün `AD` bitine güvenir (Postfix/Exim DANE modeli);
+  SPF/DKIM/ARC değerlendirici ve kanonikleştirme host'ta, DMARC politikası
+  Zee'de (RFC-0039 ilke 1'in gerekçeli incelmesi); tek başlık ayrıştırıcı
+  ("Composition Kills" sınıfı); gizli anahtar Zee değeri olmaz, imza yalnız
+  bildirilmiş `From:` alanına; DANE > MTA-STS > fırsatçı TLS. Net yeni crate
+  yalnız DNS tel biçimi kitaplığı (seçim uygulama günü, ADR-038).
+- Reddedilenler: `Liste<TamSayı>` bayt temsili, Latin-1 "ham metin" hilesi,
+  sistem `res_query`, tam özyinelemeli çözücü crate'i, kendi DNS tel
+  ayrıştırıcısı, PSL'i derleyiciye gömmek, üretimde hazır posta kimlik
+  doğrulama crate'i (yalnız dev kâhini adayı), dış milter.
+- Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
+  her aşama ayrı `dogfood-change` ve depo içi reproducer ister. K-383 açık
+  kalır.
