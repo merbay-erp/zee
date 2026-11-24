@@ -100,6 +100,12 @@ pub(super) fn islem_argumanlari(kimlik: u64, islem: &BaglantiIslemi) -> Vec<Stri
         BaglantiIslemi::SatirYaz(metin) => alanlar.extend(["yaz".into(), metin.clone()]),
         BaglantiIslemi::Kapat => alanlar.push("kapat".into()),
         BaglantiIslemi::TlsBaslat => alanlar.push("tls".into()),
+        BaglantiIslemi::NoktaBlogu => alanlar.push("nokta".into()),
+        BaglantiIslemi::BaytBlogu(adet) => alanlar.extend(["blok".into(), adet.to_string()]),
+        BaglantiIslemi::BaytOku(adet) => alanlar.extend(["bayt".into(), adet.to_string()]),
+        BaglantiIslemi::ParcaYaz(metin) => alanlar.extend(["parca".into(), metin.clone()]),
+        BaglantiIslemi::DosyaAktar(yol) => alanlar.extend(["aktar".into(), yol.clone()]),
+        BaglantiIslemi::SatirOkuSureli(ms) => alanlar.extend(["oku_sure".into(), ms.to_string()]),
         BaglantiIslemi::Engelle(son) => alanlar.extend([
             "engelle".into(),
             son.map_or_else(|| "yok".into(), |an| an.to_string()),
@@ -111,9 +117,15 @@ pub(super) fn islem_argumanlari(kimlik: u64, islem: &BaglantiIslemi) -> Vec<Stri
 pub(super) fn islem_semasi(argumanlar: &[String]) -> Result<(), String> {
     let gecerli = match argumanlar {
         [kimlik, islem] => {
-            kanonik_tamsayi::<u64>(kimlik) && matches!(islem.as_str(), "oku" | "kapat" | "tls")
+            kanonik_tamsayi::<u64>(kimlik)
+                && matches!(islem.as_str(), "oku" | "kapat" | "tls" | "nokta")
         }
-        [kimlik, islem, _] if islem == "yaz" => kanonik_tamsayi::<u64>(kimlik),
+        [kimlik, islem, _] if matches!(islem.as_str(), "yaz" | "parca" | "aktar") => {
+            kanonik_tamsayi::<u64>(kimlik)
+        }
+        [kimlik, islem, sayi] if matches!(islem.as_str(), "blok" | "bayt" | "oku_sure") => {
+            kanonik_tamsayi::<u64>(kimlik) && kanonik_tamsayi::<i64>(sayi)
+        }
         [kimlik, islem, son] if islem == "engelle" => {
             kanonik_tamsayi::<u64>(kimlik) && (son == "yok" || kanonik_tamsayi::<i64>(son))
         }
@@ -132,6 +144,9 @@ pub(super) fn sonuc_yaz(sonuc: &BaglantiSonucu) -> Vec<String> {
         BaglantiSonucu::Tamam(bayt) => vec!["tamam".into(), bayt.to_string()],
         BaglantiSonucu::Bekle => vec!["bekle".into()],
         BaglantiSonucu::Hata(tur, mesaj) => vec!["hata".into(), tur.clone(), mesaj.clone()],
+        BaglantiSonucu::Blok { yol, sha256, bayt } => {
+            vec!["blok".into(), yol.clone(), sha256.clone(), bayt.to_string()]
+        }
     }
 }
 
@@ -144,6 +159,20 @@ pub(super) fn sonuc_coz(alanlar: &[String]) -> Result<BaglantiSonucu, String> {
         [etiket] if etiket == "bekle" => Ok(BaglantiSonucu::Bekle),
         [etiket, tur, mesaj] if etiket == "hata" => {
             Ok(BaglantiSonucu::Hata(tur.clone(), mesaj.clone()))
+        }
+        [etiket, yol, sha256, bayt]
+            if etiket == "blok"
+                && kanonik_tamsayi::<i64>(bayt)
+                && sha256.len() == 64
+                && sha256
+                    .bytes()
+                    .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) =>
+        {
+            Ok(BaglantiSonucu::Blok {
+                yol: yol.clone(),
+                sha256: sha256.clone(),
+                bayt: bayt.parse().unwrap_or(0),
+            })
         }
         _ => Err("bağlantı işlem sonucu geçersiz".into()),
     }

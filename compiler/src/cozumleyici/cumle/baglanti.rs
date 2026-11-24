@@ -33,7 +33,7 @@ pub(super) fn denetle(
             baglanti_ortami.insert("bağlantı".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
             blok_denetle(govde, &mut baglanti_ortami, baglam)
         }
-        Cumle::BaglantiyaYaz { deger, satir } => {
+        Cumle::BaglantiyaYaz { deger, satir, .. } => {
             let tur = ifade_denetle(deger, ortam, baglam, *satir)?;
             metin_olmali(tur, "Bağlantıya yazılan satır", *satir)
         }

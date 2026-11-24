@@ -8,6 +8,10 @@
 //! bağlantısını kapatır (yalıtılmış bağlantı kapsamı); kardeşler iptal
 //! edilmez. Tek iş parçacığı olduğu için data race yoktur; ağ olaylarının
 //! sırası dış girdidir ve IO izine yazılır.
+//!
+//! K-384 (A2c): blok okuma (SMTP nokta bloğu ve IMAP literal'i geçici
+//! dosyaya), bayt-kesin okuma, satır sonusuz parça, dosyadan bağlantıya
+//! aktarım ve kısa süreli satır okuması aynı işlem kanalından geçer.
 
 use super::*;
 
@@ -22,6 +26,12 @@ pub enum BaglantiSonucu {
     Bekle,
     /// Sınıflandırılmış ret: (`tür`, ileti).
     Hata(String, String),
+    /// K-384: dosyaya alınan blok — göreli geçici yol, SHA-256, bayt.
+    Blok {
+        yol: String,
+        sha256: String,
+        bayt: i64,
+    },
 }
 
 impl BaglantiSonucu {
@@ -38,6 +48,19 @@ pub enum BaglantiIslemi {
     Kapat,
     /// STARTTLS: ara bellek boşsa TLS el sıkışması; başarıda sürüm/takım.
     TlsBaslat,
+    /// K-384: SMTP `DATA` nokta bloğu → geçici dosya.
+    NoktaBlogu,
+    /// K-384: tam `n` baytlık literal → geçici dosya.
+    BaytBlogu(i64),
+    /// K-384: tam `n` bayt → Metin (en çok satır sınırı).
+    BaytOku(i64),
+    /// K-384: satır sonu eklemeden yazma.
+    ParcaYaz(String),
+    /// K-384: dosyayı bağlantıya akıtma; yol Zee yoludur, adaptör çözer.
+    DosyaAktar(String),
+    /// K-384: süresi (ms) `bağlantı_boşta_süresi`nden kısa olabilen satır
+    /// okuması; zaman aşımı bağlantıyı kapatmaz.
+    SatirOkuSureli(i64),
     /// Scheduler dışından (iç içe eşzamanlı görev) engelleyerek hazırlık
     /// bekler; argüman Zee son tarihinin mutlak anıdır.
     Engelle(Option<i64>),
@@ -165,22 +188,130 @@ fn hata_sonucu(tur: String, mesaj: String) -> Deger {
     }
 }
 
+fn basari(icerik: Deger) -> Deger {
+    Deger::Sonuc {
+        basarili: true,
+        icerik: Box::new(icerik),
+    }
+}
+
+fn gecersiz_sonuc(mesaj: &str) -> Deger {
+    hata_sonucu("geçersiz".into(), mesaj.into())
+}
+
+/// Metin veren okuma (satır, süreli satır, bayt): başarıda komut başına
+/// bütçe yenilenir.
+async fn metin_oku(
+    io: &mut dyn GirdiCikti,
+    islem: BaglantiIslemi,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    Ok(match islemi_yurut(io, islem, satir).await? {
+        BaglantiSonucu::Satir(metin) => {
+            // Komut başına bütçe: her tam satır yeni bir adım/heap bütçesi açar.
+            calistirma_butcesini_yenile();
+            basari(Deger::Metin(metin))
+        }
+        BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+        _ => return Err(ic_hata(satir)),
+    })
+}
+
 /// `bağlantıdan satır okumayı dene` → `Sonuç<Metin>`.
 pub(super) async fn satir_oku(io: &mut dyn GirdiCikti, satir: usize) -> Result<Deger, Tani> {
-    Ok(
-        match islemi_yurut(io, BaglantiIslemi::SatirOku, satir).await? {
-            BaglantiSonucu::Satir(metin) => {
-                // Komut başına bütçe: her tam satır yeni bir adım/heap bütçesi açar.
-                calistirma_butcesini_yenile();
-                Deger::Sonuc {
-                    basarili: true,
-                    icerik: Box::new(Deger::Metin(metin)),
-                }
-            }
-            BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
-            BaglantiSonucu::Tamam(_) | BaglantiSonucu::Bekle => return Err(ic_hata(satir)),
-        },
-    )
+    metin_oku(io, BaglantiIslemi::SatirOku, satir).await
+}
+
+/// K-384 (ZM-F032): `bağlantıdan satır okumayı <n> saniye içinde dene`.
+/// Süre en az 1 sn'dir; `bağlantı_boşta_süresi`ni aşan süre ona indirilir.
+/// Zaman aşımı `tür=zaman_aşımı` Sonucu'dur ve bağlantı açık kalır.
+async fn satir_oku_sureli(
+    io: &mut dyn GirdiCikti,
+    saniye: i64,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    if saniye < 1 {
+        return Ok(gecersiz_sonuc("okuma süresi en az 1 saniye olmalı"));
+    }
+    let ms = saniye.saturating_mul(1000);
+    metin_oku(io, BaglantiIslemi::SatirOkuSureli(ms), satir).await
+}
+
+/// K-384 (ZM-F031): `bağlantıdan <n> bayt okumayı dene` → `Sonuç<Metin>`.
+async fn bayt_oku(io: &mut dyn GirdiCikti, adet: i64, satir: usize) -> Result<Deger, Tani> {
+    if adet < 0 {
+        return Ok(gecersiz_sonuc("bayt sayısı negatif olamaz"));
+    }
+    metin_oku(io, BaglantiIslemi::BaytOku(adet), satir).await
+}
+
+/// K-384: nokta bloğu ya da bayt bloğu → `Sonuç<Sözlük>` (`yol`, `sha256`,
+/// `bayt`; hepsi Metin, web yüklemesinin `yukleme_*` alanlarıyla aynı biçim).
+async fn blok_al(
+    io: &mut dyn GirdiCikti,
+    islem: BaglantiIslemi,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    if let BaglantiIslemi::BaytBlogu(adet) = islem {
+        if adet < 0 {
+            return Ok(gecersiz_sonuc("bayt sayısı negatif olamaz"));
+        }
+    }
+    Ok(match islemi_yurut(io, islem, satir).await? {
+        BaglantiSonucu::Blok { yol, sha256, bayt } => {
+            calistirma_butcesini_yenile();
+            basari(Deger::Sozluk(vec![
+                ("yol".into(), Deger::Metin(yol)),
+                ("sha256".into(), Deger::Metin(sha256)),
+                ("bayt".into(), Deger::Metin(bayt.to_string())),
+            ]))
+        }
+        BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+        _ => return Err(ic_hata(satir)),
+    })
+}
+
+/// K-384: `bağlantıya X parçasını yazmayı dene` ve `bağlantıya Y dosyasını
+/// aktarmayı dene` → `Sonuç<TamSayı>` (kuyruğa alınan bayt).
+async fn bayt_yaz(
+    io: &mut dyn GirdiCikti,
+    islem: BaglantiIslemi,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    Ok(match islemi_yurut(io, islem, satir).await? {
+        BaglantiSonucu::Tamam(bayt) => basari(Deger::TamSayi(bayt)),
+        BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+        _ => return Err(ic_hata(satir)),
+    })
+}
+
+/// K-384 (A2c) intrinsic'lerinin dağıtımı (tür denetimi derleme zamanında).
+pub(super) async fn a2c_yurut(
+    kimlik: &str,
+    degerler: &[Deger],
+    io: &mut dyn GirdiCikti,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    use crate::intrinsic as i;
+    match (kimlik, degerler) {
+        (i::BAGLANTI_NOKTA_BLOGU, []) => blok_al(io, BaglantiIslemi::NoktaBlogu, satir).await,
+        (i::BAGLANTI_BAYT_BLOGU, [Deger::TamSayi(adet)]) => {
+            blok_al(io, BaglantiIslemi::BaytBlogu(*adet), satir).await
+        }
+        (i::BAGLANTI_BAYT_OKU, [Deger::TamSayi(adet)]) => bayt_oku(io, *adet, satir).await,
+        (i::BAGLANTI_SATIR_OKU_SURELI, [Deger::TamSayi(saniye)]) => {
+            satir_oku_sureli(io, *saniye, satir).await
+        }
+        (i::BAGLANTI_PARCA_YAZ, [metin]) => {
+            let metin = metne_sinirli(metin, satir)?;
+            bayt_yaz(io, BaglantiIslemi::ParcaYaz(metin), satir).await
+        }
+        (i::BAGLANTI_DOSYA_AKTAR, [yol]) => {
+            let yol = metne_sinirli(yol, satir)?;
+            bayt_yaz(io, BaglantiIslemi::DosyaAktar(yol), satir).await
+        }
+        _ => Err(ic_hata(satir)),
+    }
 }
 
 /// `bağlantıya X satırını yazmayı dene` → `Sonuç<TamSayı>`.
@@ -196,7 +327,7 @@ pub(super) async fn satir_yaz(
                 icerik: Box::new(Deger::TamSayi(bayt)),
             },
             BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
-            BaglantiSonucu::Satir(_) | BaglantiSonucu::Bekle => return Err(ic_hata(satir)),
+            _ => return Err(ic_hata(satir)),
         },
     )
 }
@@ -212,18 +343,19 @@ pub(super) async fn tls_baslat(io: &mut dyn GirdiCikti, satir: usize) -> Result<
                 icerik: Box::new(Deger::Metin(bilgi)),
             },
             BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
-            BaglantiSonucu::Tamam(_) | BaglantiSonucu::Bekle => return Err(ic_hata(satir)),
+            _ => return Err(ic_hata(satir)),
         },
     )
 }
 
-/// `bağlantıya X satırını yaz` cümlesi: hata bağlantı görevini C030 ile bitirir.
-pub(super) async fn satir_yaz_cumlesi(
+/// `bağlantıya X satırını yaz` / `… parçasını yaz` cümlesi: hata bağlantı
+/// görevini C030 ile bitirir.
+pub(super) async fn yaz_cumlesi(
     io: &mut dyn GirdiCikti,
-    metin: String,
+    islem: BaglantiIslemi,
     satir: usize,
 ) -> Result<(), Tani> {
-    match islemi_yurut(io, BaglantiIslemi::SatirYaz(metin), satir).await? {
+    match islemi_yurut(io, islem, satir).await? {
         BaglantiSonucu::Tamam(_) => Ok(()),
         BaglantiSonucu::Hata(tur, mesaj) => Err(baglanti_tanisi(
             format!("Bağlantıya yazılamadı ({tur}): {mesaj}."),
@@ -259,10 +391,19 @@ pub(super) async fn cumle_yurut(
             son_tarihi_denetle(cikti, *satir)?;
             kaydet(&ad, ortam, cikti, *satir)
         }
-        Cumle::BaglantiyaYaz { deger, satir } => {
+        Cumle::BaglantiyaYaz {
+            deger,
+            satir_sonu,
+            satir,
+        } => {
             let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
             let metin = metne_sinirli(&deger, *satir)?;
-            satir_yaz_cumlesi(cikti, metin, *satir).await
+            let islem = if *satir_sonu {
+                BaglantiIslemi::SatirYaz(metin)
+            } else {
+                BaglantiIslemi::ParcaYaz(metin)
+            };
+            yaz_cumlesi(cikti, islem, *satir).await
         }
         Cumle::BaglantiyiKapat { satir } => kapat(cikti, *satir).await,
         // Yalnız kayıt: rota gövdesi sunucu döngüsünde istek gelince koşulur.

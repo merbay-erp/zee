@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 125] = [
+const KALIP_KELIMELERI: [&str; 133] = [
     "yaz",
     "olsun",
     "ise",
@@ -159,12 +159,20 @@ const KALIP_KELIMELERI: [&str; 125] = [
     "bağlantıda",
     "TLS",
     "başlatmayı",
+    "nokta",
+    "bloğunu",
+    "dosyaya",
+    "almayı",
+    "baytı",
+    "bayt",
+    "parçasını",
+    "aktarmayı",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 70] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -230,6 +238,10 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 70] = [
     ("dinleyicisinde", "Adlı dinleyiciden (proje.dil `dinleyiciler`, systemd soket devri) kabul edilen her bağlantı için bloğu taze ortamda koşar; blok `bağlantı` Sözlüğünü (dinleyici, uzak_adres, uzak_kapı, yerel_kapı) görür. `ağ-dinleyici` yetkinliği ister.\n\n`\"smtp_v4\" dinleyicisinde bağlantı geldiğinde`"),
     ("bağlantıdan", "O anki bağlantıdan CRLF ile biten tek satırı okur → Metin Sonucu; çıplak CR/LF, uzun satır, kodlama, zaman aşımı, kapanma ve kapanış C030 Hata verisinde `tür` ile ayrılır.\n\n`komut bağlantıdan satır okumayı dene olsun`"),
     ("bağlantıda", "STARTTLS: ara bellekte bekleyen düz metin yoksa o anki bağlantıyı TLS'e yükseltir → Metin Sonucu (sürüm ve şifre takımı); aynı pakette gelen komut varsa bağlantı kapanır (`tür=tls`). Önce protokolün hazır satırını yaz.\n\n`sonuç bağlantıda TLS başlatmayı dene olsun`"),
+    ("bloğunu", "SMTP DATA gövdesini (nokta doldurma çözülür, yalnız birebir CRLF.CRLF biter) belleğe almadan `0600` geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); çıplak CR/LF `satır_sonu`, sınır `boyut_aşımı` (blok sonlandırıcıya kadar tüketilir, dosya silinir).\n\n`ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun`"),
+    ("baytı", "IMAP literal'inin tam n baytını geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); n `bağlantı_blok_sınırı`nı aşarsa hiç bayt okunmadan `boyut_aşımı`.\n\n`ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun`"),
+    ("parçasını", "O anki bağlantıya satır sonu EKLEMEDEN yazar (ör. IMAP `+ `); CR/LF/NUL reddedilir, satır sonunu yalnız `satırını yaz` üretir. Cümle biçiminde hata görevi bitirir, `… yazmayı dene` Sonuç verir.\n\n`bağlantıya \"+ \" parçasını yaz`"),
+    ("aktarmayı", "Dosyayı belleğe almadan bağlantıya akıtır → TamSayı Sonucu (kuyruğa alınan bayt); `dosya-okuma` da ister, `bağlantı_blok_sınırı`nı aşan dosya `boyut_aşımı`.\n\n`sonuç bağlantıya yol dosyasını aktarmayı dene olsun`"),
     ("bağlantıya", "O anki bağlantıya bir satır yazar; CRLF'yi çalışma zamanı ekler, CR/LF/NUL içeren metin reddedilir. Cümle biçiminde hata bağlantı görevini C030 ile bitirir, `... yazmayı dene` Sonuç verir.\n\n`bağlantıya \"220 hazır\" satırını yaz`"),
     ("türünde", "Dosya yanıtının kayıtlı içerik türü (application/pdf, image/png, text/csv, application/zip, OOXML, application/octet-stream …); kayıtta olmayan tür C013 Sonucu.\n\n`sonuç yol dosyasını \"application/pdf\" türünde \"fatura.pdf\" adıyla ek olarak göndermeyi dene olsun`"),
     ("adıyla", "Dosya yanıtında tarayıcıya önerilen ad; çalışma zamanı `Content-Disposition: attachment` + RFC 6266 `filename*` kurar, CR/LF, tırnak, yol ve yön karakterli ad C013.\n\n`sonuç yol dosyasını \"text/csv\" türünde \"kişiler.csv\" adıyla ek olarak göndermeyi dene olsun`"),

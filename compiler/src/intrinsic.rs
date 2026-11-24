@@ -46,6 +46,22 @@ pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
 /// K-381 A2b: `bağlantıda TLS başlatmayı dene` — STARTTLS yükseltmesi →
 /// Metin Sonucu (anlaşılan sürüm ve şifre takımı).
 pub const BAGLANTI_TLS_BASLAT: &str = "ag.baglanti_tls_baslat";
+/// K-384 (RFC-0039 A2c): `bağlantıdan nokta bloğunu dosyaya almayı dene` —
+/// SMTP `DATA` gövdesini geçici dosyaya akıtır → Metin sözlüğü Sonucu
+/// (`yol`, `sha256`, `bayt`).
+pub const BAGLANTI_NOKTA_BLOGU: &str = "ag.baglanti_nokta_blogu";
+/// K-384: `bağlantıdan <n> baytı dosyaya almayı dene` — IMAP literal'i.
+pub const BAGLANTI_BAYT_BLOGU: &str = "ag.baglanti_bayt_blogu";
+/// K-384 (ZM-F031): `bağlantıdan <n> bayt okumayı dene` → Metin Sonucu.
+pub const BAGLANTI_BAYT_OKU: &str = "ag.baglanti_bayt_oku";
+/// K-384 (ZM-F031): `bağlantıya <metin> parçasını yazmayı dene` — satır
+/// sonu eklemeden → TamSayı Sonucu.
+pub const BAGLANTI_PARCA_YAZ: &str = "ag.baglanti_parca_yaz";
+/// K-384: `bağlantıya <yol> dosyasını aktarmayı dene` → TamSayı Sonucu.
+pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
+/// K-384 (ZM-F032): `bağlantıdan satır okumayı <n> saniye içinde dene` —
+/// kısa okuma süresi; zaman aşımı oturumu kapatmaz → Metin Sonucu.
+pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -105,6 +121,7 @@ pub struct IntrinsicTanimi {
 const METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin];
 const IKI_METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::Metin];
 const YOK: &[IntrinsicTuru] = &[];
+const SAYI: &[IntrinsicTuru] = &[IntrinsicTuru::TamSayi];
 const METIN_VE_SAYI: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::TamSayi];
 const METIN_VE_METIN_LISTESI: &[IntrinsicTuru] =
     &[IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi];
@@ -149,6 +166,54 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::MetinSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Bağlantıda TLS başlatma argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_NOKTA_BLOGU,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıdan nokta bloğu alma argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_BAYT_BLOGU,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: SAYI,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Dosyaya alınacak bayt sayısı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_BAYT_OKU,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: SAYI,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Okunacak bayt sayısı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_PARCA_YAZ,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıya yazılacak parça Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_DOSYA_AKTAR,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlantıya aktarılacak dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_SATIR_OKU_SURELI,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: SAYI,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Okuma süresi saniye cinsinden TamSayı olmalı.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_MIME_GONDER,

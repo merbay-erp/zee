@@ -12,13 +12,14 @@ pub const BAGLANTI_OMRU_UST_SANIYE: i64 = 86_400;
 pub use crate::ag_satiri::BaglantiAyari;
 
 /// Bağlantı ayarı alan adları (dinleyici bildirimi şartı için).
-pub(super) const ALANLAR: [&str; 9] = [
+pub(super) const ALANLAR: [&str; 10] = [
     "bağlantı_sınırı",
     "uzak_adres_bağlantı_sınırı",
     "bağlantı_satır_sınırı",
     "bağlantı_boşta_süresi",
     "bağlantı_ömrü",
     "bağlantı_dolu_yanıtı",
+    "bağlantı_blok_sınırı",
     "tls_dinleyicileri",
     "tls_sertifika_değişkeni",
     "tls_anahtar_değişkeni",
@@ -70,6 +71,19 @@ fn dolu_yanitini_al(alanlar: &mut HashMap<String, (Ifade, usize)>) -> Result<Opt
             }
         },
     })
+}
+
+/// K-384 (A2c): dosyaya alınan blok ve dosyadan aktarım tavanı (bayt).
+fn blok_siniri_al(alanlar: &mut HashMap<String, (Ifade, usize)>) -> Result<i64, Tani> {
+    use crate::ag_satiri::{BLOK_SINIRI_ALT, BLOK_SINIRI_UST, BLOK_SINIRI_VARSAYILAN};
+    let (deger, _) = sayi_al(
+        alanlar,
+        "bağlantı_blok_sınırı",
+        BLOK_SINIRI_ALT as i64,
+        BLOK_SINIRI_UST as i64,
+        BLOK_SINIRI_VARSAYILAN as i64,
+    )?;
+    Ok(deger)
 }
 
 pub(super) fn alanlari_al(
@@ -138,6 +152,7 @@ pub(super) fn alanlari_al(
         varsayilan.omur_ms / 1000,
     )?;
     let dolu_yaniti = dolu_yanitini_al(alanlar)?;
+    let blok_siniri = blok_siniri_al(alanlar)?;
     let tls = super::baglanti_tls::alanlari_al(alanlar, dinleyici_adlari)?;
     Ok(BaglantiAyari {
         sinir: sinir as usize,
@@ -147,5 +162,6 @@ pub(super) fn alanlari_al(
         omur_ms: omur * 1000,
         dolu_yaniti,
         tls,
+        blok_siniri: blok_siniri as u64,
     })
 }

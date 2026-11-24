@@ -59,10 +59,16 @@ impl Proje {
             SIRA.fetch_add(1, Ordering::Relaxed)
         ));
         std::fs::create_dir_all(&kok).expect("proje kökü");
+        // K-384: ayarlar kendi yetkinlik listesini taşıyabilir (dosya aktarımı).
+        let yetkinlik = if ayarlar.contains("yetkinlikler ") {
+            ""
+        } else {
+            "yetkinlikler \"ağ-dinleyici\" listesi olsun\n"
+        };
         std::fs::write(
             kok.join("proje.dil"),
             format!(
-                "proje \"baglanti\" olsun\nsürüm \"0.1.0\" olsun\nmorfoloji \"zee-tr-1\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"ağ-dinleyici\" listesi olsun\nağ_hedefleri boş liste olsun\ndinleyiciler \"smtp_v4 {adres}\" listesi olsun\n{ayarlar}"
+                "proje \"baglanti\" olsun\nsürüm \"0.1.0\" olsun\nmorfoloji \"zee-tr-1\" olsun\ngiriş \"ana.dil\" olsun\n{yetkinlik}ağ_hedefleri boş liste olsun\ndinleyiciler \"smtp_v4 {adres}\" listesi olsun\n{ayarlar}"
             ),
         )
         .expect("proje.dil");
@@ -81,6 +87,19 @@ struct Sunucu {
     cocuk: Option<Child>,
     adres: SocketAddr,
     _proje: Proje,
+}
+
+impl Sunucu {
+    /// K-384: blok geçici dizinindeki `.parca` dosyaları.
+    fn blok_dosyalari(&self) -> Vec<PathBuf> {
+        std::fs::read_dir(self._proje.0.join(".zee/baglanti-bloklari"))
+            .map(|girdiler| girdiler.filter_map(|g| g.ok().map(|g| g.path())).collect())
+            .unwrap_or_default()
+    }
+
+    fn kok(&self) -> &std::path::Path {
+        &self._proje.0
+    }
 }
 
 impl Sunucu {
@@ -210,6 +229,13 @@ impl Istemci {
     fn komut(&mut self, satir: &str) -> String {
         self.gonder(format!("{satir}\r\n").as_bytes());
         self.satir()
+    }
+
+    /// K-384: tam `adet` bayt (satır sonu beklemeden).
+    fn bayt(&mut self, adet: usize) -> Vec<u8> {
+        let mut tampon = vec![0u8; adet];
+        self.okuyucu.read_exact(&mut tampon).expect("bayt");
+        tampon
     }
 
     fn kapandi_mi(&mut self) -> bool {
@@ -446,4 +472,271 @@ fn hic_okumayan_istemci_yazma_suresinde_kesilir() {
         stderr.contains("C030") && stderr.contains("yazılamadı"),
         "{stderr}"
     );
+}
+
+/// K-384 (RFC-0039 A2c): SMTP DATA kesiti — blok dosyaya akar, yanıt bayt,
+/// SHA-256 ve göreli yol taşır; hata türü 554 ile döner.
+pub const DATA_SUNUCUSU: &str = r#"# K-384 test: SMTP DATA gövdesi dosyaya akar.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    bağlantıya "220 zee.test ESMTP" satırını yaz
+    açık doğru olsun
+    açık olduğu sürece
+        komut bağlantıdan satır okumayı dene olsun
+        komut başarılıysa
+            metin komutun değeri olsun
+            metin "DATA" e eşitse
+                bağlantıya "354 bitir" satırını yaz
+                ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun
+                ileti başarılıysa
+                    bilgi iletinin değeri olsun
+                    bağlantıya "250 " ile bilginin "bayt" değeri ile " " ile bilginin "sha256" değeri ile " " ile bilginin "yol" değeri satırını yaz
+                değilse
+                    hata iletinin hatası olsun
+                    veri hatanın verisi olsun
+                    son bağlantıya "554 " ile verinin "tür" değeri satırını yazmayı dene olsun
+            değilse metin "QUIT" e eşitse
+                bağlantıya "221 hoşça kal" satırını yaz
+                açık yanlış olsun
+            değilse
+                bağlantıya "250 " ile metin satırını yaz
+        değilse
+            hata komutun hatası olsun
+            veri hatanın verisi olsun
+            son bağlantıya "421 " ile verinin "tür" değeri satırını yazmayı dene olsun
+            açık yanlış olsun
+    bağlantıyı kapat
+"#;
+
+fn sha256(icerik: &[u8]) -> String {
+    use sha2::{Digest, Sha256};
+    Sha256::digest(icerik)
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
+}
+
+fn bekle_ki(mut kosul: impl FnMut() -> bool) -> bool {
+    let son = Instant::now() + Duration::from_secs(30);
+    while Instant::now() < son {
+        if kosul() {
+            return true;
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    false
+}
+
+#[test]
+fn data_blogu_dosyaya_akar_smuggling_ve_sinir_oturumu_bozmaz() {
+    let ayarlar = "bağlantı_boşta_süresi 20 olsun\nbağlantı_blok_sınırı 1048576 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, DATA_SUNUCUSU, None);
+    let mut a = sunucu.baglan();
+    assert_eq!(a.satir(), "220 zee.test ESMTP");
+
+    // 900 KiB'lık gövde, 7 KiB'lık parçalar hâlinde; nokta doldurma çözülür.
+    let mut govde = Vec::new();
+    let mut beklenen = Vec::new();
+    let satir = format!("{}\r\n", "z".repeat(900));
+    while govde.len() < 900 * 1024 {
+        govde.extend_from_slice(b"..b\r\n");
+        beklenen.extend_from_slice(b".b\r\n");
+        govde.extend_from_slice(satir.as_bytes());
+        beklenen.extend_from_slice(satir.as_bytes());
+    }
+    govde.extend_from_slice(b".\r\n");
+    assert_eq!(a.komut("DATA"), "354 bitir");
+    for parca in govde.chunks(7 * 1024) {
+        a.gonder(parca);
+    }
+    let yanit = a.satir();
+    let alanlar: Vec<&str> = yanit.split(' ').collect();
+    assert_eq!(
+        alanlar[..3],
+        ["250", &beklenen.len().to_string(), &sha256(&beklenen)]
+    );
+    let yol = sunucu.kok().join(alanlar[3]);
+    assert!(alanlar[3].starts_with(".zee/baglanti-bloklari/"), "{yanit}");
+    assert_eq!(std::fs::read(&yol).expect("blok dosyası"), beklenen);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let izin = std::fs::metadata(&yol).unwrap().permissions().mode() & 0o777;
+        assert_eq!(izin, 0o600);
+    }
+    // Pipelining: sonlandırıcıdan sonra aynı pakette gelen komut işlenir.
+    a.gonder(b"NOOP\r\n");
+    assert_eq!(a.satir(), "250 NOOP");
+
+    // SMTP smuggling: <LF>.<LF> sonlandırıcı değildir; kaçak komut blokla atılır.
+    assert_eq!(a.komut("DATA"), "354 bitir");
+    a.gonder(b"Subject: a\r\n\n.\nMAIL FROM:<kotu@ornek.test>\r\n.\r\n");
+    assert_eq!(a.satir(), "554 satır_sonu");
+    // Önceki taşınmamış blok yeni blokta silindi.
+    assert!(!yol.exists());
+
+    // Sınırı aşan gövde sonuna kadar tüketilir, oturum eşzamanlı sürer.
+    assert_eq!(a.komut("DATA"), "354 bitir");
+    let buyuk = vec![b'q'; 1_100_000];
+    a.gonder(&buyuk);
+    a.gonder(b"\r\n.\r\nNOOP\r\n");
+    assert_eq!(a.satir(), "554 boyut_aşımı");
+    assert_eq!(a.satir(), "250 NOOP");
+    assert!(
+        sunucu.blok_dosyalari().is_empty(),
+        "{:?}",
+        sunucu.blok_dosyalari()
+    );
+
+    // Tamamlanan ama taşınmayan blok bağlantı bitince silinir.
+    assert_eq!(a.komut("DATA"), "354 bitir");
+    a.gonder(b"kisa\r\n.\r\n");
+    assert!(a.satir().starts_with("250 6 "));
+    assert_eq!(sunucu.blok_dosyalari().len(), 1);
+    assert_eq!(a.komut("QUIT"), "221 hoşça kal");
+    assert!(a.kapandi_mi());
+    assert!(bekle_ki(|| sunucu.blok_dosyalari().is_empty()));
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}
+
+#[test]
+fn yavas_ve_kesilen_data_yarim_dosyayi_siler_okuma_yonu_kapanir() {
+    let ayarlar = "bağlantı_boşta_süresi 2 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, DATA_SUNUCUSU, None);
+    let mut a = sunucu.baglan();
+    assert_eq!(a.satir(), "220 zee.test ESMTP");
+    assert_eq!(a.komut("DATA"), "354 bitir");
+    // Damla damla bayt (hız tabanının çok altında) bütçeyi uzatmaz.
+    let baslangic = Instant::now();
+    let mut yazici = a.akis.try_clone().unwrap();
+    let damla = std::thread::spawn(move || {
+        for _ in 0..80 {
+            if yazici.write_all(b"d").is_err() {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(100));
+        }
+    });
+    assert_eq!(a.satir(), "554 zaman_aşımı");
+    let gecen = baslangic.elapsed();
+    assert!(gecen < Duration::from_secs(7), "{gecen:?}");
+    // Akış eşzamanı bozuk: sonraki okuma `kapandı`, Zee 421 yazıp kapatır.
+    assert_eq!(a.satir(), "421 kapandı");
+    assert!(a.kapandi_mi());
+    let _ = damla.join();
+    assert!(bekle_ki(|| sunucu.blok_dosyalari().is_empty()));
+
+    // Blok ortasında kopan istemci: yarım dosya silinir, sunucu sürer.
+    let mut b = sunucu.baglan();
+    assert_eq!(b.satir(), "220 zee.test ESMTP");
+    assert_eq!(b.komut("DATA"), "354 bitir");
+    b.gonder(b"Subject: yarim\r\n\r\nbaslangic");
+    assert!(bekle_ki(|| sunucu.blok_dosyalari().len() == 1));
+    let _ = b.akis.shutdown(std::net::Shutdown::Both);
+    assert!(bekle_ki(|| sunucu.blok_dosyalari().is_empty()));
+    let mut c = sunucu.baglan();
+    assert_eq!(c.satir(), "220 zee.test ESMTP");
+    assert_eq!(c.komut("QUIT"), "221 hoşça kal");
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}
+
+/// K-384 (ZM-F031): IMAP benzeri literal: `+ ` satır sonusuz, literal tam
+/// bayt dosyaya, küçük literal bellekte, alınan dosya bağlantıya geri akar.
+const LITERAL_SUNUCUSU: &str = r#"# K-384 test: IMAP literal'i ve dosya aktarımı.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    komut başarılıysa
+        bağlantıya "+ " parçasını yaz
+        bağlantıya "hazır" satırını yaz
+        ek bağlantıdan 70000 baytı dosyaya almayı dene olsun
+        ek başarılıysa
+            bilgi ekin değeri olsun
+            bağlantıya "A1 OK " ile bilginin "sha256" değeri satırını yaz
+            bağlantıya "+ " parçasını yaz
+            bağlantıya "parola" satırını yaz
+            parola bağlantıdan 6 bayt okumayı dene olsun
+            parola başarılıysa
+                bağlantıya "A2 OK " ile parolanın değeri satırını yaz
+            bağlantıya "* 1 FETCH (BODY[] {70000}" satırını yaz
+            geri bağlantıya bilginin "yol" değeri dosyasını aktarmayı dene olsun
+            bağlantıya ")" satırını yaz
+            geri başarılıysa
+                bağlantıya "A3 OK " ile gerinin değeri satırını yaz
+    bağlantıyı kapat
+"#;
+
+#[test]
+fn literal_parca_bayt_okuma_ve_dosya_aktarimi_bayt_kesindir() {
+    let ayarlar = "yetkinlikler \"ağ-dinleyici\", \"dosya-okuma\" listesi olsun\nbağlantı_boşta_süresi 20 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, LITERAL_SUNUCUSU, None);
+    let mut a = sunucu.baglan();
+    a.gonder(b"A1 APPEND kutu {70000}\r\n");
+    // Satır sonu eklenmeden yazılan devam yanıtı: tam iki bayt.
+    assert_eq!(a.bayt(2), b"+ ");
+    assert_eq!(a.satir(), "hazır");
+    // İkili literal (CRLF, NUL, 8 bit dahil) ve ardından gelen fazla bayt.
+    let literal: Vec<u8> = (0..70000u32).map(|i| (i % 251) as u8).collect();
+    a.gonder(&literal[..30000]);
+    std::thread::sleep(Duration::from_millis(50));
+    a.gonder(&literal[30000..]);
+    assert_eq!(a.satir(), format!("A1 OK {}", sha256(&literal)));
+    assert_eq!(a.bayt(2), b"+ ");
+    assert_eq!(a.satir(), "parola");
+    a.gonder(b"gizli1");
+    assert_eq!(a.satir(), "A2 OK gizli1");
+    assert_eq!(a.satir(), "* 1 FETCH (BODY[] {70000}");
+    assert_eq!(a.bayt(70000), literal);
+    assert_eq!(a.satir(), ")");
+    assert_eq!(a.satir(), "A3 OK 70000");
+    assert!(a.kapandi_mi());
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}
+
+/// K-384 (ZM-F032): IDLE benzeri kısa süreli okuma; zaman aşımında oturum
+/// sürer, sunucu yoklama satırını yazar ve beklemeye döner.
+const IDLE_SUNUCUSU: &str = r#"# K-384 test: IDLE benzeri yoklama.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    bağlantıya "+ idling" satırını yaz
+    açık doğru olsun
+    yoklama 0 olsun
+    açık olduğu sürece
+        satır bağlantıdan satır okumayı 1 saniye içinde dene olsun
+        satır başarılıysa
+            bağlantıya "A1 OK " ile satırın değeri satırını yaz
+            açık yanlış olsun
+        değilse
+            hata satırın hatası olsun
+            veri hatanın verisi olsun
+            tür verinin "tür" değeri olsun
+            tür "zaman_aşımı" e eşitse
+                yoklamayı 1 artır
+                bağlantıya "* yoklama " ile yoklama satırını yaz
+            değilse
+                açık yanlış olsun
+    bağlantıyı kapat
+"#;
+
+#[test]
+fn sureli_okuma_zaman_asiminda_oturum_surer_yarim_satir_korunur() {
+    let ayarlar = "bağlantı_boşta_süresi 120 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, IDLE_SUNUCUSU, None);
+    let mut a = sunucu.baglan();
+    let baslangic = Instant::now();
+    assert_eq!(a.satir(), "+ idling");
+    assert_eq!(a.satir(), "* yoklama 1");
+    // Yarım satır zaman aşımında atılmaz; sonraki okuma onu tamamlar.
+    a.gonder(b"DO");
+    assert_eq!(a.satir(), "* yoklama 2");
+    assert!(baslangic.elapsed() < Duration::from_secs(30));
+    a.gonder(b"NE\r\n");
+    assert_eq!(a.satir(), "A1 OK DONE");
+    assert!(a.kapandi_mi());
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
 }

@@ -44,7 +44,24 @@ A2b ile kesit 465 implicit TLS ve 25'te STARTTLS taşır; TLS kimliği
 systemd ölçümü implicit TLS 1.3, STARTTLS ve STARTTLS enjeksiyonunun
 reddini bu programla doğrular.
 
+| K-384 exact ürün dosyası (ürün commit'i `a180e0c3b38384ca1b27c324811db71dc0dbe8ce`, 24 Kasım 2026) | Git blob | SHA-256 |
+|---|---|---|
+| Ürün SMTP DATA birimi (`smtp_veri`; gövde satır satır, 1000 bayt sınırı) | `8ac852d8e2519d3bbc42b423b0dbab3e82aa5338` | `1640d588c0c7c6d0c5aaee9eaddc7b0164c9390d5c4e804225e1255d5678e92e` |
+| Ürün IMAP oturum birimi (`imap_oturumu`; literal satır birleştirme, APPEND `NO [CANNOT]`, IDLE) | `976b3fa09d996fda2b392391b02df915bb56b640` | `939059901657b06248e9def7960bd20c2e3ec2c45baf639e17ebb164061e6176` |
+| Ürün IMAP hizmet girişi (bağlantı blokları, `bağlantı_boşta_süresi` 1800) | `26863c635280ddab9d0bab717635565e24ce0922` | `f48c444ea345452534b9015d9952b2fb449d3e5738489c886baf52d96b9413cf` |
+
+Ürün sürtünme kaydı: ZM-F031 (satır sonusuz yazma ve N bayt okuma yok;
+`\r` kaçışı yok, S040 — APPEND yapılamıyor) ve ZM-F032 (okuma başına zaman
+aşımı yok — IDLE yeni iletiyi ancak 1800 sn'de fark eder).
+
+A2c (K-384) ile kesit `DATA` gövdesini belleğe almadan geçici dosyaya
+akıtır (`bağlantı_blok_sınırı`; sınır `552`, çıplak LF/CR smuggling'i
+`554`, yarıda kalma `421`) ve ürünün IMAP motorundan IDLE kesitini taşır:
+1 saniyelik okuma süresiyle yoklar, zaman aşımı oturumu bitirmez. Gerçek
+systemd ölçümü kısa DATA, smuggling reddi ve IDLE yoklamasını bu programla
+doğrular; koşu sonunda blok dizini boştur.
+
 ## Açık
 
-`DATA` gövdesinin dosyaya akıtılması (A2c), ürünün kendi imajında uçtan
-uca kabul (ürün tarafı).
+Ürünün kendi imajında uçtan uca kabul (ürün tarafı); bağlantılar arası
+uyandırma (IDLE'ı yeni iletiyle uyandırma, RFC-0039 adım 5).

@@ -299,7 +299,9 @@ impl Gezici {
             }
             | Cumle::CagriCumlesi { cagri: i, satir }
             | Cumle::SunucuBaslat { kapi: i, satir }
-            | Cumle::BaglantiyaYaz { deger: i, satir }
+            | Cumle::BaglantiyaYaz {
+                deger: i, satir, ..
+            }
             | Cumle::YanitGonder {
                 deger: i, satir, ..
             }

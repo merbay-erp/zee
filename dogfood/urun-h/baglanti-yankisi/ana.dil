@@ -4,6 +4,10 @@
 # değişmezidir, protokol yanıtı Zee'nin kararıdır. STARTTLS'te tamponda
 # bekleyen düz metin varsa çalışma zamanı yükseltmeyi reddedip bağlantıyı
 # kapatır (A2b); başarıda EHLO durumu sıfırlanır (ürün durum makinesinin işi).
+# K-384 (A2c): DATA gövdesi belleğe alınmadan geçici dosyaya akar (yalnız
+# birebir CRLF.CRLF biter; çıplak LF/CR smuggling'i 554, sınır 552); ürün
+# dosyayı `atomik taşımayı dene` ile posta kutusuna taşır. IDLE kesiti (ürünün
+# IMAP motorundan) kısa süreli okumayla yoklar; zaman aşımı oturumu bitirmez.
 
 işlem oturumu sür
     bağlantıya "220 mx.ornek.test ESMTP" satırını yaz
@@ -15,6 +19,41 @@ işlem oturumu sür
             metin "QUIT" e eşitse
                 bağlantıya "221 2.0.0 hoşça kal" satırını yaz
                 açık yanlış olsun
+            değilse metin "DATA" e eşitse
+                bağlantıya "354 ileti bitince <CRLF>.<CRLF>" satırını yaz
+                ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun
+                ileti başarılıysa
+                    künye iletinin değeri olsun
+                    bağlantıya "250 2.0.0 alındı " ile künyenin "bayt" değeri satırını yaz
+                değilse
+                    sorun iletinin hatası olsun
+                    ayrıntı sorunun verisi olsun
+                    neden ayrıntının "tür" değeri olsun
+                    neden "boyut_aşımı" e eşitse
+                        bağlantıya "552 5.3.4 ileti çok büyük" satırını yaz
+                    değilse
+                        neden "satır_sonu" e eşitse
+                            bağlantıya "554 5.6.0 çıplak satır sonu" satırını yaz
+                        değilse
+                            son bağlantıya "421 4.4.2 ileti yarıda kaldı" satırını yazmayı dene olsun
+                            açık yanlış olsun
+            değilse metin "IDLE" e eşitse
+                bağlantıya "+ idling" satırını yaz
+                bekliyor doğru olsun
+                bekliyor olduğu sürece
+                    satır bağlantıdan satır okumayı 1 saniye içinde dene olsun
+                    satır başarılıysa
+                        bağlantıya "OK IDLE bitti" satırını yaz
+                        bekliyor yanlış olsun
+                    değilse
+                        sorun satırın hatası olsun
+                        ayrıntı sorunun verisi olsun
+                        neden ayrıntının "tür" değeri olsun
+                        neden "zaman_aşımı" e eşitse
+                            bağlantıya "* yoklama" satırını yaz
+                        değilse
+                            bekliyor yanlış olsun
+                            açık yanlış olsun
             değilse metin "STARTTLS" e eşitse
                 bağlantıya "220 2.0.0 TLS için hazır" satırını yaz
                 tls bağlantıda TLS başlatmayı dene olsun

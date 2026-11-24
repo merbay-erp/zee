@@ -5711,6 +5711,40 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
   değişmez ya da statik dosya).
 
+## K-384 — Bağlantıda blok okuma ve bayt-kesin akış; RFC-0039 A2c (24 Kasım 2026)
+
+- Merkez kararı (23 Kasım 2026, “Sırayla aç”): ZeeMail (`urun-h`) adım 3 =
+  RFC-0039 A2c, ürünün somut ihtiyaçlarıyla (DATA, APPEND literal, ZM-F031,
+  ZM-F032, iki tanı gözlemi). Karar ADR-165 A2c eki, freeze sınıfı
+  `dogfood-change`, GB-159.
+- Blok dosyası web yüklemesinin `.parca` modelinde ama ayrı dizinde
+  (`.zee/baglanti-bloklari`): web süpürmesi 15 dakikadan eski `.parca`
+  dosyalarını siler, uzun IMAP oturumunda taşınmamış ya da (boşta süresi
+  3600 sn'ye kadar) duraklayan canlı dosya bu eşiği aşabilir. Bağlantı
+  süpürmesinin eşiği `bağlantı_ömrü` + 15 dk.
+- Smuggling kuralı: blok yalnız birebir CRLF.CRLF ile biter; çıplak LF/CR
+  satır başı sayılmaz (`<LF>.<CR><LF>` dahil). Postfix'in isteğe bağlı
+  `smtpd_forbid_bare_newline` davranışı varsayılan ve kapatılamaz.
+  Çıplak satır sonu, blok sonlandırıcısına kadar tüketildikten sonra
+  reddedilir; böylece istemci 554 alır ve oturum eşzamanlı kalır.
+- Satır sonusuz yazma için kaçış kümesi genişletilmedi (S040 kalır):
+  `parçasını yaz` satır kuralına uyar, CRLF'yi yalnız `satırını yaz`
+  üretir. Ham bayt değer türü reddedildi (core freeze, değer modeli).
+- IDLE: bağlantılar arası uyandırma yerine kısa süreli okuma; zaman aşımı
+  (bütün okumalarda) oturumu bitirmez, yarım satır korunur. Uyandırma
+  Katman C/E ile adım 5.
+- `bağlantı` Sözlüğü sözcüksel kapsamda bırakıldı (dinamik geçiş gizli
+  kapsam olurdu); yerleşik fiille biten işlem adı tanımda reddedilmedi
+  (ifade çağrısı geçerli, uyumluluk kırılırdı). İkisi için yalnız tanı
+  ipucu; ipucu ayrıştırıcıda değil çözümleyicide (A001) çünkü `"x" ile
+  yanıtı yaz` `yanıt` değişkeni varken geçerli bir yazdırmadır.
+- Ölçümler: hermetik 13 vaka, gerçek TCP 4 yeni vaka (900 KiB DATA 7 KiB
+  parçalarla; 1.1 MB sınır aşımı sonrası pipelining; 100 ms'de bir bayt
+  gönderen DATA 2 sn bütçeyle 7 sn sınırının içinde kesildi; 70000 baytlık ikili literal
+  ve geri aktarım bayt bayt aynı; IDLE 1 sn yoklaması), gerçek systemd 255
+  Docker koşusu (`Type=notify`, UID 1000, CapEff 0; DATA `250 2.0.0 alındı
+  26`, smuggling `554`, IDLE yoklaması 1,0 sn, blok dizini koşu sonunda boş).
+
 ## K-381 — Adlı dinleyici bağlantı yüzeyi; RFC-0039 A2 tasarımı ve A2a (23 Kasım 2026)
 
 - Merkez kararı (23 Kasım 2026, “Sırayla aç”, “hiç durmadan geliştir”):

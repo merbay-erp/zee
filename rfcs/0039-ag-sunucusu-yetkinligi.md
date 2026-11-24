@@ -6,8 +6,10 @@
   uygulandı — 23 Kasım 2026, K-376, [ADR-162](../adr/162-adli-dinleyici-devri-ve-hizmet-bildirimi.md);**
   **Aşama A2 tasarımı tamamlandı; A2a (bağlantı yüzeyi) ve A2b (sunucu
   TLS'i, STARTTLS) uygulandı — 23–24 Kasım 2026, K-381,
-  [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md);** A2c (blok okuma)
-  ve katmanların geri kalanı taslaktır.
+  [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md);** **A2c (blok
+  okuma, bayt-kesin okuma/yazma, dosyadan aktarım, kısa süreli okuma)
+  uygulandı — 24 Kasım 2026, K-384, ADR-165 A2c eki;** katmanların geri
+  kalanı taslaktır.
 - **Tarih:** 21 Kasım 2026
 - **İş:** K-354
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
@@ -65,7 +67,7 @@ yetkinliği olarak tasarlanır.
 | Port dinleme | Zee kodu port açamaz. Native adaptör yalnız `--deneysel-web` ile loopback'e bağlanır ya da devralınan dinleyiciyi kullanır; devralınan soket tam `AF_INET`/`127.0.0.1`/bildirilen kapı olarak doğrulanır | `compiler/src/web_listener.rs` (`endpoint`, `adopt_group`), spec/11 K-259 |
 | systemd soket devri | Var ama dar: yalnız çok işçi grubu yöneticisi, `LISTEN_FDS=1`, fd 3, `127.0.0.1:worker-port`; bind'e geri dönüş yok. **K-376 (A1) sonrası:** `proje.dil` `dinleyiciler` bildirimiyle adla çoklu devir ve sd_notify | `compiler/src/cli/web_isci_grubu.rs` (`systemd_soketini_al`), K-343, ADR-161 eki; `compiler/src/cli/adli_dinleyici.rs`, ADR-162 |
 | IPv6, ayrıcalıklı kapı, birden çok dinleyici | Yok. **K-376 sonrası:** devralınır, doğrulanır ve tutulur. **K-381 (A2a) sonrası:** bağlantı bloğu kabul eder, satır okur/yazar | aynı; `compiler/src/cli/ag_baglantisi.rs`, ADR-165 |
-| Bağlantı/akış değeri | Yok. Tek ağ sunucusu yüzeyi HTTP rota modelidir; Zee bağlantıya ya da bayt akışına dokunamaz. **K-381 sonrası:** satır akışı (bayt/blok akışı A2c) | spec/11; spec/12 §9 |
+| Bağlantı/akış değeri | Yok. Tek ağ sunucusu yüzeyi HTTP rota modelidir; Zee bağlantıya ya da bayt akışına dokunamaz. **K-381 sonrası:** satır akışı; **K-384 sonrası:** blok/literal dosyaya, bayt-kesin okuma/yazma, dosyadan bağlantıya akış | spec/11; spec/12 §9 |
 | Bayt değeri | Yok. Tür envanteri `TamSayı · Ondalık · Metin · Mantıksal · Liste · Sözlük · Seçenek ...`; binary yalnız diske akıtılan yükleme dosyası (yol + SHA-256 + bayt sayısı) olarak görünür | spec/04, spec/26 |
 | Sunucu TLS'i | Yok. TLS yalnız istemci yollarında: SMTP istemcisi `native-tls` (465 implicit, 587 STARTTLS, TLS 1.2 alt sınır), HTTP istemcisi `ureq`+`rustls` | `compiler/src/eposta.rs` (K-210/K-232), `compiler/src/ag_istemcisi.rs` |
 | Eşzamanlılık | Tek OS iş parçacığında işbirlikli, deterministik scheduler (`zee-esz-1`). Adaptör çağrısı önleyici olmayan atomik dilimdir; dinamik görev sayısı ve akış "bu sürümün sözü değildir"; çok çekirdek söz verilmez | spec/14 §2/§4, spec/09 |
@@ -495,7 +497,7 @@ değişmezlerini gevşetemez.
 |---|---|---|
 | **A2a** | Düz TCP: bağlantı olayı, satır okuma/yazma, kapatma, satır/boşta/ömür/bağlantı sınırları, kibar ret, bağlantı görevi scheduler'ı, `ağ-dinleyici`, SIGTERM boşaltma | uygulanır (K-381) |
 | **A2b** | Sunucu TLS'i: implicit TLS dinleyicisi (465/993), STARTTLS (25/587/143), sertifika/anahtar yükleme, TLS 1.2+ AEAD politikası | uygulandı (K-381, ayrı commit) |
-| **A2c** | Blok okuma: SMTP `DATA` nokta bloğu ve IMAP literal'i `0600` geçici dosyaya, SHA-256 aynı akışta; dosyadan bağlantıya akıtma | taslak (sonraki iş) |
+| **A2c** | Blok okuma: SMTP `DATA` nokta bloğu ve IMAP literal'i `0600` geçici dosyaya, SHA-256 aynı akışta; dosyadan bağlantıya akıtma; satır sonusuz yazma ve bayt-kesin okuma (ZM-F031); kısa süreli okuma (ZM-F032) | uygulandı (K-384) |
 
 ### A2a — Zee yüzeyi
 
@@ -644,6 +646,86 @@ kuralı yoktur (rota kalıbının bağlantı karşılığı, `dene` ailesi):
     yalnız TLS sonrası ilanı) Zee kodunun işidir; başarı Sonuç'u Zee'nin
     kendi durumunu güncellemesi içindir (ayrı bir sorgu kalıbı açılmadı).
 
+### A2c — blok okuma ve bayt-kesin akış (K-384)
+
+ZeeMail'in (`urun-h`) iki somut ihtiyacı: SMTP `DATA` gövdesi ve IMAP
+`APPEND` literal'i satır satır belleğe alınamaz (1000 baytlık satır sınırı,
+ikili içerik, 25+ MiB ileti); IMAP `+ ` devam yanıtı ve `{n}` literal'i
+satır sonu eklemeden yazma ve tam `n` bayt okuma ister (ZM-F031; Zee
+metninde `\r` kaçışı yok, S040). IMAP `IDLE` yeni iletiyi ancak boşta
+süresi (ürünce 1800 sn) dolunca fark edebiliyordu (ZM-F032).
+
+Yüzey (yeni anahtar kelime, değer türü ya da koşul grameri yok; `dene`
+Sonuç ailesi ve var olan yazma cümlesi):
+
+```text
+ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun      # Sonuç<Sözlük>
+ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun          # Sonuç<Sözlük>
+parola bağlantıdan uzunluk bayt okumayı dene olsun              # Sonuç<Metin>
+bağlantıya "+ " parçasını yaz                                   # satır sonu yok
+sonuç bağlantıya "+ hazır" parçasını yazmayı dene olsun         # Sonuç<TamSayı>
+sonuç bağlantıya yol dosyasını aktarmayı dene olsun             # Sonuç<TamSayı>
+satır bağlantıdan satır okumayı 30 saniye içinde dene olsun     # Sonuç<Metin>
+```
+
+Blok sözlüğü web yüklemesinin `yukleme_*` alanlarıyla aynı biçimdedir:
+`yol` (`.zee/baglanti-bloklari/<64 hex>.parca`), `sha256`, `bayt` (Metin).
+Zee dosyayı `atomik taşımayı dene` ile kalıcı yerine taşır.
+
+Değişmezler (normatif metin spec/12 §9 A2c):
+
+- **Nokta bloğu.** Yalnız birebir `CRLF . CRLF` biter; nokta doldurma
+  çözülür, satır sonları CRLF korunur. Bloktaki çıplak CR/LF
+  normalleştirilmez ve satır başı sayılmaz: blok `satır_sonu` ile atılır,
+  akış gerçek sonlandırıcıya kadar tüketilir — kaçak `<LF>.<LF>` ardındaki
+  baytlar asla komut olmaz (SMTP smuggling; CVE-2023-51764/51765/51766 sınıfı).
+  Postfix'in `smtpd_forbid_bare_newline` seçeneğinin karşılığı varsayılan
+  ve kapatılamaz. Sınır aşımı `boyut_aşımı` ile aynı biçimde tüketilir;
+  oturum eşzamanlı kalır (Zee `552`/`554` yazar).
+- **Literal.** Tam `n` bayt; fazlası sonraki komuttur. Sınırı aşan `n`
+  hiç bayt okunmadan `boyut_aşımı` (Zee senkron literal'de `+` yazmadan
+  `NO` döner; LITERAL+ istemcisinde bağlantıyı kapatmak Zee'nin işidir).
+- **Dosya.** RFC-0041/spec/26 `.parca` modeli: `0600`, benzersiz ad,
+  SHA-256 aynı akışta, başarıda `fsync`, yarım dosya her hatada silinir.
+  Ayrı dizin (`.zee/baglanti-bloklari`): web süpürmesinin 15 dakikalık
+  eşiği uzun oturumdaki canlı dosyaya dokunamaz; bağlantı süpürmesinin
+  eşiği `bağlantı_ömrü` + 15 dk. Tamamlanan dosya bağlantıya aittir,
+  sonraki blokta ya da bağlantı sonunda (taşınmadıysa) silinir.
+- **Zaman.** Bütçe çağrının başından mutlak `boşta + bayt / 64 KiB/sn`
+  (K-372 ilkesi; damla damla bayt uzatamaz). Yarıda kalan blok okuma
+  yönünü kapatır (eşzamanı bozuk akış komut olarak okunmaz), yazma sürer.
+- **Bayt-kesin yazma.** `parçasını yaz` satır kuralına uyar (CR/LF/NUL
+  yok); satır sonunu yalnız `satırını yaz` üretir. Dil kaçış kümesi
+  genişletilmedi: CRLF'yi her zaman çalışma zamanı üretir, Zee metni ham
+  satır sonu taşıyamaz. Aktarım dosyayı 64 KiB geri basınçla akıtır,
+  dosya baytı Zee değeri ya da IO izi içeriği olmaz.
+- **Kısa süreli okuma.** Süre `bağlantı_boşta_süresi`ni aşamaz; zaman aşımı
+  (bütün okumalarda) bağlantıyı kapatmaz ve yarım satırı atmaz. `IDLE`
+  bu süreyle döngüde posta kutusunu yoklar.
+- **Bağlam ipuçları.** Örtük `bağlantı` Sözlüğü sözcüksel kapsamda kalır
+  (işleme dinamik geçiş reddedildi: gizli kapsam, işlemin başka bağlamda
+  sessizce farklı davranması); A001 parametre önerir. Yerleşik `yaz`/
+  `gönder` ile biten işlem adı cümle olarak çağrılamaz; A001/S037 ipucu
+  verir. Tanı kodları ve ret davranışı değişmedi.
+
+Reddedilenler: blok içeriğini Metin olarak vermek (ikili/8 bit ileti,
+bellek), satır akışından blok kurmak (1000 bayt sınırı, smuggling yüzeyi
+Zee'ye geçer), `\r` kaçışı eklemek (grammar/kaçış yüzeyi, CRLF dışı satır
+sonu yazılabilir olur), çıplak LF'yi bloğun içinde normalleştirmek
+(smuggling), okuma zaman aşımını Ç001 iptali yapmak (IDLE'de oturum
+kaybolur), bağlantılar arası uyandırma (Katman C/E; adım 5).
+
+#### A2c açık soruları — kapandı
+
+- Blok dosyası nerede ve kime ait: **göreli IO kökünde ayrı dizin,
+  bağlantıya ait** (yukarıda).
+- Sınır: **`bağlantı_blok_sınırı`** (P020; 1 KiB–1 GiB, varsayılan
+  32 MiB, SMTP `SIZE` ilanıyla aynı değer verilmeli).
+- Zaman: **mutlak `boşta + bayt/64 KiB/sn`**; yarıda kalma okuma yönünü
+  kapatır.
+- Satır sonusuz yazma: **ayrı `parçasını yaz` kalıbı**, kaçış genişletilmez.
+- IDLE: **kısa süreli okuma**; zaman aşımında oturum sürer.
+
 ### A2 açık soruları — kapandı
 
 - Engellemeyen IO katmanı: **`libc` `poll(2)` üzerinden dar reaktör**
@@ -659,11 +741,13 @@ kuralı yoktur (rota kalıbının bağlantı karşılığı, `dene` ailesi):
 
 ### A2 açık kalanlar
 
-- A2c blok okuma/akıtma; Katman C'nin genel hali (PostgreSQL/dosya/DNS'in
+- Katman C'nin genel hali (PostgreSQL/dosya/DNS'in
   engellemeyen yürütülmesi); çok işçi grubuna adla aktarım; `dil dene`
   içinden betiklenmiş bağlantı cümlesi (bugün hermetik adaptör yalnız Rust
   testlerinden beslenir); binlerce boşta oturum ölçümü (H4); geliştirme
-  için açık bayraklı loopback bind (bugün `systemd-socket-activate`).
+  için açık bayraklı loopback bind (bugün `systemd-socket-activate`);
+  bağlantılar arası uyandırma (yeni ileti → IDLE oturumu; adım 5);
+  kısmi literal getirme ve dosya aralığı aktarımı.
 
 ## Freeze ve kanıt kapısı
 
