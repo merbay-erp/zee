@@ -587,7 +587,9 @@ edildi; alt RFC açılmadı, karar ADR-163'te. Yanıtlar:
   toplamı form bütçesi (64 KiB), aşım 413; `gövde_aşımı_rotası` gövde
   boyutu 413'ünü salt okuma GET sayfasıyla verir (ZM-F037;
   [ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md) Dilim 1).
-  Orantılı okuma bütçesi Dilim 2'dedir (açık).
+  Dilim 2 ile multipart okuma bütçesi alınan bayta orantılıdır
+  (`10 sn + okunan / 128 KiB/s`, ≤ 146 sn); taslak dönemi açık sorusundaki
+  “bayt orantılı formül” seçildi, damlatma süre kazanmaz.
 
 ## Açık sorular (taslak dönemi, tarihsel)
 

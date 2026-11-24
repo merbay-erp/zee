@@ -170,4 +170,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-163 | [İkili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı](163-ikili-yanit-multipart-ve-ek-turu-kaydi.md) | **kabul** (K-378/GB-154–156) |
 | ADR-164 | [Satır içi betik CSP özeti yalnız kaynak değişmezinden](164-satir-ici-betik-csp-ozeti.md) | **kabul** (K-379/GB-153) |
 | ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158; A2c eki K-384/GB-159) |
-| ADR-168 | [İstek boyut sınırları: multipart metin alanı, gövde aşımı rotası, rota bazlı gövde ve SQL parametre tavanı](168-istek-boyut-sinirlari-ve-govde-asimi.md) | **kabul** (K-391/GB-164; Dilim 1 uygulandı, Dilim 2 açık) |
+| ADR-168 | [İstek boyut sınırları: multipart metin alanı, gövde aşımı rotası, rota bazlı gövde ve SQL parametre tavanı](168-istek-boyut-sinirlari-ve-govde-asimi.md) | **kabul** (K-391/GB-164, GB-165; Dilim 1 ve 2 uygulandı) |

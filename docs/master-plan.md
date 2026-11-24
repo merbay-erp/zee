@@ -212,8 +212,10 @@ Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag
 sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
-`sandbox allow-downloads`; K-391 Dilim 2 (rota bazlı gövde sınırı, orantılı
-multipart okuma bütçesi, SQL parametre tavanı). V1 sözü değildir.
+`sandbox allow-downloads`. K-391 Dilim 2 rota bazlı gövde sınırını
+(`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
+ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
+hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
 
 Bayt/kodlama/özet yapı taşları (UTF-8 bayt sayısı, katı UTF-8 çözme,
 RFC 4648 base64/onaltılık, kod noktası, bellekte SHA-256) ile DNS ve posta
