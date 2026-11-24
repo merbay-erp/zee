@@ -1,6 +1,6 @@
 # 01 — Sözcükleme
 
-Normatif kaynak: RFC-0002 (geçici kabul), RFC-0013. Tanı kodları:
+Normatif kaynak: RFC-0002 (geçici kabul), RFC-0013, RFC-0029. Tanı kodları:
 [hata-katalogu](../docs/hata-katalogu.md) S bölümü.
 
 ## Kaynak metin
@@ -24,6 +24,17 @@ Normatif kaynak: RFC-0002 (geçici kabul), RFC-0013. Tanı kodları:
 | Ondalık | `3,14` — virgül **bitişik** | tam ve kesir haneleri keyfî uzunluktadır; kaynak boyuyla sınırlıdır |
 | Kelime | tanımlayıcı alfabesi | ekleriyle birlikte tek token |
 | Virgül | `,` | liste ayracı — sonrasında boşluk beklenir |
+| Sıra eki | `3.` / `sıra.` — nokta **bitişik** | yalnız sıra erişiminde (RFC-0029); başka her nokta S001 |
+
+## Sıra eki noktası (TANIMLI — RFC-0029)
+
+Nokta yalnız şu üç koşul birlikte tutarsa sıra eki tokenidir (**TANIMLI**):
+önceki TamSayı, Kelime ya da Metin tokenine boşluksuz bitişiktir, aynı satırdadır
+ve ardından en az bir boşluk ile `öğe` ile başlayan bir kelime gelir
+(`harflerin 3. öğesi`, `harflerin sıra. öğesi`). Bu koşulların dışındaki her
+nokta (`3.14`, `x.y`, `3 .`, `3.öğesi`, cümle sonu noktası) önceki gibi S001
+ile reddedilir (**YASAK**); sıra eki K-386 öncesinde geçerli olan hiçbir
+programın token dizisini değiştirmez.
 
 ## Bitişik virgül kuralı (TANIMLI — RFC-0013)
 

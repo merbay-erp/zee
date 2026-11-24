@@ -1,5 +1,6 @@
 use super::*;
 
+mod sira;
 pub(super) mod web;
 
 pub(super) fn degerlendir_async<'a>(
@@ -262,6 +263,9 @@ pub(super) fn degerlendir_async<'a>(
                         )
                         .onerili("Önce \"sözlükte <anahtar> varsa\" ile kontrol et.".into())
                     })
+            }
+            Ifade::ListeOgesi { liste, sira, dene } => {
+                sira::oge(liste, sira, *dene, ortam, program, io, derinlik, satir).await
             }
             Ifade::SozlukteVar {
                 sozluk,

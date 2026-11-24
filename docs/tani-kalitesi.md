@@ -2,20 +2,20 @@
 
 <!-- `cd compiler && cargo run --locked --bin tani_kalitesi -- --rapor-yaz` üretir. Elle değiştirme. -->
 
-K-166/ADR-070 kapısı: golden korpusuna deterministik acemi hatası mutasyonları uygulanır (244 vaka, 14 hata sınıfı). Sınıf = (operatör, ilk tanı kodu); en az 3 vakalı sınıflar frekans sırasıyla en çok 50 taneye kadar kapıya girer. Ölçütler: öneri %100, işaret hatalı satırda ≥ %90, gürültü medyan ≤ 2 ve tepe ≤ 4. “En sık” sıralaması gerçek kullanıcı verisi (K-161/K-162) gelene kadar bu korpusun frekansıdır.
+K-166/ADR-070 kapısı: golden korpusuna deterministik acemi hatası mutasyonları uygulanır (254 vaka, 14 hata sınıfı). Sınıf = (operatör, ilk tanı kodu); en az 3 vakalı sınıflar frekans sırasıyla en çok 50 taneye kadar kapıya girer. Ölçütler: öneri %100, işaret hatalı satırda ≥ %90, gürültü medyan ≤ 2 ve tepe ≤ 4. “En sık” sıralaması gerçek kullanıcı verisi (K-161/K-162) gelene kadar bu korpusun frekansıdır.
 
 | Sıra | Operatör | Kod | Vaka | İşaret | Öneri | Gürültü medyan | Gürültü tepe | Kapı |
 |---:|---|---|---:|---:|---:|---:|---:|---|
-| 1 | `tirnak-kapatma` | S002 | 30 | %100 | %100 | 1 | 1 | evet |
-| 2 | `buyuk-harf` | S004 | 29 | %100 | %100 | 1 | 1 | evet |
-| 3 | `ingilizce-print` | S004 | 29 | %100 | %100 | 1 | 1 | evet |
-| 4 | `bos-blok` | S007 | 25 | %100 | %100 | 1 | 4 | evet |
-| 5 | `sekme-girinti` | S003 | 25 | %100 | %100 | 1 | 1 | evet |
-| 6 | `esittir` | S001 | 24 | %100 | %100 | 1 | 1 | evet |
-| 7 | `girinti-sil` | S007 | 24 | %100 | %100 | 2 | 4 | evet |
-| 8 | `olsun-eksik` | S004 | 23 | %100 | %100 | 1 | 2 | evet |
-| 9 | `ad-yazim` | A001 | 19 | %100 | %100 | 1 | 2 | evet |
-| 10 | `parantez` | S001 | 10 | %100 | %100 | 1 | 1 | evet |
+| 1 | `tirnak-kapatma` | S002 | 31 | %100 | %100 | 1 | 1 | evet |
+| 2 | `buyuk-harf` | S004 | 30 | %100 | %100 | 1 | 1 | evet |
+| 3 | `ingilizce-print` | S004 | 30 | %100 | %100 | 1 | 1 | evet |
+| 4 | `bos-blok` | S007 | 26 | %100 | %100 | 1 | 4 | evet |
+| 5 | `sekme-girinti` | S003 | 26 | %100 | %100 | 1 | 1 | evet |
+| 6 | `esittir` | S001 | 25 | %100 | %100 | 1 | 1 | evet |
+| 7 | `girinti-sil` | S007 | 25 | %100 | %100 | 2 | 4 | evet |
+| 8 | `olsun-eksik` | S004 | 24 | %100 | %100 | 1 | 2 | evet |
+| 9 | `ad-yazim` | A001 | 20 | %100 | %100 | 1 | 2 | evet |
+| 10 | `parantez` | S001 | 11 | %100 | %100 | 1 | 1 | evet |
 | 11 | `nokta-ondalik` | S001 | 3 | %100 | %100 | 1 | 1 | evet |
 | 12 | `ad-yazim` | A003 | 1 | %0 | %100 | 1 | 1 | seyrek |
 | 13 | `girinti-sil` | S005 | 1 | %0 | %100 | 1 | 1 | seyrek |
@@ -272,6 +272,16 @@ Yok.
 | 33-acik-islem-imzasi.dil | `buyuk-harf` | 14 | S004 | 14 | var | 1 |
 | 33-acik-islem-imzasi.dil | `nokta-ondalik` | 12 | S001 | 12 | var | 1 |
 | 33-acik-islem-imzasi.dil | `bos-blok` | 5 | S007 | 5 | var | 1 |
+| 34-liste-sira-erisimi.dil | `girinti-sil` | 16 | S007 | 15 | var | 1 |
+| 34-liste-sira-erisimi.dil | `sekme-girinti` | 16 | S003 | 16 | var | 1 |
+| 34-liste-sira-erisimi.dil | `tirnak-kapatma` | 6 | S002 | 6 | var | 1 |
+| 34-liste-sira-erisimi.dil | `esittir` | 6 | S001 | 6 | var | 1 |
+| 34-liste-sira-erisimi.dil | `olsun-eksik` | 6 | S004 | 6 | var | 1 |
+| 34-liste-sira-erisimi.dil | `ad-yazim` | 7 | A001 | 7 | var | 1 |
+| 34-liste-sira-erisimi.dil | `ingilizce-print` | 7 | S004 | 7 | var | 1 |
+| 34-liste-sira-erisimi.dil | `buyuk-harf` | 7 | S004 | 7 | var | 1 |
+| 34-liste-sira-erisimi.dil | `parantez` | 30 | S001 | 30 | var | 1 |
+| 34-liste-sira-erisimi.dil | `bos-blok` | 15 | S007 | 15 | var | 1 |
 | hesap_araclari.dil | `girinti-sil` | 4 | S007 | 3 | var | 2 |
 | hesap_araclari.dil | `sekme-girinti` | 4 | S003 | 4 | var | 1 |
 | hesap_araclari.dil | `tirnak-kapatma` | 10 | S002 | 10 | var | 1 |

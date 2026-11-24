@@ -1,5 +1,6 @@
 # K-164 kanıt özeti — TSV kayıt defteri okuma yardımcıları.
-# Sürtünme: dilde sıra ile öğe erişimi yok; başlık→alan eşlemesi sayaçla yapılır.
+# K-164/F010 → K-386: başlık→alan eşlemesi ve çift birleştirme sıra erişimiyle
+# (`alanların sıra. öğesi`, RFC-0029) yapılır; eski iç içe sayaç döngüsü kalktı.
 # Sürtünme: "\t" kaçışı yok; sekme metin sabitine ham olarak gömülür.
 
 işlem veri satırlarını ayıkla
@@ -46,14 +47,11 @@ işlem bilgiye çevir
     Metin sözlüğü döndürür
 
     bilgi boş sözlük olsun
-    sıra 0 olsun
+    adet alanların adedi olsun
+    sıra 1 olsun
     her başlık için
-        hedef sıra olsun
-        sayaç 0 olsun
-        her alan için
-            sayaç hedefe eşitse
-                bilginin başlık değeri alan olsun
-            sayacı 1 artır
+        sıra adetten büyük değilse
+            bilginin başlık değeri alanların sıra. öğesi olsun
         sırayı 1 artır
     bilgiyi döndür
 
@@ -81,14 +79,12 @@ işlem çiftleri birleştir
     Metin listesi döndürür
 
     çiftler boş liste olsun
-    sıra 0 olsun
+    adet ikincilerin adedi olsun
+    sıra 1 olsun
     her birinci için
-        hedef sıra olsun
-        sayaç 0 olsun
-        her ikinci için
-            sayaç hedefe eşitse
-                çiftlere birinci ile ayırıcı ile ikinci ekle
-            sayacı 1 artır
+        sıra adetten büyük değilse
+            ikinci ikincilerin sıra. öğesi olsun
+            çiftlere birinci ile ayırıcı ile ikinci ekle
         sırayı 1 artır
     çiftleri döndür
 
