@@ -28,7 +28,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/20-ifade-grameri.md` | 9 | 9 | 0 | 0 |
 | `spec/21-deterministik-io-izi.md` | 5 | 5 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
-| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 39 | 38 | 0 | 1 |
+| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 42 | 41 | 0 | 1 |
 | `spec/24-kaynak-guvenlik-profili.md` | 9 | 9 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 11 | 10 | 0 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 12 | 11 | 0 | 1 |
@@ -36,7 +36,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| **Toplam** | **352** | **334** | **5** | **13** |
+| **Toplam** | **355** | **337** | **5** | **13** |
 
 ## Kısmi kanıtlı maddeler
 

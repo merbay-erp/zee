@@ -87,6 +87,11 @@ değil, yedi bağımsız katmandır.
    yetenek ilanı, alıcı politikası, kuyruk durum makinesi, MIME yapısı ve
    SPF/DMARC değerlendirmesi Zee kodudur. Host intrinsic'i protokol kararı
    vermez ("SMTP sunucusu çalıştır" biçiminde bir intrinsic reddedilir).
+   **Çapraz not (K-383, kabul ayrı):** [RFC-0044](0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
+   taslağı bu ilkeyi inceltmeyi öneriyor — DMARC politikası Zee'de kalır;
+   SPF `check_host`, DKIM/ARC doğrulama ve kanonikleştirme DNS bütçesi ve
+   ayrıştırıcı tutarlılığı gerekçesiyle host değerlendiricisi olur. RFC-0044
+   kabul edilirse bu madde onunla güncellenecek.
 2. **Kriptografi yazılmaz.** TLS, RSA/Ed25519, SHA-256, base64 ve DNS tel
    biçimi doğrulanmış crate'lerle; algoritma Zee'de ya da elle Rust'ta
    yeniden yazılmaz. Gizli anahtar hiçbir zaman Zee değeri olmaz.
@@ -268,6 +273,10 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
   söyler.
 - **Ertelenen:** gerçek `Baytlar` değer türü; ihtiyaç tutamak yolunun
   ölçülmüş sürtünmesiyle kanıtlanırsa ayrı RFC.
+- **Çapraz not (K-383):** kodlama/özet maddeleri
+  [RFC-0043](0043-bayt-kodlama-ve-ozet-yuzeyi.md) taslağında
+  ayrıntılanıyor (kodlanmış `Metin` + dosya tutamağı, `Baytlar` yine
+  ertelendi; ilk dilim ZM-F034 dosya↔base64/QP). İmza maddesi RFC-0044 B3.
 
 ### E — DNS
 
@@ -280,6 +289,12 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
   loopback stub çözücünün (systemd-resolved) bildirimle izinli tek DNS
   hedefi olmasıdır; doğrulayıcı çözücü beklenmez, DNSSEC doğrulaması bu
   RFC'de vaat edilmez.
+  **Çapraz not (K-383, kabul ayrı):** [RFC-0044](0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
+  B1 bu maddeyi güncellemeyi öneriyor — çözücü seçimi tel biçimi crate'i +
+  bildirilmiş loopback **doğrulayıcı** çözücüye dar stub; `AD` biti yalnız
+  loopback'ten güvenilir ve yalnız DANE kararına bağlanır;
+  `hickory-resolver` ve `res_query` reddedildi. RFC-0044 kabul edilirse bu
+  madde onunla güncellenecek.
   **Durum: ZeeOS sağlamalı; bugün yalnız statik laboratuvar çözücüsü var
   (QEMU user-net); sahada kullanılamaz (ZeeOS P0-Z3 açık).** Düzeltme
   (ZeeOS ADR-076, 21 Kasım 2026): imajın systemd-resolved taşıdığı yönündeki

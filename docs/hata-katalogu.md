@@ -139,7 +139,7 @@ kalır (ADR-025).
 | T051 | Eşzamanlı görev grubunun sözcüksel sahipliği kapanmadı ya da boş birleştirme yapıldı | Her `eşzamanlı olarak` grubunu aynı kapsamda tek `hepsini bekle` ile kapat; açık görevlerle dönme/bitirme |
 | T052 | Hata nedeni/verisi yanlış türde ya da yeniden yayma zenginleştiriliyor | Neden `Hata`, veri `Metin sözlüğü` olmalı; zenginleştirmek için yeni kodlu hata ile sar |
 | T053 | Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor | Öğeyi döngü adıyla güncelle; ekleme/silmeyi ayrı listede toplayıp gezme bitince uygula |
-| T054 | Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor | Yetkiyi ve gerekiyorsa tam şema+host+port hedefini `proje.dil` içinde bilinçli olarak bildir |
+| T054 | Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor | Yetkiyi ve gerekiyorsa tam şema+host+port hedefini `proje.dil` içinde bilinçli olarak bildir; tek dosya kipinde dış ağ varsayılan kapalıdır, `dil çalıştır --izin ağ dosya.dil` ile açılır (K-387) |
 | T055 | Görünüm metni/özniteliği Metin (ya da bayrak için Mantıksal) değil | Sayıyı metne çevir; bayrak öznitelik için `doğru`/`yanlış` ver |
 | T056 | Önbelleklenebilir rota politikası GET/HEAD dışı rotada | Durum değiştiren rotada `herkese açık` yaz; önbellek iznini salt-okuma GET/HEAD rotasına taşı (K-335) |
 | T057 | Önbelleklenebilir rota oturum, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; oturuma bağlı parçayı ayrı rotaya taşı ya da `önbelleklenebilir` iznini kaldır; paylaşılan yanıt kimliğe bağlanamaz (K-335) |

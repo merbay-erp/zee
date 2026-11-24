@@ -509,7 +509,10 @@ rastgelelik oyun/simülasyon içindir; güvenlik belirteçleri OS CSPRNG'si kull
 
 ## 18. Ağ ve eşzamanlılık
 
-Proje dış dünyaya kapalı başlar. Public HTTPS için `proje.dil`:
+Proje dış dünyaya kapalı başlar; `proje.dil` olmadan çalışan tek dosya da
+dış ağa kapalıdır (K-387). Tek dosyada bilinçli açmak için dosyadan önce
+bayrak yazılır: `dil çalıştır --izin ağ betik.dil` (yalnız public HTTPS ve
+SMTPS). Kalıcı kullanım ve kesin hedef listesi için `proje.dil`:
 
 ```text
 yetkinlikler "ağ" listesi olsun

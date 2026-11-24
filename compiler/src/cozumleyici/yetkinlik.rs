@@ -31,10 +31,7 @@ pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Resu
             *sutun,
             *uzunluk,
         )
-        .onerili(format!(
-            "Güven sınırını inceledikten sonra proje.dil içindeki `yetkinlikler` listesine \"{}\" ekle.",
-            yetkinlik.yazimi()
-        )));
+        .onerili(oneri(*yetkinlik, politika)));
     }
     bilgi
         .ag_istekleri
@@ -55,6 +52,16 @@ pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Resu
         }
     }
     Ok(())
+}
+/// K-387: tek dosya kipinde dış ağ açık `--izin ağ` bayrağıyla açılır.
+fn oneri(yetkinlik: Yetkinlik, politika: &YetkinlikPolitikasi) -> String {
+    if yetkinlik == Yetkinlik::Ag && politika.bildirimsiz() {
+        return "Tek dosya kipinde dış ağ varsayılan kapalı. Güven sınırını inceledikten sonra `dil çalıştır --izin ağ dosya.dil` ile aç ya da proje.dil içindeki `yetkinlikler` listesine \"ağ\" ve `ağ_hedefleri` ekle.".into();
+    }
+    format!(
+        "Güven sınırını inceledikten sonra proje.dil içindeki `yetkinlikler` listesine \"{}\" ekle.",
+        yetkinlik.yazimi()
+    )
 }
 fn blok_bilgisi(cumleler: &[Cumle], bilgi: &mut Bilgi) {
     for cumle in cumleler {
