@@ -215,6 +215,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P019 | `e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür | Listeyi kanonik adlarla yaz (pdf, png, jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip); liste kümeyi tam belirler, varsayılanları da yaz; makro taşıyan ve yürütülebilir türler açılamaz |
 | P020 | Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`, `bağlantı_blok_sınırı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok | Aralıkları tanıdaki gibi yaz; uzak adres sınırı genel sınırı aşamaz; ret satırını en çok 512 baytlık yazdırılabilir ASCII yaz |
 | P021 | TLS bildirimi bozuk: `tls_sertifika_değişkeni` / `tls_anahtar_değişkeni` eksik, aynı ya da A-Z/0-9/_ dışı ad; `tls_dinleyicileri` kimliksiz, `dinleyiciler`de olmayan ya da yinelenen ad | Zincir ve anahtar için iki ayrı credential/ortam adı yaz (değerin kendisini değil); implicit TLS dinleyicilerini `dinleyiciler`deki adlarla yaz |
+| P022 | Web isteği boyut ayarı geçersiz: `gövde_aşımı_rotası` `/` ile başlamıyor, 256 baytı aşıyor ya da sorgu/parça/yüzde/boşluk/denetim karakteri taşıyor | Sorgusuz mutlak bir GET rota yolu yaz (`gövde_aşımı_rotası "/ileti/cok-buyuk" olsun`); aşım sayfası salt okuma rotasıdır |
 
 ## Ç — İç akış
 
@@ -253,6 +254,11 @@ bağlantı hataları C030'dur: beklenen okuma/yazma reddi yakalanabilir `Sonuç`
 `tür` Hata verisiyle; görev hatası yalnız o bağlantıyı kapatır ve nedeni
 operatör günlüğüne `Zee bağlantı #N … kapandı:` satırıyla düşer.
 [Karar](../adr/165-ag-dinleyici-baglanti-yuzeyi.md).
+
+K-391: web isteği boyut ayarı hataları P022'dir ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)).
+Gövde boyutu 413'ü tanı değildir; `gövde_aşımı_rotası` bildirimli projede
+salt okuma GET rotasının sayfası 413 durumuyla gider, rota yoksa ya da 200
+metin vermezse ham `istek gövdesi … KiB sınırını aşıyor` iletisi kalır.
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

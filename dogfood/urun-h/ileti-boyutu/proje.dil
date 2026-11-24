@@ -1,0 +1,9 @@
+# K-391: ürün H web arayüzünün (ZeeMail) ileti yazma formu boyut kesiti.
+proje "ileti-boyutu" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu" listesi olsun
+ağ_hedefleri boş liste olsun
+çok_parçalı_yükleme doğru olsun
+gövde_aşımı_rotası "/posta/cok-buyuk" olsun

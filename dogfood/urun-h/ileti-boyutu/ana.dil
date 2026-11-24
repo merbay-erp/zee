@@ -1,0 +1,22 @@
+# K-391 (ADR-168, ZM-F037): ileti yazma formu multipart gönderilir; Türkçe
+# metin urlencoded gibi altı kata şişmez, dosyasız form kabul edilir. Gövde
+# sınırı aşılırsa ham 413 yerine salt okuma aşım sayfası 413 ile döner.
+8080 kapısında sunucu başlat
+
+GET "/posta/yaz" adresine istek geldiğinde
+    csrf csrf belirteci olsun
+    form "<form method=post action=/posta/gonder enctype=multipart/form-data><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input name=konu maxlength=998><textarea name=govde></textarea><button>Gönder</button></form>" olsun
+    form yanıtını gönder
+
+POST "/posta/gonder" adresine istek geldiğinde
+    herkese açık
+    "govde" alanı gerekli
+    metin isteğin "govde" değeri olsun
+    boy metnin uzunluğu olsun
+    cevap "<p>İleti alındı: " ile boy ile " harf</p>" olsun
+    cevap yanıtını gönder
+
+GET "/posta/cok-buyuk" adresine istek geldiğinde
+    sinir isteğin "govde_asimi_siniri" değeri olsun
+    sayfa "<p>İleti " ile sinir ile " bayt sınırını aşıyor. Tarayıcıda Geri ile dönüp metni kısaltın; yazdıklarınız formda durur.</p>" olsun
+    sayfa yanıtını gönder

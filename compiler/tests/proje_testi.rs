@@ -228,6 +228,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             baglanti: dil::proje::BaglantiAyari::default(),
             cok_parcali_yukleme: false,
             eposta_ek_turleri: None,
+            govde_siniri: Default::default(),
         }
     );
 }
@@ -1668,6 +1669,39 @@ fn cok_parcali_yukleme_bildirimi_web_oturumu_ister() {
     assert_eq!(bildirimi_oku(&oturumsuz).unwrap_err().kod, "P015");
     let metin = format!("{oturumlu}çok_parçalı_yükleme \"evet\" olsun\n");
     assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P001");
+}
+
+/// K-391 (ADR-168): `gövde_aşımı_rotası` isteğe bağlı, sorgusuz mutlak yol;
+/// bozuk değer P022.
+#[test]
+fn govde_asimi_rotasi_bildirimi_mutlak_sorgusuz_yol_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+                 yetkinlikler \"ağ-sunucusu\" listesi olsun\nağ_hedefleri boş liste olsun\n";
+    assert_eq!(bildirimi_oku(taban).unwrap().govde_siniri.asim_rotasi, None);
+    assert_eq!(
+        bildirimi_oku(&format!(
+            "{taban}gövde_aşımı_rotası \"/ileti/çok-büyük\" olsun\n"
+        ))
+        .unwrap()
+        .govde_siniri
+        .asim_rotasi
+        .as_deref(),
+        Some("/ileti/çok-büyük")
+    );
+    let uzun = format!("\"/{}\"", "a".repeat(256));
+    for kotu in [
+        "\"ileti\"",
+        "\"/a?b=1\"",
+        "\"/a#b\"",
+        "\"/a b\"",
+        "\"/a%20\"",
+        "\"\"",
+        "42",
+        uzun.as_str(),
+    ] {
+        let metin = format!("{taban}gövde_aşımı_rotası {kotu} olsun\n");
+        assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P022", "{kotu}");
+    }
 }
 
 /// K-378: `e_posta_ek_türleri` kanonik aday adlarla tam küme; `ağ` ister.

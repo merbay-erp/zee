@@ -15,6 +15,7 @@ mod io_izi_veritabani;
 mod io_izi_web;
 mod io_profili;
 mod istek_gunlugu;
+mod istek_siniri;
 mod kaynak;
 mod kendine_ekleme;
 mod kimlik_iletisim;
@@ -41,6 +42,8 @@ use self::ifade::degerlendir_async;
 pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI};
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
 pub use self::istek_gunlugu::{istek_tani_gunluk_satiri, yanit_kopmasi_gunluk_satiri};
+pub use self::istek_siniri::govde_sinirini_istege_ekle;
+use self::istek_siniri::{istek_sinirlarini_denetle, IC_GOVDE_SINIRI};
 use self::kaynak::*;
 use self::kendine_ekleme::kendine_metin_ekle;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
@@ -113,34 +116,7 @@ pub const AZAMI_ISTEK_ALANI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_
     .http()
     .istek_alani();
 
-fn istek_sinirlarini_denetle(ham: &str) -> Result<(), (u16, &'static str)> {
-    let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
-    let (yontem, hedef) = ilk_satir.split_once(' ').unwrap_or(("GET", ilk_satir));
-    let (_, sorgu) = hedef.split_once('?').unwrap_or((hedef, ""));
-    let govde = match kalan.strip_prefix("çerez ") {
-        Some(devam) => devam.split_once('\n').map(|(_, govde)| govde).unwrap_or(""),
-        None => kalan,
-    };
-    if govde.len() > AZAMI_ISTEK_GOVDESI {
-        return Err((413, "istek gövdesi 64 KiB sınırını aşıyor"));
-    }
-    let govde_kullanilir = matches!(
-        yontem.to_ascii_uppercase().as_str(),
-        "POST" | "PUT" | "PATCH" | "DELETE"
-    );
-    let alan_sayisi = sorgu.split('&').filter(|alan| !alan.is_empty()).count()
-        + if govde_kullanilir {
-            govde.split('&').filter(|alan| !alan.is_empty()).count()
-        } else {
-            0
-        };
-    if alan_sayisi > AZAMI_ISTEK_ALANI {
-        return Err((413, "istek 100 alan sınırını aşıyor"));
-    }
-    Ok(())
-}
-
-fn istek_zarfi_parcala(ham: &str) -> (&str, &str, &str) {
+pub(super) fn istek_zarfi_parcala(ham: &str) -> (&str, &str, &str) {
     let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
     let (cerez_satiri, govde) = match kalan.strip_prefix("çerez ") {
         Some(devam) => match devam.split_once('\n') {
@@ -187,7 +163,7 @@ pub fn dogrulanmis_oturumu_istege_ekle(
 ) -> String {
     let (ilk_satir, cerez_satiri, govde) = istek_zarfi_parcala(ham);
     let mut cerezler = cerezleri_parcala(cerez_satiri);
-    cerezler.retain(|(ad, _)| !ad.starts_with("__zee_ic_oturum_"));
+    cerezler.retain(|(ad, _)| !ad.starts_with("__zee_ic_oturum_") && ad != IC_GOVDE_SINIRI);
     if let Some(bilgi) = bilgi {
         cerezler.push((IC_OTURUM_KIMLIGI.into(), bilgi.kimlik.clone()));
         cerezler.push((IC_OTURUM_KULLANICISI.into(), url_kodla(&bilgi.kullanici)));
@@ -235,6 +211,7 @@ fn oturum_cerezlerini_ayir(
             IC_OTURUM_OLUSTURMA_MS => "oluşturulma_ms",
             IC_OTURUM_SON_ERISIM_MS => "son_erişim_ms",
             IC_OTURUM_SON_GECERLILIK_MS => "son_geçerlilik_ms",
+            IC_GOVDE_SINIRI => continue,
             _ => {
                 if ad.starts_with("__zee_ic_oturum_") {
                     return Err((400, "bilinmeyen iç oturum bilgisi"));
