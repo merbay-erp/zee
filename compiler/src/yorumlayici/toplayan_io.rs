@@ -45,6 +45,11 @@ pub struct ToplayanIo {
     pub baglanti: super::toplayan_baglanti::ToplayanBaglanti,
     /// K-210: sahte SMTP giden kutusu — (alıcı, konu, gövde).
     pub eposta_kutusu: Vec<(String, String, String)>,
+    /// K-390: sahte çözücü bölgesi — (kanonik ad, tür) → yanıt. Kayıtsız
+    /// sorgu `alan_yok` döner (sahte çözücü yetkili ve boş bölgedir).
+    pub dns_bolgesi: HashMap<(String, crate::dns_teli::KayitTuru), DnsSahteYaniti>,
+    /// K-390: gerçekten yapılan sahte DNS sorguları ve verilen süre (ms).
+    pub dns_sorgulari: Vec<(String, crate::dns_teli::KayitTuru, i64)>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     eylem_yedekleri: Vec<HashMap<String, String>>,
@@ -53,6 +58,9 @@ pub struct ToplayanIo {
     web_istek_yedegi: Option<ToplayanWebIstekYedegi>,
     bekleyen_sunucu_yaniti: Option<SunucuYanitTaslagi>,
 }
+
+/// K-390: hermetik DNS yanıtı.
+pub type DnsSahteYaniti = Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi>;
 
 struct ToplayanWebIstekYedegi {
     yazilan_cerez_sayisi: usize,
@@ -117,6 +125,8 @@ impl ToplayanIo {
             eylem_tamamla_sonuclari: VecDeque::new(),
             dosya_yaz_sonuclari: VecDeque::new(),
             eposta_kutusu: Vec::new(),
+            dns_bolgesi: HashMap::new(),
+            dns_sorgulari: Vec::new(),
             baglanti: Default::default(),
             an_son_degeri: 0,
             cikti: Vec::new(),
@@ -760,5 +770,26 @@ impl GirdiCikti for ToplayanIo {
             self.an_son_degeri = self.an_son_degeri.max(an);
         }
         self.an_son_degeri
+    }
+
+    fn dns_sorgula(
+        &mut self,
+        ad: &str,
+        tur: crate::dns_teli::KayitTuru,
+        zaman_asimi_ms: i64,
+    ) -> Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi> {
+        let ad = crate::dns_teli::ad_dogrula(ad)?;
+        self.dns_sorgulari.push((ad.clone(), tur, zaman_asimi_ms));
+        self.dns_bolgesi
+            .get(&(ad.clone(), tur))
+            .cloned()
+            .unwrap_or_else(|| {
+                Ok(crate::dns_teli::Cozum {
+                    durum: crate::dns_teli::Durum::AlanYok,
+                    kayitlar: Vec::new(),
+                    dogrulanmis: false,
+                    kanonik_ad: ad,
+                })
+            })
     }
 }

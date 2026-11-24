@@ -66,3 +66,10 @@ ya da okuma yapmaz.
 
 K-337 `birincil_surec` olayı argümansızdır ve tek `0`/`1` sonucu taşır; replay
 yönetici ya da işçi grubu kurmaz, kayıtlı rolü döndürür.
+
+K-390 `dns_sorgula` olayı (spec/31 §1) argüman olarak kanonik soru adını ve
+tür yazımını (`a`, `aaaa`, `mx`, `txt`, `tlsa`, `soa`) taşır; son tarih
+bütçesi kaydedilmez. Sonuç `ok, durum, doğrulanmış(0/1), kanonik_ad` ve
+etiketli sabit alanlı kayıtlar (A/AAAA/TXT/TLSA verisi onaltılık) ya da
+`hata, tür, mesaj`tır; `var` durumu kayıtsız, diğer durumlar kayıtlı olamaz.
+Replay hiçbir DNS paketi göndermez. Ekleme mevcut şema-1 izlerini bozmaz.

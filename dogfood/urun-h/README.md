@@ -14,6 +14,7 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Zee kodu adlı dinleyiciden bağlantı kabul edemiyor, satır okuma istem basıyor (F009/F010; K-381, çözüldü: A2a) | `baglanti-yankisi/`, `korpus/f009-dinleyici-yok.dil` | A2a (uygulandı) |
 | Web arayüzü ek indiremiyor, JS'siz dosya yükleyemiyor, PDF/görsel dışı ek gönderemiyor (ZM-F022; K-378, çözüldü: RFC-0041 A, B, C) | `ek-akisi/` | RFC-0041 A, B, C (uygulandı) |
 | Webmail e-posta istemcisi autoconfig XML'ini ve Apple yapılandırma profilini kayıtlı türle sunamıyor (ZM-F033; K-385, çözüldü: ADR-163 eki) | `istemci-yapilandirma/` | RFC-0041 A (tür kaydı satırı) |
+| DNS sorgusu (MX/TXT/TLSA) yok; dış teslim, SPF/DKIM/DMARC ve DANE yanıtları dışarıdan verilen boş sözlükten geliyor (ZM-R006, S015; K-390, çözüldü: RFC-0044 B1a) | `korpus/zm-r006-mx-sorgusu-yok.dil` | RFC-0044 B1a (uygulandı) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355
 kaydındadır. Korpus vakaları `dogfood/korpus-v1.tsv` içinde exact

@@ -47,7 +47,7 @@ class Protocol(unittest.TestCase):
         self.save()
         with self.assertRaises((V.Invalid,KeyError)):self.export()
     def test_synthetic_protocol_fixture_roundtrip_not_campaign(self):
-        r=self.export();self.assertEqual(self.check(r)['targets'],4)
+        r=self.export();self.assertEqual(self.check(r)['targets'],len(V.TARGETS))
         p=subprocess.run([sys.executable,'-I','-B',str(ROOT/'scripts/rc-kaniti.py'),'check','--framework-root',str(self.root),'--bundle',str(self.bundle),'--sha256',r['manifest_sha256']],capture_output=True,timeout=10);self.assertEqual(p.returncode,0,p.stderr)
     def test_other_clean_commit_not_source_equivalent(self):
         r=self.export();self.git('-c','user.name=Test','-c','user.email=x@example.invalid','commit','--allow-empty','-qm','other SHA same tree')

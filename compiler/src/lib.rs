@@ -34,6 +34,11 @@ pub mod bicimleyici;
 #[doc(hidden)]
 pub mod cozumleyici;
 #[doc(hidden)]
+#[cfg(not(target_arch = "wasm32"))]
+pub mod dns_istemcisi;
+#[doc(hidden)]
+pub mod dns_teli;
+#[doc(hidden)]
 pub mod eposta;
 #[doc(hidden)]
 pub mod faz;

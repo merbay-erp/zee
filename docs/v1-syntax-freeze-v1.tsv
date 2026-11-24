@@ -5,7 +5,7 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	97acebf8abea00d4ed2afbb41b27b54a5b798583f8db60295507915451bb9135
+dondurulmus_sha256	2cf19d46fc829a4b35edc56931a42330267a10aff23cc7ff66f129adda5d944a
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
@@ -28,3 +28,5 @@ dondurulmus_sha256	97acebf8abea00d4ed2afbb41b27b54a5b798583f8db60295507915451bb9
 # K-381/ADR-165/RFC-0039 A2b: STARTTLS için tek contextual Sonuç kalıbı `bağlantıda TLS başlatmayı dene` (yeni kalıp kelimeleri `bağlantıda`, `TLS`, `başlatmayı`) pencere SONRASI eklendi. Implicit TLS ve TLS kimliği grammar değil proje bildirimidir (P021); yeni değer türü ve koşul grameri yoktur.
 
 # K-384/ADR-165 A2c eki/RFC-0039 A2c: ZeeMail (urun-h, ZM-F031/F032) DATA gövdesi, IMAP literal'i, satır sonusuz yazma, dosya aktarımı ve kısa süreli okuma için altı contextual Sonuç kalıbı (`bağlantıdan nokta bloğunu dosyaya almayı dene`, `bağlantıdan <n> baytı dosyaya almayı dene`, `bağlantıdan <n> bayt okumayı dene`, `bağlantıya <metin> parçasını yazmayı dene`, `bağlantıya <yol> dosyasını aktarmayı dene`, `bağlantıdan satır okumayı <n> saniye içinde dene`) ve var olan yazma cümlesinin `… parçasını yaz` biçimi pencere SONRASI eklendi (yeni kalıp kelimeleri `nokta`, `bloğunu`, `dosyaya`, `almayı`, `baytı`, `bayt`, `parçasını`, `aktarmayı`). Yeni anahtar kelime, kaçış dizisi, değer türü ve koşul grameri yoktur; blok sınırı proje bildirimidir (P020).
+
+# K-390/ADR-169/RFC-0044 B1a: ZeeMail (urun-h, ZM-R006) DNS sorgusu için tek contextual Sonuç kalıbı `<ad> için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene` pencere SONRASI eklendi (yeni kalıp kelimeleri `kayıtlarını`, `sorgulamayı`, `MX`, `TXT`, `TLSA`, `adres`); biçim ürün reproducer'ının kendi yazımıdır. Yeni değer türü, koşul ve komut yoktur; `dns` yetkinliği ve `dns_çözücü`/`dns_dnssec` grammar değil proje bildirimidir (P015).

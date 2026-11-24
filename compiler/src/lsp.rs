@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 133] = [
+const KALIP_KELIMELERI: [&str; 139] = [
     "yaz",
     "olsun",
     "ise",
@@ -167,12 +167,18 @@ const KALIP_KELIMELERI: [&str; 133] = [
     "bayt",
     "parçasını",
     "aktarmayı",
+    "kayıtlarını",
+    "sorgulamayı",
+    "MX",
+    "TXT",
+    "TLSA",
+    "adres",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 75] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -235,6 +241,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
     ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
     ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
+    ("sorgulamayı", "Bildirilmiş loopback çözücüye DNS sorgusu (`dns` yetkinliği, `dns_çözücü`, `dns_dnssec`): MX, TXT, TLSA ya da adres (A + AAAA) → kayıt başına satırlı Metin sözlük listesi Sonucu (`ad`, `ttl`, `doğrulanmış` + türe özgü alanlar). Kayıt/alan yoksa boş liste; geçici hata C031 `tür` verisiyle.\n\n`kayıtlar \"ornek.test\" için MX kayıtlarını sorgulamayı dene olsun`"),
     ("dinleyicisinde", "Adlı dinleyiciden (proje.dil `dinleyiciler`, systemd soket devri) kabul edilen her bağlantı için bloğu taze ortamda koşar; blok `bağlantı` Sözlüğünü (dinleyici, uzak_adres, uzak_kapı, yerel_kapı) görür. `ağ-dinleyici` yetkinliği ister.\n\n`\"smtp_v4\" dinleyicisinde bağlantı geldiğinde`"),
     ("bağlantıdan", "O anki bağlantıdan CRLF ile biten tek satırı okur → Metin Sonucu; çıplak CR/LF, uzun satır, kodlama, zaman aşımı, kapanma ve kapanış C030 Hata verisinde `tür` ile ayrılır.\n\n`komut bağlantıdan satır okumayı dene olsun`"),
     ("bağlantıda", "STARTTLS: ara bellekte bekleyen düz metin yoksa o anki bağlantıyı TLS'e yükseltir → Metin Sonucu (sürüm ve şifre takımı); aynı pakette gelen komut varsa bağlantı kapanır (`tür=tls`). Önce protokolün hazır satırını yaz.\n\n`sonuç bağlantıda TLS başlatmayı dene olsun`"),

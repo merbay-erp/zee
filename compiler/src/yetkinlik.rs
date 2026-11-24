@@ -19,10 +19,12 @@ pub enum Yetkinlik {
     WebOturumu,
     Kriptografi,
     Veritabani,
+    /// K-390: bildirilmiş loopback doğrulayıcı çözücüye DNS sorgusu (RFC-0044 B1).
+    Dns,
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 10] = [
+    pub const TUMU: [Self; 11] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
@@ -33,6 +35,7 @@ impl Yetkinlik {
         Self::WebOturumu,
         Self::Kriptografi,
         Self::Veritabani,
+        Self::Dns,
     ];
 
     pub const fn yazimi(self) -> &'static str {
@@ -47,6 +50,7 @@ impl Yetkinlik {
             Self::WebOturumu => "web-oturumu",
             Self::Kriptografi => "kriptografi",
             Self::Veritabani => "veritabanı",
+            Self::Dns => "dns",
         }
     }
 
@@ -192,11 +196,17 @@ impl YetkinlikPolitikasi {
     }
 
     /// Bildirimsiz tek dosya geliştirici akışı. Dış dünya yetkinlikleri açık
-    /// kalır; outbound ağ yine yalnız public HTTPS hedefine çıkabilir.
+    /// kalır; outbound ağ yine yalnız public HTTPS hedefine çıkabilir. `dns`
+    /// çözücü bildirimi ister (K-390), bildirimsiz akışta kapalıdır.
     pub fn gelistirici() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
-            .filter(|yetkinlik| !matches!(yetkinlik, Yetkinlik::YerelAg | Yetkinlik::Veritabani))
+            .filter(|yetkinlik| {
+                !matches!(
+                    yetkinlik,
+                    Yetkinlik::YerelAg | Yetkinlik::Veritabani | Yetkinlik::Dns
+                )
+            })
             .collect();
         Self {
             izinler,

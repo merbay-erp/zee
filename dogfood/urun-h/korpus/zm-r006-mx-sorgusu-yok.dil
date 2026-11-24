@@ -1,0 +1,11 @@
+# ZM-R006 — RFC-0044 B1 reproducer (ürün H ZeeMail korpusu, ürün commit
+# 7f7b1fe; alan adı anonimleştirildi). Dış teslim (MX seçimi, null MX), SPF,
+# DKIM anahtarı, DMARC ve MTA-STS/DANE DNS ister; ürün motoru yanıtı
+# dışarıdan verilen sözlükle alıyordu ve canlıda sözlük boştu. K-390 öncesi
+# S015; B1a (ADR-169) ile kayıt başına satırlı Sonuç döner.
+
+test "MX kayıtları"
+    yanıt "ornek.test" için MX kayıtlarını sorgulamayı dene olsun
+    yanıt başarılıysa
+        kayıtlar yanıtın değeri olsun
+        kayıtlar boş olmamalı

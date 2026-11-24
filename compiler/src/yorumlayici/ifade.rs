@@ -93,6 +93,12 @@ pub(super) fn degerlendir_async<'a>(
                         }
                         http_istek::getir(url, io, satir)
                     }
+                    k if k.starts_with("dns.") => {
+                        if gorevde_miyiz() {
+                            gorev_bekleme_noktasi(0).await;
+                        }
+                        dns::intrinsic_degerlendir(kimlik, &degerler, io, satir)
+                    }
                     POSTGRESQL_OKU => {
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, false)
                     }

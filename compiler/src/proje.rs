@@ -21,11 +21,14 @@
 //! dinleyiciler "smtp_v4 0.0.0.0:25", "smtp_v6 [::]:25" listesi olsun
 //! çok_parçalı_yükleme doğru olsun
 //! e_posta_ek_türleri "pdf", "docx", "csv" listesi olsun
+//! dns_çözücü "127.0.0.1:53" olsun
+//! dns_dnssec "zorunlu" olsun
 //! ```
 
 mod baglanti;
 mod baglanti_tls;
 mod dinleyici;
+mod dns;
 mod eposta_ek;
 mod form_yukleme;
 mod http_istek;
@@ -84,6 +87,8 @@ pub struct ProjeBildirimi {
     pub cok_parcali_yukleme: bool,
     /// K-378: `e_posta_ek_türleri` — SMTP ek türü kümesi; `None` dört varsayılan.
     pub eposta_ek_turleri: Option<Vec<String>>,
+    /// K-390: `dns` yetkinliğinin loopback çözücüsü ve DNSSEC kipi.
+    pub dns: Option<crate::dns_teli::DnsAyari>,
 }
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
@@ -170,7 +175,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, dns_çözücü, dns_dnssec.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -207,6 +212,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let adlar: Vec<&str> = dinleyiciler.iter().map(|d| d.ad.as_str()).collect();
     let baglanti = baglanti::alanlari_al(&mut alanlar, &adlar)?;
     let cok_parcali_yukleme = form_yukleme::alani_al(&mut alanlar, &yetkinlik_yazimlari)?;
+    let dns = dns::alanlari_al(&mut alanlar, &yetkinlik_yazimlari, yetkinlik_satiri)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -353,6 +359,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         baglanti,
         cok_parcali_yukleme,
         eposta_ek_turleri,
+        dns,
     })
 }
 
@@ -1034,6 +1041,8 @@ fn bilinen_alan(ad: &str) -> bool {
             | "dinleyiciler"
             | "çok_parçalı_yükleme"
             | "e_posta_ek_türleri"
+            | "dns_çözücü"
+            | "dns_dnssec"
     ) || baglanti::ALANLAR.contains(&ad)
 }
 

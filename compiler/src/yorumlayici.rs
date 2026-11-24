@@ -5,6 +5,7 @@
 
 mod baglanti;
 mod cumle;
+mod dns;
 mod dosya;
 mod eylem_hatasi;
 mod hir_gecisi;
@@ -57,6 +58,7 @@ pub use crate::web_guvenligi::OturumAyari;
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
 };
+use crate::dns_teli::{DnsSonucu, KayitTuru};
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_ILK_BAYTLAR,
     DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI,
@@ -598,6 +600,10 @@ pub trait GirdiCikti {
     fn bekle_ms(&mut self, milisaniye: i64);
     /// Tekdüze artan an ölçümü (zaman aşımı hesabı, milisaniye).
     fn an_ms(&mut self) -> i64;
+    /// K-390: loopback çözücüye tek DNS sorgusu (spec/31 §1; süre izde yok).
+    fn dns_sorgula(&mut self, _ad: &str, _tur: KayitTuru, _ms: i64) -> DnsSonucu {
+        crate::dns_teli::desteklenmeyen()
+    }
 }
 
 /// Eşzamanlı görev geleceklerinin aynı gerçek IO'yu sırayla kullanmasını sağlar.
@@ -687,6 +693,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
         self.ic
             .borrow_mut()
             .postgresql_degistir(sorgu, parametreler, zaman_asimi_ms)
+    }
+    fn dns_sorgula(&mut self, ad: &str, tur: KayitTuru, ms: i64) -> DnsSonucu {
+        self.ic.borrow_mut().dns_sorgula(ad, tur, ms)
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.ic.borrow_mut().sunucu_kur(kapi)

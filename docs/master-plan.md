@@ -221,8 +221,15 @@ yeni `Baytlar` türü açmadan kodlanmış `Metin` + dosya tutamağı modelini
 (ilk dilim: A2c blok dosyasından aralıklı okuma ve base64/QP çözerek bayt
 yazma, ZM-F034),
 [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
-B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar; core freeze
-altında uygulanmaz, V1 sözü değildir.
+B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar; aşamalar
+core freeze altında ayrı `dogfood-change` ile açılır, V1 sözü değildir.
+**Gerçekleşen: B1a (K-390, ADR-169)** — `dns` yetkinliği, yalnız loopback
+`dns_çözücü` ve `dns_dnssec` (zorunlu kipte açılış AD sınaması);
+`AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene` → kayıt başına
+satırlı Sonuç, geçici hata C031; üretimde yeni crate olmadan kendi sınırlı
+tel biçimi ayrıştırıcısı (hickory-proto yalnız kâhin, `dns_yaniti` fuzz
+hedefi RC kapısında), önbelleksiz stub, IO izi. **Açık:** PSL ve B2 gelen
+doğrulama (K-390 ikinci dilimi), B3, B4.
 
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.

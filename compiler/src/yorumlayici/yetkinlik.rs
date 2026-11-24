@@ -228,4 +228,16 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn an_ms(&mut self) -> i64 {
         self.ic.an_ms()
     }
+
+    fn dns_sorgula(
+        &mut self,
+        ad: &str,
+        tur: crate::dns_teli::KayitTuru,
+        zaman_asimi_ms: i64,
+    ) -> Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi> {
+        self.gerektir(Yetkinlik::Dns).map_err(|mesaj| {
+            crate::dns_teli::DnsHatasi::yeni(crate::dns_teli::DnsHataTuru::Ag, mesaj)
+        })?;
+        self.ic.dns_sorgula(ad, tur, zaman_asimi_ms)
+    }
 }

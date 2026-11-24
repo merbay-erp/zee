@@ -1,8 +1,8 @@
 use super::*;
-mod http;
-
 mod baglanti;
+mod dns;
 mod dosya;
+mod http;
 mod web;
 pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
     let mut harfler = kod.chars();
@@ -834,7 +834,7 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     {
         return Ok(Some(ifade));
     }
-    if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)? {
+    if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)?.or(dns::dns_kalibi(tokenlar)?) {
         return Ok(Some(ifade));
     }
 

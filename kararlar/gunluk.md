@@ -5906,3 +5906,26 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   ya da kaynağa eklemek T053.
 - Ayrı açık hata kaydedildi: türsüz ve çağrılmayan işlem C000 iç hatası
   (backlog K-380 "Açık").
+
+## K-390 — RFC-0044 B1a: DNS stub çözücü, loopback AD biti, kendi tel biçimi (24 Kasım 2026)
+
+- Etkin dogfood ürünü `urun-h` (ZeeMail) internete açık posta sunucusu için
+  MX/TXT/TLSA istiyor; reproducer ZM-R006 (`"…" için MX kayıtlarını
+  sorgulamayı dene`) S015 veriyordu. Merkez kararı: B1 ve B2 sırayla.
+- Tel biçimi kararı: RFC taslağı yeni crate öneriyordu. Ön değerlendirme
+  (`hickory-proto 0.26.3` +46 paket, unsafe yok; `domain 0.12.3` +10 paket,
+  unsafe yoğun, RUSTSEC-2026-0310) sonrası merkez üçüncü yolu seçti:
+  üretimde bağımlılık yok, kendi sınırlı ayrıştırıcı (`dns_teli`), hickory
+  yalnız dev/fuzz kâhini (K-362 `httparse` emsali), yeni `dns_yaniti` fuzz
+  hedefi RC kapısında. ADR-169.
+- Yüzey RFC'deki `alanın … kayıtlarını` fikri yerine ürünün gerçek biçimi:
+  `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene`; yeni tür yok,
+  sonuç kayıt başına satırlı Metin sözlük listesi. NXDOMAIN/NODATA boş
+  liste (SPF/DMARC için ikisi de "yok"); ayrım host iç API'sinde ve IO
+  izinde, Zee yüzeyinde B4'e kaldı.
+- Güvenlik: yalnız loopback çözücü; eşleşmeyen paket atılır; SERVFAIL asla
+  "kayıt yok" değil (C031); AD yalnız `zorunlu` kipte, açılışta sınanır.
+  Kabul kümesi dar tutuldu ki Zee ⊆ hickory sözleşmesi sağlansın (NSID/ECS
+  OPT seçenekleri, bilinmeyen tür, sondaki bayt reddi). GB-161.
+- Disk doldu (ENOSPC); yalnız master'a girmiş altı worktree'nin
+  yeniden üretilebilir `target/` önbelleği silindi (merkeze bildirildi).

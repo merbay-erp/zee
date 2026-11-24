@@ -183,6 +183,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş kovası aşımı C028 değil 429/503 yanıtıdır (spec/12 §5, K-365); "gizli değeri okunamadı" nedeninde systemd credential dosyasını/dizinini spec/23 §K-339'a göre düzelt |
 | C029 | E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir | `e_posta_bağlantı_değişkeni`, exact `ağ_hedefleri`, alıcı ve ekli iletide readonly dosya/başlık sınırlarını denetle; başarısız `dene` sonucu teslim edilmedi garantisi değildir, otomatik tekrar yapma |
 | C030 | Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında | Okuma/yazma ret Sonuç'unda Hata verisinin `tür` değerine bak: `kapandı`, `zaman_aşımı`, `satır_uzun`, `satır_sonu` (çıplak CR/LF), `kodlama`, `kapanıyor` (SIGTERM), `yazılamadı`, `tls` (STARTTLS reddi: aynı pakette gelen düz metin — bağlantı kapanır —, zaten TLS, kimlik yok, el sıkışma başarısız); K-384 blok/bayt/aktarım: `boyut_aşımı` (`bağlantı_blok_sınırı` ya da bellekte satır sınırı; nokta bloğu sonlandırıcıya kadar tüketilir, literal hiç okunmaz), `geçersiz` (negatif bayt sayısı, 1 sn'den kısa okuma süresi), `dosya` (blok dosyası açılamadı/yazılamadı, aktarılacak dosya yok, normal değil ya da dosya sınırı dışında). Zaman aşımı bağlantıyı kapatmaz; yarıda kalan blok okuma yönünü kapatır (sonraki okumalar `kapandı`). Protokolün uygun yanıtını yaz. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantıyı kapatır. Kayıtsız dinleyici, ikinci blok, web sunucusuyla birlikte kullanım ve blok dışı kullanım yürütmeyi durdurur (K-381) |
+| C031 | DNS sorgusu geçici olarak başarısız (RFC-0044 B1) | Hata verisinin `tür` değerine bak: `zaman_aşımı` (5 sn ya da son tarihin kalanı), `sunucu_hatası` (SERVFAIL — DNSSEC doğrulaması başarısız yanıt dahil —, FORMERR, NOTIMP), `ret` (REFUSED), `ağ` (yerel çözücüye ulaşılamadı ya da `dns_çözücü` bildirilmedi), `boyut_aşımı` (64 kayıt, 4 KiB TXT/TLSA, 8 CNAME), `bütçe`, `geçersiz_ad` (ASCII harf/rakam/`-`/`_`, etiket 1–63, ≤ 253 oktet; paket gönderilmez), `bozuk_yanıt`. Geçici hata "kayıt yok" değildir: posta akışında `451 4.4.3` gibi yeniden dene yanıtı ver. Kayıt yok/alan yok başarılı boş listedir (K-390) |
 
 ## D — Doğrulama
 
@@ -253,6 +254,13 @@ bağlantı hataları C030'dur: beklenen okuma/yazma reddi yakalanabilir `Sonuç`
 `tür` Hata verisiyle; görev hatası yalnız o bağlantıyı kapatır ve nedeni
 operatör günlüğüne `Zee bağlantı #N … kapandı:` satırıyla düşer.
 [Karar](../adr/165-ag-dinleyici-baglanti-yuzeyi.md).
+
+K-390: `dns` yetkinliği, `dns_çözücü` ve `dns_dnssec` üçlüsünün eksik ya da
+tek başına bildirimi, loopback dışı/adlı/0 kapılı çözücü ve bilinmeyen
+`dns_dnssec` kipi P015'tir; yeni proje tanı kodu yoktur. `dns_dnssec
+"zorunlu"` iken çözücü kök bölgeyi AD=1 ile yanıtlamazsa süreç kaynak
+yürütülmeden `dns_dnssec zorunlu:` iletisiyle çıkış 2 verir. DNS sorgu
+hataları C031 kodlu `Sonuç`tur. [Karar](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY
