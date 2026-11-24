@@ -37,7 +37,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-028 | [Kanonik `.zep` yol ve Unicode güvenlik profili](028-kanonik-zep-yol-profili.md) | **kabul** (K-117/B-030/B-031) |
 | ADR-029 | [Ondalık ile binary float arasında örtük köprü yoktur](029-ondalik-binary-float-siniri.md) | **kabul** (K-125/B-012) |
 | ADR-030 | [Bütün AST ifadelerinde kesin kaynak aralığı](030-kesin-ast-kaynak-araliklari.md) | **kabul** (K-126/B-050) |
-| ADR-031 | [Merkezî yetkinlik politikası ve native outbound istemci](031-merkezi-yetkinlik-ve-outbound-istemci.md) | **kabul** (K-127/B-023/B-049) |
+| ADR-031 | [Merkezî yetkinlik politikası ve native outbound istemci](031-merkezi-yetkinlik-ve-outbound-istemci.md) | **kabul** (K-127/B-023/B-049; K-387 eki) |
 | ADR-032 | [Atomik replace metadata koruma politikası](032-atomik-replace-metadata-politikasi.md) | **kabul** (K-128/B-048; ek K-348, K-351) |
 | ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/K-130/K-131/K-132; B-025 kapalı; bağlantı birimi eki K-388) |
 | ADR-034 | [Kalıcı ortak web deposu ve tek-worker süreç modeli](034-web-ortak-depo-ve-worker-modeli.md) | **kabul** (K-137/B-046) |

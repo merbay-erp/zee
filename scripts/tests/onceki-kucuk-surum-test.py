@@ -106,6 +106,13 @@ def main():
             require(code == row['new_exit'])
             if row['file'] == m['migration']['file']:
                 require(m['migration']['expected_diagnostic'].encode() in raw)
+            # K-387: bilinçli güvenlik kırılması yalnız kayıtlı tanı ve açık göç bayrağıyla geçer.
+            kirilma = row.get('security_break')
+            if kirilma is not None:
+                require(code == 1 and kirilma['expected_diagnostic'].encode() in raw)
+                code, raw = command('check-izinli-' + str(index), [binary, 'denetle', kirilma['migration_flag'],
+                                                                   kirilma['migration_value'], FIXTURES / row['file']])
+                require(code == 0)
             proof['cases'].append({'kind': 'check', 'file': row['file'], 'exit': code, 'passed': True})
         for index, row in enumerate(m['pure_runtime']):
             code, raw = command('run-' + str(index), [binary, 'çalıştır', FIXTURES / row['file']])
