@@ -37,6 +37,31 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve
+  metnin SHA-256 özeti (K-389):** büyük bir dosya (ör. bağlantıdan alınmış
+  bir e-posta) artık en çok 1 MiB'lık aralıklarla okunabilir:
+  `bölüm yol dosyasının 0 baytından 65536 baytını metin olarak okumayı dene olsun`
+  katı UTF-8 Metin verir; ikili ya da 8bit içerik için
+  `ham yol dosyasının 0 baytından 65536 baytını base64 okumayı dene olsun`
+  base64 Metin verir. Bir e-posta ekini bayt bayt dosyaya çıkarmak için
+  `tutamak parça base64 çözerek "ekler/ek.pdf" dosyasına yazmayı dene olsun`
+  (yeni dosya; var olan dosya ezilmez) ya da büyük eklerde parça parça
+  `… base64 çözerek "ekler/ek.pdf" dosyasına eklemeyi dene` kullanılır;
+  `quoted_printable` de aynı biçimde çözülür. Sonuç `yol`, `sha256`, `bayt`
+  taşıyan bir Sözlüktür; `yol` doğrudan dosya indirme yanıtına
+  (`… adıyla ek olarak göndermeyi dene`) verilebilir. Bozuk kodlama yeni
+  **C032** ile döner (`tür`: `alfabe`, `dolgu`, `uzunluk`, `kaçış`,
+  `satır_sonu`, `utf8`, `boyut_aşımı`; `konum` hatalı baytı gösterir) ve
+  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir.
+  `özet metnin sha256 özeti olsun` bellekteki metnin özetini dosya
+  özetiyle aynı biçimde (64 küçük harf onaltılık) verir. Okuma `dosya-okuma`,
+  yazma `dosya-yazma` yetkinliği ister; IO izine içerik değil yalnız uzunluk
+  ve özet yazılır. UTF-8 bayt sayısı ve metin↔base64 dönüşümleri sonraki
+  dilimdir (`uzunluğu` harf saymaya devam eder).
+
+  **Göç:** Gerekmez; mevcut `dosyasını okumayı dene` ve `dosyasına … yaz/ekle`
+  değişmez. Önceden bu cümleler S015 veriyordu.
+
 - **Listede sıra ile öğe erişimi (K-386, RFC-0029):** artık listenin N'inci
   öğesini sayaç döngüsü yazmadan okursun:
   `üçüncü harflerin 3. öğesi olsun`, `değer sayıların orta. öğesi olsun`.

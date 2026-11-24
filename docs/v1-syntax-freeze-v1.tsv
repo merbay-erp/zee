@@ -5,7 +5,7 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	134c20e635cf603ad22f18528f1c75c11a3dcb5f0d910e67ae984e37783a692b
+dondurulmus_sha256	dd24f63b26fd5fafb8ef1c064b588b9ac07cdbc3502738ad333afe77891aedba
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 

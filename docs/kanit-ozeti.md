@@ -73,7 +73,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/18-paket-yayini.md | 13 | 1 | 0 | 14 | 92 |
 | spec/19-registry-metadata-guveni.md | 10 | 0 | 0 | 10 | 100 |
 | spec/20-ifade-grameri.md | 9 | 0 | 0 | 9 | 100 |
-| spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
+| spec/21-deterministik-io-izi.md | 6 | 0 | 0 | 6 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 41 | 0 | 1 | 42 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
@@ -83,7 +83,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 340 | 5 | 13 | 358 | 94 |
+| **Toplam** | 346 | 5 | 14 | 365 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -113,7 +113,7 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 74.
+Toplam korpus vakası: 77.
 
 ## Deprecation kayıtları
 
@@ -146,16 +146,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 96 |
+| maintenance | 99 |
 | semantic-bugfix | 42 |
-| semantic-change | 63 |
+| semantic-change | 64 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
 | correctness | 42 |
-| dogfood-change | 41 |
-| maintenance | 93 |
+| dogfood-change | 42 |
+| maintenance | 96 |
 | security | 19 |
 
-Toplam: 201 compiler değişiklik beyanı, 197 core freeze beyanı.
+Toplam: 205 compiler değişiklik beyanı, 201 core freeze beyanı.
