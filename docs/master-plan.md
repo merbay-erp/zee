@@ -210,8 +210,15 @@ açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytında
 ölçülebilir yerel ret). K-385 (ADR-163 eki) e-posta istemcisi
 yapılandırma XML'i ve Apple profili için `application/xml` ile
 `application/x-apple-aspen-config` türlerini yalnız web dosya sınıfına
-ekledi. **Açık:** `inline`/Range/ETag sonrası; Outlook POX Autodiscover
-(POST + CSRF muafiyeti, RFC-0040 ile); `sandbox allow-downloads`. V1 sözü değildir.
+ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
+(dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
+boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag
+sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
+`sandbox allow-downloads`. K-391 Dilim 2 rota bazlı gövde sınırını
+(`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
+ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
+hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
 
 Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 ([ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),

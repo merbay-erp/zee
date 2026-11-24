@@ -126,6 +126,17 @@ Sorgu 64 KiB; parametre sayısı 100; tek parametre 64 KiB; sonuç 10.000 satır
 100 sütun ve 16 MiB; migration tek dosya 1 MiB, toplam 8 MiB sınırını AŞAMAZ.
 Bu değerlerin tek sahibi `KaynakSinirlari.veritabani()`dir.
 
+ZORUNLU (K-391, [ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)):
+`veritabanı_parametre_sınırı N olsun` (65 536 ≤ N ≤ 4 194 304, yalnız
+veritabanı bildirimiyle; aksi P022) gerçek adaptörde tek parametre tavanını
+N bayta yükseltir. Bütün parametrelerin bayt toplamı her durumda
+`100 × 64 KiB = 6 400 KiB`'ı aşamaz (varsayılanın örtük en kötü değeri);
+sorgu metni, parametre sayısı ve sonuç sınırları değişmez. Aşım bugünkü gibi
+sorgu gönderilmeden C025'tir. Gerekçe: parametreler istek belleğinde zaten
+metin olarak durur (16 MiB metin, 64 MiB heap); toplam tavan sunucuya giden
+tek mesajın ve IO izinin en kötü boyunu değiştirmez. 4 MiB üstü içerik dosyaya
+(spec/26 `.parca`) aittir; akışlı SQL parametresi AÇIKTIR.
+
 Okuma, değişiklik, değerler ve structured hata `zee-io-izi\t1` içine kanonik
 sırada yazılır. Replay aynı SQL/parametreleri exact eşleştirir ve dış
 veritabanına bağlanamaz.

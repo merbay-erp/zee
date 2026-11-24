@@ -6,6 +6,8 @@
 # kullanır; ek akışı kesiti bu politikayla derlenir. K-381: posta motorunun
 # bağlantı tarafı `ağ-dinleyici` ister (f009 reproducer'ı artık derlenir).
 # K-389: gelen iletinin ekleri çözülerek ek dosyasına yazılır (`dosya-yazma`).
+# K-391: ürün ileti gövdesini PostgreSQL'e yazar (ZeeMail web bildirimi
+# `veritabanı` taşır); hedef anonim loopback, göçler SQL kesitinin klasörü.
 # K-390: dış teslim ve gelen doğrulama `dns` ister; yalnız loopback
 # doğrulayıcı çözücü, DANE için `zorunlu` kip (zm-r006 artık derlenir).
 
@@ -13,8 +15,11 @@ proje "urun-h" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "korpus/f001-ascii-katlama-elle.dil" olsun
-yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "dosya-yazma", "ağ", "ağ-dinleyici", "dns" listesi olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "dosya-yazma", "ağ", "ağ-dinleyici", "veritabanı", "dns" listesi olsun
 ağ_hedefleri "smtps://smtp.ornek.test:465" listesi olsun
 yerel_bağımlılıklar boş liste olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/ornek_posta" olsun
+veritabanı_bağlantı_değişkeni "URUN_H_DATABASE_URL" olsun
+veritabanı_göçleri "ileti-govdesi-sql/gocler" olsun
 dns_çözücü "127.0.0.1:53" olsun
 dns_dnssec "zorunlu" olsun

@@ -1,0 +1,11 @@
+# K-391: ürün H ileti gövdesinin tek SQL parametresiyle kaydı (ZM-F036).
+proje "ileti-govdesi-sql" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "veritabanı" listesi olsun
+ağ_hedefleri boş liste olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/ornek_posta" olsun
+veritabanı_bağlantı_değişkeni "URUN_H_DATABASE_URL" olsun
+veritabanı_göçleri "gocler" olsun
+veritabanı_parametre_sınırı 1048576 olsun

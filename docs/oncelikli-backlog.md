@@ -2576,7 +2576,7 @@ boş liste, geçici hata C033 (`tür`). Üretimde yeni crate yok: kendi sınırl
 ≤ 16, TXT/TLSA ≤ 4 KiB, CNAME ≤ 8); `hickory-proto` yalnız dev/fuzz kâhini
 (Zee ⊆ hickory, 40.000 bozulmuş paket); yeni `dns_yaniti` fuzz hedefi RC
 kapısında. Stub: getrandom kimlik + rastgele kapı, eşleşmeyen paket atılır,
-TC→TCP, 5 sn / son tarih kalanı, önbellek yok. IO izi `dns_sorgula`. GB-164.
+TC→TCP, 5 sn / son tarih kalanı, önbellek yok. IO izi `dns_sorgula`. GB-166.
 
 Kanıt: `dns_teli.rs` birim testleri (sınırlar, SERVFAIL hiçbir yolda boş
 değil, CNAME döngüsü), `dns_kahin_testi.rs`, `dns_testi.rs` (hermetik
@@ -2626,6 +2626,53 @@ Açık: hesaplanan sıra ifadesi ve iyelik zinciri (`tablonun 2. öğesinin 3.
 O(n) değer kopyası (kopya-üzerine-yazma ayrı performans işi), K-161/K-162
 K-180 kartının insan verisiyle geriye dönük doğrulanması.
 
+## K-391 — İstek boyut sınırları ve gövde aşımı rotası (ADR-168)
+
+**Durum: KAPALI (Dilim 1 ve Dilim 2).** Kaynak: etkin dogfood ürünü
+`urun-h` (ZeeMail) sürtünmeleri ZM-F037 ve ZM-F036. Web gövdesi 64 KiB
+(spec/11 §5) ve urlencoded form Türkçe harfi altı bayta şişirdiğinden
+25 000 harflik Türkçe-yoğun ileti rota çalışmadan 413 alıyor, kullanıcı
+taslağı kaybedebiliyordu (ürün 30 000 harf sınırı koydu); K-378 multipart
+yolu metin alanını 8 KiB ile sınırlıyor ve dosya parçası istiyordu. Tek SQL
+parametresi 64 KiB (ürün gövdeyi 20 000 harflik parçalara bölüyor). Freeze
+sınıfı `dogfood-change`; gramer değişmedi, yeni kalıp yok.
+
+Dilim 1 (ADR-168 madde 1, 2, 6): `çok_parçalı_yükleme` projesinde multipart
+metin alanları sıradan form alanıdır — dosya parçası isteğe bağlı, alan
+başına 8 KiB yerine metin toplamı form bütçesi (64 KiB), aşım 413. Yeni
+`proje.dil` alanı `gövde_aşımı_rotası "/yol"`: gövde boyutu 413'ü (zarf ya da
+akış içi) salt okuma GET rotasının sayfasıyla 413 + no-store olarak döner;
+özgün rota çalışmaz; ardından K-374 boşaltması. Yorumlayıcının ikinci gövde
+denetimi native bütçeyi iç `__zee_ic_govde_siniri` çereziyle alır (varsayılan
+bütçede istek zarfı bayt bayt aynı; IO izi/replay tutarlı). Tanı P022,
+dil yüzeyi `govde-asimi-rotasi-v1`, GB-164.
+
+Kanıt: `web_cok_parcali.rs::dosyasiz_form_ve_turkce_yogun_metin_alani_kabul`,
+`…::metin_butcesi_alanlar_toplaminda_413`,
+`govde_siniri_testi.rs` (gerçek `dil` web süreci: 25 000 harf multipart
+kabul ve bayt bayt aynı; aynı ileti urlencoded 413 ve 64 KiB iletisi aynı;
+aşım sayfası 413 + text/html + no-store, okunmamış gövdeye rağmen yanıt
+ulaşır; 404 veren aşım rotası düz 413), `proje_testi.rs::govde_asimi_rotasi_bildirimi_mutlak_sorgusuz_yol_ister`,
+dogfood `urun-h-ileti-boyutu` (`dogfood/urun-h/ileti-boyutu/`).
+
+Dilim 2 (ADR-168 madde 3, 4, 5; ayrı PR, KAPALI): rota bazlı gövde sınırı
+(`geniş_gövde_rotaları` + `geniş_gövde_sınırı`, 65 537–1 MiB, önek/tam yol,
+yalnız unsafe yöntem), multipart'ta alınan bayta orantılı okuma bütçesi
+(`10 sn + okunan / 128 KiB/s`, ≤ 146 sn) ve yetim `.parca` eşiği 15 → 30 dk
+(canlı ömür 181 → 317 sn), `veritabanı_parametre_sınırı` (tek parametre
+≤ 4 MiB, toplam 6 400 KiB). GB-165, dil yüzeyi `genis-govde-rotalari-v1`,
+`veritabani-parametre-siniri-v1`. Kanıt: `govde_siniri_testi.rs::genis_govde_rotasi_yalniz_eslesen_yolda_tavani_yukseltir`,
+`…::yavas_buyuk_yukleme_orantili_butceyle_kabul_damlatma_408` (2,5 MiB
+~200 KiB/s ile ~12,8 sn'de kabul; bütçe kapalıyken 10. saniyede kesildi;
+300 ms'de bir bayt damlatma 408), `main.rs::kazanilmis_okuma_suresi_alinan_bayta_orantilidir`,
+`postgresql.rs::…::parametre_tavani_varsayilan_ve_proje_yukseltmesi_toplamla_sinirli`,
+`proje_testi.rs` iki P022 vakası.
+
+Açık: hermetik `dil dene` adaptöründe aşım rotası ve rota bazlı bütçe; ikili
+(`application/octet-stream`) yolun orantılı bütçesi; 4 MiB üstü/akışlı SQL
+metni; sunucu tarafı taslak kaydı (ürün); gerçek PostgreSQL'de 1 MiB
+parametre ölçümü (birim testi sunucuya gitmeden önceki tavanı sınar).
+
 ## K-388 — Bağlantı görevinde protokol birimi sınırında bütçe yenileme (ZM-F035)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) ZM-F035;
@@ -2659,7 +2706,8 @@ spec/25 tek PostgreSQL parametresinin 64 KiB sınırına takıldı (64 KB
 üstü gövde `451`). Sınır bilinçli güvenlik değeridir (K-235); büyük gövde
 dosya tutamağında tutulup veritabanına yol/özet yazılmalıdır. Sınırın
 gevşetilmesi ya da `bytea`/akış parametresi ayrı K-işi ve spec/25 kararı
-ister; bu işte değiştirilmedi.
+ister; bu işte değiştirilmedi. (Sonra K-391 Dilim 2: isteğe bağlı
+`veritabanı_parametre_sınırı` ≤ 4 MiB, toplam 6 400 KiB; ADR-168.)
 
 ## K-383 — Bayt/kodlama/özet ile DNS, posta kimlik doğrulama ve teslim güvenliği RFC taslakları
 

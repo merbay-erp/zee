@@ -228,6 +228,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             baglanti: dil::proje::BaglantiAyari::default(),
             cok_parcali_yukleme: false,
             eposta_ek_turleri: None,
+            govde_siniri: Default::default(),
             dns: None,
         }
     );
@@ -1669,6 +1670,111 @@ fn cok_parcali_yukleme_bildirimi_web_oturumu_ister() {
     assert_eq!(bildirimi_oku(&oturumsuz).unwrap_err().kod, "P015");
     let metin = format!("{oturumlu}çok_parçalı_yükleme \"evet\" olsun\n");
     assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P001");
+}
+
+/// K-391 (ADR-168): `gövde_aşımı_rotası` isteğe bağlı, sorgusuz mutlak yol;
+/// bozuk değer P022.
+#[test]
+fn govde_asimi_rotasi_bildirimi_mutlak_sorgusuz_yol_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+                 yetkinlikler \"ağ-sunucusu\" listesi olsun\nağ_hedefleri boş liste olsun\n";
+    assert_eq!(bildirimi_oku(taban).unwrap().govde_siniri.asim_rotasi, None);
+    assert_eq!(
+        bildirimi_oku(&format!(
+            "{taban}gövde_aşımı_rotası \"/ileti/çok-büyük\" olsun\n"
+        ))
+        .unwrap()
+        .govde_siniri
+        .asim_rotasi
+        .as_deref(),
+        Some("/ileti/çok-büyük")
+    );
+    let uzun = format!("\"/{}\"", "a".repeat(256));
+    for kotu in [
+        "\"ileti\"",
+        "\"/a?b=1\"",
+        "\"/a#b\"",
+        "\"/a b\"",
+        "\"/a%20\"",
+        "\"\"",
+        "42",
+        uzun.as_str(),
+    ] {
+        let metin = format!("{taban}gövde_aşımı_rotası {kotu} olsun\n");
+        assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P022", "{kotu}");
+    }
+}
+
+/// K-391 (ADR-168 Dilim 2): geniş gövde rotaları ve sınırı birlikte, aralıkta;
+/// `/` ile biten öge önek, diğeri tam yol; GET/HEAD varsayılanda kalır.
+#[test]
+fn genis_govde_rotalari_birlikte_aralikta_ve_onek_kuraliyla_eslesir() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+                 yetkinlikler \"ağ-sunucusu\" listesi olsun\nağ_hedefleri boş liste olsun\n";
+    let bildirim = bildirimi_oku(&format!(
+        "{taban}geniş_gövde_rotaları \"/posta/gonder\", \"/taslak/\" listesi olsun\ngeniş_gövde_sınırı 262144 olsun\n"
+    ))
+    .unwrap();
+    let ayar = &bildirim.govde_siniri;
+    assert_eq!(ayar.genis_rotalar, ["/posta/gonder", "/taslak/"]);
+    assert_eq!(ayar.form_butcesi("POST", "/posta/gonder"), 262_144);
+    assert_eq!(ayar.form_butcesi("put", "/taslak/12"), 262_144);
+    assert_eq!(ayar.form_butcesi("POST", "/posta/gonder/ek"), 65_536);
+    assert_eq!(ayar.form_butcesi("POST", "/taslak"), 65_536);
+    assert_eq!(ayar.form_butcesi("GET", "/posta/gonder"), 65_536);
+    assert_eq!(
+        bildirimi_oku(taban)
+            .unwrap()
+            .govde_siniri
+            .form_butcesi("POST", "/x"),
+        65_536
+    );
+    for kotu in [
+        "geniş_gövde_rotaları \"/a\" listesi olsun\n",
+        "geniş_gövde_sınırı 262144 olsun\n",
+        "geniş_gövde_rotaları \"/a\" listesi olsun\ngeniş_gövde_sınırı 65536 olsun\n",
+        "geniş_gövde_rotaları \"/a\" listesi olsun\ngeniş_gövde_sınırı 1048577 olsun\n",
+        "geniş_gövde_rotaları \"a\" listesi olsun\ngeniş_gövde_sınırı 262144 olsun\n",
+        "geniş_gövde_rotaları \"/a\", \"/a\" listesi olsun\ngeniş_gövde_sınırı 262144 olsun\n",
+        "geniş_gövde_rotaları \"/a?b\" listesi olsun\ngeniş_gövde_sınırı 262144 olsun\n",
+        "geniş_gövde_rotaları boş liste olsun\ngeniş_gövde_sınırı 262144 olsun\n",
+    ] {
+        let metin = format!("{taban}{kotu}");
+        assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P022", "{kotu}");
+    }
+    assert!(bildirimi_oku(&format!(
+        "{taban}geniş_gövde_rotaları \"/a\" listesi olsun\ngeniş_gövde_sınırı 1048576 olsun\n"
+    ))
+    .is_ok());
+}
+
+/// K-391 (ADR-168 Dilim 2, ZM-F036): SQL tek parametre tavanı 64 KiB–4 MiB,
+/// yalnız veritabanı bildirimiyle.
+#[test]
+fn veritabani_parametre_siniri_aralikta_ve_veritabani_bildirimi_ister() {
+    let taban = "proje \"posta\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nağ_hedefleri boş liste olsun\n";
+    let vt = format!(
+        "{taban}yetkinlikler \"veritabanı\" listesi olsun\nveritabanı_hedefi \"postgresql://127.0.0.1:5432/posta\" olsun\nveritabanı_bağlantı_değişkeni \"POSTA_DATABASE_URL\" olsun\nveritabanı_göçleri \"gocler\" olsun\n"
+    );
+    assert_eq!(
+        bildirimi_oku(&vt).unwrap().govde_siniri.sql_parametre_bayti,
+        None
+    );
+    assert_eq!(
+        bildirimi_oku(&format!("{vt}veritabanı_parametre_sınırı 1048576 olsun\n"))
+            .unwrap()
+            .govde_siniri
+            .sql_parametre_bayti,
+        Some(1_048_576)
+    );
+    for kotu in ["65535", "4194305", "\"1 MiB\""] {
+        let metin = format!("{vt}veritabanı_parametre_sınırı {kotu} olsun\n");
+        assert_eq!(bildirimi_oku(&metin).unwrap_err().kod, "P022", "{kotu}");
+    }
+    let vtsiz = format!(
+        "{taban}yetkinlikler \"ağ-sunucusu\" listesi olsun\nveritabanı_parametre_sınırı 1048576 olsun\n"
+    );
+    assert_eq!(bildirimi_oku(&vtsiz).unwrap_err().kod, "P022");
 }
 
 /// K-378: `e_posta_ek_türleri` kanonik aday adlarla tam küme; `ağ` ister.
