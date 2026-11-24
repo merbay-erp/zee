@@ -5,6 +5,27 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 24 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **E-posta istemcisi otomatik yapılandırması ve Apple profili (K-385):**
+  Rotadan dosya indirme kalıbı (K-378) iki yeni türü kabul eder:
+  `application/xml` (Thunderbird'ün `/.well-known/autoconfig/mail/config-v1.1.xml`
+  dosyası gibi XML) ve `application/x-apple-aspen-config` (iPhone/iPad'de
+  Safari'nin kurulum önerdiği `.mobileconfig` yapılandırma profili):
+  `sonuç "yapilandirma/posta.mobileconfig" dosyasını "application/x-apple-aspen-config" türünde "posta.mobileconfig" adıyla ek olarak göndermeyi dene olsun`.
+  Yanıt öteki dosya türleri gibi indirme olarak gider, tarayıcıda sayfa
+  olarak açılmaz ve önbelleğe alınmaz; sunucu dosyayı okumaz/yorumlamaz.
+  `text/xml` yazımı kabul edilmez (`application/xml` kullanın); bu iki tür
+  e-posta eki olarak seçilemez. Outlook'un POST ile çalışan autodiscover
+  isteği henüz karşılanamaz.
+
+  **Göç:** Gerekmez; mevcut türler ve kalıbı kullanmayan rotalar değişmez.
+
 ## 23 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
