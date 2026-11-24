@@ -105,6 +105,12 @@ pub(super) fn islem_argumanlari(kimlik: u64, islem: &BaglantiIslemi) -> Vec<Stri
         BaglantiIslemi::BaytOku(adet) => alanlar.extend(["bayt".into(), adet.to_string()]),
         BaglantiIslemi::ParcaYaz(metin) => alanlar.extend(["parca".into(), metin.clone()]),
         BaglantiIslemi::DosyaAktar(yol) => alanlar.extend(["aktar".into(), yol.clone()]),
+        // K-396: içeriksiz iz — yalnız yol ve kodlanmış aralık.
+        BaglantiIslemi::Base64Aktar { yol, aralik } => alanlar.extend([
+            "aktar_b64".into(),
+            yol.clone(),
+            aralik.map_or_else(|| "tum".into(), |(k, n)| format!("{k}+{n}")),
+        ]),
         BaglantiIslemi::SatirOkuSureli(ms) => alanlar.extend(["oku_sure".into(), ms.to_string()]),
         BaglantiIslemi::Engelle(son) => alanlar.extend([
             "engelle".into(),
@@ -125,6 +131,13 @@ pub(super) fn islem_semasi(argumanlar: &[String]) -> Result<(), String> {
         }
         [kimlik, islem, sayi] if matches!(islem.as_str(), "blok" | "bayt" | "oku_sure") => {
             kanonik_tamsayi::<u64>(kimlik) && kanonik_tamsayi::<i64>(sayi)
+        }
+        [kimlik, islem, _, aralik] if islem == "aktar_b64" => {
+            kanonik_tamsayi::<u64>(kimlik)
+                && (aralik == "tum"
+                    || aralik.split_once('+').is_some_and(|(k, n)| {
+                        kanonik_tamsayi::<u64>(k) && kanonik_tamsayi::<u64>(n)
+                    }))
         }
         [kimlik, islem, son] if islem == "engelle" => {
             kanonik_tamsayi::<u64>(kimlik) && (son == "yok" || kanonik_tamsayi::<i64>(son))

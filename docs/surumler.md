@@ -37,6 +37,24 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
+  bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
+  satırları olarak (76 karakter + satır sonu) belleğe alınmadan
+  gönderilebilir:
+  `n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`.
+  Kodlanmış çıktının bir parçası da gönderilebilir (IMAP kısmi getirme):
+  `n yol dosyasının base64 satırlarının 0 baytından 1024 baytını bağlantıya aktarmayı dene olsun`.
+  Sonuç yazılan bayt sayısıdır; tam çıktının boyu `b` baytlık dosya için
+  e = 4·⌈b/3⌉ olmak üzere e + 2·⌈e/76⌉'dır, böylece boyu dosyayı açmadan
+  önceden hesaplayabilirsiniz. Yol için `dosya-okuma` (ya da `veri:` yolu
+  için `veri-okuma`) yetkinliği gerekir. Kaynak dosya en çok 32 MiB
+  olabilir (çözerek yazma tavanıyla aynı); daha büyük dosya hiç bayt
+  gönderilmeden `boyut_aşımı` ile döner. 16 MB'lık ek artık bir saniyenin
+  altında gider; önceki 57 baytlık okuma döngüsü yavaştı ve bellek
+  sınırına takılıyordu.
+
+  **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
+  kalıpla değiştirebilirsiniz.
 - **DNS sorgusu: MX, TXT, TLSA ve adres kayıtları (K-390):** Zee programı
   artık aynı makinedeki doğrulayıcı DNS çözücüsüne (ör. unbound) sorgu
   yapabilir:

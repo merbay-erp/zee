@@ -1,0 +1,11 @@
+# K-396 (RFC-0039 A2d): ürün H IMAP hizmetinin FETCH gövde kesiti. Ekler
+# paylaşılan veri kökündedir; yalnız okunur (`veri-okuma`).
+proje "imap_govde_base64" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-dinleyici", "veri-okuma" listesi olsun
+ağ_hedefleri boş liste olsun
+dinleyiciler "imap_v4 127.0.0.1:1143" listesi olsun
+bağlantı_blok_sınırı 26214400 olsun
+veri_kökü "POSTA_DEPO" olsun

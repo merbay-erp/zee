@@ -2929,6 +2929,39 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040
+(IMAP istemcileri veri kökündeki ekleri `BODY[n]` ile alamıyor; 57 baytlık
+`base64 okumayı dene` döngüsü 16 MB ekte 29,6 sn sürüp C024 ile kesiliyor).
+Freeze sınıfı `dogfood-change`; yeni tür, anahtar kelime, koşul grameri ya da
+tanı kodu yok; iki kalıp kelimesi (`satırlarıyla`, `satırlarının`) ve iki
+intrinsic.
+
+Karar (RFC-0039 A2d, ADR-172): `<yol> dosyasını base64 satırlarıyla
+bağlantıya aktarmayı dene` ve `<yol> dosyasının base64 satırlarının <konum>
+baytından <adet> baytını bağlantıya aktarmayı dene` → `Sonuç<TamSayı>`.
+RFC 2045 satırları (76 + CRLF, son satır dahil); T = e + 2·⌈e/76⌉,
+e = 4·⌈b/3⌉ normatif (spec/12 §9). Aralık kodlanmış akış üzerinde, sonda
+kırpılır, negatif `geçersiz`. Akışlı (Metin yok, zarf yok), A2c geri basınç
+ve süre bütçesi; kaynak yol `dosya-okuma`/`veri-okuma` merkezî denetimi.
+Kaynak dosya tavanı 32 MiB (K-395 yazma tavanıyla hizalı; merkez kararı
+25 Kasım, ZeeMail 25 MB iletide ~18 MB ek): tam 32 MiB geçer, +1 bayt hiç
+bayt yazılmadan `boyut_aşımı`. RFC-0039'a bağlandı (güvenlik sınırı bağlantı akışı), saf kodlayıcı
+RFC-0043 Dilim 1 `kodlama` modülünde. GB-169.
+
+Kanıt: `compiler/tests/ag_blok_testi.rs` (5 yeni vaka: bağımsız başvuru
+kodlayıcıyla 0/1/2/3/57/58/114/1000/70000 bayt ve formül, 12 aralık kenarı,
+negatif/yok/blok sınırı, T034 ve iz replay), `compiler/tests/ag_baglantisi_surec_testi.rs`
+(5 yeni vaka: 32 MiB tavan geçer/+1 bayt reddi, 16 MiB + 5 baytlık ikili ek gerçek TCP'de bayt bayt ve
+0,87 sn, aralık, kaçış ve yokluk, yetkinlik yok T054, `veri:` kökü ve
+`veri:../` reddi, kopan karşı taraf `yazılamadı`), `kodlama::testler`
+(satır kodlayıcı ve pencere her kenarda dilim eşitliği); dogfood
+`urun-h-imap-govde-base64`; K-167 iki kalıp ve iki API satırı.
+
+Açık: ham dosya baytlarının kısmi aktarımı (`BODY[]<o.n>` ham); RFC-0043
+Dilim 2 ile iç base64 yardımcılarının birleşmesi.
+
 ## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma` (RFC-0045, ADR-170)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F038

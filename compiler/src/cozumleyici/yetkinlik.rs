@@ -258,8 +258,8 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
                 if let Some(tanim) = intrinsic::tanim(kimlik) {
                     bilgi.ekle(tanim.yetkinlik, ifade_konumu(ifade));
                 }
-                // K-384: dosyadan bağlantıya aktarım dosyayı da okur.
-                if kimlik == intrinsic::BAGLANTI_DOSYA_AKTAR {
+                // K-384/K-396: dosyadan bağlantıya aktarım dosyayı da okur.
+                if intrinsic::baglantiya_dosya_aktarir(kimlik) {
                     bilgi.ekle(Yetkinlik::DosyaOkuma, ifade_konumu(ifade));
                 }
                 if kimlik == HTTP_GETIR || kimlik == intrinsic::HTTP_ISTEK {

@@ -8,8 +8,10 @@
   TLS'i, STARTTLS) uygulandı — 23–24 Kasım 2026, K-381,
   [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md);** **A2c (blok
   okuma, bayt-kesin okuma/yazma, dosyadan aktarım, kısa süreli okuma)
-  uygulandı — 24 Kasım 2026, K-384, ADR-165 A2c eki;** katmanların geri
-  kalanı taslaktır.
+  uygulandı — 24 Kasım 2026, K-384, ADR-165 A2c eki;** **A2d (dosyanın
+  RFC 2045 satırlı base64 aktarımı ve kodlanmış aralığı) uygulandı —
+  24 Kasım 2026, K-396, [ADR-172](../adr/172-baglantiya-satirli-base64-aktarimi.md);**
+  katmanların geri kalanı taslaktır.
 - **Tarih:** 21 Kasım 2026
 - **İş:** K-354
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
@@ -521,6 +523,7 @@ değişmezlerini gevşetemez.
 | **A2a** | Düz TCP: bağlantı olayı, satır okuma/yazma, kapatma, satır/boşta/ömür/bağlantı sınırları, kibar ret, bağlantı görevi scheduler'ı, `ağ-dinleyici`, SIGTERM boşaltma | uygulanır (K-381) |
 | **A2b** | Sunucu TLS'i: implicit TLS dinleyicisi (465/993), STARTTLS (25/587/143), sertifika/anahtar yükleme, TLS 1.2+ AEAD politikası | uygulandı (K-381, ayrı commit) |
 | **A2c** | Blok okuma: SMTP `DATA` nokta bloğu ve IMAP literal'i `0600` geçici dosyaya, SHA-256 aynı akışta; dosyadan bağlantıya akıtma; satır sonusuz yazma ve bayt-kesin okuma (ZM-F031); kısa süreli okuma (ZM-F032) | uygulandı (K-384) |
+| **A2d** | Dosyanın RFC 2045 satırlı base64 kodlamasını bağlantıya akıtma ve kodlanmış çıktı üzerinde aralık (IMAP `BODY[n]`, `BODY[n]<o.n>`; ZM-F040) | uygulandı (K-396) |
 
 ### A2a — Zee yüzeyi
 
@@ -753,6 +756,68 @@ kaybolur), bağlantılar arası uyandırma (Katman C/E; adım 5).
 - Satır sonusuz yazma: **ayrı `parçasını yaz` kalıbı**, kaçış genişletilmez.
 - IDLE: **kısa süreli okuma**; zaman aşımında oturum sürer.
 
+### A2d — satırlı base64 aktarımı ve kodlanmış aralık (K-396)
+
+ZeeMail (`urun-h`) ekleri çözülmüş hâlde paylaşılan veri kökünde tutar
+(`veri:ekler/<kiracı>-<sha256>`, RFC-0045). IMAP istemcileri (Outlook,
+Apple Mail, Thunderbird) `BODY[n]` gövdesini orijinal aktarım kodlamasıyla,
+yani RFC 2045 base64 satırları (76 karakter + CRLF) olarak bir literal
+içinde ister; kısmi getirme `BODY[n]<o.n>` kodlanmış çıktı üzerinde
+konumlanır. Bugünkü geçici çözüm A2c ve RFC-0043 parçalarıyla 57 baytlık
+`base64 okumayı dene` döngüsüydü: her satırda dosya yeniden açılır, her
+satır Zee `Metin`i olur. 16 MiB'lık ek 29,6 sn sürüyor ve sonunda C024
+(kümülatif değer zarfı) ile kesiliyordu (ZM-F040).
+
+```text
+n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun                        # Sonuç<TamSayı>
+n yol dosyasının base64 satırlarının konum baytından adet baytını bağlantıya aktarmayı dene olsun  # Sonuç<TamSayı>
+```
+
+Yeni anahtar kelime, değer türü, tanı kodu ya da koşul grameri yoktur:
+iki kalıp kelimesi (`satırlarıyla`, `satırlarının`) ve iki intrinsic
+(`ag.baglanti_base64_aktar`, `ag.baglanti_base64_aralik_aktar`) eklenir;
+retler A2c'nin C030 `tür`leridir.
+
+Değişmezler (normatif metin spec/12 §9 A2d):
+
+- **Biçim ve uzunluk.** RFC 4648 §4 dolgulu alfabe; son satır dışında tam
+  76 karakter, her satır (son satır dahil) CRLF ile biter; boş dosya sıfır
+  bayt. `b` ham bayt için e = 4·⌈b/3⌉, toplam T = e + 2·⌈e/76⌉. Formül
+  normatiftir: ürün IMAP literal boyunu (`{T}`) veritabanındaki ham boydan
+  SQL ile hesaplar, dosyayı açmaz.
+- **Aralık.** `konum`/`adet` T baytlık kodlanmış akış (CRLF dahil)
+  üzerindedir; yazılan dilim [min(K,T), min(K+N,T)), dönen sayı
+  min(N, max(0, T−K)). K ≥ T boş başarıdır (RFC 3501/9051 kırpması);
+  negatif değer dosya açılmadan `geçersiz`. Aralık satır başına hizalı ham
+  konuma (`⌊K/78⌋·57`) atlayarak başlar; dosyanın baştan kodlanması
+  gerekmez.
+- **Akış.** Kodlanmış çıktı Zee değeri olmaz ve değer zarfına sayılmaz;
+  bellekte en çok bir ham parçanın (57·256 bayt) kodlaması durur. A2c
+  aktarımının 64 KiB geri basıncı, 256 KiB tur dilimi, mutlak
+  `boşta + bayt/64 KiB/sn` bütçesi (bayt = yazılan çıktı) ve kırık
+  bağlantı/`yazılamadı` kuralları aynen geçerlidir. `bağlantı_blok_sınırı`
+  ham dosya boyuna uygulanır; ayrıca kaynak dosya tavanı 32 MiB'tır
+  (K-395 çözerek yazma tavanıyla hizalı; ZeeMail 25 MB iletideki ~18 MB
+  ek): tavandaki dosya geçer, bir bayt fazlası hiç bayt yazılmadan
+  `boyut_aşımı` döner.
+- **Yol ve yetkinlik.** Kaynak, dosya okumasının merkezî yol denetiminden
+  geçer: proje dosyası `dosya-okuma`, `veri:` yolu `veri-okuma`; `veri:`
+  yaprağı A2c gibi bağ izlenmeden açılır.
+
+Neden RFC-0039 (A2d), RFC-0043 değil: davranışın güvenlik sınırı
+bağlantı akışıdır — geri basınç, süre bütçesi, kısmi yazımda eşzamanın
+bozulması ve C030 sınıflandırması RFC-0039 A2c'ye aittir. RFC-0043
+süreç içi dosya ↔ `Metin` dönüşümünü ve değer zarfını yönetir; A2d tam
+olarak o zarfı devre dışı bırakır. Saf kodlayıcı RFC-0043 Dilim 1'in
+`kodlama` modülünü paylaşır, ikinci bir base64 gerçeklemesi yazılmaz.
+
+Reddedilenler: base64'ü `Metin` olarak üretip satır yazmak (C024, ZM-F040'ın
+kendisi); RFC-0043'e "kodlayarak oku" eklemek (zarf sorunu sürer); ham
+dosya konumuyla aralık (IMAP partial kodlanmış çıktı üzerindedir, ürün
+satır hesabını Zee'de yeniden yazmak zorunda kalırdı); satır uzunluğunu
+parametre yapmak (RFC 2045 76'yı sabitler, yüzey büyür); quoted-printable
+kodlama (ihtiyaç yok, ürün yalnız base64 ek saklar).
+
 ### A2 açık soruları — kapandı
 
 - Engellemeyen IO katmanı: **`libc` `poll(2)` üzerinden dar reaktör**
@@ -774,7 +839,7 @@ kaybolur), bağlantılar arası uyandırma (Katman C/E; adım 5).
   testlerinden beslenir); binlerce boşta oturum ölçümü (H4); geliştirme
   için açık bayraklı loopback bind (bugün `systemd-socket-activate`);
   bağlantılar arası uyandırma (yeni ileti → IDLE oturumu; adım 5);
-  kısmi literal getirme ve dosya aralığı aktarımı.
+  ham dosya baytlarının kısmi aktarımı (base64 kodlu kısmi getirme A2d'de).
 
 ## Freeze ve kanıt kapısı
 

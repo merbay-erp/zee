@@ -16,7 +16,7 @@ bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani kalitesi kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,ag_satiri,agac,artefakt_dogrulama,bicimleyici,cozumleyici,dns_istemcisi,dns_teli,eposta,faz,gorsel,guvenlik,http_istegi,icerik_turu,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,sozcukleyici,surum,tani,test_kapsami,web_cok_parcali,web_guvenligi,web_kapanis,web_listener,web_metrikleri,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,ag_satiri,agac,artefakt_dogrulama,bicimleyici,cozumleyici,dns_istemcisi,dns_teli,eposta,faz,gorsel,guvenlik,http_istegi,icerik_turu,kalici_dosya,kaynak_sinirlari,kodlama,morfoloji,paket,postgresql,proje,sozcukleyici,surum,tani,test_kapsami,web_cok_parcali,web_guvenligi,web_kapanis,web_listener,web_metrikleri,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 dns_istemcisi	altyapi	dns_teli	Loopback DNS stub istemcisi: rastgele kimlik/kapı, eşleşmeyen paket atma, TC→TCP, 5 sn sınır, AD sınaması (K-390)
 dns_teli	altyapi	-	Sınırlı DNS tel biçimi: sorgu kurma, fail-closed yanıt ayrıştırma, CNAME zinciri ve çözüm (K-390, unsafe yok)

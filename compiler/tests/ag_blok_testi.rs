@@ -453,3 +453,224 @@ fn ad_cakismasi_ve_ortuk_baglanti_tanisi_ipucu_verir() {
         .unwrap_or_default()
         .contains("parametre olarak geçir"));
 }
+
+/// K-396: kütüphaneden bağımsız başvuru — bit tamponlu RFC 4648 alfabesi,
+/// 76 karakterde bir ve en sonda CRLF (RFC 2045 §6.8).
+pub fn basvuru_base64_satirli(veri: &[u8]) -> Vec<u8> {
+    const A: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let (mut kod, mut tampon, mut bit) = (Vec::new(), 0u32, 0u32);
+    for &b in veri {
+        tampon = (tampon << 8) | u32::from(b);
+        bit += 8;
+        while bit >= 6 {
+            bit -= 6;
+            kod.push(A[((tampon >> bit) & 63) as usize]);
+        }
+    }
+    if bit > 0 {
+        kod.push(A[((tampon << (6 - bit)) & 63) as usize]);
+    }
+    while kod.len() % 4 != 0 {
+        kod.push(b'=');
+    }
+    let mut cikti = Vec::new();
+    for satir in kod.chunks(76) {
+        cikti.extend_from_slice(satir);
+        cikti.extend_from_slice(b"\r\n");
+    }
+    cikti
+}
+
+/// K-396: tek aktarım satırı olan hermetik bağlantı; (ham giden, çıktı).
+fn base64_aktar(icerik: &str, satir: &str, blok_siniri: u64) -> (Vec<u8>, Vec<String>) {
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.baglanti.ayar.blok_siniri = blok_siniri;
+    io.dosyalar.insert("ekler/a.bin".into(), icerik.into());
+    io.baglanti
+        .bekleyenler
+        .push_back(SahteBaglanti::satirlarla("imap_v4", "192.0.2.26", &[]));
+    let kaynak = format!(
+        r#"
+"imap_v4" dinleyicisinde bağlantı geldiğinde
+    aktarım {satir} olsun
+    aktarım başarılıysa
+        aktarımın değeri yaz
+    değilse
+        hata aktarımın hatası olsun
+        veri hatanın verisi olsun
+        verinin "tür" değeri yaz
+"#
+    );
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    calistir_io_kodla(&program, &mut io).expect("çalışmalı");
+    (io.baglanti.baglantilar[0].ham_giden.clone(), io.cikti)
+}
+
+fn ascii_icerik(boy: usize) -> String {
+    (0..boy)
+        .map(|i| (b' ' + (i * 7 % 95) as u8) as char)
+        .collect()
+}
+
+#[test]
+fn base64_satirli_aktarim_basvuruyla_bayt_bayt_ve_formul_uzunlugunda() {
+    for boy in [0usize, 1, 2, 3, 57, 58, 114, 1000, 70_000] {
+        let icerik = ascii_icerik(boy);
+        let (giden, cikti) = base64_aktar(
+            &icerik,
+            "\"ekler/a.bin\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene",
+            1 << 20,
+        );
+        let beklenen = basvuru_base64_satirli(icerik.as_bytes());
+        assert_eq!(giden, beklenen, "boy={boy}");
+        let e = 4 * boy.div_ceil(3);
+        let formul = e + 2 * e.div_ceil(76);
+        assert_eq!(cikti, vec![formul.to_string()], "boy={boy}");
+        assert!(giden.split(|b| *b == b'\n').all(|s| s.len() <= 77));
+    }
+}
+
+#[test]
+fn base64_aralik_kodlanmis_ciktinin_kenarlarinda_dilimle_esit() {
+    let icerik = ascii_icerik(200);
+    let tum = basvuru_base64_satirli(icerik.as_bytes());
+    let toplam = tum.len() as i64;
+    for (konum, adet) in [
+        (0, 0),
+        (0, 1),
+        (0, 1024),
+        (75, 3),
+        (76, 2),
+        (77, 1),
+        (78, 78),
+        (79, 200),
+        (toplam - 1, 5),
+        (toplam, 10),
+        (toplam + 5, 1),
+        (3, i64::MAX),
+    ] {
+        let (giden, cikti) = base64_aktar(
+            &icerik,
+            &format!("\"ekler/a.bin\" dosyasının base64 satırlarının {konum} baytından {adet} baytını bağlantıya aktarmayı dene"),
+            1 << 20,
+        );
+        let bas = konum.min(toplam) as usize;
+        let son = konum.saturating_add(adet).min(toplam) as usize;
+        assert_eq!(giden, &tum[bas..son], "konum={konum} adet={adet}");
+        assert_eq!(cikti, vec![(son - bas).to_string()]);
+    }
+}
+
+#[test]
+fn base64_aktarim_negatif_aralik_yok_ve_sinir_sonuctur() {
+    let icerik = ascii_icerik(100);
+    let aralik = |konum: &str, adet: &str| {
+        format!("\"ekler/a.bin\" dosyasının base64 satırlarının {konum} baytından {adet} baytını bağlantıya aktarmayı dene")
+    };
+    for satir in [aralik("-1", "5"), aralik("0", "-1")] {
+        let (giden, cikti) = base64_aktar(&icerik, &satir, 1 << 20);
+        assert!(giden.is_empty());
+        assert_eq!(cikti, vec!["geçersiz"]);
+    }
+    let (giden, cikti) = base64_aktar(
+        &icerik,
+        "\"ekler/yok.bin\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene",
+        1 << 20,
+    );
+    assert!(giden.is_empty());
+    assert_eq!(cikti, vec!["dosya"]);
+    // Sınır ham dosya boyuna uygulanır (kodlanmış çıktı ~%37 büyür).
+    let (giden, cikti) = base64_aktar(
+        &icerik,
+        "\"ekler/a.bin\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene",
+        99,
+    );
+    assert!(giden.is_empty());
+    assert_eq!(cikti, vec!["boyut_aşımı"]);
+    let (_, cikti) = base64_aktar(
+        &icerik,
+        "\"ekler/a.bin\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene",
+        100,
+    );
+    assert_eq!(cikti, vec!["140"]);
+}
+
+#[test]
+fn base64_aktarim_kaynak_tavani_32_mib_gecer_bir_bayt_fazlasi_reddedilir() {
+    // `bağlantı_blok_sınırı` 1 GiB: yalnız K-396 kaynak tavanı (32 MiB) sınar.
+    let tavan = dil::ag_satiri::BASE64_KAYNAK_TAVANI as usize;
+    assert_eq!(tavan, 32 * 1024 * 1024);
+    let tam = "\"ekler/a.bin\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene";
+    let dilim = "\"ekler/a.bin\" dosyasının base64 satırlarının 0 baytından 4 baytını bağlantıya aktarmayı dene";
+    let icerik = "A".repeat(tavan);
+    let (giden, cikti) = base64_aktar(&icerik, tam, 1 << 30);
+    let e = 4 * tavan.div_ceil(3);
+    assert_eq!(cikti, vec![(e + 2 * e.div_ceil(76)).to_string()]);
+    assert_eq!(giden.len(), 45_916_594);
+    let (giden, cikti) = base64_aktar(&icerik, dilim, 1 << 30);
+    assert_eq!(
+        (giden.as_slice(), cikti),
+        (&b"QUFB"[..], vec!["4".to_string()])
+    );
+    let fazla = "A".repeat(tavan + 1);
+    for satir in [tam, dilim] {
+        let (giden, cikti) = base64_aktar(&fazla, satir, 1 << 30);
+        assert!(giden.is_empty(), "{satir}");
+        assert_eq!(cikti, vec!["boyut_aşımı"], "{satir}");
+    }
+}
+
+#[test]
+fn base64_aktarim_kaliplari_turlu_arguman_ister_ve_iz_replay_eder() {
+    for kaynak in [
+        "x 5 dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun\n",
+        "x \"a\" dosyasının base64 satırlarının \"0\" baytından 1 baytını bağlantıya aktarmayı dene olsun\n",
+        "x \"a\" dosyasının base64 satırlarının 0 baytından doğru baytını bağlantıya aktarmayı dene olsun\n",
+    ] {
+        let hata = dil::kaynagi_derle(kaynak).unwrap_err();
+        assert_eq!(hata.kod, "T034", "{kaynak}: {}", hata.mesaj);
+    }
+    let program = dil::kaynagi_derle(
+        "x \"a\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun\n",
+    )
+    .unwrap();
+    let hata = calistir_io(&program, &mut ToplayanIo::yeni(Vec::new())).unwrap_err();
+    assert_eq!(hata.kod, "C030");
+
+    let kaynak = r#"
+"imap_v4" dinleyicisinde bağlantı geldiğinde
+    tüm "ekler/a.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+    parça "ekler/a.bin" dosyasının base64 satırlarının 70 baytından 20 baytını bağlantıya aktarmayı dene olsun
+    tüm başarılıysa
+        parça başarılıysa
+            tümün değeri ile " " ile parçanın değeri yaz
+"#;
+    let mut io = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+    io.ic
+        .dosyalar
+        .insert("ekler/a.bin".into(), ascii_icerik(90));
+    io.ic
+        .baglanti
+        .bekleyenler
+        .push_back(SahteBaglanti::satirlarla("imap_v4", "192.0.2.27", &[]));
+    let program = dil::kaynagi_derle(kaynak).unwrap();
+    calistir_io(&program, &mut io).unwrap();
+    let iz = io.iz_metni().unwrap();
+    let ic = io.icine_al();
+    assert_eq!(ic.cikti, vec!["124 20"]);
+    // İz içeriksizdir: yol ve aralık var, dosya içeriği ya da base64 yok.
+    let hex = |m: &str| m.bytes().map(|b| format!("{b:02x}")).collect::<String>();
+    assert!(
+        iz.contains(&hex("aktar_b64")) && iz.contains(&hex("70+20")),
+        "{iz}"
+    );
+    let kod = basvuru_base64_satirli(ascii_icerik(90).as_bytes());
+    assert!(
+        !iz.contains(&hex(std::str::from_utf8(&kod[..20]).unwrap())),
+        "{iz}"
+    );
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    calistir_io(&program, &mut oynatici).unwrap();
+    assert_eq!(oynatici.uyusmazlik(), None);
+    assert_eq!(oynatici.cikti, ic.cikti);
+}
