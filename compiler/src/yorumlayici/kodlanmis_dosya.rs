@@ -12,18 +12,8 @@ use crate::intrinsic::{
 };
 use crate::kodlama::{self, KodlamaHatasi, AZAMI_PARCA_BAYTI};
 
-pub(super) fn kimlik_mi(kimlik: &str) -> bool {
-    matches!(
-        kimlik,
-        DOSYA_ARALIK_METIN
-            | DOSYA_ARALIK_BASE64
-            | DOSYA_BASE64_YAZ
-            | DOSYA_BASE64_EKLE
-            | DOSYA_QP_YAZ
-            | DOSYA_QP_EKLE
-    )
-}
-
+/// K-389 kimlikleri; dağıtıcının kalan kolu buraya gelir, tanınmayan
+/// kimlik iç tutarlılık hatasıdır.
 pub(super) fn degerlendir(
     kimlik: &str,
     degerler: &[Deger],

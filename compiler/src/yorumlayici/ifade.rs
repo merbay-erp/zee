@@ -115,16 +115,13 @@ pub(super) fn degerlendir_async<'a>(
                     | GIZLI_COZ => {
                         kimlik_iletisim::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
-                    k if super::kodlanmis_dosya::kimlik_mi(k) => {
-                        super::kodlanmis_dosya::degerlendir(k, &degerler, io, satir)
-                    }
                     SENSOR_ACIK_MI => {
                         let [Deger::Metin(ad)] = degerler.as_slice() else {
                             return Err(ic_hata(satir));
                         };
                         Ok(Deger::Mantiksal(io.sensor_acik_mi(ad)))
                     }
-                    _ => Err(ic_hata(satir)),
+                    k => super::kodlanmis_dosya::degerlendir(k, &degerler, io, satir),
                 }
             }
             Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
