@@ -5675,6 +5675,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık; RFC-0039 A2d, ADR-172 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F040 (ürün commit'i `171f6b2`, SQL tarafı `c455cc8`):
+  IMAP `BODY[n]` gövdesi RFC 2045 base64 satırları ister; 57 baytlık okuma
+  döngüsü 16 MB ekte 29,6 sn + C024. Kullanıcı onayı 24 Kasım ~23:15
+  (merkez), aralıklı biçim dahil. Freeze sınıfı `dogfood-change`; K-164
+  sınıfı "yerleşik yüzey eksik".
+- Ev: RFC-0039 A2d (RFC-0043 değil): güvenlik sınırı bağlantı akışı
+  (geri basınç, süre, yarım yazım, C030); RFC-0043 süreç içi `Metin` ve
+  değer zarfını yönetir, A2d o zarfın dışında kalmalı. Ayrı ADR-172: formül
+  ve aralık semantiği ürünün SQL'ine sızan kalıcı sözleşme.
+- Karar: aralık kodlanmış akış (CRLF dahil) üzerinde, RFC 3501/9051
+  kırpması; gerçekleme `⌊K/78⌋·57` ham konuma `seek` eder. Satır uzunluğu
+  parametresi, QP kodlama ve ham aralık reddedildi. `kodlama` CLI'ye
+  `#[doc(hidden)]` iç modül olarak açıldı (katman kenarı `dil_cli → kodlama`).
+- Kanıt: 8 yeni test vakası + 2 birim; 16 MiB ek 0,87 sn (debug). GB-165.
+
 ## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045, ADR-170 (24 Kasım 2026)
 
 - Kaynak `urun-h` ZM-F038: ekleri yazan SMTP/gönderim/IMAP hizmetleri ile

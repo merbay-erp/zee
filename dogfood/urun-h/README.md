@@ -16,6 +16,7 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Webmail e-posta istemcisi autoconfig XML'ini ve Apple yapılandırma profilini kayıtlı türle sunamıyor (ZM-F033; K-385, çözüldü: ADR-163 eki) | `istemci-yapilandirma/` | RFC-0041 A (tür kaydı satırı) |
 | Gelen iletinin ekleri çıkarılamıyor: blok dosyası parça parça okunamıyor, base64/QP gövde bayt olarak yazılamıyor, bellekte SHA-256 yok (ZM-F034/ZM-F024; K-389, çözüldü: RFC-0043 Dilim 1) | `ek-cikarma/`, `korpus/zm-r005-bellekte-sha256.dil` | D (RFC-0043 Dilim 1) |
 | Ekleri yazan hizmetler ile sunan web ayrı proje kökleri; proje dosya sınırı paylaşılan depoyu engelliyor (ZM-F038; K-394, çözüldü: RFC-0045) | `paylasilan-depo/` | G (veri kökü yazımı) |
+| Dosyayı bağlantıya RFC 2045 base64 satırlarıyla akıtan yüzey yok; 57 baytlık okuma döngüsü 16 MB ekte 29,6 sn + C024 (ZM-F040; K-396, çözüldü: RFC-0039 A2d) | `imap-govde-base64/` | G (yerleşik yüzey eksik) |
 | `uzunluğu` harf sayar, UTF-8 oktet saymaz (ZM-F023; açık: RFC-0043 Dilim 2) | `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | D (RFC-0043 Dilim 2) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355

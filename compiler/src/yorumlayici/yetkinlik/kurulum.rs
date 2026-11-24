@@ -37,7 +37,8 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
         islem: &super::super::BaglantiIslemi,
     ) -> Result<(), String> {
         match islem {
-            super::super::BaglantiIslemi::DosyaAktar(yol) => {
+            super::super::BaglantiIslemi::DosyaAktar(yol)
+            | super::super::BaglantiIslemi::Base64Aktar { yol, .. } => {
                 self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)
             }
             _ => Ok(()),

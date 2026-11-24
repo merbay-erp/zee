@@ -37,6 +37,23 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
+  bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
+  satırları olarak (76 karakter + satır sonu) belleğe alınmadan
+  gönderilebilir:
+  `n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`.
+  Kodlanmış çıktının bir parçası da gönderilebilir (IMAP kısmi getirme):
+  `n yol dosyasının base64 satırlarının 0 baytından 1024 baytını bağlantıya aktarmayı dene olsun`.
+  Sonuç yazılan bayt sayısıdır; tam çıktının boyu `b` baytlık dosya için
+  e = 4·⌈b/3⌉ olmak üzere e + 2·⌈e/76⌉'dır, böylece boyu dosyayı açmadan
+  önceden hesaplayabilirsiniz. Yol için `dosya-okuma` (ya da `veri:` yolu
+  için `veri-okuma`) yetkinliği gerekir. 16 MB'lık ek artık bir saniyenin
+  altında gider; önceki 57 baytlık okuma döngüsü yavaştı ve bellek
+  sınırına takılıyordu.
+
+  **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
+  kalıpla değiştirebilirsiniz.
+
 - **Projeler arasında paylaşılan veri kökü (K-394):** aynı uygulamanın ayrı
   projeleri (ör. e-postayı alan hizmet ile eki sunan web paneli) artık ortak
   bir veri klasörünü paylaşabilir. `proje.dil` klasörün yolunu değil, yolu

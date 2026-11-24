@@ -38,6 +38,17 @@ pub struct SahteBaglanti {
     bekleme_ms: Option<i64>,
 }
 
+/// K-396: hermetik taraf aynı saf pencereyle (`kodlama`) üretir.
+fn base64_penceresi(icerik: &[u8], aralik: Option<(u64, u64)>) -> Vec<u8> {
+    let (konum, adet) = aralik.unwrap_or((0, u64::MAX));
+    let p = crate::kodlama::base64_satir_penceresi(icerik.len() as u64, konum, adet);
+    let mut cikti = Vec::new();
+    crate::kodlama::base64_satirlari_kodla(&icerik[p.ham_baslangic as usize..], &mut cikti);
+    cikti.drain(..p.atla as usize);
+    cikti.truncate(p.uzunluk as usize);
+    cikti
+}
+
 impl SahteBaglanti {
     pub fn yeni(dinleyici: &str, uzak_adres: &str, parcalar: &[&[u8]]) -> Self {
         Self {
@@ -216,6 +227,17 @@ impl ToplayanBaglanti {
                 Some(icerik) => {
                     b.ham_giden.extend_from_slice(icerik);
                     BaglantiSonucu::Tamam(icerik.len() as i64)
+                }
+            },
+            BaglantiIslemi::Base64Aktar { yol, aralik } => match self.dosyalar.get(yol) {
+                None => BaglantiSonucu::hata("dosya", format!("\"{yol}\" dosyası yok")),
+                Some(icerik) if icerik.len() as u64 > ayar.blok_siniri => {
+                    BaglantiSonucu::hata("boyut_aşımı", crate::ag_satiri::BLOK_SINIRI_ASILDI)
+                }
+                Some(icerik) => {
+                    let parca = base64_penceresi(icerik, *aralik);
+                    b.ham_giden.extend_from_slice(&parca);
+                    BaglantiSonucu::Tamam(parca.len() as i64)
                 }
             },
             BaglantiIslemi::Kapat => {

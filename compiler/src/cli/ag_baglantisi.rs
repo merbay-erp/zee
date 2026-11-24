@@ -66,9 +66,35 @@ impl AcikBlok {
 /// Sürmekte olan dosyadan bağlantıya aktarım.
 struct Aktarim {
     dosya: std::fs::File,
+    /// Dosyadan okunacak ham bayt.
     kalan: u64,
+    /// Zee'ye dönen bayt: ham aktarımda dosya boyu, base64'te çıktı penceresi.
     toplam: u64,
     son: Instant,
+    /// K-396: RFC 2045 satırlı base64 akışı; `None` ham aktarım.
+    kodlu: Option<KodluAktarim>,
+}
+
+/// K-396: kodlanmış çıktı penceresinin akış durumu. Bellekte en çok bir ham
+/// parçanın (57·256 bayt) kodlaması tutulur; `Metin` üretilmez.
+struct KodluAktarim {
+    bekleyen: Vec<u8>,
+    bas: usize,
+    /// İlk satırdan atlanacak çıktı baytı (pencere satır ortasında başlar).
+    atla: u64,
+    cikti_kalan: u64,
+}
+
+/// K-396: bir okumada kodlanan ham bayt; 57'nin katı, satır hizası korunur.
+const KODLU_HAM_PARCA: u64 = dil::kodlama::BASE64_SATIR_HAM_BAYTI * 256;
+
+impl Aktarim {
+    fn bitti(&self) -> bool {
+        match &self.kodlu {
+            Some(k) => k.cikti_kalan == 0,
+            None => self.kalan == 0,
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -994,8 +1020,8 @@ impl Reaktor {
     fn aktarim_ac(
         yol: &std::path::Path,
         veri: Option<&str>,
-        blok_siniri: u64,
-        bosta: i64,
+        (blok_siniri, bosta): (u64, i64),
+        kodlu: Option<(u64, u64)>,
     ) -> Result<Aktarim, BaglantiSonucu> {
         // K-394: `veri:` yaprağı bağ izlenmeden, tek hard-link olarak açılır.
         let dosya = match veri {
@@ -1012,17 +1038,97 @@ impl Reaktor {
         if bilgi.len() > blok_siniri {
             return Err(BaglantiSonucu::hata("boyut_aşımı", BLOK_SINIRI_ASILDI));
         }
-        let butce = akis_butcesi_ms(bosta, bilgi.len());
-        Ok(Aktarim {
+        let mut aktarim = Aktarim {
             dosya,
             kalan: bilgi.len(),
             toplam: bilgi.len(),
-            son: Instant::now() + Duration::from_millis(butce.max(0) as u64),
-        })
+            son: Instant::now(),
+            kodlu: None,
+        };
+        if let Some((konum, adet)) = kodlu {
+            Self::kodlu_pencereyi_ac(&mut aktarim, konum, adet)?;
+        }
+        // Süre bütçesi gerçekten yazılacak bayta göre (K-372 hız tabanı).
+        let butce = akis_butcesi_ms(bosta, aktarim.toplam);
+        aktarim.son += Duration::from_millis(butce.max(0) as u64);
+        Ok(aktarim)
+    }
+
+    /// K-396: kodlanmış çıktı penceresinin ilk satırına konumlanır.
+    fn kodlu_pencereyi_ac(
+        aktarim: &mut Aktarim,
+        konum: u64,
+        adet: u64,
+    ) -> Result<(), BaglantiSonucu> {
+        use std::io::{Seek, SeekFrom};
+        let pencere = dil::kodlama::base64_satir_penceresi(aktarim.kalan, konum, adet);
+        aktarim
+            .dosya
+            .seek(SeekFrom::Start(pencere.ham_baslangic))
+            .map_err(|hata| {
+                BaglantiSonucu::hata("dosya", format!("dosya konumlanamadı: {hata}"))
+            })?;
+        aktarim.kalan -= pencere.ham_baslangic;
+        aktarim.toplam = pencere.uzunluk;
+        aktarim.kodlu = Some(KodluAktarim {
+            bekleyen: Vec::new(),
+            bas: 0,
+            atla: pencere.atla,
+            cikti_kalan: pencere.uzunluk,
+        });
+        Ok(())
+    }
+
+    /// K-396: giden tampona en çok `butce` kodlanmış bayt; (eklenen, kısaldı).
+    fn kodlu_doldur(
+        dosya: &mut std::fs::File,
+        kalan: &mut u64,
+        k: &mut KodluAktarim,
+        giden: &mut Vec<u8>,
+        butce: usize,
+    ) -> (usize, bool) {
+        let mut eklenen = 0usize;
+        while k.cikti_kalan > 0 && giden.len() < GIDEN_TAMPON_BAYTI && eklenen < butce {
+            if k.bas == k.bekleyen.len() {
+                if !Self::kodlu_parca_oku(dosya, kalan, k) {
+                    return (eklenen, true);
+                }
+                continue;
+            }
+            let n = (k.bekleyen.len() - k.bas)
+                .min(GIDEN_TAMPON_BAYTI - giden.len())
+                .min(usize::try_from(k.cikti_kalan).unwrap_or(usize::MAX));
+            giden.extend_from_slice(&k.bekleyen[k.bas..k.bas + n]);
+            k.bas += n;
+            k.cikti_kalan -= n as u64;
+            eklenen += n;
+        }
+        (eklenen, false)
+    }
+
+    /// Sıradaki ham parçayı okuyup satırlı kodlar; dosya kısaldıysa `false`.
+    fn kodlu_parca_oku(dosya: &mut std::fs::File, kalan: &mut u64, k: &mut KodluAktarim) -> bool {
+        let istek = KODLU_HAM_PARCA.min(*kalan) as usize;
+        let mut ham = vec![0u8; istek];
+        if istek == 0 || dosya.read_exact(&mut ham).is_err() {
+            return false;
+        }
+        *kalan -= istek as u64;
+        k.bekleyen.clear();
+        dil::kodlama::base64_satirlari_kodla(&ham, &mut k.bekleyen);
+        let atla = usize::try_from(k.atla)
+            .unwrap_or(usize::MAX)
+            .min(k.bekleyen.len());
+        k.bas = atla;
+        k.atla -= atla as u64;
+        true
     }
 
     /// Dosyadan giden tampona en çok `butce` bayt; (eklenen, dosya kısaldı).
     fn aktarim_doldur(aktarim: &mut Aktarim, giden: &mut Vec<u8>, butce: usize) -> (usize, bool) {
+        if let Some(k) = aktarim.kodlu.as_mut() {
+            return Self::kodlu_doldur(&mut aktarim.dosya, &mut aktarim.kalan, k, giden, butce);
+        }
         let mut parca = [0u8; 16 * 1024];
         let mut eklenen = 0usize;
         while aktarim.kalan > 0 && giden.len() < GIDEN_TAMPON_BAYTI && eklenen < butce {
@@ -1051,12 +1157,15 @@ impl Reaktor {
         BaglantiSonucu::hata("yazılamadı", neden)
     }
 
-    /// K-384: çözülmüş yoldaki dosyayı giden tampona geri basınçla akıtır.
+    /// K-384: çözülmüş yoldaki dosyayı giden tampona geri basınçla akıtır;
+    /// K-396: `kodlu` verilirse dosyanın satırlı base64 çıktısının
+    /// (konum, adet) penceresini akıtır.
     pub(crate) fn dosya_aktar(
         &mut self,
         kimlik: u64,
         yol: &std::path::Path,
         veri: Option<&str>,
+        kodlu: Option<(u64, u64)>,
     ) -> BaglantiSonucu {
         let bosta = self.ayar.bosta_suresi_ms;
         let blok_siniri = self.ayar.blok_siniri;
@@ -1068,7 +1177,7 @@ impl Reaktor {
             return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
         }
         if b.aktarim.is_none() {
-            match Self::aktarim_ac(yol, veri, blok_siniri, bosta) {
+            match Self::aktarim_ac(yol, veri, (blok_siniri, bosta), kodlu) {
                 Ok(aktarim) => b.aktarim = Some(aktarim),
                 Err(ret) => return ret,
             }
@@ -1083,11 +1192,11 @@ impl Reaktor {
             let (eklenen, kisaldi) =
                 Self::aktarim_doldur(aktarim, &mut b.giden, BLOK_DILIMI.saturating_sub(islenen));
             islenen += eklenen;
-            let (kalan, toplam, son) = (aktarim.kalan, aktarim.toplam, aktarim.son);
+            let (bitti, toplam, son) = (aktarim.bitti(), aktarim.toplam, aktarim.son);
             if !bosalt(&mut b.kanal, &mut b.giden) {
                 return Self::aktarim_kes(b, "karşı taraf bağlantıyı kapattı");
             }
-            if kalan == 0 {
+            if bitti {
                 b.aktarim = None;
                 b.bekleme = None;
                 b.zaman_asti = false;
@@ -1125,7 +1234,7 @@ impl Reaktor {
             BaglantiIslemi::BaytBlogu(adet) => self.blok_al(kimlik, Some(*adet)),
             BaglantiIslemi::BaytOku(adet) => self.bayt_oku(kimlik, *adet),
             // Yol çözümü ve `dosya-okuma` denetimi adaptörde (main.rs) yapılır.
-            BaglantiIslemi::DosyaAktar(_) => {
+            BaglantiIslemi::DosyaAktar(_) | BaglantiIslemi::Base64Aktar { .. } => {
                 BaglantiSonucu::hata("dosya", "dosya yolu adaptörde çözülmedi")
             }
             BaglantiIslemi::Kapat => self.kapat(kimlik),

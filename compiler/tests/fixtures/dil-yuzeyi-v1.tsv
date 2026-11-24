@@ -1,6 +1,8 @@
 # zee-dil-yuzeyi-1
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
+api	ag.baglanti_base64_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BASE64_AKTAR: &str = "ag.baglanti_base64_aktar";
+api	ag.baglanti_base64_aralik_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar";
 api	ag.baglanti_bayt_blogu	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BAYT_BLOGU: &str = "ag.baglanti_bayt_blogu";
 api	ag.baglanti_bayt_oku	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BAYT_OKU: &str = "ag.baglanti_bayt_oku";
 api	ag.baglanti_dosya_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
@@ -233,6 +235,8 @@ kalip	quoted_printable	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	satırlarının	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	satırlarıyla	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	satırını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
