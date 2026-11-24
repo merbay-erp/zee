@@ -1,8 +1,8 @@
 use super::*;
-mod http;
-
 mod baglanti;
 mod dosya;
+mod http;
+mod sira;
 mod web;
 pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
     let mut harfler = kod.chars();
@@ -183,7 +183,7 @@ fn bolge_ifadesi_ic(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> R
     if let Some(ifade) = yapili_kalip(tokenlar, islemler)? {
         return Ok(ifade);
     }
-    let ikinci = &tokenlar[1];
+    let ikinci = sira::kalip_disi_tanisi(tokenlar).map_or(Ok(&tokenlar[1]), Err)?;
     Err(Tani::yeni(
         "S015",
         "İki değer yan yana geldi; aralarına \"ile\" koy ya da bilinen bir kalıp kullan.".into(),
@@ -549,7 +549,7 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         Some(k) => k,
         None => return Ok(None),
     };
-    if let Some(ifade) = kimlik_iletisim::yapili_kalip(tokenlar)? {
+    if let Some(ifade) = kimlik_iletisim::yapili_kalip(tokenlar)?.or(sira::kalip(tokenlar)?) {
         return Ok(Some(ifade));
     }
 

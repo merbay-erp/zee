@@ -7,16 +7,16 @@ ile temiz ağaçta exact SHA'yla [`docs/dogfood-karsilastirma-v1.tsv`](dogfood-k
 tarihçesine yazılır.
 
 <!-- ZEE-KARSILASTIRMA:BEGIN -->
-Son ölçüm: `41135379556c` · 2026-11-24 · darwin-arm64 · rustc 1.98.1 (48a229cea 2026-09-01) · go go1.26.1 · 10 tur medyanı.
+Son ölçüm: `a1299d087f26` · 2026-11-24 · darwin-arm64 · rustc 1.98.1 (48a229cea 2026-09-01) · go go1.26.1 · 10 tur medyanı.
 
 | Ölçü | Zee | Rust | Go |
 |---|---:|---:|---:|
-| Kaynak satırı (boş/yorum dışı, testler dahil) | 639 | 364 | 328 |
+| Kaynak satırı (boş/yorum dışı, testler dahil) | 634 | 364 | 328 |
 | Birim testi | 19 | 6 | 6 |
-| Soğuk derleme süresi (ms; Zee yorumlayıcı: ürün derlemesi çalışma süresinde) | - | 4900 | 6731 |
-| Çalışma süresi (ms; Zee: derle+yürüt) | 283 | 3 | 3 |
-| Tepe RSS (KiB) | 14464 | 2912 | 6160 |
-| Korpusa giren sürtünme vakası | 21 | — | — |
+| Soğuk derleme süresi (ms; Zee yorumlayıcı: ürün derlemesi çalışma süresinde) | - | 2484 | 1936 |
+| Çalışma süresi (ms; Zee: derle+yürüt) | 84 | 3 | 3 |
+| Tepe RSS (KiB) | 14288 | 2912 | 6000 |
+| Korpusa giren sürtünme vakası | 22 | — | — |
 <!-- ZEE-KARSILASTIRMA:END -->
 
 ## Platform satırları
@@ -49,8 +49,10 @@ satırında okunur, Linux satırı yalnız süre için anlamlıdır.
   sayıma dahildir (Rust/Go 6'şar).
 - Çalışma süresi ve tepe RSS: yorumlayıcı derle+yürüt, derlenmiş ikilinin
   ~30 katı; RSS 2,6–5×. V1 sözü değildir.
-- Sıra ile öğe erişimi yok (F010) ve `\t` kaçışı yok (F011): TSV işleme
-  Rust/Go'dan daha dolaylı yazılıyor.
+- `\t` kaçışı yok (F011): TSV işleme Rust/Go'dan daha dolaylı yazılıyor.
+  Sıra ile öğe erişimi (F010) K-386/RFC-0029 ile kapandı: başlık→alan
+  eşlemesi ve çift birleştirme artık `alanların sıra. öğesi` ile, iç içe
+  sayaç döngüsü olmadan yazılıyor (çıktı bayt bayt aynı).
 - Morfoloji kökü seçimi (F006/F007/F008/F013) ad seçimini kısıtlıyor;
   `zee-tr-2` adayı.
 - Çağrı argümanında birleştirme (F003) ve postfix zinciri (F014) ara ad

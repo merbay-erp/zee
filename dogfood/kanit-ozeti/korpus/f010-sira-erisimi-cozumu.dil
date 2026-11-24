@@ -1,0 +1,7 @@
+# K-164/F010 → K-386 (RFC-0029): hedef sıradaki öğe doğrudan `alanların 2.
+# öğesi` ile okunur. Eski ret (`2 inci`, S015) ve sayaçlı çözüm tarihsel
+# vaka olarak korunur; ürün `bilgiye çevir` / `çiftleri birleştir` bu yüzeye geçti.
+
+alanlar "GB-001", "kapali", "yuksek" listesi olsun
+durum alanların 2. öğesi olsun
+durum yaz

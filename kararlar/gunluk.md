@@ -5905,6 +5905,34 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   proje kökünde kaldıkça sınır içi).
 - Takip önerisi (açık, ayrı `dogfood-change`): `proje.dil` `veri_kökü`
   alanı. Bkz. backlog K-382.
+## K-386 — Liste sıra erişimi; RFC-0029 kabul ve uygulama (24 Kasım 2026)
+- Karar (Mustafa, 24 Kasım 2026): K-180 "syntax freeze içinde açılmaz"
+  kaydı kaldırıldı. Dört bağımsız kanıt aynı sayaç döngüsünü yazdırdı:
+  kanıt özeti (K-164/F010), kelime avı (K-179), ürün H (K-355/F002) ve
+  bağımsız karşılaştırma raporundaki ikili arama (O(log n) yerine
+  O(n log n)). Freeze sınıfı `dogfood-change`; karar ADR-166.
+- Seçim: aday C, `<liste>nin <sıra>. öğesi` (A onun sabit hâli). Yazıyla
+  sıra (B) `-inci` eki ister ve değişken sıra veremez; reddedildi. Yeni
+  morfoloji eki gerekmedi (`harflerin` mevcut tamlayan çözümü).
+- 1 tabanlı: `ilki` ile tutarlı; ürünlerin elle yazdığı sayaçlarda 0/1
+  karışıklığı vardı. Sabit 0/negatif T059, değişken aralık dışı C031.
+- Hata modeli: taslağın açık sorusu Sonuç ile kapandı (`… öğesini almayı
+  dene`, Hata kodu `SIRA_DISI`); RFC-0008 ailesiyle aynı.
+- Yazma: açılmadı. Ürün kanıtının tamamı okuma; yazma T053 kaynak
+  sabitliğine yeni yol ve `olsun` ad konumu genişlemesi getirir. Girişim
+  S049 ile gezme yazmasına yönlendirilir.
+- Grammar: sözcükleyiciye tek dar token (bitişik nokta + boşluk + `öğe…`);
+  bu nokta önceden her konumda S001 olduğundan eski programların token
+  dizileri değişmez. Syntax freeze kaydına açıkça yazıldı.
+- O(1): yorumlayıcı liste adını ortamdan ödünç alır, yalnız öğeyi kopyalar;
+  sayan global ayırıcı testi bunu zamanlamasız sınar. Bilinen sınır:
+  listeyi işlem argümanı yapmak spec/17 gereği O(n) kopya (ayrı iş).
+- Seçim ölçütü 1 (K-161/K-162 insan kartı) karşılanmadı; kart geriye dönük
+  doğrulama olarak kalır.
+- Ürünler: kanıt özeti iki iç içe sayaç döngüsü, kelime avı iki yardımcı
+  işlem ve bir alan döngüsü sıra erişimine taşındı; çıktılar bayt bayt aynı,
+  K-165 Rust/Go eşdeğerleri değişmedi. Ürün H kaynağı harici; değişiklik
+  ürün sahibinde.
 
 ## K-383 — RFC-0043 ve RFC-0044 taslakları: bayt/kodlama/özet; DNS, posta kimlik doğrulama ve teslim güvenliği (24 Kasım 2026)
 

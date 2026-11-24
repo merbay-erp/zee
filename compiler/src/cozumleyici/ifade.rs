@@ -1,4 +1,5 @@
 use super::*;
+mod sira;
 
 pub(super) fn ifade_denetle(
     ifade: &mut Ifade,
@@ -293,6 +294,10 @@ fn ifade_denetle_ic(
                 ));
             }
             Ok(deger_turu.ture())
+        }
+        Ifade::ListeOgesi { liste, sira, dene } => {
+            let oge = sira::liste_ogesi_turu(liste, sira, ortam, baglam, satir)?;
+            Ok(if *dene { Tur::Sonuc(oge) } else { oge.ture() })
         }
         Ifade::SozlukteVar {
             sozluk, anahtar, ..

@@ -5,7 +5,7 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	95d1d729c79997b30831e7cc9faffa496968aa984b98e5d7257b62e9817501e3
+dondurulmus_sha256	134c20e635cf603ad22f18528f1c75c11a3dcb5f0d910e67ae984e37783a692b
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
@@ -29,4 +29,5 @@ dondurulmus_sha256	95d1d729c79997b30831e7cc9faffa496968aa984b98e5d7257b62e981750
 
 # K-384/ADR-165 A2c eki/RFC-0039 A2c: ZeeMail (urun-h, ZM-F031/F032) DATA gövdesi, IMAP literal'i, satır sonusuz yazma, dosya aktarımı ve kısa süreli okuma için altı contextual Sonuç kalıbı (`bağlantıdan nokta bloğunu dosyaya almayı dene`, `bağlantıdan <n> baytı dosyaya almayı dene`, `bağlantıdan <n> bayt okumayı dene`, `bağlantıya <metin> parçasını yazmayı dene`, `bağlantıya <yol> dosyasını aktarmayı dene`, `bağlantıdan satır okumayı <n> saniye içinde dene`) ve var olan yazma cümlesinin `… parçasını yaz` biçimi pencere SONRASI eklendi (yeni kalıp kelimeleri `nokta`, `bloğunu`, `dosyaya`, `almayı`, `baytı`, `bayt`, `parçasını`, `aktarmayı`). Yeni anahtar kelime, kaçış dizisi, değer türü ve koşul grameri yoktur; blok sınırı proje bildirimidir (P020).
 
+# K-386/ADR-166/RFC-0029 (24 Kasım 2026 Mustafa kararı, dogfood-change istisnası): K-180 "freeze içinde açılmaz" kaydı dört ürün kanıtıyla (kanıt özeti K-164/F010, kelime avı K-179, ürün H K-355/F002, bağımsız karşılaştırma raporundaki ikili arama) bilinçli olarak kaldırıldı. Liste sıra erişimi `<liste>nin <sıra>. öğesi` ve Sonuç biçimi `… öğesini almayı dene` pencere SONRASI eklendi (yeni kalıp kelimeleri `öğesi`, `öğesini`). Bu ekleme contextual kalıptan büyüktür ve açıkça kaydedilir: sözcükleyiciye tek dar token (sıra eki noktası: sayıya/ada/metne BİTİŞİK, ardından boşluk ve `öğe…`) ve iki yeni AST ifadesi eklendi. Önceden geçerli her program aynı anlamı korur (bu nokta eskiden her konumda S001 idi; `3.14` ve öteki noktalar S001 kalır). Yeni değer türü, koşul grameri, anahtar kelime ve eski kalıp kaldırması yoktur; indeksle yazma bilinçli olarak açılmadı.
 # K-389/ADR-167/RFC-0043 Dilim 1: urun-h (ZM-F034/F024) gelen ileti eklerini çıkarmak ve DKIM gövde özeti için iki aralıklı okuma, dört çözerek yazma/ekleme contextual Sonuç kalıbı ve bir özellik (`metnin sha256 özeti`); yeni kalıp kelimeleri `baytından`, `base64`, `quoted_printable`, `çözerek`, `özeti` pencere SONRASI eklendi. Yeni tür ya da grammar kuralı yok.
