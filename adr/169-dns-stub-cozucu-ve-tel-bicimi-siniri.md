@@ -6,7 +6,7 @@
   ZM-R006, ADR-059 (core freeze), ADR-064 (dil yüzeyi), ADR-011 (intrinsic
   sınırı), ADR-038 (tedarik zinciri), ADR-022/ADR-056 (fuzz ve RC kapısı),
   K-362/GB-109 (bağımsız kâhin emsali), K-375/RFC-0042 (son tarih modeli),
-  K-173/ADR-069 (soak), spec/31, spec/23, spec/21, GB-161
+  K-173/ADR-069 (soak), spec/31, spec/23, spec/21, GB-163
 
 ## Bağlam
 

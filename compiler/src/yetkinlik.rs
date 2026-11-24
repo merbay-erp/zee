@@ -195,10 +195,21 @@ impl YetkinlikPolitikasi {
         }
     }
 
-    /// Bildirimsiz tek dosya geliştirici akışı. Dış dünya yetkinlikleri açık
-    /// kalır; outbound ağ yine yalnız public HTTPS hedefine çıkabilir. `dns`
-    /// çözücü bildirimi ister (K-390), bildirimsiz akışta kapalıdır.
+    /// Bildirimsiz tek dosya geliştirici akışı. Dosya ve yerel adaptörler açık
+    /// kalır; K-387 ile dış ağ (`ağ`) varsayılan kapalıdır. Açmak için açık
+    /// `--izin ağ` bayrağı [`Self::gelistirici_agli`] profilini seçer. `dns`
+    /// çözücü bildirimi ister (K-390), bildirimsiz akışta hep kapalıdır.
     pub fn gelistirici() -> Self {
+        let mut politika = Self::gelistirici_agli();
+        politika.izinler.remove(&Yetkinlik::Ag);
+        politika.ag_hedefleri = AgHedefKapsami::Kapali;
+        politika
+    }
+
+    /// `--izin ağ` ile açılan tek dosya profili: outbound yalnız public
+    /// HTTPS/SMTPS hedefine çıkabilir; `yerel-ağ` ve `veritabanı` kapalıdır.
+    /// Gerçek ağa çıkmayan `dene` ve IO izi oynatma da bu profili kullanır.
+    pub fn gelistirici_agli() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
             .filter(|yetkinlik| {
@@ -213,6 +224,11 @@ impl YetkinlikPolitikasi {
             ag_hedefleri: AgHedefKapsami::GenelInternet,
             dosya_siniri: DosyaSiniri::HerYer,
         }
+    }
+
+    /// Bildirimsiz tek dosya profillerinden biri mi (tanı önerisi seçimi).
+    pub const fn bildirimsiz(&self) -> bool {
+        matches!(self.dosya_siniri, DosyaSiniri::HerYer)
     }
 
     /// Çocuk modu yerel proje dosyalarını korur; ağ, sunucu ve donanımı açmaz.

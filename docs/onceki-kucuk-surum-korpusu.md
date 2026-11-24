@@ -6,7 +6,7 @@ Ayrı temiz klonda Rust1.93.1 ile derlenen eski CLI, 33 eski golden kaynağı
 her dosyanın exact Git blob ve SHA-256 kaydını tutar. Özel ürün korpusu veya
 beş anonim tam site yerine geçmez.
 
-Çalışma adayıyla karşılaştırmada 32/33 denetleme exit sonucu aynı kaldı.
+Çalışma adayıyla karşılaştırmada 32/33 denetleme exit sonucu aynı kaldı (K-387 sonrası 30/33; aşağıya bakın).
 `31-birimler.dil`, eski `hesap_araclari.dil` birimi açık parametre/dönüş türü
 bildirmediğinden mevcut T039 ile reddedilir. Bu yeni değişiklik değildir:
 [K-086 kararı](../spec/10-disari-acik-islem-sozlesmesi.md)
@@ -14,6 +14,13 @@ bildirmediğinden mevcut T039 ile reddedilir. Bu yeni değişiklik değildir:
 birimde `fiyatı al` yerine `fiyatı Ondalık olarak al` ve `Ondalık döndürür`
 yazar. Ana program değişmez; göçten sonra denetleme ve eski runtime çıktısı
 birebir geçer. Ham korpusun tamamı değişmeden uyumlu gösterilmez.
+
+K-387 (24 Kasım 2026) ile ikinci bilinçli kırılma kayıtlıdır:
+`24-http-istemcisi.dil` ve `27-zaman-asimi.dil` bildirimsiz tek dosyada dış
+ağ kullandığı için artık T054 ile reddedilir (30/33 aynı). Manifest bu iki
+satırda `security_break` taşır; betik T054 tanısını ve aynı dosyanın `dil denetle --izin ağ` göç
+yoluyla exit 0 verdiğini ayrıca doğrular. Karar spec/23 "Tek dosya kipinde
+dış ağ — K-387", ADR-031 eki, GB-161.
 
 Sabit 15 saf programda gerçek eski/yeni çalışma çıktıları eşittir. Girdi,
 rastgelelik, dosya, saat, ağ, web, donanım ve async örnekleri bu runtime

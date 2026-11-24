@@ -65,3 +65,20 @@ manifest doğrulaması, compile çıkarımı, runtime kapısı, olumlu/olumsuz t
 RFC/spec güncellemesi olmadan eklenemez. Registry taşıma/cache işi B-029'da,
 dosya metadata sözleşmesi B-048/K-128/ADR-032'de ayrı kapatılmıştır. Inbound
 proxy origin'i ve loopback peer güven sınırı B-052/K-139/ADR-036'da kapanır.
+
+## Ek — K-387: tek dosya kipinde dış ağ kapalı (24 Kasım 2026)
+
+Bağlam: bildirimsiz tek dosya profili geriye uyumluluk için `ağ` yetkinliğini
+örtük açıyordu (public HTTPS/SMTPS). Aynı kaynak proje kipinde bildirimsiz
+T054 alırken tek dosyada dış ağa çıkabiliyordu; "ağ varsayılan kapalı" iddiası
+yalnız proje kipinde doğruydu ve kullanıcı farkı göremiyordu (GB-161).
+
+Karar: tek dosya profili `ağ`sız başlar. Açık, tek değerli `--izin ağ` CLI
+bayrağı yalnız dosya işleneninden önce okunur ve eski sınırı (public
+`https`/`smtps`; `yerel-ağ`/`veritabanı` kapalı) açar. Projede bayrak
+reddedilir: yetki tek kaynaktan, manifestten gelir. Gerçek ağa çıkmayan
+`dene` ve IO izi oynatma eski profili korur. Uyarı + sonraki sürümde ret
+geçişi reddedildi: yerel tüketici taramasında tek dosya kipinde ağ kullanan
+betik/servis bulunmadı ve güvenlik varsayılanını bir sürüm daha açık bırakmak
+riski uzatırdı. Genel `--izin <yetkinlik>` listesi de reddedildi; diğer
+yetkinlikler bugün tek dosyada zaten açıktır ya da manifest ister.

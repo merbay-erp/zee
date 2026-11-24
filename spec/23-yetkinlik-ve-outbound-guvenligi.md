@@ -72,10 +72,27 @@ allowlist dışı origin'i kesin AST ifade aralığında T054'tür. Dinamik URL 
 origin denetiminden geçmek ZORUNDADIR.
 
 Proje çalıştırma ve denetleme manifest politikasını kullanır. `--güvenli`
-yalnız proje-kökü dosya okuma/yazmayı açar. Bildirimsiz tek dosya geriye uyumlu
-geliştirici profilidir; dosya ve adaptörler açık, outbound yalnız public
-HTTPS, `yerel-ağ` kapalıdır. Her runtime IO çağrısı policy sarmalayıcısından;
-native dosya/ağ/web adaptörü ayrıca aynı kapıdan geçer.
+yalnız proje-kökü dosya okuma/yazmayı açar. Bildirimsiz tek dosya geliştirici
+profilidir; dosya ve yerel adaptörler açık, `ağ`, `yerel-ağ` ve `veritabanı`
+kapalıdır. Her runtime IO çağrısı policy sarmalayıcısından; native
+dosya/ağ/web adaptörü ayrıca aynı kapıdan geçer.
+
+### Tek dosya kipinde dış ağ — K-387
+
+ZORUNLU: Bildirimsiz tek dosya kipinde `ağ` yetkinliği varsayılan kapalıdır;
+ağ kullanan program `dil çalıştır`, `dil denetle` ve `dil iz kaydet` ile
+yürütmeden önce T054 alır ve öneri `--izin ağ` bayrağını gösterir.
+
+TANIMLI: Yalnız dosya işleneninden önce yazılan `--izin ağ`, tek dosya
+kipinde outbound'u K-387 öncesi sınırla açar: yalnız public `https`/`smtps`
+hedefi; `yerel-ağ` ve `veritabanı` yine kapalıdır. İşlenenden sonraki aynı
+yazım programın argümanıdır ve yetki açmak YASAKTIR. Bayrak yalnız `ağ`
+değerini alır; tekrar, başka değer, başka komut, `--güvenli` ile birliktelik
+ve proje kipinde kullanım çıkış 2 ile reddedilir (projede yetki yalnız
+manifestten gelir).
+
+TANIMLI: Gerçek ağa çıkmayan `dil dene` (toplayan IO) ve `dil iz oynat`
+(kayıttan oynatma) tek dosya kipinde K-387 öncesi profili korur.
 
 Proje dosya yolu göreli ve kök içinde olmalıdır. Göreli yol giriş kaynağının
 klasöründen çözülür, sınır kökü `proje.dil` klasörüdür (spec/07 K-382).

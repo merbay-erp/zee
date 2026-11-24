@@ -31,6 +31,8 @@ mod adli_dinleyici;
 #[cfg(unix)]
 #[path = "cli/ag_baglantisi.rs"]
 mod ag_baglantisi;
+#[path = "cli/ag_izni.rs"]
+mod ag_izni;
 #[cfg(unix)]
 #[path = "cli/ag_tls.rs"]
 mod ag_tls;
@@ -466,7 +468,7 @@ fn govde() -> ExitCode {
         }
     };
     argumanlar.retain(|a| a != "--güvenli" && a != "--guvenli");
-    if let Err(hata) = cli_seceneklerini_denetle(&argumanlar) {
+    if let Err(hata) = cli_seceneklerini_denetle(&mut argumanlar, guvenli) {
         eprintln!("{hata}");
         return ExitCode::from(2);
     }
@@ -594,7 +596,9 @@ fn govde() -> ExitCode {
 /// K-221: Bir seçenek kaynak yolu gibi yorumlanmaz. Çalıştırılan programın
 /// kaynak yolundan sonraki argümanları ve iz kaydının program argümanları
 /// uygulamaya aittir; burada derleyici seçeneği olarak tüketilmez.
-fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
+fn cli_seceneklerini_denetle(argumanlar: &mut Vec<String>, guvenli: bool) -> Result<(), String> {
+    // K-387: tek dosya kipinde dış ağ yalnız açık `--izin ağ` ile açılır.
+    ag_izni::ayikla(argumanlar, guvenli)?;
     let komut = argumanlar.first().map(String::as_str).unwrap_or("");
     let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
         "denetle" => (&["--json", "--lint"], &[]),
@@ -862,7 +866,8 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let cikis = calistir_io_ile(&girdi, &girdi.politikasi(), &mut io, None);
+    // Oynatma gerçek ağa çıkmaz; kayıt anındaki tek dosya profiliyle aynı kalır.
+    let cikis = calistir_io_ile(&girdi, &girdi.yan_etkisiz_politika(), &mut io, None);
     let cikti = std::mem::take(&mut io.cikti);
     if let Err(hata) = io.bitir() {
         eprintln!("IO replay uyuşmazlığı: {}", hata);
@@ -1700,6 +1705,8 @@ where
 }
 
 struct KaynakGirdisi {
+    /// K-387: tek dosya kipinde açık `--izin ağ` verildi mi.
+    ag_izni: bool,
     kapsam: Option<dil_kapsam::Rapor>,
     kaynak: String,
     klasor: std::path::PathBuf,
@@ -1709,10 +1716,20 @@ struct KaynakGirdisi {
 
 impl KaynakGirdisi {
     fn politikasi(&self) -> dil::yetkinlik::YetkinlikPolitikasi {
-        self.proje
-            .as_ref()
-            .map(|proje| proje.ana_bildirim().yetkinlik_politikasi())
-            .unwrap_or_else(dil::yetkinlik::YetkinlikPolitikasi::gelistirici)
+        match &self.proje {
+            Some(proje) => proje.ana_bildirim().yetkinlik_politikasi(),
+            None if self.ag_izni => dil::yetkinlik::YetkinlikPolitikasi::gelistirici_agli(),
+            None => dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+        }
+    }
+
+    /// `dene` ve IO izi oynatma gerçek ağa çıkmaz (toplayan/replay IO); K-387
+    /// öncesi tek dosya profilini korur. Proje kipinde manifest aynen geçerlidir.
+    fn yan_etkisiz_politika(&self) -> dil::yetkinlik::YetkinlikPolitikasi {
+        match &self.proje {
+            Some(proje) => proje.ana_bildirim().yetkinlik_politikasi(),
+            None => dil::yetkinlik::YetkinlikPolitikasi::gelistirici_agli(),
+        }
     }
 
     fn dinleyiciler(&self) -> &[dil::proje::DinleyiciBildirimi] {
@@ -1909,7 +1926,11 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
             .filter(|p| !p.as_os_str().is_empty())
             .unwrap_or(yol)
             .to_path_buf();
+        if ag_izni::verildi() {
+            return Err(GirdiHatasi::Mesaj(ag_izni::PROJE_RET.into()));
+        }
         Ok(KaynakGirdisi {
+            ag_izni: false,
             kapsam: None,
             kaynak: giris.kaynak,
             klasor,
@@ -1929,6 +1950,7 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
             .unwrap_or_else(|| std::path::Path::new("."))
             .to_path_buf();
         Ok(KaynakGirdisi {
+            ag_izni: ag_izni::verildi(),
             kapsam: None,
             kaynak,
             klasor,
@@ -5274,7 +5296,10 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
                 return ExitCode::FAILURE;
             }
         };
-    if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi()) {
+    // `dene` toplayan IO ile koşar, gerçek ağa çıkmaz (K-387 öncesi profil).
+    if let Err(tani) =
+        dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.yan_etkisiz_politika())
+    {
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
     }

@@ -587,7 +587,11 @@ kuralı yoktur (rota kalıbının bağlantı karşılığı, `dene` ailesi):
   dolunca görev iptal edilir ve bağlantı kapanır.
 - **Bütçe.** Her bağlantı görevi kendi çalışma adımı/heap bütçesiyle başlar
   ve her başarılı satır okuması bütçeyi yeniler (komut başına bütçe); C023/
-  C024 yalnız o bağlantıyı bitirir.
+  C024 yalnız o bağlantıyı bitirir. K-388 (ZM-F035): protokol birimi
+  sınırı girdi tüketen ya da süresini dolduran her okuma dönüşüdür
+  (başarı, `zaman_aşımı`, `satır_uzun`, `satır_sonu`, `kodlama`, nokta
+  bloğunda `boyut_aşımı`); anında dönen `kapandı` ve okumadan dönen
+  `boyut_aşımı` yenilemez (spec/12 §9, ADR-165 eki).
 - **Bellek.** Bağlantı başına gelen tampon ≤ satır sınırı + 4 KiB, giden
   tampon ≤ 64 KiB; sınırsız kuyruk yoktur (geri basınç: yazma görevi
   askıya alır).
