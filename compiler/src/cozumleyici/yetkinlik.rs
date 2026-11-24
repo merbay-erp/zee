@@ -336,14 +336,6 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::OndaligiDene(ic)
         | Ifade::AlanErisim { nesne: ic, .. } => ifade_bilgisi(ic, bilgi),
         Ifade::SozlukDegeri { sozluk, anahtar }
-        | Ifade::ListeOgesi {
-            liste: sozluk,
-            sira: anahtar,
-        }
-        | Ifade::ListeOgesiDene {
-            liste: sozluk,
-            sira: anahtar,
-        }
         | Ifade::SozlukteVar {
             sozluk, anahtar, ..
         } => {
@@ -353,6 +345,10 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         Ifade::GunSonrasi { tarih, miktar } => {
             ifade_bilgisi(tarih, bilgi);
             ifade_bilgisi(miktar, bilgi);
+        }
+        Ifade::ListeOgesi { liste, sira, .. } => {
+            ifade_bilgisi(liste, bilgi);
+            ifade_bilgisi(sira, bilgi);
         }
         Ifade::MetinSabiti(_)
         | Ifade::SayiSabiti(_)

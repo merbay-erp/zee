@@ -89,8 +89,9 @@ impl Gezici {
                 sozluk: a,
                 anahtar: b,
             }
-            | Ifade::ListeOgesi { liste: a, sira: b }
-            | Ifade::ListeOgesiDene { liste: a, sira: b }
+            | Ifade::ListeOgesi {
+                liste: a, sira: b, ..
+            }
             | Ifade::SozlukteVar {
                 sozluk: a,
                 anahtar: b,

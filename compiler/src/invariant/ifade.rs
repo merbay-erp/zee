@@ -121,7 +121,7 @@ impl Denetleyici<'_> {
                 self.ifadeyi_dogrula(sozluk, &format!("{yol}.sözlük"), satir, false)?;
                 self.ifadeyi_dogrula(anahtar, &format!("{yol}.anahtar"), satir, false)?;
             }
-            Ifade::ListeOgesi { liste, sira } | Ifade::ListeOgesiDene { liste, sira } => {
+            Ifade::ListeOgesi { liste, sira, .. } => {
                 self.ifadeyi_dogrula(liste, &format!("{yol}.liste"), satir, false)?;
                 self.ifadeyi_dogrula(sira, &format!("{yol}.sıra"), satir, false)?;
             }

@@ -30,7 +30,7 @@ anlamını değiştirmemelidir.
    aynıdır; (b) `3.14` ondalık karışıklığı — RFC-0013 önerisi korunur.
    Metin öncesine izin, `"1". öğesi` gibi hatayı S001 yerine öğretici T058'e
    taşımak içindir.
-3. **AST:** iki ifade düğümü (`ListeOgesi`, `ListeOgesiDene`); erişim/postfix
+3. **AST:** tek ifade düğümü (`ListeOgesi { liste, sira, dene }`); erişim/postfix
    katmanında tam bölge kalıbı. Kalıba oturmayan sıra eki S049 ile durur;
    sessiz yeniden yorum yoktur (spec/20 "TANIMLI" kuralı).
 4. **Tür:** sıra TamSayı, nesne öğe türü belli Liste (T058); sabit sıra < 1

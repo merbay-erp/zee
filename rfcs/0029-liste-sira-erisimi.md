@@ -124,7 +124,7 @@ yeni RFC ve K-işiyle açılır.
 - **Ayrıştırıcı:** erişim/postfix katmanında (spec/20) iki tam-bölge kalıbı:
   4 token (`L S . öğesi`) ve 6 token (`L S . öğesini almayı dene`). Bölgenin
   tamamı eşleşmezse S049.
-- **AST/HIR:** `Ifade::ListeOgesi`, `Ifade::ListeOgesiDene`; çözümleyici,
+- **AST/HIR:** `Ifade::ListeOgesi { liste, sira, dene }` (`dene`: Sonuç biçimi); çözümleyici,
   etki/yetkinlik, invariant ve test kapsamı gezicileri iki çocuğu yürütür.
   Yeni değer türü yoktur.
 - **Kapsam dışı (bu sürüm):** hesaplanan sıra ifadesi (`sıra ile 1 in

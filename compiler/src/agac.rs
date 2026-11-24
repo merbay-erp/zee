@@ -304,16 +304,12 @@ pub enum Ifade {
         anahtar: Box<Ifade>,
     },
     /// "harflerin 3. öğesi" / "harflerin sıra. öğesi" — 1 tabanlı sıra ile
-    /// liste öğesinin kopyası (RFC-0029, K-386). Aralık dışı C031.
+    /// liste öğesinin kopyası (RFC-0029, K-386); aralık dışı C031. `dene`:
+    /// "… öğesini almayı dene" → Sonuç<T>, aralık dışı `SIRA_DISI` Hata.
     ListeOgesi {
         liste: Box<Ifade>,
         sira: Box<Ifade>,
-    },
-    /// "harflerin sıra. öğesini almayı dene" → Sonuç<T>; aralık dışı
-    /// `SIRA_DISI` kodlu Hata (RFC-0029, K-386).
-    ListeOgesiDene {
-        liste: Box<Ifade>,
-        sira: Box<Ifade>,
+        dene: bool,
     },
     /// "yaşlarda (anahtar) varsa/yoksa" (K-015).
     SozlukteVar {
