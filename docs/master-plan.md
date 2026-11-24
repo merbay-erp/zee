@@ -185,7 +185,10 @@ TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
 ve IMAP literal'i belleğe alınmadan `0600` geçici dosyaya akar (yalnız
 birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
 yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
-süreli okuma vardır. Bağlantılar arası uyandırma ve diğer katmanlar
+süreli okuma vardır. K-388 ile bağlantı görevinin çalışma bütçesi her
+protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
+dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
+zarfı aynen geçerlidir. Bağlantılar arası uyandırma ve diğer katmanlar
 açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV

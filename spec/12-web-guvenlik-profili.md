@@ -370,7 +370,7 @@ TANIMLI: `NOTIFY_SOCKET` her `dil` sürecinin başında okunur ve ortamdan silin
 
 ZORUNLU: `NOTIFY_SOCKET` verilmişse tek süreç web çalışma zamanı `sunucu başlat` dinleyiciyi açtıktan sonra, çok işçi yöneticisi birincil işçi açılışı bitip işçiler başlatıldıktan sonra bir kez `READY=1` gönderir; SIGTERM ile yeni kabul durduğunda (yöneticide kapanışın başında) bir kez `STOPPING=1` gönderir. İşçi süreçleri bildirim göndermez (`NotifyAccess=main`).
 
-## 9. Adlı dinleyici bağlantı yüzeyi (K-381, K-384)
+## 9. Adlı dinleyici bağlantı yüzeyi (K-381, K-384, K-388)
 
 RFC-0039 Aşama A2a, A2b (sunucu TLS'i) ve A2c (blok okuma, K-384); karar [ADR-165](../adr/165-ag-dinleyici-baglanti-yuzeyi.md), işletim [docs/adli-dinleyici-devri.md](../docs/adli-dinleyici-devri.md).
 
@@ -385,6 +385,8 @@ ZORUNLU: Yazılan satıra CRLF'yi çalışma zamanı ekler; CR, LF, NUL ya da TA
 ZORUNLU: Açık bağlantı sayısı `bağlantı_sınırı`na ya da aynı uzak IP'den açık bağlantı sayısı `uzak_adres_bağlantı_sınırı`na ulaştığında yeni bağlantı kabul edilir, bildirilmişse `bağlantı_dolu_yanıtı` satırı tek engellemeyen yazımla gönderilir ve bağlantı kapatılır; Zee görevi kurulmaz. Ret sayısı günlüğe en çok beş saniyede bir yazılır.
 
 ZORUNLU: Bağlantı görevleri tek iş parçacıklı bağlantı scheduler'ında ilerler; bekleyen okuma/yazma ve `bekle` scheduler noktasıdır, bir bağlantının beklemesi diğerini durdurmaz. Görev hatası (C023/C024 dahil) yalnız kendi bağlantısını kapatır ve kardeşleri iptal etmez (yalıtılmış bağlantı kapsamı; spec/14 §3'ten bilinçli ayrılış); neden yalnız operatör günlüğüne yazılır. Her görev kendi çalışma bütçesiyle başlar ve her başarılı satır okuması bütçeyi yeniler. Görev içindeki `programı bitir` bütün bağlantıları kapatıp süreci o kodla bitirir.
+
+ZORUNLU (K-388): Bağlantı görevinin protokol birimi sınırı, girdi tüketen ya da süresini dolduran her okuma dönüşüdür: satır okuması, süreli satır okuması, bayt okuması, nokta bloğu ve bayt bloğu çağrısının başarıyla ya da `zaman_aşımı`, `satır_uzun`, `satır_sonu`, `kodlama` türüyle, nokta bloğunda ayrıca `boyut_aşımı` türüyle dönmesi. Her sınırda görevin adım, çıktı ve heap bütçesi (spec/24) web isteğindeki gibi taze kurulur. Anında dönen `kapandı`, `kapanıyor`, `geçersiz` ve `tls`, hiç okumadan dönen bayt bloğu ya da bayt okuması `boyut_aşımı`, yazma, parça yazımı, dosya aktarımı, TLS başlatma ve `bekle` sınır değildir: bunları yok sayan döngü aynı bütçede kalır ve adım (C023) ya da heap (C024) sınırıyla yalnız kendi bağlantısını kapatır. Tek birim içinde spec/24 sınırları aynen geçerlidir. Yenileme `bağlantı_ömrü`, `bağlantı_boşta_süresi`, blok süre bütçesi, `bağlantı_sınırı` ve `uzak_adres_bağlantı_sınırı`nı uzatmaz.
 
 ZORUNLU: Bağlantı scheduler'ı başlayınca `NOTIFY_SOCKET` varsa `READY=1` gönderilir. SIGTERM'de yeni kabul durur, `STOPPING=1` gönderilir, bekleyen ve sonraki okumalar `tür=kapanıyor` döner, yazma sürer; görevler en çok 10 saniyede bitmezse iptal edilip bağlantıları kapatılır ve süreç 0 ile çıkar.
 
@@ -414,7 +416,7 @@ ZORUNLU (A2c): Okuma zaman aşımı (`tür=zaman_aşımı`) bağlantıyı kapatm
 
 TANIMLI (A2c): `bağlantı` Sözlüğü sözcüksel kapsamlıdır: yalnız bağlantı bloğunun kendi gövdesinde tanımlıdır ve bloğun çağırdığı işleme geçmez; işlemde kullanılması A001'dir ve tanı alanın parametre olarak geçirilmesini önerir. Bağlantı kalıpları (okuma, yazma, blok, TLS) işlemde de o anki bağlantıya uygulanır. Adı yerleşik `yaz` ya da `gönder` fiiliyle biten işlem cümle biçiminde çağrılamaz (satır yerleşik cümle olarak ayrıştırılır); bu durumda çıkan A001 ve S037 tanıları çakışan işlemi adıyla anar ve başka ad önerir, ifade konumundaki çağrı değişmez.
 
-AÇIK: Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları ile blok dosyasına yazım senkron dilimdir ve kardeş bağlantıları o süre bekletir. Bağlantılar arası uyandırma (yeni ileti gelince IDLE oturumunu uyandırma) yoktur; Zee kısa süreli okumayla yoklar. Unix dışı platformda bağlantı bloğu C030'dur. Binlerce boşta oturumun bellek ölçümü yapılmamıştır. Kısmi literal getirme (IMAP `BODY[]<o.n>`) ve dosya aralığı aktarımı yoktur.
+AÇIK: Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları ile blok dosyasına yazım senkron dilimdir ve kardeş bağlantıları o süre bekletir. Bağlantılar arası uyandırma (yeni ileti gelince IDLE oturumunu uyandırma) yoktur; Zee kısa süreli okumayla yoklar. Unix dışı platformda bağlantı bloğu C030'dur. Binlerce boşta oturumun bellek ölçümü yapılmamıştır. Kısmi literal getirme (IMAP `BODY[]<o.n>`) ve dosya aralığı aktarımı yoktur. Birim sınırındaki bütçe yenilemesi önceki birimlerde bağlanıp yaşayan değerleri yeni bütçeye yeniden saymaz; oturum boyunca biriken canlı değer bağlantı başına ayrıca sınırlanmaz (her değer spec/24 tekil metin ve koleksiyon sınırına bağlıdır). Birim içinde atılan geçici değer zarftan iade edilmez; MB ölçeğinde gövdeyi tek birimde Zee metni olarak işlemek C024'e yürür (dosya tutamağıyla aralıklı işleme RFC-0043 taslağıdır).
 
 ## K-335 — Önbelleklenebilir herkese açık rota
 
