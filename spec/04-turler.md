@@ -49,6 +49,11 @@ ettiremez. Tersi
 - `<ad> al` başlangıç biçiminde parametre türleri bütün erişilebilir çağrı
   kısıtlarından önce birleştirilir; gövde ve dönüş türü nihai imzayla
   denetlenir (K-121). Parametre sayısı/türü T015/T017'ye uymak ZORUNDADIR.
+- Hiç çağrılmayan çıkarımlı işlemin parametre türü yoktur (TANIMLI — K-392):
+  gövdesi tür/ad denetiminden geçmez, bağlanmış HIR taşımaz ve geçerli
+  program C000 iç hatası üretmez. Gövdedeki tür/ad hatası ilk erişilebilir
+  çağrıyla (ana program, test ya da başka işlem) raporlanır; çağrısız
+  denetim isteyen işlem `<ad> <Tür> olarak al` açık imzasını yazar.
 - `<ad> <Tür> olarak al` açık biçiminde bütün parametreler tanımın
   sözleşmesidir. İşlem hiç çağrılmadan gövdesi bu türlerle denetlenir; dönüş
   türü gövdeden o anda çıkarılır ve imza çağrıyla terfi etmez.

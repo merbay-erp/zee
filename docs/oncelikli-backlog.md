@@ -2710,9 +2710,49 @@ T036); spec/17 ve spec/04 K-380 maddeleri. Yerel tüketicilerde `dil denetle`
 önce/sonra farksız; ürün kaynağında ad geri değiştirilince eski derleyici
 T053, yeni derleyici temiz.
 
-Açık — ayrı hata (bu işte düzeltilmedi): türsüz parametreli ve hiç
-çağrılmayan bir işlem, programın geri kalanı geçerliyken
+Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
+hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
+
+## K-392 — Çağrılmayan çıkarımlı işlem gövdesi C000 iç hatası vermez
+
+**Durum: KAPALI.** Kaynak: K-380 incelemesinde bulunan açık hata. Freeze
+sınıfı `correctness` (semantic-bugfix). Reproducer `işlem birini ver` /
+`sayıyı al` / `sayıyı döndür` + `1 yaz`: debug derlemede `çalıştır`/`dene`
+C000 (`bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok`); `denetle` ve
+release ikili temizdi (değişmez doğrulayıcı yalnız `debug_assertions`
+altında koşar).
+
+Kök neden: çıkarımlı parametre türü yalnız erişilebilir çağrı kısıtlarından
+gelir (K-121, spec/04); hiç çağrılmayan işlemin türü olmadığı için checker
+gövdesini bilinçli olarak bağlamaz. Bağlanmış HIR değişmez doğrulayıcısı ise
+`program.işlemler` içindeki her gövdeden çözülmüş ad/SymbolId bekliyordu.
+Sıfır parametreli ve açık imzalı işlemler çağrısız da denetlendiği için
+etkilenmez.
+
+Düzeltme: checker HIR bilgisine gövdesi doğrulanan işlemlerin kümesini
+(`Imza::govde_dogrulandi`) taşır; doğrulayıcı denetlenmemiş gövdeyi parser
+AST kurallarıyla doğrular (çözülmüş ad/SymbolId taşımamak ZORUNDA). Davranış,
+tanı ve çalışma zamanı değişmez; çağrılan gövdeler bağlı HIR kurallarıyla
+denetlenmeye devam eder.
+
+| Senaryo | Önce (debug) | Sonra |
+|---|---|---|
+| çağrılmayan türsüz işlem | C000 | çalışır |
+| çağrılmayan özyinelemeli türsüz işlem | C000 | çalışır |
+| çağrılmayan işlem → çağrılmayan türsüz işlem zinciri | C000 | çalışır |
+| çağrılmayan türsüz gövdede tanımsız ad | C000 | çalışır (gövde denetlenmez) |
+| aynı gövde testten çağrılınca | A001 | A001 |
+| çağrılmayan açık imzalı / sıfır parametreli işlem | çalışır | çalışır |
+| yalnız testten çağrılan türsüz işlem | çalışır | çalışır |
+
+Kanıt: `invariant_testi.rs::cagrilmayan_cikarimli_islem_govdesi_parser_astsi_olarak_kalir`,
+`cagrilmayan_cikarimli_govde_hatasi_ilk_cagriyla_raporlanir`; regression
+`hir/cagrilmayan-cikarimli-islem` (run); spec/04 K-392 maddesi. Yerel
+tüketicilerde `dil denetle` önce/sonra farksız.
+
+Açık (V1 sonrası tasarım, bu işte değil): çağrısız çıkarımlı gövdedeki ad/tür
+hatası ilk çağrıya dek görünmez; uyarı/lint ayrı karar ister.
 
 ## K-384 — Bağlantıda blok okuma ve bayt-kesin akış (RFC-0039 A2c)
 
