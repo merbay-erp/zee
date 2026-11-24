@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
-| orta | 50 | 16 | 2 | 68 |
+| orta | 51 | 16 | 2 | 69 |
 | dusuk | 45 | 30 | 1 | 76 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 163.
+Toplam bulgu: 164.
 
 ## Spec maddeleri
 
@@ -63,7 +63,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/08-kalici-dosya.md | 7 | 1 | 0 | 8 | 87 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
-| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 25 | 0 | 0 | 25 | 100 |
+| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 26 | 0 | 0 | 26 | 100 |
 | spec/12-web-guvenlik-profili.md | 70 | 0 | 6 | 76 | 92 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
@@ -77,13 +77,13 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 41 | 0 | 1 | 42 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
-| spec/25-postgresql-veri-erisimi.md | 10 | 0 | 1 | 11 | 90 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 12 | 0 | 1 | 13 | 92 |
+| spec/25-postgresql-veri-erisimi.md | 11 | 0 | 1 | 12 | 91 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 13 | 0 | 0 | 13 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 332 | 5 | 13 | 350 | 94 |
+| **Toplam** | 335 | 5 | 12 | 352 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -146,16 +146,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 88 |
+| maintenance | 89 |
 | semantic-bugfix | 41 |
-| semantic-change | 63 |
+| semantic-change | 64 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
 | correctness | 41 |
-| dogfood-change | 41 |
-| maintenance | 85 |
+| dogfood-change | 42 |
+| maintenance | 86 |
 | security | 19 |
 
-Toplam: 192 compiler değişiklik beyanı, 188 core freeze beyanı.
+Toplam: 194 compiler değişiklik beyanı, 190 core freeze beyanı.
