@@ -229,7 +229,7 @@ core freeze altında ayrı `dogfood-change` ile açılır, V1 sözü değildir.
 **Gerçekleşen: B1a (K-390, ADR-169)** — `dns` yetkinliği, yalnız loopback
 `dns_çözücü` ve `dns_dnssec` (zorunlu kipte açılış AD sınaması);
 `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene` → kayıt başına
-satırlı Sonuç, geçici hata C031; üretimde yeni crate olmadan kendi sınırlı
+satırlı Sonuç, geçici hata C033; üretimde yeni crate olmadan kendi sınırlı
 tel biçimi ayrıştırıcısı (hickory-proto yalnız kâhin, `dns_yaniti` fuzz
 hedefi RC kapısında), önbelleksiz stub, IO izi. **Açık:** PSL ve B2 gelen
 doğrulama (K-390 ikinci dilimi), B3, B4.

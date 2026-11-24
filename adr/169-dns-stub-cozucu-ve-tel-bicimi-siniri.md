@@ -94,7 +94,7 @@ değerlendirmesi (cargo-deny, RustSec, ağaç):
    listedir (RFC 7208/7489 için ikisi de "kayıt yok"). Ayrımları ve olumsuz
    yanıtın doğrulanmışlığı host iç API'sinde (`Cozum::durum`) ve IO izinde
    taşınır; Zee yüzeyinde B4 (MX örtük A, DANE) ihtiyacıyla açılır.
-   Başarısız Sonuç yalnız geçici hatadır: yeni çalışma zamanı kodu **C031**,
+   Başarısız Sonuç yalnız geçici hatadır: yeni çalışma zamanı kodu **C033**,
    Hata verisi `tür` ∈ `zaman_aşımı`, `sunucu_hatası` (SERVFAIL — DNSSEC
    `bogus` dahil —, FORMERR, NOTIMP, diğer), `ret` (REFUSED), `ağ`,
    `boyut_aşımı`, `bütçe` (B2 değerlendirici bütçeleri için ayrılmış),

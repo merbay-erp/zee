@@ -1,5 +1,6 @@
 use super::*;
 
+mod sira;
 pub(super) mod web;
 
 pub(super) fn degerlendir_async<'a>(
@@ -94,10 +95,7 @@ pub(super) fn degerlendir_async<'a>(
                         http_istek::getir(url, io, satir)
                     }
                     k if k.starts_with("dns.") => {
-                        if gorevde_miyiz() {
-                            gorev_bekleme_noktasi(0).await;
-                        }
-                        dns::intrinsic_degerlendir(kimlik, &degerler, io, satir)
+                        dns::intrinsic_degerlendir(kimlik, &degerler, io, satir).await
                     }
                     POSTGRESQL_OKU => {
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, false)
@@ -268,6 +266,9 @@ pub(super) fn degerlendir_async<'a>(
                         )
                         .onerili("Önce \"sözlükte <anahtar> varsa\" ile kontrol et.".into())
                     })
+            }
+            Ifade::ListeOgesi { liste, sira, dene } => {
+                sira::oge(liste, sira, *dene, ortam, program, io, derinlik, satir).await
             }
             Ifade::SozlukteVar {
                 sozluk,

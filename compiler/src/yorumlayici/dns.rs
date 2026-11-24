@@ -1,6 +1,6 @@
 //! K-390 (RFC-0044 B1, ADR-169): DNS sorgu intrinsic'lerinin yorumlayıcı
 //! sınırı. Başarı kayıt başına bir Metin sözlüğüdür (boş liste = kayıt yok
-//! ya da alan yok); başarısız Sonuç yalnız geçici hatadır (C031, `tür`).
+//! ya da alan yok); başarısız Sonuç yalnız geçici hatadır (C033, `tür`).
 use super::*;
 use crate::dns_teli::{Cozum, DnsHatasi, KayitTuru, KayitVerisi};
 use crate::intrinsic::{DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT};
@@ -8,12 +8,16 @@ use crate::intrinsic::{DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT};
 /// Tek sorgunun Zee tarafındaki en uzun bütçesi (adaptör de 5 sn ile keser).
 const SORGU_MS: i64 = 5_000;
 
-pub(super) fn intrinsic_degerlendir(
+/// Görevdeyken adaptöre girmeden kardeşlere bir tur verir (HTTP_GETIR gibi).
+pub(super) async fn intrinsic_degerlendir(
     kimlik: &str,
     degerler: &[Deger],
     io: &mut dyn GirdiCikti,
     satir: usize,
 ) -> Result<Deger, Tani> {
+    if gorevde_miyiz() {
+        gorev_bekleme_noktasi(0).await;
+    }
     let [Deger::Metin(ad)] = degerler else {
         return Err(ic_hata(satir));
     };
@@ -115,7 +119,7 @@ fn hata_sonucu(hata: DnsHatasi) -> Deger {
     Deger::Sonuc {
         basarili: false,
         icerik: Box::new(Deger::Hata(Box::new(HataDegeri {
-            kod: "C031".into(),
+            kod: "C033".into(),
             mesaj: format!("DNS sorgusu geçici olarak başarısız: {}", hata.mesaj),
             neden: None,
             veri: vec![("tür".into(), metin(hata.tur.yazimi()))],

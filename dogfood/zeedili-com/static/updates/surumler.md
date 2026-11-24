@@ -46,7 +46,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   `doğrulanmış`; MX'te `öncelik` ve `hedef` (önceliğe göre sıralı), TXT'de
   `metin`, adreste `aile` ve `adres`, TLSA'da `kullanım`, `seçici`, `eşleme`,
   `veri`. Alan ya da kayıt yoksa liste boştur. Başarısızlık yalnız geçici
-  hatadır (yeni C031, `tür`: `zaman_aşımı`, `sunucu_hatası`, `ret`, `ağ`,
+  hatadır (yeni C033, `tür`: `zaman_aşımı`, `sunucu_hatası`, `ret`, `ağ`,
   `boyut_aşımı`, `bütçe`, `geçersiz_ad`, `bozuk_yanıt`) — "kayıt yok"
   sayılmaz; posta akışında yeniden dene yanıtı verin. `proje.dil`'de üç
   satır birlikte gerekir: `yetkinlikler` içinde `"dns"`,
@@ -62,6 +62,24 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez; `dns` bildirmeyen projeler değişmez. Bildirimsiz tek
   dosya çalıştırmada ve `--güvenli` kipte DNS sorgusu kapalıdır.
 
+- **Listede sıra ile öğe erişimi (K-386, RFC-0029):** artık listenin N'inci
+  öğesini sayaç döngüsü yazmadan okursun:
+  `üçüncü harflerin 3. öğesi olsun`, `değer sayıların orta. öğesi olsun`.
+  Sayım **1'den başlar** (`1. öğe` `ilki`, `adet. öğe` `sonu` ile aynıdır),
+  sıra tek bir ad ya da tam sayıdır ve nokta sayıya/ada bitişik yazılır.
+  Gelen değer öğenin kopyasıdır; onu değiştirmek listeyi değiştirmez.
+  Listede olmayan sıra programı `C031` ile durdurur ("Listenin 7. öğesi yok:
+  liste 5 öğeli."); olmayabilecek öğe için
+  `sonuç sayıların sıra. öğesini almayı dene olsun` bir Sonuç verir
+  (hata kodu `SIRA_DISI`). Okuma liste uzunluğundan bağımsız hızdadır:
+  sıralı listede ikili arama artık gerçekten O(log n). Yeni tanılar `S049`
+  (kalıba uymayan sıra; hesaplanan sırayı önce bir ada ver), `T058` (sıra
+  tam sayı değil ya da nesne liste değil), `T059` (`0.` ya da negatif sabit
+  sıra). `harfler[0]` yazınca öneri artık `harflerin 1. öğesi` der. Sıra ile
+  öğe **yazma** bu sürümde yoktur; öğeyi gezme içinde değiştir. Göç: eski
+  sayaç döngüleri çalışmaya devam eder; dilersen `listenin sıra. öğesi` ile
+  sadeleştir (kanıt özeti ve kelime avı ürünleri böyle sadeleşti, çıktıları
+  aynı kaldı).
 - **E-posta istemcisi otomatik yapılandırması ve Apple profili (K-385):**
   Rotadan dosya indirme kalıbı (K-378) iki yeni türü kabul eder:
   `application/xml` (Thunderbird'ün `/.well-known/autoconfig/mail/config-v1.1.xml`

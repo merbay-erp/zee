@@ -209,7 +209,7 @@ fn servfail_bozuk_ve_sinir_disi_yanit_gecici_hatadir() {
         let cozucu = sahte_cozucu(isleyici, None);
         let (kod, cikti, hata) = calistir(cozucu.port, "bilgi", PROGRAM);
         assert_eq!(kod, 0, "{hata}");
-        assert_eq!(cikti, format!("C031\n{tur}\n"));
+        assert_eq!(cikti, format!("C033\n{tur}\n"));
     }
 }
 
@@ -219,7 +219,7 @@ fn yanitsiz_cozucu_zaman_asimi_verir() {
     let baslangic = std::time::Instant::now();
     let (kod, cikti, hata) = calistir(cozucu.port, "bilgi", PROGRAM);
     assert_eq!(kod, 0, "{hata}");
-    assert_eq!(cikti, "C031\nzaman_aşımı\n");
+    assert_eq!(cikti, "C033\nzaman_aşımı\n");
     let sure = baslangic.elapsed();
     assert!(sure.as_secs_f64() >= 4.5 && sure.as_secs() < 30, "{sure:?}");
 }
@@ -267,7 +267,7 @@ fn cozucu_yoksa_ag_hatasi_ve_dnssec_sinamasi_baslatmaz() {
     let (kod, cikti, hata) = calistir(port, "bilgi", PROGRAM);
     assert_eq!(kod, 0, "{hata}");
     assert!(
-        cikti == "C031\nağ\n" || cikti == "C031\nzaman_aşımı\n",
+        cikti == "C033\nağ\n" || cikti == "C033\nzaman_aşımı\n",
         "{cikti}"
     );
     let (kod, _, hata) = calistir(port, "zorunlu", PROGRAM);

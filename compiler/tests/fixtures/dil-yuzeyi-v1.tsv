@@ -257,6 +257,8 @@ kalip	çerezine	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	çözmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	önbelleklenebilir	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	önekli	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	öğesi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	öğesini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	üzerinden	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	şifrelenmişi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 komut	anahtar	aktif	0.8.0-dev	compiler/src/main.rs	-

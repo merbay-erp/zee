@@ -63,7 +63,7 @@ pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
 /// kısa okuma süresi; zaman aşımı oturumu kapatmaz → Metin Sonucu.
 pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
 /// K-390 (RFC-0044 B1): `<ad> için MX kayıtlarını sorgulamayı dene` →
-/// kayıt başına satırlı Metin sözlük listesi Sonucu (C031 `tür` verili ret).
+/// kayıt başına satırlı Metin sözlük listesi Sonucu (C033 `tür` verili ret).
 pub const DNS_MX: &str = "dns.mx_sorgula";
 /// K-390: `<ad> için TXT kayıtlarını sorgulamayı dene`.
 pub const DNS_TXT: &str = "dns.txt_sorgula";

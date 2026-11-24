@@ -303,6 +303,14 @@ pub enum Ifade {
         sozluk: Box<Ifade>,
         anahtar: Box<Ifade>,
     },
+    /// "harflerin 3. öğesi" / "harflerin sıra. öğesi" — 1 tabanlı sıra ile
+    /// liste öğesinin kopyası (RFC-0029, K-386); aralık dışı C031. `dene`:
+    /// "… öğesini almayı dene" → Sonuç<T>, aralık dışı `SIRA_DISI` Hata.
+    ListeOgesi {
+        liste: Box<Ifade>,
+        sira: Box<Ifade>,
+        dene: bool,
+    },
     /// "yaşlarda (anahtar) varsa/yoksa" (K-015).
     SozlukteVar {
         sozluk: Box<Ifade>,

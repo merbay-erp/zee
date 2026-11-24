@@ -52,7 +52,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [28 — Görünüm bloğu](28-gorunum-blogu.md) | `<ad> görünüm olsun` tipli HTML ağacı: varsayılan kaçış, bayrak öznitelik, boş öğe, `ham` parça; S046/T055 | ADR-085, K-212 |
 | [29 — Kaynak karar kapsamı](29-test-kapsami.md) | Opt-in gerçek kaynak karar sonuçları, kaynak hashleri, ürün/test paydası ve rapor sınırları | ADR-142, K-284 |
 | [30 — Editör analizi ve lint](30-editor-analizi-ve-lint.md) | UTF-16 aralıklı eşitleme, biçim, sınırlı analiz oturumu, opt-in uyarı ve açık performans kapsamı | RFC-0010, ADR-145, K-287 |
-| [31 — DNS ve posta kimlik doğrulama](31-dns-ve-posta-kimlik-dogrulama.md) | loopback doğrulayıcı çözücü, AD biti, sınırlı tel biçimi, MX/TXT/TLSA/adres sorgusu, C031 geçici hata | RFC-0044 B1, ADR-169, K-390 |
+| [31 — DNS ve posta kimlik doğrulama](31-dns-ve-posta-kimlik-dogrulama.md) | loopback doğrulayıcı çözücü, AD biti, sınırlı tel biçimi, MX/TXT/TLSA/adres sorgusu, C033 geçici hata | RFC-0044 B1, ADR-169, K-390 |
 
 ## Faza bağlı — henüz spec dışı
 

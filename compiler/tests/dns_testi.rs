@@ -93,7 +93,7 @@ fn kayit_yok_ve_alan_yok_bos_listedir_gecici_hata_c031() {
             Err(DnsHatasi::yeni(tur, "sahte")),
         );
         let cikti = calistir(RAPOR, &mut io);
-        assert_eq!(cikti, ["C031", yazim]);
+        assert_eq!(cikti, ["C033", yazim]);
     }
 }
 
@@ -102,7 +102,7 @@ fn gecersiz_ad_tel_bicimine_girmeden_reddedilir() {
     let mut io = ToplayanIo::yeni(Vec::new());
     let kaynak = RAPOR.replace("\"Ornek.Test\"", "\"örnek.test\"");
     let cikti = calistir(&kaynak, &mut io);
-    assert_eq!(cikti, ["C031", "geçersiz_ad"]);
+    assert_eq!(cikti, ["C033", "geçersiz_ad"]);
     assert!(io.dns_sorgulari.is_empty());
 }
 

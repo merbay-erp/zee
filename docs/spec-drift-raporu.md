@@ -6,7 +6,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 | Bölüm | Madde | Kanıtlı | Kısmi | Açık |
 |---|---:|---:|---:|---:|
-| `spec/01-sozcukleme.md` | 6 | 6 | 0 | 0 |
+| `spec/01-sozcukleme.md` | 8 | 8 | 0 | 0 |
 | `spec/02-dizim.md` | 7 | 7 | 0 | 0 |
 | `spec/03-adlar-ve-kapsam.md` | 6 | 6 | 0 | 0 |
 | `spec/04-turler.md` | 15 | 15 | 0 | 0 |
@@ -22,10 +22,10 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
 | `spec/16-keyfi-hassasiyetli-ondalik.md` | 2 | 2 | 0 | 0 |
-| `spec/17-deger-semantigi-ve-gezme.md` | 6 | 6 | 0 | 0 |
+| `spec/17-deger-semantigi-ve-gezme.md` | 11 | 11 | 0 | 0 |
 | `spec/18-paket-yayini.md` | 14 | 13 | 1 | 0 |
 | `spec/19-registry-metadata-guveni.md` | 10 | 10 | 0 | 0 |
-| `spec/20-ifade-grameri.md` | 7 | 7 | 0 | 0 |
+| `spec/20-ifade-grameri.md` | 9 | 9 | 0 | 0 |
 | `spec/21-deterministik-io-izi.md` | 5 | 5 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 42 | 41 | 0 | 1 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **369** | **350** | **5** | **14** |
+| **Toplam** | **378** | **359** | **5** | **14** |
 
 ## Kısmi kanıtlı maddeler
 

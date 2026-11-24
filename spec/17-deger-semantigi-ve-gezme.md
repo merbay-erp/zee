@@ -1,6 +1,6 @@
 # 17 — Değer Semantiği ve Gezme
 
-Normatif kaynak: RFC-0019. Tanı kodu: T053.
+Normatif kaynak: RFC-0019, RFC-0029. Tanı kodları: T053, T058, T059, C031.
 
 ## Genel değer modeli (TANIMLI)
 
@@ -61,6 +61,25 @@ sembol kapsamında denetlenir: o işlemin aynı adlı yereli, parametresi ya da
 kendi gezmesi başka semboldür ve T053 üretmez. Değer semantiğinde çağrılan
 işlem çağıranın kaynağını göremez ve değiştiremez; işlemden dönen değeri
 kaynağın kendisine bağlamak ya da kaynağa eklemek ise yine T053'tür.
+
+## Sıra ile okuma (TANIMLI — RFC-0029)
+
+`<liste>nin <sıra>. öğesi`, 1 tabanlı sıradaki öğenin bağımsız değer kopyasını
+verir (**TANIMLI**): `1. öğe` `ilki`, `<adet>. öğe` `sonu` ile aynı değerdir.
+Kopyayı değiştirmek (yapı alanı yazma, iç listeye ekleme) kaynak listeyi
+değiştirmez. Okuma maliyeti liste uzunluğundan bağımsızdır; gerçekleme
+listenin tamamını kopyalamadan yalnız seçilen öğeyi kopyalamak **ZORUNDA**dır.
+
+- Sıra TamSayı olmak **ZORUNDA**dır; nesne öğe türü belli bir Liste
+  olmalıdır, aksi derlemede T058'dir. Sabit sıra 1'den küçükse (0, negatif)
+  derlemede T059 verilir.
+- Çalışma zamanında `1 ≤ sıra ≤ adet` dışı okuma C031 ile durur ve tanı sırayı
+  ile liste uzunluğunu gösterir. `… öğesini almayı dene` aynı durumda
+  durmaz; `SIRA_DISI` kodlu Hata taşıyan başarısız Sonuç döndürür (**TANIMLI**).
+- Sıra ile okuma kaynağı değiştirmez; gezilen listenin kendisini gezme
+  sırasında sıra ile okumak T053 **değildir**. Sıra ile yazma (`listenin 3.
+  öğesi … olsun`) bu sürümde **AÇIK** değildir; öğe değiştirme gezme yazması
+  ya da yeni liste kurma ile yapılır.
 
 ## Sözlük gezmesi (TANIMLI)
 

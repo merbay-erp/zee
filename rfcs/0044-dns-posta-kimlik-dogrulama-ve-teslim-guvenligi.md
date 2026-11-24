@@ -166,7 +166,7 @@ Bunlar olmadan:
 > sorgulamayı dene` → kayıt başına satırlı `Sonuç<Metin sözlük listesi>`
 > (yeni tür yok; `durum`/`ttl`/`ad` sonuç sözlüğü yerine satır alanlarıdır,
 > NXDOMAIN/NODATA boş liste, ayrımları host iç API'sinde); (3) hata kodu
-> C031, `tür` listesine `bozuk_yanıt` eklendi. B1b (PSL, `kurumsal alanı`)
+> C033, `tür` listesine `bozuk_yanıt` eklendi. B1b (PSL, `kurumsal alanı`)
 > B2 DMARC ile birlikte gelir.
 
 ### Çözücü modeli — karar

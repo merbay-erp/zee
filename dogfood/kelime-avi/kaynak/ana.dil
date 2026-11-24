@@ -31,7 +31,7 @@ oyuncu boşsa
 
 adet kelimelerin adedi olsun
 sıra 1 ile adet arasında rastgele sayı olsun
-gizli kelimeler ve sıra ile sıradaki kelimeyi al olsun
+gizli kelimelerin sıra. öğesi olsun
 
 "Merhaba " ile oyuncu ile "! Beş harfli bir kelime tuttum; " ile hak ile " hakkın var." yaz
 "İpucu: ● doğru yer, ○ kelimede var, · yok." yaz

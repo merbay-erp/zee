@@ -29,7 +29,7 @@ TANIMLI: `doğrulanmış` yalnız `dns_dnssec "zorunlu"` kipinde çözücünün 
 
 TANIMLI: Yetkili "alan yok" (NXDOMAIN) ve "kayıt yok" (NODATA) cevabı başarılı boş listedir.
 
-ZORUNLU: Başarısız Sonuç yalnız geçici hatadır ve C031 kodlu Hata taşır; Hata verisinin `tür` değeri `zaman_aşımı`, `sunucu_hatası`, `ret`, `ağ`, `boyut_aşımı`, `bütçe`, `geçersiz_ad` ya da `bozuk_yanıt`tır.
+ZORUNLU: Başarısız Sonuç yalnız geçici hatadır ve C033 kodlu Hata taşır; Hata verisinin `tür` değeri `zaman_aşımı`, `sunucu_hatası`, `ret`, `ağ`, `boyut_aşımı`, `bütçe`, `geçersiz_ad` ya da `bozuk_yanıt`tır.
 
 YASAK: SERVFAIL (DNSSEC doğrulaması başarısız yanıt dahil), REFUSED, zaman aşımı ya da bozuk yanıt hiçbir yolda boş liste veya başarılı Sonuç olamaz.
 

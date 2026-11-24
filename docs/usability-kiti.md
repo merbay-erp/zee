@@ -183,6 +183,10 @@ kelimelerin sıra. öğesi yaz
   en az 12 kişi armut diyorsa 1 tabanı kesinleşir.
 - Eşik oluşmazsa RFC-0029 taslak kalır ve ikinci karşılaştırmalı oturum
   yapılır; freeze içinde ve insan verisi olmadan yüzey seçilmez.
+- **24 Kasım 2026 (K-386):** bu kural dört ürün kanıtıyla `dogfood-change`
+  kararıyla aşıldı; RFC-0029 `listenin sıra. öğesi` ve 1 tabanla kabul edildi.
+  Kart artık geriye dönük doğrulamadır: eşik aykırı çıkarsa sonuç RFC-0029'a
+  yazılır ve değişiklik yeni RFC ister.
 
 ## Görev kartları
 
