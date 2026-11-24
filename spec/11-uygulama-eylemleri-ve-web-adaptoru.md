@@ -186,6 +186,24 @@ Ham red yanıtından sonraki istek artığı boşaltması (aşağıda, K-374) bu
 bütçeden sonra en çok 2 saniye ve 16 MiB ekler. Bu limitleri büyüten kaynak
 sözdizimi v1'de yoktur.
 
+ZORUNLU (K-391, [ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)):
+`proje.dil` içinde `gövde_aşımı_rotası "/yol" olsun` yazan projede gerçek TCP
+adaptörü, POST/PUT/PATCH/DELETE isteğini gövde boyutu yüzünden reddettiğinde
+(bildirilen `Content-Length` zarfı aşar; multipart dosya ya da metin bütçesi
+akış sırasında aşılır) ham 413 yerine aynı bağlantıda o yolu `GET` isteği
+olarak, gövdesiz ve isteğin çerez/oturumuyla yönlendirir. Rota
+`govde_asimi_yolu` (sorgusuz özgün yol), `govde_asimi_siniri` ve
+`govde_asimi_bayti` sorgu alanlarını görür; bu alanlar güvenilmezdir. Rotanın
+200 metin/HTML yanıtı `413 Payload Too Large` durumu ve `Cache-Control:
+no-store` ile yazılır; rota önbellek izni uygulanmaz. Yönlendirme, dosya, 404
+ya da başka durum düz 413 iletisine döner. Yanıttan sonra yukarıdaki K-374
+boşaltması uygulanır. Özgün rotanın gövdesiz ya da kısmi gövdeyle
+çalıştırılması YASAKTIR (CSRF belirteci okunmamış gövdededir). GET ve HEAD
+isteğinin aşımı, alan sayısı (100) aşımı ve bildirimsiz projede 413 ham
+kalır. Yol `/` ile başlar, en çok 256 bayttır, sorgu/parça/yüzde/boşluk ya da
+denetim karakteri taşımaz; aksi P022'dir. Hermetik `dil dene` adaptöründe bayt
+düzeyi zarf olmadığından aşım rotası AÇIKTIR.
+
 ZORUNLU: Gerçek TCP adaptörü ham red yanıtı (413, 431, 400, 408, 403, 429,
 503 ve benzeri; çoğu gövde ya da başlığın kalanı okunmadan verilir) yazdıktan
 sonra bağlantıyı doğrudan kapatmaz: önce yalnız yazma yönünü kapatır (yanıt

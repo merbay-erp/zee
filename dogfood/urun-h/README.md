@@ -16,6 +16,7 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Webmail e-posta istemcisi autoconfig XML'ini ve Apple yapılandırma profilini kayıtlı türle sunamıyor (ZM-F033; K-385, çözüldü: ADR-163 eki) | `istemci-yapilandirma/` | RFC-0041 A (tür kaydı satırı) |
 | Gelen iletinin ekleri çıkarılamıyor: blok dosyası parça parça okunamıyor, base64/QP gövde bayt olarak yazılamıyor, bellekte SHA-256 yok (ZM-F034/ZM-F024; K-389, çözüldü: RFC-0043 Dilim 1) | `ek-cikarma/`, `korpus/zm-r005-bellekte-sha256.dil` | D (RFC-0043 Dilim 1) |
 | `uzunluğu` harf sayar, UTF-8 oktet saymaz (ZM-F023; açık: RFC-0043 Dilim 2) | `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | D (RFC-0043 Dilim 2) |
+| Türkçe-yoğun uzun ileti urlencoded formda 64 KiB'ı aşıp rota çalışmadan 413 alıyor (ZM-F037; K-391, çözüldü: ADR-168 Dilim 1); tek SQL parametresi 64 KiB (ZM-F036; Dilim 2, açık) | `ileti-boyutu/` | RFC-0041 B (multipart metin alanı) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355
 kaydındadır. Korpus vakaları `dogfood/korpus-v1.tsv` içinde exact

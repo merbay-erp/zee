@@ -2593,6 +2593,41 @@ Açık: hesaplanan sıra ifadesi ve iyelik zinciri (`tablonun 2. öğesinin 3.
 O(n) değer kopyası (kopya-üzerine-yazma ayrı performans işi), K-161/K-162
 K-180 kartının insan verisiyle geriye dönük doğrulanması.
 
+## K-391 — İstek boyut sınırları ve gövde aşımı rotası (ADR-168)
+
+**Durum: KISMİ — Dilim 1 KAPALI, Dilim 2 AÇIK.** Kaynak: etkin dogfood ürünü
+`urun-h` (ZeeMail) sürtünmeleri ZM-F037 ve ZM-F036. Web gövdesi 64 KiB
+(spec/11 §5) ve urlencoded form Türkçe harfi altı bayta şişirdiğinden
+25 000 harflik Türkçe-yoğun ileti rota çalışmadan 413 alıyor, kullanıcı
+taslağı kaybedebiliyordu (ürün 30 000 harf sınırı koydu); K-378 multipart
+yolu metin alanını 8 KiB ile sınırlıyor ve dosya parçası istiyordu. Tek SQL
+parametresi 64 KiB (ürün gövdeyi 20 000 harflik parçalara bölüyor). Freeze
+sınıfı `dogfood-change`; gramer değişmedi, yeni kalıp yok.
+
+Dilim 1 (ADR-168 madde 1, 2, 6): `çok_parçalı_yükleme` projesinde multipart
+metin alanları sıradan form alanıdır — dosya parçası isteğe bağlı, alan
+başına 8 KiB yerine metin toplamı form bütçesi (64 KiB), aşım 413. Yeni
+`proje.dil` alanı `gövde_aşımı_rotası "/yol"`: gövde boyutu 413'ü (zarf ya da
+akış içi) salt okuma GET rotasının sayfasıyla 413 + no-store olarak döner;
+özgün rota çalışmaz; ardından K-374 boşaltması. Yorumlayıcının ikinci gövde
+denetimi native bütçeyi iç `__zee_ic_govde_siniri` çereziyle alır (varsayılan
+bütçede istek zarfı bayt bayt aynı; IO izi/replay tutarlı). Tanı P022,
+dil yüzeyi `govde-asimi-rotasi-v1`, GB-164.
+
+Kanıt: `web_cok_parcali.rs::dosyasiz_form_ve_turkce_yogun_metin_alani_kabul`,
+`…::metin_butcesi_alanlar_toplaminda_413`,
+`govde_siniri_testi.rs` (gerçek `dil` web süreci: 25 000 harf multipart
+kabul ve bayt bayt aynı; aynı ileti urlencoded 413 ve 64 KiB iletisi aynı;
+aşım sayfası 413 + text/html + no-store, okunmamış gövdeye rağmen yanıt
+ulaşır; 404 veren aşım rotası düz 413), `proje_testi.rs::govde_asimi_rotasi_bildirimi_mutlak_sorgusuz_yol_ister`,
+dogfood `urun-h-ileti-boyutu` (`dogfood/urun-h/ileti-boyutu/`).
+
+Dilim 2 (AÇIK, ayrı değişiklik): rota bazlı gövde sınırı
+(`geniş_gövde_rotaları` + `geniş_gövde_sınırı`, tavan 1 MiB), multipart'ta
+alınan bayta orantılı okuma bütçesi (`10 sn + okunan / 128 KiB/s`) ve yetim
+`.parca` eşiğinin 30 dakikaya çekilmesi, `veritabanı_parametre_sınırı`
+(tek parametre ≤ 4 MiB, toplam 6 400 KiB). Ayrıca açık: hermetik `dil dene`
+adaptöründe aşım rotası, sunucu tarafı taslak kaydı (ürün).
 ## K-388 — Bağlantı görevinde protokol birimi sınırında bütçe yenileme (ZM-F035)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) ZM-F035;

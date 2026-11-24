@@ -4,8 +4,9 @@
 //! Gövde belleğe alınmaz: ayrıştırıcı parça parça beslenir, sınır (boundary)
 //! araması için en çok `ayraç uzunluğu - 1` bayt tutar ve olayları
 //! [`Alici`]'ya iletir. Dosya parçasının baytları `dosya_verisi` ile akar;
-//! çağıran onları spec/26 `.parca` yükleyicisine yazar. Metin alanları
-//! en çok 8 KiB'tır. Her ihlal sınıflandırılmış [`Red`] ile kısmi kabul
+//! çağıran onları spec/26 `.parca` yükleyicisine yazar. K-391 (ADR-168):
+//! metin alanları sıradan form alanıdır; ham baytlarının toplamı isteğin
+//! form bütçesine tabidir ve dosya parçası isteğe bağlıdır. Her ihlal sınıflandırılmış [`Red`] ile kısmi kabul
 //! olmadan durur (fail-closed); CSRF ve oturum kararı çağırandadır
 //! (`dosya_basladi` dönüşü).
 
@@ -15,8 +16,6 @@ pub const AZAMI_PARCA: usize = 8;
 pub const AZAMI_BASLIK_BLOGU: usize = 8 * 1024;
 /// Tek parçanın başlık satırı tavanı.
 pub const AZAMI_BASLIK_SATIRI: usize = 8;
-/// Metin alanı değeri tavanı (bayt).
-pub const AZAMI_ALAN_DEGERI: usize = 8 * 1024;
 /// Alan adı tavanı (bayt).
 pub const AZAMI_ALAN_ADI: usize = 128;
 /// İlk sınırdan önceki önsöz ve kapanıştan sonraki sonsöz tavanı (bayt).
@@ -150,10 +149,15 @@ pub struct Ayristirici {
     adlar: std::collections::BTreeSet<String>,
     onsoz: usize,
     sonsoz: usize,
+    /// K-391: metin alanlarının ham bayt toplamı ve tavanı (form bütçesi).
+    metin: usize,
+    metin_butcesi: usize,
 }
 
 impl Ayristirici {
-    pub fn yeni(sinir: &str) -> Self {
+    /// `metin_butcesi`, bütün metin alanı değerlerinin toplam bayt tavanıdır
+    /// (isteğin urlencoded form bütçesi; K-391).
+    pub fn yeni(sinir: &str, metin_butcesi: usize) -> Self {
         let mut ayrac = b"\r\n--".to_vec();
         ayrac.extend_from_slice(sinir.as_bytes());
         Self {
@@ -166,6 +170,8 @@ impl Ayristirici {
             adlar: Default::default(),
             onsoz: 0,
             sonsoz: 0,
+            metin: 0,
+            metin_butcesi,
         }
     }
 
@@ -175,14 +181,12 @@ impl Ayristirici {
         self.isle(alici)
     }
 
-    /// Gövde bitti: kapanış sınırı ve tek dosya parçası ZORUNLUDUR.
+    /// Gövde bitti: kapanış sınırı ZORUNLUDUR; dosya parçası en çok birdir
+    /// ve K-391'den beri isteğe bağlıdır (yalnız metin alanlı form).
     pub fn bitir(mut self, alici: &mut dyn Alici) -> Result<(), Red> {
         self.isle(alici)?;
         if !matches!(self.durum, Durum::Sonsoz) {
             return Err(Red::kotu("multipart gövdesi kapanış sınırı olmadan bitti"));
-        }
-        if !self.dosya_goruldu {
-            return Err(Red::kotu("multipart gövdesinde dosya parçası yok"));
         }
         Ok(())
     }
@@ -313,8 +317,9 @@ impl Ayristirici {
             return Err(Red::kotu("multipart iç durum hatası"));
         };
         deger.extend_from_slice(&self.tampon[..tuketilen]);
-        if deger.len() > AZAMI_ALAN_DEGERI {
-            return Err(Red::kotu("multipart metin alanı 8 KiB sınırını aşıyor"));
+        self.metin += tuketilen;
+        if self.metin > self.metin_butcesi {
+            return Err(metin_asimi(self.metin_butcesi));
         }
         let Some(konum) = bulunan else {
             self.tampon.drain(..tuketilen);
@@ -347,6 +352,17 @@ impl Ayristirici {
                 Ok(false)
             }
         }
+    }
+}
+
+/// K-391: metin alanları form bütçesini aştı (gövde boyutu → 413).
+pub fn metin_asimi(butce: usize) -> Red {
+    Red {
+        durum: 413,
+        mesaj: format!(
+            "multipart metin alanları {} KiB sınırını aşıyor",
+            butce / 1024
+        ),
     }
 }
 
@@ -555,8 +571,19 @@ mod tests {
         g
     }
 
+    const BUTCE: usize = 64 * 1024;
+
     fn calistir(g: &[u8], dilim: usize, csrf_red: bool) -> (Kayit, Result<(), Red>) {
-        let mut a = Ayristirici::yeni(S);
+        calistir_butceyle(g, dilim, csrf_red, BUTCE)
+    }
+
+    fn calistir_butceyle(
+        g: &[u8],
+        dilim: usize,
+        csrf_red: bool,
+        butce: usize,
+    ) -> (Kayit, Result<(), Red>) {
+        let mut a = Ayristirici::yeni(S, butce);
         let mut k = Kayit {
             csrf_red,
             ..Default::default()
@@ -683,7 +710,6 @@ mod tests {
                 g.truncate(g.len() - 4);
                 g
             }),
-            ("dosyasız".into(), govde(&[("Content-Disposition: form-data; name=\"a\"", b"1")])),
             ("iki dosya".into(), govde(&[dosya, ("Content-Disposition: form-data; name=\"e\"; filename=\"b\"", b"y")])),
             ("CTE".into(), govde(&[("Content-Disposition: form-data; name=\"d\"; filename=\"a\"\r\nContent-Transfer-Encoding: base64", b"eA==")])),
             ("bilinmeyen başlık".into(), govde(&[("Content-Disposition: form-data; name=\"d\"; filename=\"a\"\r\nX-Ek: 1", b"x")])),
@@ -710,7 +736,6 @@ mod tests {
                 govde(&p)
             }),
             ("dev başlık".into(), govde(&[(&format!("Content-Disposition: form-data; name=\"d\"; filename=\"{}\"", "a".repeat(9000)), b"x")])),
-            ("dev alan".into(), govde(&[("Content-Disposition: form-data; name=\"a\"", &vec![b'x'; AZAMI_ALAN_DEGERI + 1]), dosya])),
             ("dev önsöz".into(), {
                 let mut g = vec![b'p'; 2000];
                 g.extend_from_slice(b"\r\n");
@@ -736,6 +761,67 @@ mod tests {
                 assert_eq!(red.durum, 400, "{ad}: {red:?}");
             }
         }
+    }
+
+    /// K-391: dosyasız form ve Türkçe-yoğun 25 000 harflik metin alanı
+    /// sıradan form alanı olarak çözülür (urlencoded şişmesi yok).
+    #[test]
+    fn dosyasiz_form_ve_turkce_yogun_metin_alani_kabul() {
+        let ileti: String = "ışığı çğüöşİ ".chars().cycle().take(25_000).collect();
+        assert!(
+            ileti.len() < BUTCE && ileti.len() > 30_000,
+            "{}",
+            ileti.len()
+        );
+        let g = govde(&[
+            ("Content-Disposition: form-data; name=\"_csrf\"", b"b"),
+            (
+                "Content-Disposition: form-data; name=\"govde\"",
+                ileti.as_bytes(),
+            ),
+        ]);
+        for dilim in [1, 7, 4096, g.len()] {
+            let (k, sonuc) = calistir(&g, dilim, true);
+            sonuc.unwrap_or_else(|e| panic!("dilim {dilim}: {e:?}"));
+            assert_eq!(k.alanlar[1], ("govde".to_string(), ileti.clone()));
+            assert!(k.dosya.is_none() && k.veri.is_empty());
+        }
+    }
+
+    /// K-391: metin alanlarının TOPLAMI bütçeyi aşarsa 413; tek alan sınırı
+    /// yoktur, bütçe alanlar arasında paylaşılır.
+    #[test]
+    fn metin_butcesi_alanlar_toplaminda_413() {
+        let yarim = vec![b'x'; BUTCE / 2];
+        let tam = govde(&[
+            ("Content-Disposition: form-data; name=\"a\"", &yarim),
+            ("Content-Disposition: form-data; name=\"b\"", &yarim),
+        ]);
+        calistir(&tam, 13, false).1.expect("tam bütçe kabul");
+        let mut fazla = yarim.clone();
+        fazla.push(b'y');
+        let asan = govde(&[
+            ("Content-Disposition: form-data; name=\"a\"", &yarim),
+            ("Content-Disposition: form-data; name=\"b\"", &fazla),
+        ]);
+        for dilim in [1, 13, 4096] {
+            let red = calistir(&asan, dilim, false).1.expect_err("aşım");
+            assert_eq!(red.durum, 413, "{red:?}");
+        }
+        // Rota bazlı geniş bütçe aynı gövdeyi kabul eder; dosya baytı sayılmaz.
+        calistir_butceyle(&asan, 4096, false, 4 * BUTCE)
+            .1
+            .expect("geniş bütçe");
+        let dosyali = govde(&[
+            ("Content-Disposition: form-data; name=\"a\"", b"1"),
+            (
+                "Content-Disposition: form-data; name=\"d\"; filename=\"a\"",
+                &vec![b'z'; 2 * BUTCE],
+            ),
+        ]);
+        calistir(&dosyali, 4096, false)
+            .1
+            .expect("dosya metin bütçesine girmez");
     }
 
     #[test]
