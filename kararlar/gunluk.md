@@ -5694,6 +5694,16 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Reddedilen: `base64` crate'ini doğrudan bağımlılık yapmak (konum eşleme,
   tedarik kaydı; Dilim 2'de birleştirme ile yeniden), QP gevşek çözümü,
   `.zee/` ile sınırlı ekleme, yarım dörtlü durumu, izde içerik. K-389 kapandı.
+- CI takibi: K-386 + K-389 sonrası Linux x86_64 debug `dil` gömülü DWARF
+  ile 128 MiB'ı aştı; yürütülebilir dosyayı özetleyen betiklerin
+  (`effect-dispatcher`, `modul-yoneticisi`, Linux taşıyıcı) 128 MiB okuma
+  tavanı `native_effect_consumer` ve `yonetilen_modul` testlerinde reddetti.
+  Ölçüm (Linux aarch64 debug): varsayılan 130,6 MB, `split-debuginfo =
+  "unpacked"` ile 56,2 MB. Karar: tavan güvenlik/kaynak sınırıdır, gevşetilmez;
+  yalnız `[profile.dev]` DWARF'ı `.dwo` dosyalarına ayırır (hata ayıklama
+  korunur, macOS'ta zaten varsayılan, Windows PDB ve release profili/sürüm
+  artefaktı değişmez). Reddedilen: tavanı on betikte artırmak, `debug =
+  "line-tables-only"` (değişken incelemesini kaybettirir).
 
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı; ADR-031 eki (24 Kasım 2026)
 
