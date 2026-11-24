@@ -19,7 +19,18 @@ impl Denetleyici<'_> {
                     islem.satir,
                 ));
             }
-            self.cumleleri_dogrula(&islem.govde, &format!("{yol}.gövde"), true)?;
+            // K-392: hiç çağrılmayan çıkarımlı işlemin parametre türü yoktur
+            // (spec/04); checker gövdesini bağlamaz. Böyle bir gövde parser
+            // AST'si olarak kalmak ZORUNDADIR: çözülmüş ad/SymbolId taşımaz.
+            let dogrulandi = self.faz != InvariantFazi::BaglanmisHir
+                || self.hir(&yol, islem.satir)?.islem_govdesi_dogrulandi(ad);
+            let onceki_faz = self.faz;
+            if !dogrulandi {
+                self.faz = InvariantFazi::AyristirilmisAst;
+            }
+            let govde = self.cumleleri_dogrula(&islem.govde, &format!("{yol}.gövde"), true);
+            self.faz = onceki_faz;
+            govde?;
         }
 
         let mut yapi_adlari = HashSet::new();
