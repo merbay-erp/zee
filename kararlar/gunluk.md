@@ -6024,6 +6024,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - spec/04'e TANIMLI madde: çağrısız çıkarımlı gövde denetlenmez, hatası ilk
   çağrıyla raporlanır; çağrısız denetim için açık imza.
 
+## K-391 — İstek boyut sınırları; ADR-168 Dilim 1 (24 Kasım 2026)
+
+- Kaynak ZM-F037 ve ZM-F036 (`urun-h`, ZeeMail). Freeze sınıfı
+  `dogfood-change`. K-164 sınıfı “web adaptörü yüzeyi eksik” (ZM-F022,
+  ZM-F033 ile aynı sınıf): ikinci üründe değil, aynı üründe üçüncü tekrar;
+  backlog tasarım maddesi açılmadı.
+- Seçilen kalıp: rota cümlesine boyut eki yerine `proje.dil` alanları (gramer
+  değişmez; rota yolu çalışma zamanı ifadesi olabildiği için gövde okunmadan
+  eşleşme başlık yolundan yapılmalı). 413 için özgün rotayı işaretle
+  çalıştırmak reddedildi (CSRF okunmamış gövdede); salt okuma GET aşım rotası
+  seçildi. Genel 64 KiB yükseltmesi reddedildi (canlı işçilerin DoS profili).
+- Yorumlayıcının ikinci 64 KiB denetimi trait yöntemiyle değil istek
+  zarfındaki iç çerezle beslendi: IO izi istek_al sonucunu kaydettiği için
+  replay aynı bütçeyi görür; varsayılan bütçede zarf değişmez.
+- İki PR: Dilim 1 (b, c) bu değişiklik; Dilim 2 (a, d, orantılı okuma
+  bütçesi) ayrı PR. K-391 kısmi.
+
 
 ## K-393 — C024 heap zarfı iadesi (24 Kasım 2026)
 

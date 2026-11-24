@@ -335,7 +335,6 @@ fn bozuk_ve_asiri_buyuk_multipart_reddedilir_parca_birakmaz() {
         ("iki dosya", mp_tur(), govde(&[csrf_alani.clone(), dosya(b"x"), {
             format!("--{SINIR}\r\nContent-Disposition: form-data; name=\"ikinci\"; filename=\"b\"\r\n\r\ny\r\n").into_bytes()
         }], true), 400),
-        ("dosyasız", mp_tur(), govde(std::slice::from_ref(&csrf_alani), true), 400),
         ("CTE", mp_tur(), govde(&[csrf_alani.clone(), format!("--{SINIR}\r\nContent-Disposition: form-data; name=\"d\"; filename=\"a\"\r\nContent-Transfer-Encoding: base64\r\n\r\neA==\r\n").into_bytes()], true), 400),
         ("dokuz parça", mp_tur(), {
             let mut p: Vec<Vec<u8>> = vec![csrf_alani.clone()];

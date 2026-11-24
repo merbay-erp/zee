@@ -171,6 +171,7 @@ aktif	P018	proje.dinleyici_bildirimi	`dinleyiciler` bildirimi `<ad> <adres>:<kap
 aktif	P019	proje.eposta_ek_turleri	`e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür
 aktif	P020	proje.baglanti_ayarlari	Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`, `bağlantı_blok_sınırı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok
 aktif	P021	proje.baglanti_tls	TLS bildirimi bozuk: `tls_sertifika_değişkeni` / `tls_anahtar_değişkeni` eksik, aynı ya da A-Z/0-9/_ dışı ad; `tls_dinleyicileri` kimliksiz, `dinleyiciler`de olmayan ya da yinelenen ad
+aktif	P022	proje.govde_siniri	Web isteği boyut ayarı geçersiz: `gövde_aşımı_rotası` `/` ile başlamıyor, 256 baytı aşıyor ya da sorgu/parça/yüzde/boşluk/denetim karakteri taşıyor
 aktif	Ç000	ic.program_sonlandirma_nobetcisi	`programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez
 aktif	Ç001	ic.son_tarih_iptal_nobetcisi	Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz
 aktif	Ç002	ic.giris_orani_reddi_nobetcisi	Web isteğinde parola özeti giriş oran reddi nöbetçisi; istek döngüsü 429/503 sabit yanıtına çevirir, kullanıcıya sızmaz
