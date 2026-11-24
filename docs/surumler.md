@@ -48,6 +48,20 @@ Bu kayıt yeni sürüm etiketi değildir.
   göründüğünü ve alanın parametre olarak geçirilmesini söyler. Tanı kodları
   ve kabul/ret davranışı değişmedi.
 
+### Düzeltilenler
+
+- **Uzun bağlantı oturumları artık bellek sınırına yürümüyor (K-388):** adlı
+  dinleyici bağlantısında (K-381) çalışma bütçesi yalnız başarılı okumada
+  yenileniyordu; IMAP IDLE yoklamasının zaman aşımı ya da çok uzun satıra
+  verilen ret aynı bütçeyi taşıdığı için uzun oturum, canlı değer küçükken
+  "Çalışma değeri yaklaşık … bayt" (C024) ile kapanabiliyordu. Artık girdi
+  tüketen ya da süresini dolduran her okuma (başarı, `zaman_aşımı`,
+  `satır_uzun`, `satır_sonu`, `kodlama`) yeni bir komut gibi taze bütçe
+  açar. Tek komut içindeki 64 MiB sınırı aynen geçerlidir: büyük gövdeyi
+  bellekte işlemek yerine dosyaya al (K-384). Kapalı bağlantıda dönen
+  `kapandı` bütçeyi yenilemez; bu sonucu yok sayan döngü eskisi gibi
+  durdurulur. Web istekleri değişmedi. Göç gerekmez.
+
 ## 23 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

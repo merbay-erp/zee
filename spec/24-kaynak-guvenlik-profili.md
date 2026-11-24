@@ -50,6 +50,14 @@ Süreç genelinde kabul edilmiş inbound ve başlatılmış outbound ağ bağlan
 toplamı 64'ü AŞAMAZ. İzin bütün başarı/hata yollarında bırakılmalıdır; aşım
 outbound'da C018 nedeni, inbound'da HTTP 503'tür.
 
+Adlı dinleyici bağlantı görevi (spec/12 §9, K-388) web isteğinin bağlantıdaki
+karşılığı olarak bağımsız adım/çıktı/heap bütçesiyle başlar; bütçe her protokol
+birimi sınırında (girdi tüketen ya da süresini dolduran bağlantı okuma dönüşü)
+taze kurulmak ZORUNDADIR. Zarf birim içinde iade edilmez: tek birimde 64 MiB
+aşımı C024, adım ya da çıktı aşımı C023 olarak yalnız o bağlantıyı kapatır.
+Sınır olmayan dönüşler (anında `kapandı`, okumadan `boyut_aşımı`, yazma,
+`bekle`) bütçeyi yenilemez.
+
 ## HTTP isteği
 
 Native web başlığı en çok 16 KiB, gövdesi 64 KiB'dır. Başlık sonu ham baytta

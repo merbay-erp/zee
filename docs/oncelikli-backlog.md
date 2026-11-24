@@ -2557,6 +2557,41 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-388 — Bağlantı görevinde protokol birimi sınırında bütçe yenileme (ZM-F035)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) ZM-F035;
+freeze sınıfı `correctness`, compiler beyanı `semantic-bugfix`. Uzun IMAP
+IDLE oturumu ve kötü satırlara yanıt veren SMTP döngüsü, canlı değer birkaç
+KiB iken C024 ile kapanıyordu. Kök neden: spec/24 zarfı iade edilmez ve
+bağlantı görevi bütçeyi yalnız başarılı okumada yeniliyordu (K-381); süreli
+okumanın `zaman_aşımı` dönüşü ve girdi tüketen retler aynı zarfı oturum
+boyunca taşıyordu.
+
+Gerçekleşen: protokol birimi sınırı = girdi tüketen ya da süresini dolduran
+her okuma dönüşü (başarı, `zaman_aşımı`, `satır_uzun`, `satır_sonu`,
+`kodlama`, nokta bloğunda `boyut_aşımı`); her sınırda adım/çıktı/heap
+bütçesi taze. Anında dönen `kapandı`/`kapanıyor`/`geçersiz`/`tls`, okumadan
+dönen `boyut_aşımı`, yazma ve `bekle` yenilemez. Tek birimde 64 MiB zarf
+aynen geçerli (C024). Web istek bütçesi değişmedi.
+
+Kanıt: `compiler/tests/baglanti_butce_yenileme_testi.rs` (3 olumlu, 3
+olumsuz), regression `regression/runtime/baglanti-idle-butce-yenileme.dil`
+(yeni hermetik `baglanti` kipi), spec/12 §9 ve spec/24 normatif madde,
+ADR-033 ve ADR-165 ekleri, GB-160 (DoS değerlendirmesi), soak 1800 sn.
+
+Açık: birim içinde atılan geçici değer iadesi yok (RFC-0043 seçenek b);
+ZeeMail'in 1 MB+ `DATA` gövdesini ve 260 KB `FETCH` yanıtını tek birimde
+Zee metni olarak işlemesi bu düzeltmeyle de C024'tür — dosya tutamağıyla
+aralıklı işleme RFC-0043 Dilim 1'e bağlıdır. Birimler arası yaşayan
+değerler yeni bütçeye yeniden sayılmaz.
+
+Ayrı not (K-işi açılmadı, değerlendirme bekliyor): ZeeMail aynı ölçümde
+spec/25 tek PostgreSQL parametresinin 64 KiB sınırına takıldı (64 KB
+üstü gövde `451`). Sınır bilinçli güvenlik değeridir (K-235); büyük gövde
+dosya tutamağında tutulup veritabanına yol/özet yazılmalıdır. Sınırın
+gevşetilmesi ya da `bytea`/akış parametresi ayrı K-işi ve spec/25 kararı
+ister; bu işte değiştirilmedi.
+
 ## K-384 — Bağlantıda blok okuma ve bayt-kesin akış (RFC-0039 A2c)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail); 23 Kasım

@@ -39,7 +39,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-030 | [Bütün AST ifadelerinde kesin kaynak aralığı](030-kesin-ast-kaynak-araliklari.md) | **kabul** (K-126/B-050) |
 | ADR-031 | [Merkezî yetkinlik politikası ve native outbound istemci](031-merkezi-yetkinlik-ve-outbound-istemci.md) | **kabul** (K-127/B-023/B-049) |
 | ADR-032 | [Atomik replace metadata koruma politikası](032-atomik-replace-metadata-politikasi.md) | **kabul** (K-128/B-048; ek K-348, K-351) |
-| ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/K-130/K-131/K-132; B-025 kapalı) |
+| ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/K-130/K-131/K-132; B-025 kapalı; bağlantı birimi eki K-388) |
 | ADR-034 | [Kalıcı ortak web deposu ve tek-worker süreç modeli](034-web-ortak-depo-ve-worker-modeli.md) | **kabul** (K-137/B-046) |
 | ADR-035 | [Protokol-kesin LSP JSON-RPC sınırı](035-protokol-kesin-lsp-json-rpc.md) | **kabul** (K-138/B-051) |
 | ADR-036 | [Kanonik web proxy origin sınırı](036-kanonik-web-proxy-origin-siniri.md) | **kabul** (K-139/B-052) |
@@ -169,4 +169,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-162 | [Adlı dinleyici devri ve systemd hizmet bildirimi](162-adli-dinleyici-devri-ve-hizmet-bildirimi.md) | **kabul** (K-376/GB-152) |
 | ADR-163 | [İkili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı](163-ikili-yanit-multipart-ve-ek-turu-kaydi.md) | **kabul** (K-378/GB-154–156) |
 | ADR-164 | [Satır içi betik CSP özeti yalnız kaynak değişmezinden](164-satir-ici-betik-csp-ozeti.md) | **kabul** (K-379/GB-153) |
-| ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158; A2c eki K-384/GB-159) |
+| ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158; A2c eki K-384/GB-159; birim bütçesi eki K-388/GB-160) |
