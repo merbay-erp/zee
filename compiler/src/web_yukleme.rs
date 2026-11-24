@@ -42,7 +42,25 @@ fn runtime_parca_adi(ad: &str) -> bool {
 /// sayısını döndürür. Başka ad, alt dizin, bağ ve gelecek tarihli dosyaya
 /// dokunulmaz; dizin yoksa ya da okunamazsa hiçbir şey yapılmaz.
 pub fn yetim_parcalari_supur(kok: &Path, simdi: SystemTime, yas: Duration) -> usize {
-    let Ok(girdiler) = std::fs::read_dir(kok.join(".zee/yuklemeler")) else {
+    yetim_parcalari_supur_dizinde(kok, YUKLEME_DIZINI, simdi, yas)
+}
+
+/// Web yüklemelerinin geçici dizini (spec/26).
+pub const YUKLEME_DIZINI: &str = ".zee/yuklemeler";
+/// K-384: bağlantı bloklarının geçici dizini (RFC-0039 A2c). Ayrı dizin,
+/// web süpürmesinin 15 dakikalık eşiğinin uzun bağlantı oturumundaki canlı
+/// blok dosyasına dokunmasını önler. Bağlantı reaktörü yalnız Unix'tedir.
+#[cfg(unix)]
+pub const BAGLANTI_BLOK_DIZINI: &str = ".zee/baglanti-bloklari";
+
+/// `kok/<alt>` altında aynı süpürme kuralı (`yetim_parcalari_supur`).
+pub fn yetim_parcalari_supur_dizinde(
+    kok: &Path,
+    alt: &str,
+    simdi: SystemTime,
+    yas: Duration,
+) -> usize {
+    let Ok(girdiler) = std::fs::read_dir(kok.join(alt)) else {
         return 0;
     };
     let mut silinen = 0;
@@ -124,12 +142,17 @@ pub struct AkanYukleme {
 
 impl AkanYukleme {
     pub fn yeni(kok: &Path) -> Result<Self, String> {
-        let dizin = kok.join(".zee/yuklemeler");
+        Self::dizinde(kok, YUKLEME_DIZINI)
+    }
+
+    /// `kok/<alt>` altında `0600`, benzersiz `<64 hex>.parca`.
+    pub fn dizinde(kok: &Path, alt: &str) -> Result<Self, String> {
+        let dizin = kok.join(alt);
         std::fs::create_dir_all(&dizin)
             .map_err(|hata| format!("yükleme geçici dizini oluşturulamadı: {}", hata))?;
         for _ in 0..8 {
             let kimlik = dil::guvenlik::guvenli_belirtec_uret()?;
-            let goreli_yol = format!(".zee/yuklemeler/{}.parca", kimlik);
+            let goreli_yol = format!("{alt}/{kimlik}.parca");
             let yol = kok.join(&goreli_yol);
             let mut secenekler = OpenOptions::new();
             secenekler.write(true).create_new(true);

@@ -41,6 +41,27 @@ impl Ayristirici {
         } else {
             None
         };
+        // K-384: `… gönder` ile biten işlem adı cümle olarak çağrılamaz; S037'ye
+        // ad seçimi ipucu eklenir (program zaten S037 ile reddedilirdi).
+        let cakisan = (1..=tokenlar.len()).find_map(|k| {
+            let kelimeler: Option<Vec<&str>> = tokenlar[tokenlar.len() - k..]
+                .iter()
+                .map(|t| match &t.tur {
+                    TokenTur::Kelime(k) => Some(k.as_str()),
+                    _ => None,
+                })
+                .collect();
+            let ad = format!("{} gönder", kelimeler?.join(" "));
+            self.islem_adlari.contains(&ad).then_some(ad)
+        });
+        if let (Some(ad), false) = (
+            cakisan,
+            matches!(tokenlar.last(), Some(son) if kelime_mi(son, "yanıtını")),
+        ) {
+            if let Some(ipucu) = crate::tani::fiil_cakismasi_ipucu(&ad) {
+                return Err(yanit_bicimi_tanisi(satir).onerili(ipucu));
+            }
+        }
         if matches!(tokenlar.last(), Some(son) if kelime_mi(son, "yanıtını")) {
             tokenlar.pop();
             let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;

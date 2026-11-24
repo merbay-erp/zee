@@ -710,8 +710,14 @@ pub enum Cumle {
         govde: Vec<Cumle>,
         satir: usize,
     },
-    /// K-381: `bağlantıya "220 hazır" satırını yaz` (CRLF'yi runtime ekler).
-    BaglantiyaYaz { deger: Ifade, satir: usize },
+    /// K-381: `bağlantıya "220 hazır" satırını yaz` (CRLF'yi runtime ekler);
+    /// K-384 (ZM-F031): `bağlantıya "+ " parçasını yaz` (`satir_sonu` yanlış:
+    /// satır sonu eklenmez).
+    BaglantiyaYaz {
+        deger: Ifade,
+        satir_sonu: bool,
+        satir: usize,
+    },
     /// K-381: `bağlantıyı kapat`.
     BaglantiyiKapat { satir: usize },
     /// `"çalışıyor" yanıtını gönder` veya sabit `503 durumuyla gönder`.

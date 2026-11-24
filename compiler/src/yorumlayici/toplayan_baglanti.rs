@@ -1,10 +1,15 @@
 //! K-381: hermetik bağlantı adaptörü. Betiklenmiş istemciler gerçek
 //! reaktörle aynı satır okuyucusu ve sınırlarla sunulur; her `parça` ayrı
 //! bir ağ teslimidir, böylece eşzamanlı oturumların sırası deterministiktir.
+//!
+//! K-384: blok okuma gerçek reaktörle aynı `BlokOkuyucu`yu kullanır; dosya
+//! yerine bellekte tutulur (`bloklar`, `dosyalar`), yol deterministiktir.
 
 use super::{BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti};
-use crate::ag_satiri::{giden_satir, BaglantiAyari, SatirOkuyucu};
-use std::collections::VecDeque;
+use crate::ag_satiri::{
+    akis_butcesi_ms, bayt_metni, giden_parca, giden_satir, BaglantiAyari, BlokOkuyucu, SatirOkuyucu,
+};
+use std::collections::{HashMap, VecDeque};
 
 /// Bir betiklenmiş istemci bağlantısı.
 #[derive(Debug, Clone)]
@@ -20,8 +25,17 @@ pub struct SahteBaglanti {
     pub kapandi: bool,
     /// Implicit TLS dinleyicisinden gelir ya da STARTTLS ile yükseltildi.
     pub tls: bool,
+    /// K-384: sunucunun yazdığı bütün baytlar (satır CRLF'si, parça, aktarım).
+    pub ham_giden: Vec<u8>,
+    /// K-384: tamamlanan blokların çözülmüş içeriği.
+    pub bloklar: Vec<Vec<u8>>,
     okuyucu: Option<SatirOkuyucu>,
     sustu: bool,
+    blok: Option<(BlokOkuyucu, Vec<u8>)>,
+    /// Yarıda kalan blok/literal okuma yönünü kapatır.
+    okuma_kapali: bool,
+    /// Bekleyen işlemin süresi (susan istemcinin sanal saat artışı).
+    bekleme_ms: Option<i64>,
 }
 
 impl SahteBaglanti {
@@ -34,8 +48,13 @@ impl SahteBaglanti {
             giden: Vec::new(),
             kapandi: false,
             tls: false,
+            ham_giden: Vec::new(),
+            bloklar: Vec::new(),
             okuyucu: None,
             sustu: false,
+            blok: None,
+            okuma_kapali: false,
+            bekleme_ms: None,
         }
     }
 
@@ -72,6 +91,9 @@ pub struct ToplayanBaglanti {
     /// Sınır dolunca kibar retle kapatılanlar: (uzak adres, yazılan satır).
     pub reddedilenler: Vec<(String, Option<String>)>,
     pub gunluk: Vec<(u64, String)>,
+    /// K-384: bağlantı tarafının sanal dosyaları (alınan bloklar ve
+    /// aktarılacak dosyalar; yol → bayt).
+    pub dosyalar: HashMap<String, Vec<u8>>,
     kapanis_bildirildi: bool,
 }
 
@@ -130,7 +152,7 @@ impl ToplayanBaglanti {
             if !b.teslim_et() && b.sessiz_kalir {
                 // Susan istemci: okuma boşta süresinin sonunda zaman aşımına düşer.
                 b.sustu = true;
-                ekle = self.ayar.bosta_suresi_ms;
+                ekle = b.bekleme_ms.unwrap_or(self.ayar.bosta_suresi_ms);
             }
             olaylar.push(BaglantiOlayi::Hazir(*kimlik));
         }
@@ -147,73 +169,201 @@ impl ToplayanBaglanti {
     }
 
     pub(super) fn islem(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
-        let satir_siniri = self.ayar.satir_siniri;
+        let ayar = self.ayar.clone();
         let kapaniyor = self.kapanis_bildirildi;
-        let tls_var = self.ayar.tls.is_some();
+        let blok_sirasi = self.dosyalar.len();
         let Some(b) = self.baglantilar.get_mut((kimlik as usize).wrapping_sub(1)) else {
             return BaglantiSonucu::hata("kapandı", "bağlantı yok");
         };
+        let okuma = matches!(
+            islem,
+            BaglantiIslemi::SatirOku
+                | BaglantiIslemi::SatirOkuSureli(_)
+                | BaglantiIslemi::BaytOku(_)
+                | BaglantiIslemi::NoktaBlogu
+                | BaglantiIslemi::BaytBlogu(_)
+        );
+        let kapatma = matches!(islem, BaglantiIslemi::Kapat | BaglantiIslemi::Engelle(_));
+        if (b.kapandi && !kapatma) || (okuma && b.okuma_kapali) {
+            return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+        }
+        if okuma && kapaniyor && b.blok.is_none() {
+            return BaglantiSonucu::hata("kapanıyor", "sunucu kapanıyor");
+        }
         match islem {
-            BaglantiIslemi::SatirOku => {
-                if b.kapandi {
-                    return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+            BaglantiIslemi::SatirOku => b.satir_oku(None, ayar.bosta_suresi_ms),
+            BaglantiIslemi::SatirOkuSureli(ms) => b.satir_oku(Some(*ms), ayar.bosta_suresi_ms),
+            BaglantiIslemi::BaytOku(adet) => b.bayt_oku(*adet, &ayar),
+            BaglantiIslemi::NoktaBlogu | BaglantiIslemi::BaytBlogu(_) => {
+                let sonuc = b.blok_al(islem, &ayar, kapaniyor, blok_sirasi);
+                if let BaglantiSonucu::Blok { yol, .. } = &sonuc {
+                    let icerik = b.bloklar.last().cloned().unwrap_or_default();
+                    self.dosyalar.insert(yol.clone(), icerik);
                 }
-                if kapaniyor {
-                    return BaglantiSonucu::hata("kapanıyor", "sunucu kapanıyor");
-                }
-                let Some(okuyucu) = b.okuyucu.as_mut() else {
-                    return BaglantiSonucu::hata("kapandı", "bağlantı yok");
-                };
-                match okuyucu.siradaki() {
-                    Some(Ok(satir)) => BaglantiSonucu::Satir(satir),
-                    Some(Err(hata)) => BaglantiSonucu::hata(hata.turu(), hata.mesaji()),
-                    None if b.sustu => {
-                        b.sustu = false;
-                        BaglantiSonucu::hata("zaman_aşımı", "satır boşta süresi içinde gelmedi")
-                    }
-                    None if b.parcalar.is_empty() && b.sessiz_kalir => BaglantiSonucu::Bekle,
-                    None if b.parcalar.is_empty() => {
-                        BaglantiSonucu::hata("kapandı", "karşı taraf bağlantıyı kapattı")
-                    }
-                    None => BaglantiSonucu::Bekle,
-                }
+                sonuc
             }
             BaglantiIslemi::SatirYaz(metin) => {
-                if b.kapandi {
-                    return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
-                }
-                match giden_satir(metin, satir_siniri) {
-                    Ok(bayt) => {
-                        b.giden.push(metin.clone());
-                        BaglantiSonucu::Tamam(bayt.len() as i64)
-                    }
-                    Err(neden) => BaglantiSonucu::hata("yazılamadı", neden),
-                }
+                b.yaz(metin, giden_satir(metin, ayar.satir_siniri), true)
             }
+            BaglantiIslemi::ParcaYaz(metin) => {
+                b.yaz(metin, giden_parca(metin, ayar.satir_siniri), false)
+            }
+            BaglantiIslemi::DosyaAktar(yol) => match self.dosyalar.get(yol) {
+                None => BaglantiSonucu::hata("dosya", format!("\"{yol}\" dosyası yok")),
+                Some(icerik) if icerik.len() as u64 > ayar.blok_siniri => {
+                    BaglantiSonucu::hata("boyut_aşımı", crate::ag_satiri::BLOK_SINIRI_ASILDI)
+                }
+                Some(icerik) => {
+                    b.ham_giden.extend_from_slice(icerik);
+                    BaglantiSonucu::Tamam(icerik.len() as i64)
+                }
+            },
             BaglantiIslemi::Kapat => {
                 b.kapandi = true;
+                b.blok = None;
                 BaglantiSonucu::Tamam(0)
             }
-            BaglantiIslemi::TlsBaslat => {
-                if b.tls {
-                    return BaglantiSonucu::hata("tls", crate::ag_satiri::ZATEN_TLS);
-                }
-                if !tls_var {
-                    return BaglantiSonucu::hata("tls", crate::ag_satiri::TLS_KIMLIGI_YOK);
-                }
-                let okuyucu = b.okuyucu.as_mut();
-                if okuyucu.as_ref().is_some_and(|o| o.tamponlu_bayt() > 0) {
-                    b.kapandi = true;
-                    return BaglantiSonucu::hata("tls", crate::ag_satiri::STARTTLS_ENJEKSIYONU);
-                }
-                okuyucu.into_iter().for_each(SatirOkuyucu::sifirla);
-                b.tls = true;
-                BaglantiSonucu::Satir("TLSv1_3 TLS13_AES_128_GCM_SHA256".into())
-            }
+            BaglantiIslemi::TlsBaslat => b.tls_baslat(ayar.tls.is_some()),
             BaglantiIslemi::Engelle(_) => {
                 b.teslim_et();
                 BaglantiSonucu::Tamam(0)
             }
         }
+    }
+}
+
+impl SahteBaglanti {
+    /// Veri yokken: susan istemci zaman aşımı, kapanmış istemci `kapandı`.
+    fn veri_yok(&mut self, tur_mesaji: &str, okuma_kapanir: bool) -> BaglantiSonucu {
+        if self.sustu {
+            // Satır okumasında zaman aşımı bağlantıyı kapatmaz (K-384, ZM-F032).
+            self.sustu = false;
+            self.okuma_kapali |= okuma_kapanir;
+            return BaglantiSonucu::hata("zaman_aşımı", tur_mesaji);
+        }
+        if self.parcalar.is_empty() && !self.sessiz_kalir {
+            self.okuma_kapali |= okuma_kapanir;
+            return BaglantiSonucu::hata("kapandı", "karşı taraf bağlantıyı kapattı");
+        }
+        BaglantiSonucu::Bekle
+    }
+
+    fn satir_oku(&mut self, sure_ms: Option<i64>, bosta: i64) -> BaglantiSonucu {
+        self.bekleme_ms = sure_ms.map(|ms| ms.min(bosta));
+        let Some(okuyucu) = self.okuyucu.as_mut() else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı yok");
+        };
+        match okuyucu.siradaki() {
+            Some(Ok(satir)) => BaglantiSonucu::Satir(satir),
+            Some(Err(hata)) => BaglantiSonucu::hata(hata.turu(), hata.mesaji()),
+            None => self.veri_yok("satır süresi içinde gelmedi", false),
+        }
+    }
+
+    fn bayt_oku(&mut self, adet: i64, ayar: &BaglantiAyari) -> BaglantiSonucu {
+        if adet as u64 > ayar.satir_siniri as u64 {
+            return BaglantiSonucu::hata("boyut_aşımı", crate::ag_satiri::BAYT_OKUMA_SINIRI);
+        }
+        self.bekleme_ms = Some(akis_butcesi_ms(ayar.bosta_suresi_ms, adet as u64));
+        let Some(okuyucu) = self.okuyucu.as_mut() else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı yok");
+        };
+        match okuyucu.bayt_al(adet as usize) {
+            Some(bayt) => match bayt_metni(bayt) {
+                Ok(metin) => BaglantiSonucu::Satir(metin),
+                Err(hata) => BaglantiSonucu::hata(hata.turu(), hata.mesaji()),
+            },
+            None => self.veri_yok("baytlar süresi içinde gelmedi", true),
+        }
+    }
+
+    fn blok_al(
+        &mut self,
+        islem: &BaglantiIslemi,
+        ayar: &BaglantiAyari,
+        kapaniyor: bool,
+        sira: usize,
+    ) -> BaglantiSonucu {
+        if self.blok.is_none() {
+            let (okuyucu, taban) = match islem {
+                BaglantiIslemi::BaytBlogu(adet) if *adet as u64 > ayar.blok_siniri => {
+                    return BaglantiSonucu::hata(
+                        "boyut_aşımı",
+                        crate::ag_satiri::BLOK_SINIRI_ASILDI,
+                    );
+                }
+                BaglantiIslemi::BaytBlogu(adet) => (BlokOkuyucu::bayt(*adet as u64), *adet as u64),
+                _ => (BlokOkuyucu::nokta(ayar.blok_siniri), ayar.blok_siniri),
+            };
+            self.bekleme_ms = Some(akis_butcesi_ms(ayar.bosta_suresi_ms, taban));
+            self.blok = Some((okuyucu, Vec::new()));
+        }
+        let (Some((blok, icerik)), Some(okuyucu)) = (self.blok.as_mut(), self.okuyucu.as_mut())
+        else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı yok");
+        };
+        let tuketilen = blok.besle(okuyucu.tampon(), icerik);
+        okuyucu.tuket_bayt(tuketilen);
+        if blok.bitti() {
+            let hata = blok.hata();
+            let icerik = std::mem::take(icerik);
+            self.blok = None;
+            if let Some(hata) = hata {
+                return BaglantiSonucu::hata(hata.turu(), hata.mesaji());
+            }
+            let sha256 = crate::guvenlik::sha256_hex(&icerik);
+            let bayt = icerik.len() as i64;
+            self.bloklar.push(icerik);
+            return BaglantiSonucu::Blok {
+                yol: format!(".zee/baglanti-bloklari/{sira:064x}.parca"),
+                sha256,
+                bayt,
+            };
+        }
+        if kapaniyor {
+            self.blok = None;
+            self.okuma_kapali = true;
+            return BaglantiSonucu::hata("kapanıyor", "sunucu kapanıyor; blok atıldı");
+        }
+        let sonuc = self.veri_yok("blok süresi içinde tamamlanmadı; atıldı", true);
+        if sonuc != BaglantiSonucu::Bekle {
+            self.blok = None;
+        }
+        sonuc
+    }
+
+    fn yaz(
+        &mut self,
+        metin: &str,
+        bayt: Result<Vec<u8>, &'static str>,
+        satir: bool,
+    ) -> BaglantiSonucu {
+        match bayt {
+            Ok(bayt) => {
+                if satir {
+                    self.giden.push(metin.to_string());
+                }
+                self.ham_giden.extend_from_slice(&bayt);
+                BaglantiSonucu::Tamam(bayt.len() as i64)
+            }
+            Err(neden) => BaglantiSonucu::hata("yazılamadı", neden),
+        }
+    }
+
+    fn tls_baslat(&mut self, tls_var: bool) -> BaglantiSonucu {
+        if self.tls {
+            return BaglantiSonucu::hata("tls", crate::ag_satiri::ZATEN_TLS);
+        }
+        if !tls_var {
+            return BaglantiSonucu::hata("tls", crate::ag_satiri::TLS_KIMLIGI_YOK);
+        }
+        let okuyucu = self.okuyucu.as_mut();
+        if okuyucu.as_ref().is_some_and(|o| o.tamponlu_bayt() > 0) {
+            self.kapandi = true;
+            return BaglantiSonucu::hata("tls", crate::ag_satiri::STARTTLS_ENJEKSIYONU);
+        }
+        okuyucu.into_iter().for_each(SatirOkuyucu::sifirla);
+        self.tls = true;
+        BaglantiSonucu::Satir("TLSv1_3 TLS13_AES_128_GCM_SHA256".into())
     }
 }

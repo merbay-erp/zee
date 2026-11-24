@@ -237,6 +237,43 @@ WantedBy=multi-user.target
   `systemd-socket-activate -l 127.0.0.1:2525 --fdname=smtp_v4 dil çalıştır .`
   (Linux). Bind'e geri dönüş yoktur; devirsiz `dil çalıştır` çıkış 2 verir.
 
+## Blok okuma ve bayt-kesin akış (K-384, RFC-0039 A2c)
+
+SMTP `DATA` gövdesi ve IMAP literal'i belleğe alınmadan geçici dosyaya
+akar; Zee yalnız künyeyi (`yol`, `sha256`, `bayt`) görür ve dosyayı
+`atomik taşımayı dene` ile posta kutusuna taşır.
+
+```text
+# proje.dil — SMTP SIZE ilanıyla aynı değer
+bağlantı_blok_sınırı 26214400 olsun
+
+# DATA
+bağlantıya "354 ileti bitince <CRLF>.<CRLF>" satırını yaz
+ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun
+# IMAP APPEND {n}
+bağlantıya "+ " parçasını yaz
+bağlantıya "hazır" satırını yaz
+ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun
+# IMAP FETCH
+sonuç bağlantıya yol dosyasını aktarmayı dene olsun
+# IMAP IDLE: 30 sn'de bir posta kutusunu yokla
+satır bağlantıdan satır okumayı 30 saniye içinde dene olsun
+```
+
+- Blok dosyaları göreli IO kökünde `.zee/baglanti-bloklari/` altındadır
+  (`0600`, `<64 hex>.parca`). Birimin `ReadWritePaths=` bu kökü kapsamalı;
+  posta kutusu aynı bağlama altındaysa taşıma `rename`'dir, değilse
+  akışlı kopyaya düşer (spec/26 K-329).
+- Taşınmayan dosya aynı bağlantıdaki sonraki blokta ya da bağlantı
+  bitince silinir; süreç çökmesinden kalanlar `bağlantı_ömrü` + 15 dk
+  sonra süpürülür. Dizini elle temizlemek gerekmez.
+- Nokta bloğundaki çıplak LF/CR (`<LF>.<LF>` smuggling) bloğu `satır_sonu`
+  ile reddeder; Postfix `smtpd_forbid_bare_newline` karşılığı kapatılamaz.
+  Ürün `554 5.6.0` yazar.
+- Blok, literal ve aktarım çağrı başından `boşta + bayt / 64 KiB/sn`
+  sürede bitmelidir; yarıda kalan blok okuma yönünü kapatır (Zee `421`
+  yazıp kapatır). Dosya aktarımı `dosya-okuma` yetkinliği de ister.
+
 ## Ölçüm
 
 `python3 scripts/systemd-adli-soket-olcumu.py --dil <dil> --cikti <klasör>`
@@ -254,7 +291,11 @@ varken `systemctl stop` istemciye `421 … kapanıyor` yazdırır ve hizmet 0 il
 temiz biter. A2b: aynı koşu `smtps_v4/v6` implicit TLS soketlerini ve
 test CA'lı kimliği (`LoadCredential=`; desteklenmeyen konteynerde ortam)
 ekler, implicit TLS ve STARTTLS oturumunu ve STARTTLS enjeksiyonunun
-`220` sonrası kapanışını denetler. Sonuç
+`220` sonrası kapanışını denetler. K-384 (A2c): aynı hizmette kısa bir
+DATA gövdesi (nokta doldurmalı, 26 bayt) dosyaya alınır, `<LF>.<LF>`
+smuggling denemesi `554` alır, IDLE kesitinde 1 saniyelik okuma süresinde
+`* yoklama` gelir ve oturum `DONE` ile sürer; koşu sonunda
+`.zee/baglanti-bloklari` boştur. Sonuç
 `<klasör>/systemd-adli-soket-olcumu.json`.
 
 Kapılar çekirdeğin geçici (ephemeral) aralığının dışından seçilir, her

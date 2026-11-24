@@ -1774,6 +1774,7 @@ impl KaynakGirdisi {
                 io.ag_baglanti = Some(ag_baglantisi::Reaktor::yeni(
                     proje.ana_bildirim().baglanti.clone(),
                     io.baslangic,
+                    io.kok.clone(),
                 ));
             }
         }
@@ -4086,6 +4087,22 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         kimlik: u64,
         islem: &dil::yorumlayici::BaglantiIslemi,
     ) -> dil::yorumlayici::BaglantiSonucu {
+        // K-384: dosyadan aktarımda yol proje dosya sınırıyla çözülür ve
+        // `dosya-okuma` yetkinliği ayrıca denetlenir.
+        #[cfg(unix)]
+        if let dil::yorumlayici::BaglantiIslemi::DosyaAktar(yol) = islem {
+            let cozum = self
+                .politika
+                .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)
+                .and_then(|_| self.dosya_yolu(yol, false));
+            return match (cozum, self.ag_baglanti.as_mut()) {
+                (Ok(gercek), Some(reaktor)) => reaktor.dosya_aktar(kimlik, &gercek),
+                (Err(neden), _) => dil::yorumlayici::BaglantiSonucu::hata("dosya", neden),
+                (_, None) => {
+                    dil::yorumlayici::BaglantiSonucu::hata("kapandı", "bağlantı reaktörü yok")
+                }
+            };
+        }
         #[cfg(unix)]
         if let Some(reaktor) = self.ag_baglanti.as_mut() {
             return reaktor.islem(kimlik, islem);

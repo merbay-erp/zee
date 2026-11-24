@@ -80,7 +80,7 @@ impl Denetleyici<'_> {
                 satir,
             }
             | Cumle::SunucuBaslat { kapi: deger, satir }
-            | Cumle::BaglantiyaYaz { deger, satir }
+            | Cumle::BaglantiyaYaz { deger, satir, .. }
             | Cumle::CerezSil { ad: deger, satir }
             | Cumle::Bekle { sure: deger, satir } => {
                 self.ifadeyi_dogrula(deger, &format!("{yol}.ifade"), *satir, false)?;

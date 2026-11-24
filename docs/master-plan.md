@@ -181,7 +181,11 @@ ret, mutlak boşta süresi, 64 KiB geri basınç, SIGTERM boşaltması;
 `NOTIFY_SOCKET` varsa `READY=1`/`STOPPING=1`; ayrıcalıksız `~@privileged`
 sandbox'ta çalışır (gerçek systemd 255 ölçümü, CI adımı). A2b ile sunucu
 TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
-1.2/1.3 AEAD, kimlik credential'dan). Blok okuma (A2c) ve diğer katmanlar
+1.2/1.3 AEAD, kimlik credential'dan). A2c (K-384) ile SMTP `DATA` gövdesi
+ve IMAP literal'i belleğe alınmadan `0600` geçici dosyaya akar (yalnız
+birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
+yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
+süreli okuma vardır. Bağlantılar arası uyandırma ve diğer katmanlar
 açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV

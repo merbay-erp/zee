@@ -732,7 +732,22 @@ impl GirdiCikti for ToplayanIo {
         Ok(olaylar)
     }
     fn baglanti_islemi(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
-        self.baglanti.islem(kimlik, islem)
+        // K-384: hermetik dosyalar bağlantı tarafıyla paylaşılır.
+        if let BaglantiIslemi::DosyaAktar(yol) = islem {
+            if let Some(icerik) = self.dosyalar.get(yol) {
+                self.baglanti
+                    .dosyalar
+                    .insert(yol.clone(), icerik.as_bytes().to_vec());
+            }
+        }
+        let sonuc = self.baglanti.islem(kimlik, islem);
+        if let BaglantiSonucu::Blok { yol, .. } = &sonuc {
+            if let Some(icerik) = self.baglanti.dosyalar.get(yol) {
+                self.dosyalar
+                    .insert(yol.clone(), String::from_utf8_lossy(icerik).into_owned());
+            }
+        }
+        sonuc
     }
     fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
         self.baglanti.gunluk.push((kimlik, neden.to_string()));

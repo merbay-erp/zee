@@ -6,7 +6,7 @@
   RFC-0040 katman C, RFC-0036, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-096 (ekli e-posta), ADR-159 (imza okuma), ADR-160 (rota önbelleği),
   spec/11, spec/26, spec/23, GB-154, GB-155, GB-156; ek: K-385 (ZM-F033),
-  GB-159
+  GB-160
 
 ## Bağlam
 
@@ -196,7 +196,7 @@ iOS Safari profil kurulum akışını başlatmıyordu. İçerik sır taşımaz.
    işte tek model olarak karara bağlanır. Ürün bugün yalnız `autodiscover`
    kaydını DNS/vekil katmanında karşılayabilir.
 
-**Güvenlik değerlendirmesi (GB-159).** XML sunucuda ayrıştırılmaz: XXE/DTD
+**Güvenlik değerlendirmesi (GB-160).** XML sunucuda ayrıştırılmaz: XXE/DTD
 riski Zee tarafında yoktur. Tarayıcıda `attachment` belge oluşturmaz;
 oluşsa bile `default-src 'none'; sandbox` betik ve alt kaynak yüklemesini,
 `nosniff` tür tahminini engeller. Profilin içeriği (gömülü parola, kök

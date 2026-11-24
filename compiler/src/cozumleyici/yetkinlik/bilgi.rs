@@ -34,7 +34,7 @@ impl Bilgi {
                 ifade_bilgisi(dinleyici, self);
                 blok_bilgisi(govde, self);
             }
-            Cumle::BaglantiyaYaz { deger, satir } => {
+            Cumle::BaglantiyaYaz { deger, satir, .. } => {
                 self.ekle(Yetkinlik::AgDinleyici, (*satir, 1, 1));
                 ifade_bilgisi(deger, self);
             }

@@ -54,7 +54,7 @@ kalır (ADR-025).
 | S034 | Birim/paket kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki dosyayı; `grafik paketini kullan` — proje bağımlılığını alır |
 | S035 | Sunucu açma biçimi | `8080 kapısında sunucu başlat` |
 | S036 | Olay/zaman aşımı bloğu biçimi | `"/durum" adresine istek geldiğinde` · `yetişmezse` tek başına satır |
-| S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` veya `"hazır değil" yanıtını 503 durumuyla gönder`; durum kaynakta görünen 100..599 literalidir |
+| S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` veya `"hazır değil" yanıtını 503 durumuyla gönder`; durum kaynakta görünen 100..599 literalidir. K-384: adı `gönder` ile biten işlemi cümle olarak çağırınca öneri çakışan işlemi anar — işleme başka ad ver |
 | S038 | Eşzamanlı blok biçimi | `eşzamanlı olarak` + girintide `<ad> <ifade>` görev satırları |
 | S039 | Işık komutu biçimi | `kırmızı ışığı yak` / `mavi ışığı söndür` |
 | S043 | Web güvenlik cümlesi biçimi | Rota önsözünü, oturum açmayı veya kapatmayı tanıda gösterilen tam kalıpla yaz |
@@ -68,7 +68,7 @@ kalır (ADR-025).
 
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
-| A001 | Ad bu kapsamda tanımlı değil | Önce `<ad> <değer> olsun`; tanı tanımlı adları listeler |
+| A001 | Ad bu kapsamda tanımlı değil | Önce `<ad> <değer> olsun`; tanı tanımlı adları listeler. K-384: işlemde örtük `bağlantı` Sözlüğü görünmez (alanı parametre olarak geçir); adı yerleşik `yaz` ile biten işlemi cümle olarak çağırınca tanı çakışan işlemi anar — işleme başka ad ver |
 | A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır |
 | A003 | `her X için` gezilecek listeyi bulamadı | Kapsamda `Xlar`/`Xler` adlı liste olmalı (örtük çoğul, K-013) |
 | A004 | **ayrılmış** — eski ad çözümleme yuvası | Bu kod yeni bir anlam için kullanılamaz |
@@ -182,7 +182,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
 | C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş kovası aşımı C028 değil 429/503 yanıtıdır (spec/12 §5, K-365); "gizli değeri okunamadı" nedeninde systemd credential dosyasını/dizinini spec/23 §K-339'a göre düzelt |
 | C029 | E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir | `e_posta_bağlantı_değişkeni`, exact `ağ_hedefleri`, alıcı ve ekli iletide readonly dosya/başlık sınırlarını denetle; başarısız `dene` sonucu teslim edilmedi garantisi değildir, otomatik tekrar yapma |
-| C030 | Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında | Okuma/yazma ret Sonuç'unda Hata verisinin `tür` değerine bak: `kapandı`, `zaman_aşımı`, `satır_uzun`, `satır_sonu` (çıplak CR/LF), `kodlama`, `kapanıyor` (SIGTERM), `yazılamadı`, `tls` (STARTTLS reddi: aynı pakette gelen düz metin — bağlantı kapanır —, zaten TLS, kimlik yok, el sıkışma başarısız); protokolün uygun yanıtını yaz. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantıyı kapatır. Kayıtsız dinleyici, ikinci blok, web sunucusuyla birlikte kullanım ve blok dışı kullanım yürütmeyi durdurur (K-381) |
+| C030 | Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında | Okuma/yazma ret Sonuç'unda Hata verisinin `tür` değerine bak: `kapandı`, `zaman_aşımı`, `satır_uzun`, `satır_sonu` (çıplak CR/LF), `kodlama`, `kapanıyor` (SIGTERM), `yazılamadı`, `tls` (STARTTLS reddi: aynı pakette gelen düz metin — bağlantı kapanır —, zaten TLS, kimlik yok, el sıkışma başarısız); K-384 blok/bayt/aktarım: `boyut_aşımı` (`bağlantı_blok_sınırı` ya da bellekte satır sınırı; nokta bloğu sonlandırıcıya kadar tüketilir, literal hiç okunmaz), `geçersiz` (negatif bayt sayısı, 1 sn'den kısa okuma süresi), `dosya` (blok dosyası açılamadı/yazılamadı, aktarılacak dosya yok, normal değil ya da dosya sınırı dışında). Zaman aşımı bağlantıyı kapatmaz; yarıda kalan blok okuma yönünü kapatır (sonraki okumalar `kapandı`). Protokolün uygun yanıtını yaz. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantıyı kapatır. Kayıtsız dinleyici, ikinci blok, web sunucusuyla birlikte kullanım ve blok dışı kullanım yürütmeyi durdurur (K-381) |
 
 ## D — Doğrulama
 
@@ -213,7 +213,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | P017 | Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz | Exact sürüm, HTTPS origin, pozitif root sürümü ve ağ dışı `sha256:` root özetini birlikte bildir |
 | P018 | `dinleyiciler` bildirimi `<ad> <adres>:<kapı>` değil; ad/adres yinelenmiş, kapı 0, IPv6 kapsamlı ya da IPv4 eşlemeli, 64'ten fazla öğe | Her dinleyiciyi `"smtp_v4 0.0.0.0:25"` biçiminde, systemd `FileDescriptorName=` ile aynı tekil adla yaz; çift yığında aileye ayrı ad ver |
 | P019 | `e_posta_ek_türleri` boş, Metin listesi değil, ek türü kaydında olmayan (makro/yürütülebilir/betik dahil) ya da yinelenen tür | Listeyi kanonik adlarla yaz (pdf, png, jpeg, webp, txt, csv, ics, docx, xlsx, pptx, zip); liste kümeyi tam belirler, varsayılanları da yaz; makro taşıyan ve yürütülebilir türler açılamaz |
-| P020 | Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok | Aralıkları tanıdaki gibi yaz; uzak adres sınırı genel sınırı aşamaz; ret satırını en çok 512 baytlık yazdırılabilir ASCII yaz |
+| P020 | Bağlantı ayarı (`bağlantı_sınırı`, `uzak_adres_bağlantı_sınırı`, `bağlantı_satır_sınırı`, `bağlantı_boşta_süresi`, `bağlantı_ömrü`, `bağlantı_dolu_yanıtı`, `bağlantı_blok_sınırı`) aralık dışı, sabit değil, kibar ret satırı ASCII/CR-LF kuralını bozuyor ya da `dinleyiciler` bildirimi yok | Aralıkları tanıdaki gibi yaz; uzak adres sınırı genel sınırı aşamaz; ret satırını en çok 512 baytlık yazdırılabilir ASCII yaz |
 | P021 | TLS bildirimi bozuk: `tls_sertifika_değişkeni` / `tls_anahtar_değişkeni` eksik, aynı ya da A-Z/0-9/_ dışı ad; `tls_dinleyicileri` kimliksiz, `dinleyiciler`de olmayan ya da yinelenen ad | Zincir ve anahtar için iki ayrı credential/ortam adı yaz (değerin kendisini değil); implicit TLS dinleyicilerini `dinleyiciler`deki adlarla yaz |
 
 ## Ç — İç akış
