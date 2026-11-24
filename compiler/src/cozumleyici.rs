@@ -29,8 +29,9 @@ mod turler;
 mod yetkinlik;
 
 use self::akis::{
-    bekleyen_gorev_olmadigini_denetle, daraltma_cikar, daraltma_cikar_geri, daraltma_ekle,
-    gezilen_hedefi_denetle, gezilen_koleksiyonu_degistirme_tanisi, gorev_kapsami_tanisi, nesne_adi,
+    ayri_akista, bekleyen_gorev_olmadigini_denetle, daraltma_cikar, daraltma_cikar_geri,
+    daraltma_ekle, gezilen_hedefi_denetle, gezilen_koleksiyonu_degistirme_tanisi,
+    gorev_kapsami_tanisi, nesne_adi,
 };
 use self::baglam::{Baglam, Imza, ImzaKaydi};
 use self::cagri::cagri_denetle;

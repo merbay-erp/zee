@@ -22,6 +22,23 @@ pub(super) fn nesne_adi(nesne: &Ifade) -> Option<String> {
     }
 }
 
+/// K-380: işlem gövdesi kendi sembol kapsamında denetlenir. Çağıranın ad
+/// tabanlı akış bilgisi (gezilen kaynaklar, Seçenek/Sonuç daraltmaları) başka
+/// kapsamın aynı adlı yereline uygulanamaz; değer semantiğinde çağrılan işlem
+/// çağıranın koleksiyonunu göremez ve değiştiremez.
+pub(super) fn ayri_akista<T>(baglam: &mut Baglam, denetim: impl FnOnce(&mut Baglam) -> T) -> T {
+    let gezilen = std::mem::take(&mut baglam.gezilen_koleksiyonlar);
+    let dolu = std::mem::take(&mut baglam.dolu_secenekler);
+    let basarili = std::mem::take(&mut baglam.basarili_sonuclar);
+    let basarisiz = std::mem::take(&mut baglam.basarisiz_sonuclar);
+    let sonuc = denetim(baglam);
+    baglam.gezilen_koleksiyonlar = gezilen;
+    baglam.dolu_secenekler = dolu;
+    baglam.basarili_sonuclar = basarili;
+    baglam.basarisiz_sonuclar = basarisiz;
+    sonuc
+}
+
 pub(super) fn gezilen_koleksiyonu_degistirme_tanisi(ad: &str, satir: usize) -> Tani {
     Tani::yeni(
         "T053",
