@@ -392,7 +392,10 @@ ayrılıştır ve spec/21 ile uygulama ADR'sinde kayda geçer.
    Zee kaynağını (AUTH PLAIN çözümü, SMTP `SIZE`/satır oktet sınırı, DKIM
    `bh=` hesabı) `dogfood/urun-h/korpus/` altına exact beklentiyle koyar.
    Elle base64 döngüsünün ASCII dışı girdide yanlış sonucu ve `uzunluğu`nun
-   oktet saymaması iki ayrı reproducer'dır. ZM-F034 için: A2c ile alınmış
+   oktet saymaması iki ayrı reproducer'dır. Ürün korpusunda (24 Kasım
+   2026, henüz depo içine aynalanmadı) `zm-r004-uzunluk-oktet-saymaz.dil`
+   (bugün geçer: `"ğ"` uzunluğu 1; Dilim 2'de oktet sayısı 2) ve
+   `zm-r005-bellekte-sha256-yok.dil` (bugün S015) hazırdır. ZM-F034 için: A2c ile alınmış
    base64 ekli ileti dosyasından eki çıkaramayan ürün kodu (bugün
    `dosyasını okumayı dene` 8bit içerikte başarısız, eki bayt yazacak kalıp
    yok) ve ekli gönderimin `554`'e düşen yolu.

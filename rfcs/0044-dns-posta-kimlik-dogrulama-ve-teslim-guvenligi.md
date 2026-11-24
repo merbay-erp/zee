@@ -652,6 +652,12 @@ alanı satırları ve RFC-0024 ile aynı committe yapılır.
    Zee kaynağını (`dogfood/urun-h/korpus/`) exact beklentiyle koyar: B1 MX
    sorgusu yokluğu, B2 sahte `From:` iletisinin teslim edilmesi, B3 imzasız
    giden iletinin alıcıda reddi, B4 düz metne düşen teslim.
+   **Ürün durumu (24 Kasım 2026):** ürün deposunun korpusunda (henüz depo
+   içine aynalanmadı) `zm-r006-mx-sorgusu-yok.dil` (bugün S015) ve
+   `zm-r007-dnssiz-sahte-gonderen.md` (DMARC `p=reject` yayımlayan iş
+   ortağı alanının taklidi DNS'siz teslim ediliyor; yalnız kurumun kendi
+   alanı reddediliyor) hazır. Aşama açılırken `dogfood/urun-h/korpus/`
+   altına exact beklentiyle aynalanır.
 3. **Güvenlik önceliği.** B2 olmadan ZeeMail kimlik avına açık bir posta
    kutusu sunucusudur; B3 olmadan giden posta teslim edilemez. Bu iki aşama
    `correctness/security` gerekçesini de taşır; ama yeni yüzey açtıkları
@@ -733,6 +739,29 @@ ve sahte çözücülü proje testleri eklenir.
 
 ## Açık sorular
 
+**Ürün görüşü (`urun-h`, 24 Kasım 2026).** ZeeMail şu yanıtları verdi;
+aşama ADR'lerinde karar girdisidir, bu taslağı bağlamaz:
+
+- (1) Çözücü: **unbound**, `127.0.0.1:53`, yalnız loopback, QNAME
+  minimisation açık; systemd-resolved'ın DNSSEC'i (`allow-downgrade`)
+  indirgemeye açık olduğu için DANE'ye uygun bulunmadı.
+- (4) A-R: MX sınırında gelen **tüm** `Authentication-Results` silinsin;
+  dış A-R hiçbir yerde tüketilmiyor, güvenilen yönlendiriciler ARC ile
+  geliyor. Ürün motoru bugün yalnız kendi authserv-id'li olanları siliyor;
+  B2a entegrasyonu kısa.
+- (5) DKIM üst sınırı: ileti başına en çok **5** imza doğrulansın, fazlası
+  `neutral` (`temperror` değil); RSA 1024–4096 bit (< 1024 kalıcı hata,
+  RFC 8301); Ed25519 (RFC 8463) sayılır.
+- (6) `l=`: `l=` taşıyan imza **DMARC hizalamasına sayılmaz**; sonuç A-R'ye
+  `policy`/`neutral` olarak yazılır; imzalarken `l=` hiç kullanılmaz (B3).
+- (9) DNS bütçesi: ileti başına **~10** sorgu önerildi (SPF'in 10 sınırıyla
+  aynı mantık). Not: SPF tek başına RFC 7208 §4.6.4 uyarınca 10 sorgu
+  mekanizmasına ve `mx` başına 10 adres sorgusuna izin verdiği için toplam
+  bütçe SPF + DKIM (≤ 5 anahtar) + DMARC (≤ 2) + ARC'yi kapsamalıdır;
+  B2 ADR'si "SPF kendi RFC sınırı + diğerleri ≤ 10" ayrımını
+  değerlendirir.
+- Önerilen sıraya katıldı.
+
 1. **Doğrulayıcı çözücü:** ZeeOS hangisini sağlar (unbound mı
    systemd-resolved `DNSSEC=yes` mi)? ZeeOS ADR-077 ile birlikte karar.
 2. **DNS crate'i:** `hickory-proto` mu `domain` mu (ağaç, RustSec, fuzz)?
@@ -740,7 +769,8 @@ ve sahte çözücülü proje testleri eklenir.
    (RFC-0039 ilke 1'in lafzı)?
 4. **A-R temizliği:** yalnız kendi authserv-id'mizi taşıyanlar mı, tüm
    gelenler mi (öneri: tümü, sınır MTA'sı olarak)?
-5. **DKIM imza üst sınırı** 5 mi; fazlası `policy` mi, yok sayma mı?
+5. **DKIM imza üst sınırı** 5 mi; fazlası `policy` mi, `neutral` mı
+   (ürün: 5, `neutral`)?
 6. **`l=` politikası** varsayılanı: imzayı `pass` saymamak mı, yalnız
    raporlamak mı?
 7. **DMARC `pct`** deterministik örnekleme kaynağı (ileti kimliği özeti?).
