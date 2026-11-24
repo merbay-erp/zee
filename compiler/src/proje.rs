@@ -85,11 +85,11 @@ pub struct ProjeBildirimi {
     pub cok_parcali_yukleme: bool,
     /// K-378: `e_posta_ek_türleri` — SMTP ek türü kümesi; `None` dört varsayılan.
     pub eposta_ek_turleri: Option<Vec<String>>,
-    /// K-391: web isteği boyut ayarları (gövde aşımı rotası).
+    /// K-391: web isteği ve SQL parametresi boyut ayarları (ADR-168).
     pub govde_siniri: GovdeSiniriAyari,
 }
 
-pub use govde_siniri::GovdeSiniriAyari;
+pub use govde_siniri::{GovdeSiniriAyari, GENIS_GOVDE_UST};
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
 
@@ -175,7 +175,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, gövde_aşımı_rotası.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, gövde_aşımı_rotası, geniş_gövde_rotaları, geniş_gövde_sınırı, veritabanı_parametre_sınırı.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -212,7 +212,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let adlar: Vec<&str> = dinleyiciler.iter().map(|d| d.ad.as_str()).collect();
     let baglanti = baglanti::alanlari_al(&mut alanlar, &adlar)?;
     let cok_parcali_yukleme = form_yukleme::alani_al(&mut alanlar, &yetkinlik_yazimlari)?;
-    let govde_siniri = govde_siniri::alanlari_al(&mut alanlar)?;
+    let govde_siniri = govde_siniri::alanlari_al(&mut alanlar, veritabani.is_some())?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {

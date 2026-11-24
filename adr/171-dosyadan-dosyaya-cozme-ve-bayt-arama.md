@@ -5,7 +5,7 @@
 - **İlgili kayıt:** K-395, RFC-0043 (Dilim 2, kısmi), ADR-167 (Dilim 1),
   ADR-059 (core freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu),
   ADR-170 (paylaşılan veri kökü, K-394), spec/26, spec/08, spec/21, spec/24,
-  GB-165
+  GB-166
 
 ## Bağlam
 
@@ -71,7 +71,7 @@ Mustafa 24 Kasım 2026'da RFC-0043 Dilim 2'den yalnız bu üç parçanın
 3. **Hedef tavanı 16 → 32 MiB:** `çözerek … yazmayı|eklemeyi dene` ve yeni
    akışlı ekleme hedefin toplamını `kodlama::AZAMI_HEDEF_BAYTI` (32 MiB)
    ile sınırlar. Yükleme, dosya yanıtı ve dosya özeti tavanları (16 MiB)
-   değişmez; GB-165 DoS gerekçesini taşır.
+   değişmez; GB-166 DoS gerekçesini taşır.
 4. **IO izi (içeriksiz, tam replay):** `dosyadan_base64_ekle [kaynak, konum,
    adet, hedef] → ok,<sha256>,<toplam>,<eklenen> | hata,<mesaj> |
    kodlama,<tür>,<konum>,<mesaj>`; `dosyada_bayt_ara [yol, konum, <iğne

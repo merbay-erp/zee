@@ -2595,7 +2595,7 @@ K-180 kartının insan verisiyle geriye dönük doğrulanması.
 
 ## K-391 — İstek boyut sınırları ve gövde aşımı rotası (ADR-168)
 
-**Durum: KISMİ — Dilim 1 KAPALI, Dilim 2 AÇIK.** Kaynak: etkin dogfood ürünü
+**Durum: KAPALI (Dilim 1 ve Dilim 2).** Kaynak: etkin dogfood ürünü
 `urun-h` (ZeeMail) sürtünmeleri ZM-F037 ve ZM-F036. Web gövdesi 64 KiB
 (spec/11 §5) ve urlencoded form Türkçe harfi altı bayta şişirdiğinden
 25 000 harflik Türkçe-yoğun ileti rota çalışmadan 413 alıyor, kullanıcı
@@ -2622,12 +2622,24 @@ aşım sayfası 413 + text/html + no-store, okunmamış gövdeye rağmen yanıt
 ulaşır; 404 veren aşım rotası düz 413), `proje_testi.rs::govde_asimi_rotasi_bildirimi_mutlak_sorgusuz_yol_ister`,
 dogfood `urun-h-ileti-boyutu` (`dogfood/urun-h/ileti-boyutu/`).
 
-Dilim 2 (AÇIK, ayrı değişiklik): rota bazlı gövde sınırı
-(`geniş_gövde_rotaları` + `geniş_gövde_sınırı`, tavan 1 MiB), multipart'ta
-alınan bayta orantılı okuma bütçesi (`10 sn + okunan / 128 KiB/s`) ve yetim
-`.parca` eşiğinin 30 dakikaya çekilmesi, `veritabanı_parametre_sınırı`
-(tek parametre ≤ 4 MiB, toplam 6 400 KiB). Ayrıca açık: hermetik `dil dene`
-adaptöründe aşım rotası, sunucu tarafı taslak kaydı (ürün).
+Dilim 2 (ADR-168 madde 3, 4, 5; ayrı PR, KAPALI): rota bazlı gövde sınırı
+(`geniş_gövde_rotaları` + `geniş_gövde_sınırı`, 65 537–1 MiB, önek/tam yol,
+yalnız unsafe yöntem), multipart'ta alınan bayta orantılı okuma bütçesi
+(`10 sn + okunan / 128 KiB/s`, ≤ 146 sn) ve yetim `.parca` eşiği 15 → 30 dk
+(canlı ömür 181 → 317 sn), `veritabanı_parametre_sınırı` (tek parametre
+≤ 4 MiB, toplam 6 400 KiB). GB-165, dil yüzeyi `genis-govde-rotalari-v1`,
+`veritabani-parametre-siniri-v1`. Kanıt: `govde_siniri_testi.rs::genis_govde_rotasi_yalniz_eslesen_yolda_tavani_yukseltir`,
+`…::yavas_buyuk_yukleme_orantili_butceyle_kabul_damlatma_408` (2,5 MiB
+~200 KiB/s ile ~12,8 sn'de kabul; bütçe kapalıyken 10. saniyede kesildi;
+300 ms'de bir bayt damlatma 408), `main.rs::kazanilmis_okuma_suresi_alinan_bayta_orantilidir`,
+`postgresql.rs::…::parametre_tavani_varsayilan_ve_proje_yukseltmesi_toplamla_sinirli`,
+`proje_testi.rs` iki P022 vakası.
+
+Açık: hermetik `dil dene` adaptöründe aşım rotası ve rota bazlı bütçe; ikili
+(`application/octet-stream`) yolun orantılı bütçesi; 4 MiB üstü/akışlı SQL
+metni; sunucu tarafı taslak kaydı (ürün); gerçek PostgreSQL'de 1 MiB
+parametre ölçümü (birim testi sunucuya gitmeden önceki tavanı sınar).
+
 ## K-388 — Bağlantı görevinde protokol birimi sınırında bütçe yenileme (ZM-F035)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) ZM-F035;
@@ -2661,7 +2673,8 @@ spec/25 tek PostgreSQL parametresinin 64 KiB sınırına takıldı (64 KB
 üstü gövde `451`). Sınır bilinçli güvenlik değeridir (K-235); büyük gövde
 dosya tutamağında tutulup veritabanına yol/özet yazılmalıdır. Sınırın
 gevşetilmesi ya da `bytea`/akış parametresi ayrı K-işi ve spec/25 kararı
-ister; bu işte değiştirilmedi.
+ister; bu işte değiştirilmedi. (Sonra K-391 Dilim 2: isteğe bağlı
+`veritabanı_parametre_sınırı` ≤ 4 MiB, toplam 6 400 KiB; ADR-168.)
 
 ## K-383 — Bayt/kodlama/özet ile DNS, posta kimlik doğrulama ve teslim güvenliği RFC taslakları
 
@@ -2900,7 +2913,7 @@ C032 `konum` kaynak bayt, `eklenen` alanı, kaynak=hedef ve eylem C013);
 `<yol> dosyasında <konum> baytından <iğne> aramayı dene` (1–1024 bayt iğne,
 KMP, ≤ 64 MiB pencere, pencere sonunda belirsiz -1 yerine C013); çözerek
 yazma/ekleme hedef tavanı 16 → 32 MiB. İçeriksiz, tam oynatılabilir iz
-olayları `dosyadan_base64_ekle`, `dosyada_bayt_ara`. GB-165.
+olayları `dosyadan_base64_ekle`, `dosyada_bayt_ara`. GB-166.
 
 Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs` (+6 vaka: 18 000 000
 baytlık ek bayt aramayla bulunup tek çağrıda çıkarılır; 32 MiB tam sınır ve

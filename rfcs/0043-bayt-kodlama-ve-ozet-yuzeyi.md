@@ -115,7 +115,7 @@ yer yol dosyasında konum baytından "--sınır" aramayı dene olsun            
 | 1 | Dosyadan dosyaya çözme kaynak aralığını (≤ 48 MiB) 64 KiB parçalarla okur, akış çözücüsüyle çözer, hedefe atomik ekler; `Metin` oluşmaz, spec/24 zarfına sayılmaz. Sözlük K-389 tutamağına `eklenen` alanını ekler. |
 | 2 | C032 `konum` **kaynak dosyadaki** mutlak bayttır; ürün hatalı satırı doğrudan bulur. |
 | 3 | Bayt arama iğnesi 1–1024 UTF-8 bayt, tarama `konum`dan en çok 64 MiB, doğrusal (KMP); pencere dolup dosya sürüyorsa belirsiz `-1` yerine C013. MIME yapısı ürünün işidir. |
-| 4 | `çözerek … yazmayı|eklemeyi dene` hedef tavanı 16 → 32 MiB (GB-165: tek çağrı yine 1 MiB çözer; disk/IO yükü proje başına sınırlı). |
+| 4 | `çözerek … yazmayı|eklemeyi dene` hedef tavanı 16 → 32 MiB (GB-166: tek çağrı yine 1 MiB çözer; disk/IO yükü proje başına sınırlı). |
 | 5 | Dosyadan dosyaya quoted-printable, bayt sayısı, metin↔base64/onaltılık, kod noktası ve base64url **açık** kalır. |
 
 Kabul ölçütü: `compiler/tests/kodlanmis_dosya_testi.rs`

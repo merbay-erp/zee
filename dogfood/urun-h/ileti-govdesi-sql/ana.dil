@@ -1,0 +1,10 @@
+# K-391 (ADR-168 Dilim 2, ZM-F036): 64 KiB üstü ileti gövdesi parçalara
+# bölünmeden tek SQL parametresiyle kaydedilir; tek parametre tavanı proje
+# bildirimiyle 1 MiB, bütün parametrelerin toplamı 6 400 KiB.
+eylem iletiyi kaydet
+    gövdeyi Metin olarak al
+    TamSayı sonucu döndürür
+
+    parametreler gövdeyi listesi olsun
+    sonuç "INSERT INTO iletiler (govde) VALUES ($1)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    sonuç döndür

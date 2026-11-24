@@ -25,5 +25,8 @@ Yazma formu `enctype=multipart/form-data` ile gönderilir; metin alanları
 sıradan form alanıdır ve Türkçe metin şişmez. `gövde_aşımı_rotası`
 bildirimi gövde sınırı aşıldığında salt okuma `GET /posta/cok-buyuk`
 sayfasını 413 ile döndürür. Değişiklik öncesi bildirim P001 verirdi.
-Gerçek HTTP davranışı `govde_siniri_testi.rs` ile sınanır. ZM-F036 (tek SQL
-parametresi 64 KiB) ADR-168 Dilim 2'dedir (açık).
+Dilim 2 ile yazma ve taslak rotalarının form bütçesi
+`geniş_gövde_rotaları` + `geniş_gövde_sınırı` ile 256 KiB'tır (urlencoded
+form da sığar). Gerçek HTTP davranışı `govde_siniri_testi.rs` ile sınanır.
+ZM-F036 (tek SQL parametresi) [ileti-govdesi-sql](../ileti-govdesi-sql/README.md)
+kesitindedir.

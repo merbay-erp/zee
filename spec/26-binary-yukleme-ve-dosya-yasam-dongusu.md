@@ -37,7 +37,7 @@ süpürmeye düşer.
 Native web worker, `sunucu başlat` dinleyiciyi kurduktan sonra ve çalışırken
 en sık 5 dakikada bir, `.zee/yuklemeler` altında yalnız runtime adlandırmasına
 (64 küçük onaltılık karakter + `.parca`) uyan, sembolik bağ olmayan ve son
-değişikliği 15 dakikadan eski normal dosyaları silmek ZORUNDADIR. Eşik, canlı
+değişikliği 30 dakikadan (K-391 öncesi 15) eski normal dosyaları silmek ZORUNDADIR. Eşik, canlı
 bir yüklemenin son yazımından sonra yaşayabileceği en uzun sürenin (gövde okuma
 son tarihi, rota çalıştırma bütçesi ve yanıt yazımı) en az on katıdır; aynı
 kökü paylaşan başka worker'ın canlı yüklemesi kilit olmadan korunur ve
@@ -72,7 +72,8 @@ alanından önce) tek dosya yükleyebilir.
   metin alanları sıradan form alanıdır. Dosya parçası isteğe bağlıdır;
   yalnız metin alanlı form kabul edilir ve rotaya urlencoded formla aynı
   `istek` alanlarını verir. Alan başına tavan yoktur; bütün metin alanı
-  değerlerinin ham UTF-8 bayt toplamı isteğin form bütçesini (64 KiB) aşarsa
+  değerlerinin ham UTF-8 bayt toplamı isteğin form bütçesini (64 KiB ya da
+  spec/11 §5 rota bazlı geniş bütçe) aşarsa
   akış 413 ile durur. Türkçe metin bu yolda yüzde kaçışıyla şişmez. Dosyasız
   formda CSRF yorumlayıcının olağan `_csrf` form denetimindedir. Bu sözleşme
   ZORUNLUDUR.
@@ -88,8 +89,12 @@ alanından önce) tek dosya yükleyebilir.
   ve `yukleme_bildirilen_tur` (beyan edilen tür; güvenilmez, ASCII ≤ 127 bayt
   ya da boş) alanlarını ve diğer metin alanlarını `istek` sözlüğünde görür.
   Dosya adı hiçbir koşulda disk yoluna girmez. Bu sözleşme ZORUNLUDUR.
-- Okuma 10 sn mutlak istek son tarihine (spec/11 §5) tabidir; orantılı okuma
-  bütçesi bu sürümde AÇIK sınırdır.
+- K-391 Dilim 2: multipart gövdesinin okuma son tarihi bağlantı kabulünden
+  `10 sn + alınan bayt / 128 KiB/s`'dir. Bütçe yalnız gerçekten alınan baytla
+  büyür (bayt damlatan istemci süre kazanamaz) ve `10 sn + Content-Length /
+  128 KiB/s` ile (en çok 146 sn) sınırlıdır; başlık bloğu 10 sn mutlak kalır.
+  Bu kural ZORUNLUDUR. Urlencoded ve `application/octet-stream` gövdesi 10 sn
+  mutlak kalır (spec/11 §5).
 
 ## Beklenen dosya işlemleri
 

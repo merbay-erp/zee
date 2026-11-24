@@ -81,12 +81,16 @@ const HTTP_ISTEK_ARTIGI_BAYTI: usize = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_
 /// süre. `IstekYuklemesi` yanıt yazımı bitene dek düşmediğinden ömür: gövde
 /// okuma son tarihi + rota çalıştırma bütçesi + en büyük yanıtın K-372 yazım
 /// bütçesi (metin sınırı + 64 KiB başlık payı; `yanit_yazim_butcesi` ile aynı
-/// formül) + K-374 istek artığı boşaltması. 10 + 30 + 139 + 2 = 181 sn.
+/// formül) + K-374 istek artığı boşaltması. K-391: gövde okuma son tarihi
+/// multipart'ta alınan bayta orantılıdır; en büyük gövde (16 MiB + 1 MiB
+/// geniş form) 10 + 136 sn. 146 + 30 + 139 + 2 = 317 sn.
 const CANLI_PARCA_AZAMI_SANIYE: u64 = {
     let sinirlar = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
     let http = sinirlar.http();
     let azami_yanit = (sinirlar.metin_bayti() + 64 * 1024) as u64;
+    let azami_govde = (http.yukleme_bayti() + dil::proje::GENIS_GOVDE_UST) as u64;
     http.istek_okuma_saniyesi()
+        + azami_govde.div_ceil(http.yanit_yazim_alt_hizi())
         + (http.calistirma_zaman_asimi_ms() as u64).div_ceil(1000)
         + http.istek_okuma_saniyesi()
         + azami_yanit.div_ceil(http.yanit_yazim_alt_hizi())
@@ -1775,10 +1779,11 @@ impl KaynakGirdisi {
             .proje
             .as_ref()
             .is_some_and(|proje| proje.ana_bildirim().cok_parcali_yukleme);
-        io.govde_asimi_rotasi = self
+        io.govde_siniri = self
             .proje
             .as_ref()
-            .and_then(|proje| proje.ana_bildirim().govde_siniri.asim_rotasi.clone());
+            .map(|proje| proje.ana_bildirim().govde_siniri.clone())
+            .unwrap_or_default();
         // Bildirim `proje` katmanında P019 ile doğrulandı; burada yalnız savunma.
         if let Some(adlar) = self
             .proje
@@ -2014,8 +2019,9 @@ struct GercekIo {
     http_gizli_degiskenleri: Vec<String>,
     /// K-378: proje `çok_parçalı_yükleme doğru olsun` bildirimi.
     cok_parcali_yukleme: bool,
-    /// K-391: proje `gövde_aşımı_rotası` ve bekleyen aşım yanıtının iletisi.
-    govde_asimi_rotasi: Option<String>,
+    /// K-391: proje boyut ayarları (aşım rotası, geniş gövde, SQL parametresi)
+    /// ve bekleyen aşım yanıtının iletisi.
+    govde_siniri: dil::proje::GovdeSiniriAyari,
     bekleyen_govde_asimi: Option<String>,
     /// K-381: adlı dinleyici bağlantı reaktörü (yalnız `dinleyiciler` bildirimli projede).
     #[cfg(unix)]
@@ -2176,7 +2182,7 @@ impl GercekIo {
             gizli_anahtar_degiskeni,
             http_gizli_degiskenleri: Vec::new(),
             cok_parcali_yukleme: false,
-            govde_asimi_rotasi: None,
+            govde_siniri: Default::default(),
             bekleyen_govde_asimi: None,
             #[cfg(unix)]
             ag_baglanti: None,
@@ -2205,6 +2211,9 @@ impl GercekIo {
             } else {
                 dil::postgresql::PostgresqlOturumu::baglan(bildirim, self.eylem_yedekleri.len())?
             });
+            if let Some(postgresql) = self.postgresql.as_mut() {
+                postgresql.parametre_sinirini_ayarla(self.govde_siniri.sql_parametre_bayti);
+            }
         }
         self.postgresql
             .as_mut()
@@ -2638,11 +2647,12 @@ impl GercekIo {
         }
     }
 
-    /// K-391 (ADR-168): isteğin urlencoded form ve multipart metin bütçesi.
-    fn form_butcesi(&self, _baslik: &HttpIstekBasligi<'_>) -> usize {
-        dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .http()
-            .istek_govde_bayti()
+    /// K-391 (ADR-168): isteğin urlencoded form ve multipart metin bütçesi;
+    /// proje `geniş_gövde_rotaları` sorgusuz yolu başlıktan, gövde okunmadan
+    /// eşleştirir (yorumlayıcının rota yolu karşılaştırmasıyla aynı ham yol).
+    fn form_butcesi(&self, baslik: &HttpIstekBasligi<'_>) -> usize {
+        let yol = baslik.hedef().split('?').next().unwrap_or_default();
+        self.govde_siniri.form_butcesi(baslik.yontem(), yol)
     }
 
     /// K-391 (ADR-168): gövde boyutu yüzünden reddedilen güvenli olmayan
@@ -2661,7 +2671,7 @@ impl GercekIo {
         let yontem = baslik.yontem();
         let guvenli = yontem.eq_ignore_ascii_case("GET") || yontem.eq_ignore_ascii_case("HEAD");
         let (Some(rota), GovdeReddi::Asim { sinir, mesaj }, false) =
-            (self.govde_asimi_rotasi.clone(), &red, guvenli)
+            (self.govde_siniri.asim_rotasi.clone(), &red, guvenli)
         else {
             red.ham_gonder(akis, yontem.eq_ignore_ascii_case("HEAD"), https);
             return None;
@@ -3119,6 +3129,29 @@ fn istek_artigini_bosalt(akis: &mut impl WebTasima, sure: std::time::Duration, b
             Ok(okunan) => kalan -= okunan,
         }
     }
+}
+
+/// K-391 (ADR-168): multipart gövdesinde gerçekten alınmış `okunan` baytın
+/// kazandırdığı ek okuma süresi (`okunan / 128 KiB/s`, K-372 yazım tabanıyla
+/// aynı hız). Taban 10 sn mutlak bütçeye eklenir; bayt damlatan istemci
+/// pratikte süre kazanmaz, en büyük gövde (16 MiB + 1 MiB) ≤ 136 sn ekler.
+fn kazanilmis_okuma_suresi(okunan: usize) -> std::time::Duration {
+    let hiz = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .http()
+        .yanit_yazim_alt_hizi();
+    let us = (okunan as u128).saturating_mul(1_000_000) / u128::from(hiz);
+    std::time::Duration::from_micros(u64::try_from(us).unwrap_or(u64::MAX))
+}
+
+/// K-391: multipart okuması; taban son tarihe o ana dek alınan baytın
+/// kazandırdığı süre eklenir (damlatılan bayt pratikte süre kazanmaz).
+fn kazanilmis_butceyle_oku(
+    akis: &mut impl WebTasima,
+    tampon: &mut [u8],
+    son_tarih: std::time::Instant,
+    okunan: usize,
+) -> std::io::Result<usize> {
+    son_tarihli_soket_oku(akis, tampon, son_tarih + kazanilmis_okuma_suresi(okunan))
 }
 
 /// K-372: `bayt` uzunluğundaki yanıtın yazılabileceği mutlak süre:
@@ -3671,7 +3704,7 @@ fn cok_parcali_govdeyi_oku(
     while sonuc.is_ok() && okunan_toplam < beklenen {
         let mut parca = [0u8; 16 * 1024];
         let parca_siniri = (beklenen - okunan_toplam).min(parca.len());
-        match son_tarihli_soket_oku(akis, &mut parca[..parca_siniri], son_tarih) {
+        match kazanilmis_butceyle_oku(akis, &mut parca[..parca_siniri], son_tarih, okunan_toplam) {
             Ok(okunan) if okunan > 0 => {
                 okunan_toplam += okunan;
                 sonuc = ayristirici.besle(&parca[..okunan], &mut alici);
@@ -6402,6 +6435,18 @@ mod web_profili_testleri {
         assert_eq!(yanit_yazim_butcesi(16 * 1024 * 1024), saniye(138));
     }
 
+    /// K-391: multipart okuma bütçesi yalnız alınan baytla büyür; damlatılan
+    /// bayt pratikte süre kazandırmaz, en büyük gövde 136 sn ekler.
+    #[test]
+    fn kazanilmis_okuma_suresi_alinan_bayta_orantilidir() {
+        let saniye = std::time::Duration::from_secs;
+        assert_eq!(kazanilmis_okuma_suresi(0), saniye(0));
+        assert_eq!(kazanilmis_okuma_suresi(128 * 1024), saniye(1));
+        assert!(kazanilmis_okuma_suresi(1) < std::time::Duration::from_micros(8));
+        assert!(kazanilmis_okuma_suresi(1000) < std::time::Duration::from_millis(8));
+        assert_eq!(kazanilmis_okuma_suresi(17 * 1024 * 1024), saniye(136));
+    }
+
     /// K-332 eki: canlı `.parca` ömrü derleme zamanı sabiti, yanıt yazımının
     /// gerçek K-372 bütçesini (en büyük yanıt için) ve K-374 boşaltmasını
     /// kapsar; yazım bütçesi formülü değişirse yetim eşiği güvencesi bayatlamaz.
@@ -6412,9 +6457,10 @@ mod web_profili_testleri {
         let gereken = HTTP_ISTEK_OKUMA_SURESI
             + std::time::Duration::from_millis(http.calistirma_zaman_asimi_ms() as u64)
             + yanit_yazim_butcesi(sinirlar.metin_bayti() + 64 * 1024)
-            + HTTP_ISTEK_ARTIGI_SURESI;
+            + HTTP_ISTEK_ARTIGI_SURESI
+            + kazanilmis_okuma_suresi(http.yukleme_bayti() + dil::proje::GENIS_GOVDE_UST);
         assert!(std::time::Duration::from_secs(CANLI_PARCA_AZAMI_SANIYE) >= gereken);
-        assert_eq!(CANLI_PARCA_AZAMI_SANIYE, 181);
+        assert_eq!(CANLI_PARCA_AZAMI_SANIYE, 317);
         assert!(web_yukleme::YETIM_PARCA_YASI >= 4 * gereken);
     }
 
