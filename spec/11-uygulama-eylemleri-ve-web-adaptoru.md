@@ -186,6 +186,35 @@ Ham red yanıtından sonraki istek artığı boşaltması (aşağıda, K-374) bu
 bütçeden sonra en çok 2 saniye ve 16 MiB ekler. Bu limitleri büyüten kaynak
 sözdizimi v1'de yoktur.
 
+ZORUNLU (K-391 Dilim 2, ADR-168): `geniş_gövde_rotaları` ve
+`geniş_gövde_sınırı` birlikte yazan projede POST/PUT/PATCH/DELETE isteğinin
+sorgusuz yolu listedeki bir ögeyle (`/` ile biten öge önek, diğeri tam yol)
+eşleşirse urlencoded gövde sınırı ve multipart metin bütçesi
+`geniş_gövde_sınırı` bayttır. Eşleşme başlıktan, gövde okunmadan yapılır;
+`Content-Length` zarfı bu bütçeyle denetlenir. Sınır 65 537 ile 1 MiB
+arasındadır, liste 1–32 benzersiz geçerli yol taşır; ikisinden biri eksik ya
+da aralık dışıysa P022'dir. Eşleşmeyen yol, GET/HEAD, alan sayısı (100) ve
+10 saniyelik urlencoded okuma süresi değişmez. Hermetik adaptörde rota bazlı
+bütçe AÇIKTIR.
+
+ZORUNLU (K-391, [ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)):
+`proje.dil` içinde `gövde_aşımı_rotası "/yol" olsun` yazan projede gerçek TCP
+adaptörü, POST/PUT/PATCH/DELETE isteğini gövde boyutu yüzünden reddettiğinde
+(bildirilen `Content-Length` zarfı aşar; multipart dosya ya da metin bütçesi
+akış sırasında aşılır) ham 413 yerine aynı bağlantıda o yolu `GET` isteği
+olarak, gövdesiz ve isteğin çerez/oturumuyla yönlendirir. Rota
+`govde_asimi_yolu` (sorgusuz özgün yol), `govde_asimi_siniri` ve
+`govde_asimi_bayti` sorgu alanlarını görür; bu alanlar güvenilmezdir. Rotanın
+200 metin/HTML yanıtı `413 Payload Too Large` durumu ve `Cache-Control:
+no-store` ile yazılır; rota önbellek izni uygulanmaz. Yönlendirme, dosya, 404
+ya da başka durum düz 413 iletisine döner. Yanıttan sonra yukarıdaki K-374
+boşaltması uygulanır. Özgün rotanın gövdesiz ya da kısmi gövdeyle
+çalıştırılması YASAKTIR (CSRF belirteci okunmamış gövdededir). GET ve HEAD
+isteğinin aşımı, alan sayısı (100) aşımı ve bildirimsiz projede 413 ham
+kalır. Yol `/` ile başlar, en çok 256 bayttır, sorgu/parça/yüzde/boşluk ya da
+denetim karakteri taşımaz; aksi P022'dir. Hermetik `dil dene` adaptöründe bayt
+düzeyi zarf olmadığından aşım rotası AÇIKTIR.
+
 ZORUNLU: Gerçek TCP adaptörü ham red yanıtı (413, 431, 400, 408, 403, 429,
 503 ve benzeri; çoğu gövde ya da başlığın kalanı okunmadan verilir) yazdıktan
 sonra bağlantıyı doğrudan kapatmaz: önce yalnız yazma yönünü kapatır (yanıt

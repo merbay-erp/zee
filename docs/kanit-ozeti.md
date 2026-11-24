@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
-| orta | 50 | 16 | 2 | 68 |
+| orta | 52 | 16 | 2 | 70 |
 | dusuk | 47 | 30 | 1 | 78 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 165.
+Toplam bulgu: 167.
 
 ## Spec maddeleri
 
@@ -63,7 +63,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
-| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 24 | 0 | 0 | 24 | 100 |
+| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 26 | 0 | 0 | 26 | 100 |
 | spec/12-web-guvenlik-profili.md | 74 | 0 | 6 | 80 | 92 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
@@ -77,13 +77,13 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 42 | 0 | 1 | 43 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
-| spec/25-postgresql-veri-erisimi.md | 10 | 0 | 1 | 11 | 90 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 16 | 0 | 2 | 18 | 88 |
+| spec/25-postgresql-veri-erisimi.md | 11 | 0 | 1 | 12 | 91 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 18 | 0 | 1 | 19 | 94 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 359 | 5 | 15 | 379 | 94 |
+| **Toplam** | 364 | 5 | 14 | 383 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -108,12 +108,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 11 | 4 | 0 | 14 | 1 | 15 |
+| urun-h | 13 | 4 | 0 | 16 | 1 | 17 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 80.
+Toplam korpus vakası: 82.
 
 ## Deprecation kayıtları
 
@@ -146,16 +146,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 100 |
+| maintenance | 108 |
 | semantic-bugfix | 42 |
-| semantic-change | 66 |
+| semantic-change | 69 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
 | correctness | 42 |
-| dogfood-change | 44 |
-| maintenance | 97 |
+| dogfood-change | 47 |
+| maintenance | 105 |
 | security | 19 |
 
-Toplam: 208 compiler değişiklik beyanı, 204 core freeze beyanı.
+Toplam: 219 compiler değişiklik beyanı, 215 core freeze beyanı.

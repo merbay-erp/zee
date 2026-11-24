@@ -18,6 +18,8 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Ekleri yazan hizmetler ile sunan web ayrı proje kökleri; proje dosya sınırı paylaşılan depoyu engelliyor (ZM-F038; K-394, çözüldü: RFC-0045) | `paylasilan-depo/` | G (veri kökü yazımı) |
 | Dosyayı bağlantıya RFC 2045 base64 satırlarıyla akıtan yüzey yok; 57 baytlık okuma döngüsü 16 MB ekte 29,6 sn + C024 (ZM-F040; K-396, çözüldü: RFC-0039 A2d) | `imap-govde-base64/` | G (yerleşik yüzey eksik) |
 | `uzunluğu` harf sayar, UTF-8 oktet saymaz (ZM-F023; açık: RFC-0043 Dilim 2) | `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | D (RFC-0043 Dilim 2) |
+| Türkçe-yoğun uzun ileti urlencoded formda 64 KiB'ı aşıp rota çalışmadan 413 alıyor (ZM-F037; K-391, çözüldü: ADR-168 Dilim 1); rota bazında 256 KiB form (ADR-168 Dilim 2) | `ileti-boyutu/` | RFC-0041 B (multipart metin alanı) |
+| İleti gövdesi tek SQL parametresinin 64 KiB sınırı yüzünden 20 000 harflik parçalara bölünüyor (ZM-F036; K-391, çözüldü: ADR-168 Dilim 2) | `ileti-govdesi-sql/` | spec/25 kaynak sınırı |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355
 kaydındadır. Korpus vakaları `dogfood/korpus-v1.tsv` içinde exact

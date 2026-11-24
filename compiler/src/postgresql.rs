@@ -46,7 +46,16 @@ pub struct PostgresqlOturumu {
     /// Transaction içinde en az bir kez süre ayarlandı; `ROLLBACK TO
     /// SAVEPOINT` varsayılana dönüşü de geri alabileceği için yeniden kirli sayılır.
     sure_ayari_transactionda: bool,
+    /// K-391 (ADR-168): tek parametre tavanı; proje `veritabanı_parametre_sınırı`.
+    parametre_bayti: usize,
 }
+
+/// K-391: bütün parametrelerin toplam bayt tavanı — varsayılan tek tavan ×
+/// parametre sayısı (eski örtük en kötü durum; yükseltme bunu aşamaz).
+const TOPLAM_PARAMETRE_BAYTI: usize = {
+    let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
+    sinirlar.parametre() * sinirlar.parametre_bayti()
+};
 
 /// K-375/RFC-0042: son tarihin sunucu tarafı bütçesi.
 const SURE_AYARI_VARSAYILAN: &str =
@@ -118,6 +127,15 @@ impl PostgresqlOturumu {
     ) -> Result<Self, VeritabaniHatasi> {
         Self::baglan_ic(bildirim, eylem_derinligi, Some(gozlem))
     }
+    /// K-391 (ADR-168): proje `veritabanı_parametre_sınırı` ile tek SQL
+    /// parametresi tavanını yükseltir; `None` spec/25 varsayılanıdır.
+    pub fn parametre_sinirini_ayarla(&mut self, bayt: Option<usize>) {
+        self.parametre_bayti = bayt.unwrap_or(
+            crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                .veritabani()
+                .parametre_bayti(),
+        );
+    }
     #[doc(hidden)]
     pub fn metrik_ozetini_yayinla(&self) {
         havuz::olcum_yayinla(&self.havuz);
@@ -142,6 +160,9 @@ impl PostgresqlOturumu {
             gecersiz_eylem: None,
             sure_ayari_etkin: false,
             sure_ayari_transactionda: false,
+            parametre_bayti: crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                .veritabani()
+                .parametre_bayti(),
         };
         for _ in 0..eylem_derinligi {
             sonuc.eylem_baslat()?;
@@ -168,7 +189,7 @@ impl PostgresqlOturumu {
         bitis: Option<std::time::Instant>,
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         self.eylemi_denetle()?;
-        girdiyi_denetle(sorgu, parametreler)?;
+        girdiyi_denetle(sorgu, parametreler, self.parametre_bayti)?;
         let baglar = metin_baglari(parametreler);
         if let Some(bitis) = bitis {
             return self.sureli_oku(sorgu, &baglar, bitis);
@@ -236,7 +257,7 @@ impl PostgresqlOturumu {
                 "PostgreSQL değişikliği yalnız eylem transaction'ı içinde yapılabilir",
             ));
         }
-        girdiyi_denetle(sorgu, parametreler)?;
+        girdiyi_denetle(sorgu, parametreler, self.parametre_bayti)?;
         let acilis = match bitis {
             Some(bitis) => {
                 let ayar = sure_ayari(bitis)?;
@@ -983,19 +1004,29 @@ fn migration_ust_seviye_kelimeleri(sql: &str) -> Vec<String> {
     kelimeler
 }
 
-fn girdiyi_denetle(sorgu: &str, parametreler: &[String]) -> Result<(), VeritabaniHatasi> {
+fn girdiyi_denetle(
+    sorgu: &str,
+    parametreler: &[String],
+    parametre_bayti: usize,
+) -> Result<(), VeritabaniHatasi> {
     let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
     if sorgu.is_empty() || sorgu.len() > sinirlar.sorgu_bayti() {
         return Err(hata("PostgreSQL sorgusu boş ya da 64 KiB sınırını aşıyor"));
     }
     if parametreler.len() > sinirlar.parametre()
-        || parametreler
-            .iter()
-            .any(|p| p.len() > sinirlar.parametre_bayti())
+        || parametreler.iter().any(|p| p.len() > parametre_bayti)
     {
-        return Err(hata(
-            "PostgreSQL parametreleri 100 öğe / öğe başına 64 KiB sınırını aşıyor",
-        ));
+        return Err(hata(format!(
+            "PostgreSQL parametreleri 100 öğe / öğe başına {} KiB sınırını aşıyor",
+            parametre_bayti / 1024
+        )));
+    }
+    // K-391: tek tavan yükseltilse de toplam eski en kötü durumu aşamaz.
+    if parametreler.iter().map(String::len).sum::<usize>() > TOPLAM_PARAMETRE_BAYTI {
+        return Err(hata(format!(
+            "PostgreSQL parametreleri toplam {} KiB sınırını aşıyor",
+            TOPLAM_PARAMETRE_BAYTI / 1024
+        )));
     }
     Ok(())
 }
@@ -1074,6 +1105,30 @@ mod testler {
     use super::*;
     use postgres::Config;
     use std::str::FromStr;
+
+    /// K-391 (ADR-168, ZM-F036): tek parametre varsayılan 64 KiB; proje
+    /// tavanı 4 MiB'a kadar yükseltir, toplam eski en kötü 6400 KiB'ı aşamaz.
+    #[test]
+    fn parametre_tavani_varsayilan_ve_proje_yukseltmesi_toplamla_sinirli() {
+        let kib = 1024;
+        let sorgu = "SELECT $1";
+        let varsayilan = 64 * kib;
+        assert!(girdiyi_denetle(sorgu, &["a".repeat(varsayilan)], varsayilan).is_ok());
+        let red = girdiyi_denetle(sorgu, &["a".repeat(varsayilan + 1)], varsayilan).unwrap_err();
+        assert!(red.mesaj.contains("öğe başına 64 KiB"), "{}", red.mesaj);
+        // Türkçe-yoğun 1 MiB ileti gövdesi (2 baytlık harfler) tek parametre.
+        let ileti = "ışığı".repeat(1024 * kib / "ışığı".len());
+        assert!(ileti.len() > varsayilan);
+        assert!(girdiyi_denetle(sorgu, std::slice::from_ref(&ileti), 1024 * kib).is_ok());
+        let red = girdiyi_denetle(sorgu, &[ileti], varsayilan).unwrap_err();
+        assert!(red.mesaj.contains("64 KiB"), "{}", red.mesaj);
+        let alti = vec!["a".repeat(1024 * kib); 6];
+        assert!(girdiyi_denetle(sorgu, &alti, 4096 * kib).is_ok());
+        let yedi = vec!["a".repeat(1024 * kib); 7];
+        let red = girdiyi_denetle(sorgu, &yedi, 4096 * kib).unwrap_err();
+        assert!(red.mesaj.contains("toplam 6400 KiB"), "{}", red.mesaj);
+        assert_eq!(TOPLAM_PARAMETRE_BAYTI, 100 * 64 * kib);
+    }
 
     #[test]
     fn goc_plani_uygulanmis_ve_bekleyeni_ayni_sirali_kaynaktan_ayirir() {

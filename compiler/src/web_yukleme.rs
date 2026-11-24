@@ -18,7 +18,7 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
 /// Süreç ölümünden kalan (yetim) `.parca` bu yaştan eskiyse süpürülür.
-pub const YETIM_PARCA_YASI: Duration = Duration::from_secs(15 * 60);
+pub const YETIM_PARCA_YASI: Duration = Duration::from_secs(30 * 60);
 /// Çalışan worker'da süpürme en sık bu aralıkla tekrarlanır.
 pub const YETIM_SUPURME_ARALIGI: Duration = Duration::from_secs(5 * 60);
 /// Tek süpürmede incelenen en çok dizin girdisi; kalan sonraki tura kalır.
@@ -48,7 +48,7 @@ pub fn yetim_parcalari_supur(kok: &Path, simdi: SystemTime, yas: Duration) -> us
 /// Web yüklemelerinin geçici dizini (spec/26).
 pub const YUKLEME_DIZINI: &str = ".zee/yuklemeler";
 /// K-384: bağlantı bloklarının geçici dizini (RFC-0039 A2c). Ayrı dizin,
-/// web süpürmesinin 15 dakikalık eşiğinin uzun bağlantı oturumundaki canlı
+/// web süpürmesinin 30 dakikalık (K-391) eşiğinin uzun bağlantı oturumundaki canlı
 /// blok dosyasına dokunmasını önler. Bağlantı reaktörü yalnız Unix'tedir.
 #[cfg(unix)]
 pub const BAGLANTI_BLOK_DIZINI: &str = ".zee/baglanti-bloklari";

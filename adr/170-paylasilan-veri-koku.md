@@ -6,7 +6,7 @@
   K-382 (takip önerisi), ADR-031 (merkezî yetkinlik), ADR-059 (core
   freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), ADR-105
   (credential kaynağı), ADR-163 (dosya yanıtı), ADR-167 (çözerek yazma),
-  spec/07, spec/08, spec/23, GB-164
+  spec/07, spec/08, spec/23, GB-166
 
 ## Bağlam
 
@@ -31,7 +31,10 @@ grammar ya da kalıp gerekmiyor.
    (credential dizini, yoksa ortam; ikisi birden ret) her `veri:`
    çağrısında okunur.
 2. **Yetkinlikler.** Yeni `veri-okuma` ve `veri-yazma`. `veri_kökü` en az
-   biriyle, onlar da yalnız `veri_kökü` ile bulunur; aksi **P023**.
+   biriyle, ana projede onlar da yalnız `veri_kökü` ile bulunur; aksi **P023**.
+   Kök yalnız ana projeden gelir: paket `veri-*` ihtiyacını kökü olmadan
+   bildirir (P015 alt küme), `veri_kökü` bildiremez (P023); paketin `veri:`
+   yolları ana projenin köküne çözülür.
    `dosya-*` veri kökünü, `veri-*` proje dosyalarını açmaz. Bildirimsiz
    tek dosya profilleri ve `--güvenli` kipi `veri-*` içermez. Statik T054
    dosya gereksinimini aynı yönlü `veri-*` ile de karşılanmış sayar; kesin
@@ -90,4 +93,4 @@ grammar ya da kalıp gerekmiyor.
 
 `compiler/tests/veri_koku_testi.rs`, `compiler/src/guvenlik/veri_koku/testler.rs`,
 `dogfood/urun-h/paylasilan-depo/`, spec/07 §Paylaşılan veri kökü, spec/08,
-spec/23, hata kataloğu P023, GB-164.
+spec/23, hata kataloğu P023, GB-166.

@@ -38,7 +38,7 @@ ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,artefakt_dogrulama,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,registry,sozcukleyici,tani	Paket grafigi ve kilit cozumu
 paket_modeli	model	-	Paket yayin ve registry icin davranissiz ortak veri sozlesmesi
 postgresql	altyapi	guvenlik,kaynak_sinirlari,veritabani_modeli	Sinirli PostgreSQL tasimasi ve migration uygulayicisi
-proje	proje	ag_satiri,agac,bicimleyici,faz,icerik_turu,morfoloji,sozcukleyici,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
+proje	proje	ag_satiri,agac,bicimleyici,faz,icerik_turu,kaynak_sinirlari,morfoloji,sozcukleyici,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
 registry	proje	ag_istemcisi,artefakt_dogrulama,guvenlik,kalici_dosya,kaynak_sinirlari,morfoloji,paket_modeli,yetkinlik	Registry metadata ve cache zinciri
 semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma

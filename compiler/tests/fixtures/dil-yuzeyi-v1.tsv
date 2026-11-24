@@ -345,6 +345,8 @@ profil	dispatcher-service-calendar	aktif	0.8.0-dev	scripts/dispatcher-service.py
 profil	dispatcher-service-run	aktif	0.8.0-dev	scripts/dispatcher-service.py	--run
 profil	e-posta-ek-turleri-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "e_posta_ek_türleri"
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
+profil	genis-govde-rotalari-v1	aktif	1.0.0-dev	compiler/src/proje/govde_siniri.rs	"geniş_gövde_rotaları"
+profil	govde-asimi-rotasi-v1	aktif	1.0.0-dev	compiler/src/proje/govde_siniri.rs	"gövde_aşımı_rotası"
 profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_değişkenleri"
 profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(
 profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
@@ -368,6 +370,7 @@ profil	systemd-bildirimi-v1	aktif	1.0.0-dev	compiler/src/cli/systemd_bildirim.rs
 profil	tls-bildirimi-v1	aktif	1.0.0-dev	compiler/src/proje/baglanti.rs	"tls_dinleyicileri",
 profil	veri-koku-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "veri_kökü"
 profil	veri-yolu-oneki-v1	aktif	1.0.0-dev	compiler/src/yetkinlik/veri_yolu.rs	pub const VERI_ONEKI: &str = "veri:";
+profil	veritabani-parametre-siniri-v1	aktif	1.0.0-dev	compiler/src/proje/govde_siniri.rs	"veritabanı_parametre_sınırı"
 profil	web-activate-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-activate-fd"
 profil	web-generation	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-generation"
 profil	web-listener-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-listener-fd"

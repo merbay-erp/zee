@@ -212,8 +212,15 @@ açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytında
 ölçülebilir yerel ret). K-385 (ADR-163 eki) e-posta istemcisi
 yapılandırma XML'i ve Apple profili için `application/xml` ile
 `application/x-apple-aspen-config` türlerini yalnız web dosya sınıfına
-ekledi. **Açık:** `inline`/Range/ETag sonrası; Outlook POX Autodiscover
-(POST + CSRF muafiyeti, RFC-0040 ile); `sandbox allow-downloads`. V1 sözü değildir.
+ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
+(dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
+boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag
+sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
+`sandbox allow-downloads`. K-391 Dilim 2 rota bazlı gövde sınırını
+(`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
+ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
+hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
 
 Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 ([ADR-170](../adr/170-paylasilan-veri-koku.md),
@@ -222,7 +229,7 @@ Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 program `veri:` önekiyle adlandırır, okuma `veri-okuma` ve yazma
 `veri-yazma` ister (P023). Kök/ara klasörler `O_NOFOLLOW` yürüyüşü ve ata
 değişmeziyle, yaprak bağsız ve tek hard-link'li okunur; spec/08 iç okumaları
-da bağ izlemez (`urun-h` ZM-F038, GB-164). **Açık:** veri kökünde dizin
+da bağ izlemez (`urun-h` ZM-F038, GB-166). **Açık:** veri kökünde dizin
 listeleme, görsel küçültme, bağlantı blok dosyası, Windows. V1 sözü
 değildir.
 

@@ -54,6 +54,37 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
   kalıpla değiştirebilirsiniz.
 
+- **Uzun Türkçe iletiler ve “gövde çok büyük” sayfası (K-391):**
+  `çok_parçalı_yükleme doğru olsun` yazan projede `enctype="multipart/form-data"`
+  formu artık dosya parçası olmadan da gönderilebilir; metin alanları sıradan
+  form alanı olarak gelir ve Türkçe harfler yüzde kaçışıyla şişmez
+  (25 000 harflik Türkçe ileti ~33 KB'tır; urlencoded formda ~100 KB olup
+  64 KiB sınırını aşıyordu). Alan başına 8 KiB tavanı kalktı; bütün metin
+  alanlarının toplamı 64 KiB'tır. Yeni `proje.dil` alanı
+  `gövde_aşımı_rotası "/ileti/cok-buyuk" olsun`: gövde sınırını aşan
+  POST/PUT/PATCH/DELETE isteğinde ham 413 yerine bu GET rotasının sayfası 413
+  durumuyla gösterilir; rota `govde_asimi_yolu`, `govde_asimi_siniri`,
+  `govde_asimi_bayti` alanlarını görür. Asıl rota çalışmaz (gönderilen metin
+  okunmadan reddedildi); kullanıcıya Geri ile forma dönmesini söyleyin.
+
+  **Göç:** Gerekmez; alan yazmayan projelerde 64 KiB sınırı ve 413 metni
+  aynıdır. `çok_parçalı_yükleme` açık projelerde dosyasız form ve 8 KiB'tan
+  uzun metin alanı artık reddedilmez; metin toplamı aşımı 400 yerine 413'tür.
+
+- **Rota bazında gövde sınırı, yavaş büyük yüklemeler ve büyük SQL
+  parametresi (K-391):** `geniş_gövde_rotaları "/posta/gonder", "/taslak/"
+  listesi olsun` ile `geniş_gövde_sınırı 262144 olsun` birlikte yazılınca
+  yalnız bu yollara gelen POST/PUT/PATCH/DELETE formları (urlencoded ya da
+  multipart metin alanları) 64 KiB yerine verilen sınırı (en çok 1 MiB)
+  kullanır; `/` ile biten öge önek, diğeri tam yoldur. Multipart yükleme artık
+  sabit 10 saniyede kesilmez: süre gelen veriyle büyür (10 sn + her 128 KiB
+  için 1 sn, en çok 146 sn); veri göndermeden bekleyen istemci yine 10 sn'de
+  408 alır. `veritabanı_parametre_sınırı 1048576 olsun` tek SQL parametresini
+  64 KiB yerine en çok 4 MiB yapar (bütün parametrelerin toplamı 6 400 KiB).
+
+  **Göç:** Gerekmez. Alan yazmayan projede sınırlar aynıdır. Süreç çökmesinden
+  kalan geçici yükleme dosyaları artık 15 yerine 30 dakika sonra silinir.
+
 - **Projeler arasında paylaşılan veri kökü (K-394):** aynı uygulamanın ayrı
   projeleri (ör. e-postayı alan hizmet ile eki sunan web paneli) artık ortak
   bir veri klasörünü paylaşabilir. `proje.dil` klasörün yolunu değil, yolu
