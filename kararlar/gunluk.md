@@ -5695,6 +5695,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   tedarik kaydı; Dilim 2'de birleştirme ile yeniden), QP gevşek çözümü,
   `.zee/` ile sınırlı ekleme, yarım dörtlü durumu, izde içerik. K-389 kapandı.
 
+## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı; ADR-031 eki (24 Kasım 2026)
+
+- Kaynak: bağımsız zee/Python/Go/Rust karşılaştırma raporu (bd8d44f) ve dış
+  incelemesi; g04 yoklaması aynı kodu projede T054, tek dosyada gerçek HTTPS
+  isteğiyle gözledi. Freeze sınıfı `security`, GB-161.
+- Karar: tek dosya profili `ağ`sız; açık `--izin ağ` (yalnız dosya
+  işleneninden önce; `çalıştır`/`denetle`/`iz kaydet`) eski public
+  HTTPS/SMTPS sınırını açar. Proje kipinde, `--güvenli` ile, başka değerle
+  ya da tekrarla çıkış 2. `dene` ve `iz oynat` gerçek ağa çıkmadığı için
+  eski profili korur. v0.7 korpusunda `24-http-istemcisi.dil` ve
+  `27-zaman-asimi.dil` kayıtlı `security_break` olarak T054 alır.
+- Reddedilen: önce uyarı + sonraki sürümde ret (yerel taramada tek dosya
+  kipinde ağ kullanan betik/servis yok; açık varsayılanı uzatmak riski
+  uzatır), genel `--izin <yetkinlik>` listesi (diğerleri ya açık ya manifest
+  ister), dosyadan sonraki bayrağı da okumak (program argümanı yetki
+  açamaz), projede bayrağı sessizce yok saymak. K-387 kapandı.
+
 ## K-385 — İstemci yapılandırma dosya türleri; ADR-163 eki (24 Kasım 2026)
 
 - Kaynak ZM-F033 (`urun-h`, ZeeMail): autoconfig XML'i ve `.mobileconfig`
@@ -5748,6 +5765,31 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   birebir aynı CSP; tek kırılan kullanım çalışma zamanında parça parça
   kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
   değişmez ya da statik dosya).
+
+## K-388 — Bağlantı görevinde protokol birimi sınırında bütçe yenileme (24 Kasım 2026)
+
+- Kaynak: `urun-h` ZM-F035; merkez kararı RFC-0043 taslağındaki seçenek (a)
+  "en küçük güvenli hâliyle". Freeze sınıfı `correctness`, beyan
+  `semantic-bugfix`.
+- Kaynak incelemesi: bağlantı görevi K-381'den beri başarılı satır/blok
+  okumasında bütçeyi yeniliyordu; seçenek (a)'nın büyük kısmı zaten vardı.
+  Eksik olan, başarısız dönen okumaydı: IDLE'ın `zaman_aşımı` yoklaması ve
+  `satır_uzun`/`satır_sonu`/`kodlama` retleri. Hermetik yeniden üretim:
+  `A1 IDLE` sonrası 3 × 1 sn yoklama, her biri ~25 MiB atılan geçici metin
+  → üçüncü yoklamada C024; düzeltmeyle yanıt yazılır.
+- Karar: sınır = girdi tüketen ya da süresini dolduran okuma dönüşü. Anında
+  dönen sonuçlar sınır değildir; aksi hâlde kapalı bağlantıyı yok sayan
+  döngü her turda taze adım bütçesi alır ve C023 ile hiç bitmezdi
+  (`kapandi_donusu_butceyi_yenilemez`). Bayt bloğu/bayt okumasında `n`
+  sınırı aşınca dönen `boyut_aşımı` okumadan döndüğü için sınır değildir;
+  nokta bloğunda sonlandırıcıya kadar tükettiği için sınırdır.
+- Reddedilen: (b) atılan değer iadesi (ADR-033 iade-yok ilkesi, sıcak yol
+  maliyeti), her yazmada yenileme (çıktı döngüsü sınırsız olurdu), `bekle`de
+  yenileme (yoklamasız sonsuz döngü).
+- Ürüne not: 1 MB+ gövdeyi tek birimde Zee metni olarak işlemek yine C024;
+  K-384 dosya tutamağı + RFC-0043 aralıklı okuma yolu.
+- spec/25 64 KiB tek SQL parametresi gözlemi backlog'a ayrı not olarak
+  yazıldı; değiştirilmedi.
 
 ## K-384 — Bağlantıda blok okuma ve bayt-kesin akış; RFC-0039 A2c (24 Kasım 2026)
 

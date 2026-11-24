@@ -3,7 +3,9 @@
 use dil::faz::KaynakMetni;
 use dil::tani::Tani;
 use dil::yetkinlik::YetkinlikPolitikasi;
-use dil::yorumlayici::{calistir_baglanmis_io_kodla, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
+use dil::yorumlayici::{
+    calistir_baglanmis_io_kodla, IzKaydedenIo, IzYenidenOynatici, SahteBaglanti, ToplayanIo,
+};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
@@ -81,6 +83,7 @@ const KIPLER: &[&str] = &[
     "web",
     "smtp",
     "postgresql",
+    "baglanti",
     "cli",
     "lsp-uri",
     "lsp-utf16",
@@ -270,6 +273,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
             "run"
                 | "trace"
                 | "postgresql"
+                | "baglanti"
                 | "native-dosya-exdev"
                 | "native-dosya-okuma-penceresi"
                 | "native-dosya-okuma-izsiz-penceresi"
@@ -697,6 +701,50 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
             let gecen = dil::yorumlayici::GirdiCikti::an_ms(&mut io);
             let mut cikti = io.cikti;
             cikti.push(format!("[postgresql] bütçe={butceler} geçen={gecen}ms"));
+            match sonuc {
+                Ok(cikis) => Gozlem {
+                    tani: None,
+                    cikis,
+                    cikti,
+                },
+                Err(tani) => hata_gozle(tani, cikti),
+            }
+        }
+        "baglanti" => {
+            // K-388: hermetik bağlantı adaptörü; başlıklar dinleyiciyi, gelen
+            // satırları ve istemcinin susup susmadığını verir. Çıktı giden
+            // satırlar ve `[günlük] <neden>` satırlarıdır.
+            let mut dinleyici = None;
+            let mut satirlar = Vec::new();
+            let mut sessiz = false;
+            for satir in kaynak.lines() {
+                if let Some(ad) = satir.strip_prefix("# bağlantı-dinleyici: ") {
+                    dinleyici = Some(ad);
+                } else if let Some(gelen) = satir.strip_prefix("# bağlantı-satırı: ") {
+                    satirlar.push(gelen);
+                } else if satir == "# bağlantı-sessiz" {
+                    sessiz = true;
+                }
+            }
+            let dinleyici =
+                dinleyici.unwrap_or_else(|| panic!("{}: bağlantı-dinleyici başlığı yok", vaka.ad));
+            let mut baglanti = SahteBaglanti::satirlarla(dinleyici, "192.0.2.10", &satirlar);
+            baglanti.sessiz_kalir = sessiz;
+            let mut io = ToplayanIo::yeni(Vec::new());
+            io.baglanti.bekleyenler.push_back(baglanti);
+            let sonuc = calistir_baglanmis_io_kodla(&program, &mut io);
+            let mut cikti: Vec<String> = io
+                .baglanti
+                .baglantilar
+                .iter()
+                .flat_map(|b| b.giden.iter().cloned())
+                .collect();
+            cikti.extend(
+                io.baglanti
+                    .gunluk
+                    .iter()
+                    .map(|(_, n)| format!("[günlük] {n}")),
+            );
             match sonuc {
                 Ok(cikis) => Gozlem {
                     tani: None,

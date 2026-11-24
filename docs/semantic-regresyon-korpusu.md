@@ -74,6 +74,7 @@ hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 | `capability` | Compile sonrası kapalı yetkinlik politikası |
 | `smtp` | Security fazında typed runtime → gerçek native SMTP; yalnız sabit loopback fixture |
 | `postgresql` | Runtime fazında typed runtime → hermetik PostgreSQL; sabit sanal sorgu süresi, adaptöre verilen son tarih bütçesi ve geçen sanal süre çıktıda |
+| `baglanti` | Runtime fazında typed runtime → hermetik bağlantı adaptörü (`SahteBaglanti`); başlıklar dinleyiciyi, gelen satırları ve susan istemciyi verir; çıktı giden satırlar ve `[günlük] <neden>` |
 | `lsp-utf16` | LSP mesaj işleyicisinde BMP dışı önek sonrası hover, definition ve iki imleçten aynı rename aralıkları; süreç/taşıma kabulü değildir |
 | `lsp-uri` | LSP fazında gerçek stdio ikilisi, yüzde UTF-8 dosya URI'si ve hermetik disk birimi |
 
@@ -154,6 +155,17 @@ her okuma/yazım SymbolId için ayrıca ister; görünüm LHS eksikliği yalnız
 ifade invariantıyla yakalanamaz. K-213 vaka kimlikleri silinmez.
 
 ## PostgreSQL runtime kipi (K-375)
+
+`baglanti`, `runtime` fazına aittir (K-388). Kaynakta tam bir
+`# bağlantı-dinleyici: <ad>` yorum satırı, sırayla teslim edilen her gelen
+satır için `# bağlantı-satırı: <metin>` ve istemci satırlar bitince
+kapatmak yerine susacaksa `# bağlantı-sessiz` bulunur. Hermetik
+`ToplayanIo` sanal saatle süreli okumayı zaman aşımına düşürür; çıktı
+bağlantının giden satırları ve bağlantı görevi hatasının operatör
+günlüğü (`[günlük] <kod> satır <n>: <ileti>`) satırlarıdır. [K-388
+reproducer'ı](../regression/runtime/baglanti-idle-butce-yenileme.dil) IDLE
+yoklamasının zaman aşımında bütçenin yenilenmesini korur; eski davranış
+üçüncü yoklamada `[günlük] C024 …` yazıyordu.
 
 `postgresql`, `runtime` fazına aittir. Kaynakta tam bir
 `# postgresql-sorgu-suresi-ms: N` yorum satırı bulunur; hermetik `ToplayanIo`

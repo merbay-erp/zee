@@ -10,6 +10,31 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Güvenlik
+
+- **Tek dosya kipinde dış ağ artık varsayılan kapalı (K-387):** `proje.dil`
+  olmadan çalıştırılan bir dosya (`dil çalıştır betik.dil`) şimdiye kadar
+  HTTPS isteği ve SMTPS e-postasıyla dış ağa çıkabiliyordu; aynı kod proje
+  kipinde `ağ` yetkinliği bildirilmeden T054 ile reddediliyordu. İki kip
+  artık aynı varsayılanı taşır: tek dosya kipinde ağ kullanan program
+  derlemeden önce **T054** ile durur ve öneri yeni bayrağı gösterir. Bilinçli
+  açmak için dosyadan önce `--izin ağ` yazın:
+  `dil çalıştır --izin ağ betik.dil` (aynı bayrak `dil denetle` ve
+  `dil iz kaydet` için de geçerli). Bayrak eski sınırı aynen açar: yalnız
+  public `https://`/`smtps://` hedefleri; `yerel-ağ` ve `veritabanı` tek dosya
+  kipinde yine kapalıdır. Dosya adından sonra yazılan `--izin ağ` programın
+  kendi argümanıdır, yetki açmaz. Proje kipinde bayrak reddedilir (yetki
+  `proje.dil` `yetkinlikler`/`ağ_hedefleri` listelerinden gelir), `--güvenli`
+  çocuk moduyla birlikte kullanılamaz. Dosya okuma/yazma ve yerel web
+  sunucusu tek dosya kipinde değişmeden açıktır. `dil dene` (testler gerçek
+  ağa çıkmaz) ve `dil iz oynat` (kayıttan oynatma) eski davranışı korur.
+
+  **Göç:** Ağ kullanan tek dosyalı betiği `dil çalıştır --izin ağ betik.dil`
+  ile çağırın ya da kalıcı kullanım için `proje.dil` oluşturup
+  `yetkinlikler "ağ" listesi olsun` ve tam origin'li `ağ_hedefleri` ekleyin
+  (önerilen yol: hedefler kesin listeyle sınırlanır). Bilinen yerel betik ve
+  servislerin tümü zaten proje kipinde çalıştığı için etkilenmedi.
+
 ### Eklenenler
 
 - **Dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve
@@ -89,6 +114,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Uzun bağlantı oturumları artık bellek sınırına yürümüyor (K-388):** adlı
+  dinleyici bağlantısında (K-381) çalışma bütçesi yalnız başarılı okumada
+  yenileniyordu; IMAP IDLE yoklamasının zaman aşımı ya da çok uzun satıra
+  verilen ret aynı bütçeyi taşıdığı için uzun oturum, canlı değer küçükken
+  "Çalışma değeri yaklaşık … bayt" (C024) ile kapanabiliyordu. Artık girdi
+  tüketen ya da süresini dolduran her okuma (başarı, `zaman_aşımı`,
+  `satır_uzun`, `satır_sonu`, `kodlama`) yeni bir komut gibi taze bütçe
+  açar. Tek komut içindeki 64 MiB sınırı aynen geçerlidir: büyük gövdeyi
+  bellekte işlemek yerine dosyaya al (K-384). Kapalı bağlantıda dönen
+  `kapandı` bütçeyi yenilemez; bu sonucu yok sayan döngü eskisi gibi
+  durdurulur. Web istekleri değişmedi. Göç gerekmez.
 - **Döngüde çağrılan işlemin aynı adlı listesi artık T053 vermiyor (K-380):**
   `her harf için` gövdesinden çağrılan bir işlem kendi içinde `harfler` adlı
   bir liste kurup değiştirdiğinde (doğrudan, başka bir işlem üzerinden ya da

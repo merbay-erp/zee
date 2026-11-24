@@ -232,6 +232,15 @@ metin görmesi — RFC-0039 MIME alt RFC'si, tek başına yetmez. Öneri (a);
 spec/24 normatif değişikliği olduğu için ayrı correctness K-işi (merkezde
 ZM-F035) ve aynı committe spec/24 + K-173 soak koşusu.
 
+**K-388 sonucu (24 Kasım 2026):** kaynak incelemesi "bağlantı görevi tek
+bütçe taşır" ifadesini düzeltti: K-381'den beri **başarılı** satır/blok
+okuması bütçeyi yeniliyordu. Eksik olan başarısız dönüşlerdi; K-388 ile
+girdi tüketen ya da süresini dolduran her bağlantı okuma dönüşü birim
+sınırıdır (spec/12 §9, spec/24, ADR-165 eki). Ölçülen 1 MB+ `DATA`
+düşmesi ise **tek birim** içindedir (gövdeyi Zee metni olarak kurmak) ve
+K-388'den sonra da C024'tür; seçenek (a) bunu çözmez. Dilim 1 için sonuç
+aşağıdaki açık soru 10'dadır.
+
 Karar (taslak): **C + D**. Küçük bayt verisi kodlanmış `Metin`, büyük bayt
 verisi dosya tutamağıdır. `Baytlar` türü ancak C+D ile yazılmış gerçek ürün
 kodunda ölçülmüş sürtünme (ör. kodlanmış metin üzerinde dilimleme ihtiyacı
@@ -549,7 +558,9 @@ V1 kapı listesine eklenmez; V1 sözü değildir.
    hedef, tavan üstü çıktı → başarısız `Sonuç` ve hedefte yarım dosya yok.
    IO izinde içerik yok, yol/bayt/SHA-256 var.
    25 MB'lık blok dosyası 1 MiB'lık aralıklarla okunup ekleri çıkarılır;
-   tek bağlantıda art arda üç ileti C024 vermez (ZM-F035 kararıyla).
+   tek bağlantıda art arda üç ileti C024 vermez (ZM-F035 kararıyla; K-388
+   üç iletiyi ayrı birim yapar, tek iletinin aralıklı okuması için açık
+   soru 10).
 6. Boş gövdenin `simple` kanonik biçimi (`CRLF`) için DKIM `bh=` değeri
    (`frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY=`) ve bağımsız bir DKIM
    uygulamasının (ör. OpenDKIM) ürettiği vektör Zee'de kanonik gövde
@@ -599,7 +610,14 @@ Golden değişmez. Uygulama K-işinde bir golden (kodlama turu) ve
    (uyumluluk yüzeyi, K-167)?
 10. (ZM-F035) Bağlantı görevinde heap bütçesi hangi sınırda yenilenir
    (blok/komut dönüşü mü, açık bir `tur` kalıbı mı) ve bu web'deki istek
-   başına bütçe ile nasıl aynı dile getirilir?
+   başına bütçe ile nasıl aynı dile getirilir? **K-388 yanıtı:** bağlantı
+   okuma dönüşünde (başarı, `zaman_aşımı`, girdi tüketen ret); açık `tur`
+   kalıbı eklenmedi. **Açık kalan (Dilim 1):** dosya aralığı okuması bağlantı
+   okuması değildir ve bütçeyi yenilemez; 25 MB'lık blok dosyasını tek
+   komut içinde aralıklarla ayrıştırmak hâlâ birikimle C024'e yürür.
+   Dilim 1 ya aralıklı okuma çağrısını ayrıca birim sınırı sayan (ve onu
+   yok sayan döngünün adım sınırından kaçamayacağını gösteren) bir karar,
+   ya da seçenek (b) ister.
 
 ## Önerilen uygulama sırası ve K-işi bölümlemesi
 

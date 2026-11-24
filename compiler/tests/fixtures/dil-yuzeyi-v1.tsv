@@ -309,6 +309,7 @@ kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 profil	baglanti-ayarlari-v1	aktif	1.0.0-dev	compiler/src/proje/baglanti.rs	"bağlantı_sınırı",
+profil	cli-ag-izni	aktif	1.0.0-dev	compiler/src/cli/ag_izni.rs	pub(crate) const IZIN_BAYRAGI: &str = "--izin";
 profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
 profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"

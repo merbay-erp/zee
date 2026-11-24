@@ -278,7 +278,7 @@ mod tests {
     }
     #[test]
     fn https_yontem_sure_baslik_tekrar_framing_ve_boyut_kapilari() {
-        let p = YetkinlikPolitikasi::gelistirici();
+        let p = YetkinlikPolitikasi::gelistirici_agli();
         let url = "https://service.example/";
         for (u, m, t) in [
             ("http://service.example/", "POST", 1000),
