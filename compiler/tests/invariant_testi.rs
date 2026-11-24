@@ -86,3 +86,77 @@ fn parser_astsi_kesin_kaynak_zarfi_olmadan_ifade_kabul_etmez() {
     let hata = ayristirilmis_ast_dogrula(&cumleler).expect_err("kaynak zarfı zorunlu");
     assert!(hata.mesaj().contains("kesin kaynak aralığı yok"), "{hata}");
 }
+
+#[test]
+fn cagrilmayan_cikarimli_islem_govdesi_parser_astsi_olarak_kalir() {
+    // K-392: çıkarımlı parametre türü yalnız çağrı kısıtından gelir (spec/04).
+    // Hiç çağrılmayan işlemin gövdesi bağlanmaz; HIR değişmezi C000 vermez,
+    // çağrılan komşu işlemin gövdesi ise bağlı HIR kurallarıyla denetlenir.
+    let kaynak = "\
+işlem birini ver
+    sayıyı al
+    sayıyı döndür
+
+işlem geri say
+    sayıyı al
+    sayı 0 a eşitse
+        0 döndür
+    önceki sayı ile 1 in farkı olsun
+    önceki için geri say döndür
+
+işlem dış hesapla
+    sayıyı al
+    sayı için iç hesapla döndür
+
+işlem iç hesapla
+    değeri al
+    değeri döndür
+
+işlem karesini hesapla
+    sayıyı al
+    sonucu sayı ile sayının çarpımı olsun
+    sonucu döndür
+
+kare 4 için karesini hesapla olsun
+kare yaz
+";
+    let program = dil::kaynagi_fazli_derle(kaynak).expect("bağlanmış HIR");
+    program
+        .invariantleri_dogrula()
+        .expect("çağrılmayan çıkarımlı gövde C000 üretmemeli");
+    let hir = program.hir();
+    let islemler = &hir.program().islemler;
+    let Cumle::Dondur { deger, .. } = &islemler["birini ver"].govde[0] else {
+        panic!("birini ver gövdesi döndür ile başlamalı");
+    };
+    assert!(
+        hir.ifade_bilgisi(deger).is_none(),
+        "çağrılmayan gövde HIR kaydı taşımamalı"
+    );
+    let Cumle::Dondur { deger, .. } = &islemler["karesini hesapla"].govde[1] else {
+        panic!("karesini hesapla dönüşü ikinci cümle olmalı");
+    };
+    assert!(
+        hir.ifade_bilgisi(deger).is_some(),
+        "çağrılan gövde HIR kaydı taşımalı"
+    );
+}
+
+#[test]
+fn cagrilmayan_cikarimli_govde_hatasi_ilk_cagriyla_raporlanir() {
+    // K-392: çağrısız gövde denetlenmez; testten gelen ilk çağrı ad hatasını
+    // kullanıcı tanısı olarak verir (C000 değil).
+    let govde = "işlem birini ver\n    sayıyı al\n    bilinmeyen döndür\n\n";
+    dil::kaynagi_fazli_derle(&format!("{govde}1 yaz\n"))
+        .expect("çağrısız gövde denetlenmez")
+        .invariantleri_dogrula()
+        .expect("çağrısız gövde C000 üretmez");
+    let hata = match dil::kaynagi_fazli_derle(&format!(
+        "{govde}test \"t\"\n    x 1 için birini ver olsun\n    x 1 e eşit olmalı\n"
+    )) {
+        Ok(_) => panic!("ilk çağrı gövdeyi denetlemeli"),
+        Err(hata) => hata,
+    };
+    assert_eq!(hata.kod, "A001");
+    assert_eq!(hata.satir, 3);
+}

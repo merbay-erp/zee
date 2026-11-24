@@ -5948,3 +5948,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   ya da kaynağa eklemek T053.
 - Ayrı açık hata kaydedildi: türsüz ve çağrılmayan işlem C000 iç hatası
   (backlog K-380 "Açık").
+
+## K-392 — Çağrılmayan çıkarımlı işlem gövdesi bağlı HIR değişmezinden muaf (24 Kasım 2026)
+
+- K-380 incelemesinde bulunan açık hata: türsüz parametreli ve hiç
+  çağrılmayan işlem debug derlemede C000 (`bağlanmış HIR değişmezi bozuldu …
+  çözülmüş adı yok`); `denetle` ve release ikili temiz.
+- Kök neden: çıkarımlı tür yalnız çağrı kısıtından gelir (K-121); çağrısız
+  gövde bilinçli olarak bağlanmaz. Doğrulayıcı her işlem gövdesinden HIR bağı
+  bekliyordu.
+- Seçenekler: (a) çağrısız işlemi reddetmek ya da uyarmak — kullanıcıya
+  görünen yeni tanı/semantic change, freeze altında gerekçesiz; (b) gövdeyi
+  bağımsız denetlemek — tür bilgisi yok, mümkün değil; (c) doğrulayıcıya
+  checker'ın gerçekten doğruladığı işlemleri bildirmek. Karar (c): davranış
+  değişmez, değişmez sözleşmesi daralmaz (denetlenmemiş gövde parser AST'si
+  olarak doğrulanır).
+- spec/04'e TANIMLI madde: çağrısız çıkarımlı gövde denetlenmez, hatası ilk
+  çağrıyla raporlanır; çağrısız denetim için açık imza.
+
