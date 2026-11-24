@@ -1,0 +1,15 @@
+işlem çift bul
+    sayıyı al
+    sayı çiftse
+        sayıyı döndür
+    yok döndür
+
+işlem boşu aç
+    sayıyı al
+    bulunan sayı için çift bul olsun
+    bulunanın değerini döndür
+
+bulunan 4 için çift bul olsun
+bulunan varsa
+    x 3 için boşu aç olsun
+    x yaz

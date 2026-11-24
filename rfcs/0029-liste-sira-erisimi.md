@@ -158,7 +158,7 @@ yeni RFC ve K-işiyle açılır.
 5. **Sürtünme geri sayımı:** kanıt özeti `bilgiye çevir`/`çiftleri
    birleştir`, kelime avı `sıradaki harfi al`/`sıradaki kelimeyi al` (iki
    yardımcı kaldırıldı) ve skor alanı sıra erişimine taşındı; ürün çıktıları
-   bayt bayt aynı (`docs/kanit-ozeti.md` değişmedi; kelime avı uçtan uca
+   bayt bayt aynı (ürün kaynağı değişikliği kanıt özeti sayfasını değiştirmedi, Zee/Rust/Go eş; kelime avı uçtan uca
    testleri aynı). Korpusa `f010-sira-erisimi-cozumu` eklendi; eski ret ve
    sayaç çözümü tarihsel vaka olarak kalır. Ürün H'nin kendi kaynağı harici
    depodadır; değişiklik ürün sahibine bırakıldı.

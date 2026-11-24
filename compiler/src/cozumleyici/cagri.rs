@@ -277,7 +277,10 @@ pub(super) fn cagri_denetle(
         donusler: Vec::new(),
         verilen_ozyineleme: None,
     });
-    let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam).map_err(kokenle);
+    let denetim = ayri_akista(baglam, |baglam| {
+        blok_denetle(&mut islem.govde, &mut islem_ortami, baglam)
+    })
+    .map_err(kokenle);
     let kayit = baglam.denetim_yigini.pop().ok_or_else(|| {
         ic_tutarlilik_hatasi(
             format!("\"{}\" işleminin denetim kaydı kayboldu", ad),

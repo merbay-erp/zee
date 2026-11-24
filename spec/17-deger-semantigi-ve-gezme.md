@@ -55,6 +55,13 @@ Kaynağın daha önce alınmış değer kopyası başka addır ve bağımsızdı
 değiştirmek kaynak üzerinde etki oluşturmaz; iç içe çift gezme gerekiyorsa
 ikinci adla açık kopya alınabilir.
 
+Kural kaynak **sembolüne** bağlıdır, yüzey adına değil (ZORUNLU — K-380).
+Gezme gövdesinden doğrudan ya da geçişli çağrılan işlemin gövdesi kendi
+sembol kapsamında denetlenir: o işlemin aynı adlı yereli, parametresi ya da
+kendi gezmesi başka semboldür ve T053 üretmez. Değer semantiğinde çağrılan
+işlem çağıranın kaynağını göremez ve değiştiremez; işlemden dönen değeri
+kaynağın kendisine bağlamak ya da kaynağa eklemek ise yine T053'tür.
+
 ## Sıra ile okuma (TANIMLI — RFC-0029)
 
 `<liste>nin <sıra>. öğesi`, 1 tabanlı sıradaki öğenin bağımsız değer kopyasını
@@ -90,4 +97,6 @@ Bir uyumlu gerçekleme en az şunları kanıtlamalıdır:
 - ekle, sil, kaynak yeniden bağlama, sözlük yazma ve aynı-kaynak iç içe gezme
   için T053;
 - T053'ün kaynak adı, konum ve eyleme dönük öneri taşıması;
+- çağrılan işlemin aynı adlı yerel koleksiyonunun (doğrudan, geçişli ve
+  kendi gezmesiyle) T053 üretmemesi;
 - sözlük anahtar sırası ve geri-yazmasız davranışın korunması.

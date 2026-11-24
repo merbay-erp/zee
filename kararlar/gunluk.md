@@ -5871,3 +5871,25 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   işlem ve bir alan döngüsü sıra erişimine taşındı; çıktılar bayt bayt aynı,
   K-165 Rust/Go eşdeğerleri değişmedi. Ürün H kaynağı harici; değişiklik
   ürün sahibinde.
+
+## K-380 — Çağrılan işlem çağıranın akış bilgisini görmez; T053/T036 yanlış eşleme (24 Kasım 2026)
+
+- Etkin dogfood ürünü `urun-h` sürtünmesi: döngü gövdesinden çağrılan işlemin
+  kendi yerelindeki aynı adlı liste (`her harf için` içinde callee'nin
+  `harfler`i) dış döngü için T053 üretiyordu; geçişli çağrıda da.
+- Kök neden: işlem gövdesi ilk çağrıda çağıranın denetim bağlamında
+  denetlenir; sembol tablosu ayrı, ama ad anahtarlı akış kümeleri (gezilen
+  kaynaklar ve üç daraltma kümesi) paylaşılıyordu. Kimlik SymbolId değil
+  yüzey adıydı.
+- Karar: işlem gövdesi kendi akışında denetlenir (`akis::ayri_akista`);
+  kümeler denetim boyunca boşaltılıp geri konur. Akış kümelerini SymbolId'ye
+  taşımak daha geniş bir değişiklikti; çağrı sınırında ayırmak aynı
+  doğruluğu minimal sağlar çünkü işlem kapsamı çağıranın yerellerini zaten
+  göremez (değer semantiği, spec/17).
+- Aynı kök nedenin daraltma yüzü ses açığıydı (callee yerelinde T036
+  kaçıyor, çalışma zamanında C008) ve ters yönde yanlış T036 üretiyordu;
+  aynı düzeltmeyle kapandı, spec/04'e madde eklendi.
+- Gerçek ihlaller korunur: gezilen kaynağı işlem sonucuyla yeniden bağlamak
+  ya da kaynağa eklemek T053.
+- Ayrı açık hata kaydedildi: türsüz ve çağrılmayan işlem C000 iç hatası
+  (backlog K-380 "Açık").

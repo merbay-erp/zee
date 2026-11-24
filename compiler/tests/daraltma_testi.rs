@@ -67,3 +67,30 @@ sonuç başarısızsa
     let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
     assert_eq!(cikti, vec!["\"yok.txt\" dosyası bulunamadı"]);
 }
+
+#[test]
+fn cagiranin_daraltmasi_cagrilan_isleme_sizmaz() {
+    // K-380: daraltma çağıranın sembolüne aittir; çağrılan işlemin aynı adlı
+    // yereli korumasız kalır (önceden çalışma zamanında C008'e düşüyordu).
+    let kaynak = format!(
+        "{}\nişlem boşu aç\n    sayıyı al\n    bulunan sayı için çift bul olsun\n    bulunanın değerini döndür\n\nbulunan 4 için çift bul olsun\nbulunan varsa\n    x 3 için boşu aç olsun\n    x yaz\n",
+        BULUCU
+    );
+    let hata = kaynagi_calistir(&kaynak).expect_err("T036");
+    assert_eq!(hata.kod, "T036");
+    assert!(hata.mesaj.contains("\"bulunan\""), "{}", hata.mesaj);
+}
+
+#[test]
+fn cagri_sonrasi_cagiranin_daraltmasi_korunur() {
+    // K-380 olumlu eşi: çağrılan işlemin ayrı akışı geri konur; işlem kendi
+    // yerelini kendi `varsa` dalında güvenle açar.
+    let kaynak = format!(
+        "{}\nişlem güvenle aç\n    sayıyı al\n    bulunan sayı için çift bul olsun\n    bulunan varsa\n        bulunanın değerini döndür\n    0 döndür\n\nbulunan 4 için çift bul olsun\nbulunan varsa\n    x 3 için güvenle aç olsun\n    x yaz\n    bulunanın değeri yaz\n",
+        BULUCU
+    );
+    assert_eq!(
+        kaynagi_calistir(&kaynak).expect("çalışmalı"),
+        vec!["0", "4"]
+    );
+}
