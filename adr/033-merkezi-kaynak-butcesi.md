@@ -65,6 +65,21 @@ C024 önerisi liste + `birleşmişi` kalıbını gösterir. Domain sabit göçü
 outbound JSON'u da üretim sırasında bütçelidir; bu sınırla B-025 kapanmıştır.
 Duvar-saati ve iptal anındaki yan etki invariant'ları B-026'da ayrıca izlenir.
 
+## Ek — Bağlantı görevinde birim başına bütçe (24 Kasım 2026, K-388)
+
+Adlı dinleyici bağlantı görevi (ADR-165) web isteğinin bağlantıdaki
+karşılığıdır: görev taze adım/çıktı/heap zarfıyla başlar ve zarf her
+protokol birimi sınırında yeniden kurulur. Sınır, girdi tüketen ya da
+süresini dolduran okuma dönüşüdür (spec/12 §9). Bu ek iade-yok ilkesini
+değiştirmez: birim içinde atılan değer zarftan geri alınmaz ve tek birimde
+64 MiB aşımı yine C024'tür. Kök neden (ZM-F035): K-381 yalnız başarılı
+okumada yeniliyordu; IDLE yoklamasının `zaman_aşımı` dönüşü ve girdi tüketen
+retler aynı zarfı oturum boyunca taşıyordu, uzun oturum bu yüzden C024 ile
+düşüyordu. "Atılan değeri iade et" (canlı değer ölçümü) seçeneği bu
+ADR'deki gerekçeyle yine reddedildi; anında dönen `kapandı` gibi sonuçlar
+sınır sayılmaz, çünkü onları yok sayan döngü yenilenen bütçeyle adım
+sınırından kaçardı.
+
 ## Kanıt
 
 - 8 MiB üstü bellek kaynağı S045 ile reddedilir;

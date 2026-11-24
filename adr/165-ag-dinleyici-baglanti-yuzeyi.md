@@ -192,6 +192,40 @@ literal'in bağlantıya geri aktarımı; IDLE benzeri 1 sn yoklama ve yarım
 satırın korunması); `ag_satiri` birim testleri; `proje_testi` P020;
 gerçek systemd ölçümüne kısa DATA + IDLE yoklama adımı.
 
+## Ek karar — Protokol birimi sınırında bütçe yenileme (24 Kasım 2026, K-388)
+
+Ürün ölçümü (`urun-h` ZM-F035): uzun IMAP IDLE oturumu ve kötü satırlara
+`500` yazan SMTP döngüsü, canlı değer birkaç KiB iken C024 ile kapanıyordu.
+A2a "her başarılı satır okuması bütçeyi yeniler" diyordu; süreli okumanın
+`zaman_aşımı` dönüşü (A2c IDLE yoklaması) ve `satır_uzun`/`satır_sonu`/
+`kodlama` retleri yenilemiyordu, iade-yok zarfı (ADR-033) oturum boyunca
+doluyordu.
+
+Karar: protokol birimi sınırı, girdi tüketen ya da süresini dolduran her
+okuma dönüşüdür — satır, süreli satır, bayt okuması, nokta bloğu ve bayt
+bloğu çağrısının başarısı ya da `zaman_aşımı`, `satır_uzun`, `satır_sonu`,
+`kodlama` dönüşü; nokta bloğunda sonlandırıcıya kadar tüketilen
+`boyut_aşımı`. Her sınırda adım/çıktı/heap bütçesi taze kurulur. Anında
+dönen `kapandı`, `kapanıyor`, `geçersiz`, `tls`, okumadan dönen
+`boyut_aşımı`, yazma, aktarım, TLS başlatma ve `bekle` sınır değildir.
+
+DoS değerlendirmesi (GB-162): yenileme hızı ya istemcinin gönderdiği bayta
+(satır sınırıyla; K-381'den beri başarılı satırda aynı) ya da duvar
+saatine (süreli okuma en az 1 sn, normal okuma `bağlantı_boşta_süresi`)
+bağlıdır; istemci bunu anında dönen sonuçla hızlandıramaz. Kapalı
+bağlantıyı yok sayan döngü yenilenmez ve C023/C024 ile biter. Görev
+toplamı `bağlantı_ömrü`, eşzamanlılık bağlantı sınırlarıyla sınırlıdır;
+tek birimde 64 MiB/10 M adım/16 MiB çıktı aynen geçerlidir. Açık: birimler
+arası yaşayan değerler yeni bütçeye yeniden sayılmaz (K-381'den beri);
+birim içi atılan değer iadesi yoktur, büyük gövdeyi tek birimde Zee metni
+olarak işlemek C024'tür (RFC-0043 aralıklı okuma).
+
+Kanıt: `compiler/tests/baglanti_butce_yenileme_testi.rs` (IDLE zaman aşımı,
+girdi tüketen ret ve çok komut olumlu; tek birim zarf aşımı, `kapandı`
+döngüsü ve okumadan `boyut_aşımı` olumsuz), regression
+`regression/runtime/baglanti-idle-butce-yenileme.dil` (`baglanti` kipi).
+Web istek bütçesi değişmedi (`web_testi` 503 vakaları).
+
 ## Reddedilen seçenekler
 
 - **Bağlantı başına süreç (inetd modeli):** yalıtım güçlü ama üst düzey kod

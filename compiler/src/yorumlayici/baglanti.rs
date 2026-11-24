@@ -199,8 +199,28 @@ fn gecersiz_sonuc(mesaj: &str) -> Deger {
     hata_sonucu("geçersiz".into(), mesaj.into())
 }
 
-/// Metin veren okuma (satır, süreli satır, bayt): başarıda komut başına
-/// bütçe yenilenir.
+/// K-388 (ZM-F035): başarısız okuma dönüşü protokol birimi sınırı mı?
+/// Girdi tüketen retler ve süresini dolduran okuma sınırdır; anında dönen
+/// `kapandı`, `kapanıyor`, `geçersiz`, `tls` ve okumadan dönen bayt
+/// `boyut_aşımı` değildir (bunları yok sayan döngü adım bütçesiyle biter).
+fn birim_siniri_mi(nokta_blogu: bool, tur: &str) -> bool {
+    match tur {
+        "zaman_aşımı" | "satır_sonu" | "satır_uzun" | "kodlama" => true,
+        "boyut_aşımı" => nokta_blogu,
+        _ => false,
+    }
+}
+
+/// Başarısız okuma `Sonuç`u; birim sınırındaysa bütçe yenilenir.
+fn okuma_hatasi(nokta_blogu: bool, tur: String, mesaj: String) -> Deger {
+    if birim_siniri_mi(nokta_blogu, &tur) {
+        calistirma_butcesini_yenile();
+    }
+    hata_sonucu(tur, mesaj)
+}
+
+/// Metin veren okuma (satır, süreli satır, bayt): başarıda ve birim
+/// sınırındaki başarısız dönüşte komut başına bütçe yenilenir (spec/12 §9).
 async fn metin_oku(
     io: &mut dyn GirdiCikti,
     islem: BaglantiIslemi,
@@ -212,7 +232,7 @@ async fn metin_oku(
             calistirma_butcesini_yenile();
             basari(Deger::Metin(metin))
         }
-        BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+        BaglantiSonucu::Hata(tur, mesaj) => okuma_hatasi(false, tur, mesaj),
         _ => return Err(ic_hata(satir)),
     })
 }
@@ -257,6 +277,7 @@ async fn blok_al(
             return Ok(gecersiz_sonuc("bayt sayısı negatif olamaz"));
         }
     }
+    let nokta_blogu = matches!(islem, BaglantiIslemi::NoktaBlogu);
     Ok(match islemi_yurut(io, islem, satir).await? {
         BaglantiSonucu::Blok { yol, sha256, bayt } => {
             calistirma_butcesini_yenile();
@@ -266,7 +287,7 @@ async fn blok_al(
                 ("bayt".into(), Deger::Metin(bayt.to_string())),
             ]))
         }
-        BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+        BaglantiSonucu::Hata(tur, mesaj) => okuma_hatasi(nokta_blogu, tur, mesaj),
         _ => return Err(ic_hata(satir)),
     })
 }

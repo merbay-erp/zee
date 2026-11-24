@@ -5746,6 +5746,31 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kurulan ve ürünün yalnız testlerinden çağrılan bir kabuk betiği (göç: tek
   değişmez ya da statik dosya).
 
+## K-388 — Bağlantı görevinde protokol birimi sınırında bütçe yenileme (24 Kasım 2026)
+
+- Kaynak: `urun-h` ZM-F035; merkez kararı RFC-0043 taslağındaki seçenek (a)
+  "en küçük güvenli hâliyle". Freeze sınıfı `correctness`, beyan
+  `semantic-bugfix`.
+- Kaynak incelemesi: bağlantı görevi K-381'den beri başarılı satır/blok
+  okumasında bütçeyi yeniliyordu; seçenek (a)'nın büyük kısmı zaten vardı.
+  Eksik olan, başarısız dönen okumaydı: IDLE'ın `zaman_aşımı` yoklaması ve
+  `satır_uzun`/`satır_sonu`/`kodlama` retleri. Hermetik yeniden üretim:
+  `A1 IDLE` sonrası 3 × 1 sn yoklama, her biri ~25 MiB atılan geçici metin
+  → üçüncü yoklamada C024; düzeltmeyle yanıt yazılır.
+- Karar: sınır = girdi tüketen ya da süresini dolduran okuma dönüşü. Anında
+  dönen sonuçlar sınır değildir; aksi hâlde kapalı bağlantıyı yok sayan
+  döngü her turda taze adım bütçesi alır ve C023 ile hiç bitmezdi
+  (`kapandi_donusu_butceyi_yenilemez`). Bayt bloğu/bayt okumasında `n`
+  sınırı aşınca dönen `boyut_aşımı` okumadan döndüğü için sınır değildir;
+  nokta bloğunda sonlandırıcıya kadar tükettiği için sınırdır.
+- Reddedilen: (b) atılan değer iadesi (ADR-033 iade-yok ilkesi, sıcak yol
+  maliyeti), her yazmada yenileme (çıktı döngüsü sınırsız olurdu), `bekle`de
+  yenileme (yoklamasız sonsuz döngü).
+- Ürüne not: 1 MB+ gövdeyi tek birimde Zee metni olarak işlemek yine C024;
+  K-384 dosya tutamağı + RFC-0043 aralıklı okuma yolu.
+- spec/25 64 KiB tek SQL parametresi gözlemi backlog'a ayrı not olarak
+  yazıldı; değiştirilmedi.
+
 ## K-384 — Bağlantıda blok okuma ve bayt-kesin akış; RFC-0039 A2c (24 Kasım 2026)
 
 - Merkez kararı (23 Kasım 2026, “Sırayla aç”): ZeeMail (`urun-h`) adım 3 =
