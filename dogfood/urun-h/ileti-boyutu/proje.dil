@@ -7,3 +7,5 @@ yetkinlikler "ağ-sunucusu", "web-oturumu" listesi olsun
 ağ_hedefleri boş liste olsun
 çok_parçalı_yükleme doğru olsun
 gövde_aşımı_rotası "/posta/cok-buyuk" olsun
+geniş_gövde_rotaları "/posta/gonder", "/posta/taslak" listesi olsun
+geniş_gövde_sınırı 262144 olsun

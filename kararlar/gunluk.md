@@ -6041,6 +6041,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - İki PR: Dilim 1 (b, c) bu değişiklik; Dilim 2 (a, d, orantılı okuma
   bütçesi) ayrı PR. K-391 kısmi.
 
+## K-391 Dilim 2 — rota bazlı gövde, orantılı okuma, SQL parametresi; ADR-168 (24 Kasım 2026)
+
+- Rota bazlı bütçe yolu başlıktan eşleştirir; yorumlayıcı rotaları ham
+  sorgusuz yolla karşılaştırdığından adaptör de çözümlenmemiş yolu kullanır
+  (yüzde kodlu taşma yolu yok). Önek yalnız `/` ile biten ögede.
+- Okuma bütçesi için iki seçenek tartıldı: Content-Length'e orantılı sabit
+  son tarih (bildiren istemci 146 sn kazanır, damlatıcı dahil) reddedildi;
+  alınan bayta orantılı kazanılmış bütçe seçildi (damlatma kazanmaz).
+  Hız K-372 yazım tabanı 128 KiB/s. Canlı `.parca` ömrü 317 sn olunca 4 kat
+  payı için yetim eşiği 30 dk'ya çekildi; tek genel gözlenebilir değişiklik.
+- SQL tavanı `VeritabaniBildirimi`'ne alan eklenmeden oturuma bağlantıdan
+  sonra verildi (yedi yapı sabiti ve public tür değişmez); toplam tavan eski
+  örtük en kötü değer (6 400 KiB), tek mesaj boyu büyümez. Akışlı/parçalı SQL
+  API'si reddedildi (4 MiB'a kadar metin tek parametreyle sığar; büyük içerik
+  dosyaya ait). K-391 kapandı.
+
 
 ## K-393 — C024 heap zarfı iadesi (24 Kasım 2026)
 

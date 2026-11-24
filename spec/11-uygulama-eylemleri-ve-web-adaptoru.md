@@ -186,6 +186,17 @@ Ham red yanıtından sonraki istek artığı boşaltması (aşağıda, K-374) bu
 bütçeden sonra en çok 2 saniye ve 16 MiB ekler. Bu limitleri büyüten kaynak
 sözdizimi v1'de yoktur.
 
+ZORUNLU (K-391 Dilim 2, ADR-168): `geniş_gövde_rotaları` ve
+`geniş_gövde_sınırı` birlikte yazan projede POST/PUT/PATCH/DELETE isteğinin
+sorgusuz yolu listedeki bir ögeyle (`/` ile biten öge önek, diğeri tam yol)
+eşleşirse urlencoded gövde sınırı ve multipart metin bütçesi
+`geniş_gövde_sınırı` bayttır. Eşleşme başlıktan, gövde okunmadan yapılır;
+`Content-Length` zarfı bu bütçeyle denetlenir. Sınır 65 537 ile 1 MiB
+arasındadır, liste 1–32 benzersiz geçerli yol taşır; ikisinden biri eksik ya
+da aralık dışıysa P022'dir. Eşleşmeyen yol, GET/HEAD, alan sayısı (100) ve
+10 saniyelik urlencoded okuma süresi değişmez. Hermetik adaptörde rota bazlı
+bütçe AÇIKTIR.
+
 ZORUNLU (K-391, [ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)):
 `proje.dil` içinde `gövde_aşımı_rotası "/yol" olsun` yazan projede gerçek TCP
 adaptörü, POST/PUT/PATCH/DELETE isteğini gövde boyutu yüzünden reddettiğinde

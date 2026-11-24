@@ -29,6 +29,18 @@ POST "/gonder" adresine istek geldiğinde
     metin isteğin "govde" değeri olsun
     metin yanıtını gönder
 
+POST "/diger" adresine istek geldiğinde
+    herkese açık
+    "govde" alanı gerekli
+    metin isteğin "govde" değeri olsun
+    metin yanıtını gönder
+
+POST "/yukle" adresine istek geldiğinde
+    herkese açık
+    "yukleme_bayti" alanı gerekli
+    bayt isteğin "yukleme_bayti" değeri olsun
+    bayt yanıtını gönder
+
 GET "/cok-buyuk" adresine istek geldiğinde
     yol isteğin "govde_asimi_yolu" değeri olsun
     sinir isteğin "govde_asimi_siniri" değeri olsun
@@ -136,12 +148,19 @@ fn form_al(kapi: u16) -> (String, String) {
 }
 
 fn gonder(kapi: u16, cerez: &str, tur: &str, govde: &[u8]) -> Yanit {
-    let mut akis = baglan(kapi);
-    let mut ham = format!(
-        "POST /gonder HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.9;proto=https;host=panel.example\r\nOrigin: https://panel.example\r\nConnection: close\r\nContent-Type: {tur}\r\nContent-Length: {}\r\nCookie: __Host-zee-oturum={cerez}\r\n\r\n",
-        govde.len()
+    gonder_yola(kapi, "/gonder", cerez, tur, govde)
+}
+
+fn istek_basi(yol: &str, cerez: &str, tur: &str, uzunluk: usize) -> Vec<u8> {
+    format!(
+        "POST {yol} HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.9;proto=https;host=panel.example\r\nOrigin: https://panel.example\r\nConnection: close\r\nContent-Type: {tur}\r\nContent-Length: {uzunluk}\r\nCookie: __Host-zee-oturum={cerez}\r\n\r\n"
     )
-    .into_bytes();
+    .into_bytes()
+}
+
+fn gonder_yola(kapi: u16, yol: &str, cerez: &str, tur: &str, govde: &[u8]) -> Yanit {
+    let mut akis = baglan(kapi);
+    let mut ham = istek_basi(yol, cerez, tur, govde.len());
     ham.extend_from_slice(govde);
     let _ = akis.write_all(&ham);
     yanit_oku(akis)
@@ -310,5 +329,109 @@ fn govde_asimi_rotasi_200_vermezse_duz_413_doner() {
     assert!(
         !yanit.govde.contains("aranan sayfa yok"),
         "404 metni sızmamalı"
+    );
+}
+
+#[test]
+fn genis_govde_rotasi_yalniz_eslesen_yolda_tavani_yukseltir() {
+    let proje = Proje::yeni(
+        "gövde_aşımı_rotası \"/cok-buyuk\" olsun\ngeniş_gövde_rotaları \"/gonder\", \"/taslak/\" listesi olsun\ngeniş_gövde_sınırı 262144 olsun\n",
+    );
+    let (_sunucu, kapi) = baslat(&proje);
+    let (cerez, csrf) = form_al(kapi);
+    let ileti = turkce_ileti();
+    let form = format!("_csrf={}&govde={}", form_kodla(&csrf), form_kodla(&ileti));
+    assert!(form.len() > 64 * 1024 && form.len() < 256 * 1024);
+    let tur = "application/x-www-form-urlencoded";
+
+    // Olumlu: aynı urlencoded Türkçe ileti geniş rotada kabul (yorumlayıcı
+    // ikinci denetimi de iç çerezle aynı bütçeyi görür).
+    let yanit = gonder_yola(kapi, "/gonder", &cerez, tur, form.as_bytes());
+    assert_eq!(yanit.durum, 200, "{}", yanit.basliklar);
+    assert_eq!(yanit.govde, ileti);
+
+    // Olumsuz: eşleşmeyen yol varsayılan 64 KiB'ta kalır.
+    let yanit = gonder_yola(kapi, "/diger", &cerez, tur, form.as_bytes());
+    assert_eq!(yanit.durum, 413);
+    assert!(yanit.govde.contains("/diger 65536"), "{}", yanit.govde);
+
+    // Tavan üstü (256 KiB + 1) geniş rotada da 413; aşım sayfası geniş sınırı söyler.
+    let on = format!("_csrf={}&govde=", form_kodla(&csrf));
+    let asan = format!("{on}{}", "a".repeat(256 * 1024 + 1 - on.len()));
+    let yanit = gonder_yola(kapi, "/gonder", &cerez, tur, asan.as_bytes());
+    assert_eq!(yanit.durum, 413);
+    assert!(yanit.govde.contains("/gonder 262144"), "{}", yanit.govde);
+    let tam = format!("{on}{}", "a".repeat(256 * 1024 - on.len()));
+    assert_eq!(
+        gonder_yola(kapi, "/gonder", &cerez, tur, tam.as_bytes()).durum,
+        200
+    );
+}
+
+fn yukleme_govdesi(csrf: &str, dosya: usize) -> (Vec<u8>, Vec<u8>) {
+    let mut bas = alan("_csrf", csrf.as_bytes());
+    bas.extend(
+        format!("--{SINIR}\r\nContent-Disposition: form-data; name=\"dosya\"; filename=\"a.bin\"\r\n\r\n")
+            .into_bytes(),
+    );
+    let mut govde = bas.clone();
+    govde.extend(std::iter::repeat_n(b'z', dosya));
+    govde.extend(format!("\r\n--{SINIR}--\r\n").into_bytes());
+    (bas, govde)
+}
+
+/// K-391: multipart okuma bütçesi alınan bayta orantılıdır. 10 sn'den uzun
+/// süren ama 128 KiB/s üstünde akan büyük yükleme kabul edilir (eskiden 408);
+/// bayt damlatan istemci yine ~10 sn'de 408 alır (slowloris koruması).
+#[test]
+fn yavas_buyuk_yukleme_orantili_butceyle_kabul_damlatma_408() {
+    let proje = Proje::yeni("çok_parçalı_yükleme doğru olsun\n");
+    let (_sunucu, kapi) = baslat(&proje);
+    let (cerez, csrf) = form_al(kapi);
+
+    let dosya = 2560 * 1024;
+    let (_, govde) = yukleme_govdesi(&csrf, dosya);
+    let mut akis = baglan(kapi);
+    akis.write_all(&istek_basi("/yukle", &cerez, &mp_tur(), govde.len()))
+        .expect("başlık");
+    let basla = std::time::Instant::now();
+    // ~200 KiB/s: 2,5 MiB yaklaşık 12,8 sn sürer.
+    for parca in govde.chunks(20 * 1024) {
+        akis.write_all(parca).expect("parça");
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    let yanit = yanit_oku(akis);
+    let gecen = basla.elapsed();
+    assert!(
+        gecen > Duration::from_secs(11),
+        "ölçüm 10 sn tabanını aşmalı: {gecen:?}"
+    );
+    assert_eq!(yanit.durum, 200, "{} ({gecen:?})", yanit.basliklar);
+    assert_eq!(yanit.govde, dosya.to_string());
+
+    // Damlatma: dosya başı gelir, sonra 300 ms'de bir tek bayt.
+    let (bas, govde) = yukleme_govdesi(&csrf, dosya);
+    let mut akis = baglan(kapi);
+    akis.write_all(&istek_basi("/yukle", &cerez, &mp_tur(), govde.len()))
+        .expect("başlık");
+    akis.write_all(&bas).expect("dosya başı");
+    let basla = std::time::Instant::now();
+    let yazici = akis.try_clone().expect("klon");
+    let damlatici = std::thread::spawn(move || {
+        let mut yazici = yazici;
+        for _ in 0..80 {
+            if yazici.write_all(b"z").is_err() {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(300));
+        }
+    });
+    let yanit = yanit_oku(akis);
+    let gecen = basla.elapsed();
+    let _ = damlatici.join();
+    assert_eq!(yanit.durum, 408, "{}", yanit.basliklar);
+    assert!(
+        gecen < Duration::from_secs(15),
+        "damlatma bütçe kazanmamalı: {gecen:?}"
     );
 }
