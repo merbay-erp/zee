@@ -42,10 +42,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
 | orta | 47 | 16 | 2 | 65 |
-| dusuk | 45 | 30 | 1 | 76 |
+| dusuk | 46 | 30 | 1 | 77 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 160.
+Toplam bulgu: 161.
 
 ## Spec maddeleri
 
@@ -73,17 +73,17 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/18-paket-yayini.md | 13 | 1 | 0 | 14 | 92 |
 | spec/19-registry-metadata-guveni.md | 10 | 0 | 0 | 10 | 100 |
 | spec/20-ifade-grameri.md | 7 | 0 | 0 | 7 | 100 |
-| spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
+| spec/21-deterministik-io-izi.md | 6 | 0 | 0 | 6 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 38 | 0 | 1 | 39 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 9 | 0 | 0 | 9 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 10 | 0 | 1 | 11 | 90 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 11 | 0 | 1 | 12 | 91 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 16 | 0 | 2 | 18 | 88 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 325 | 5 | 13 | 343 | 94 |
+| **Toplam** | 331 | 5 | 14 | 350 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -108,12 +108,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 7 | 2 | 0 | 8 | 1 | 9 |
+| urun-h | 8 | 4 | 0 | 11 | 1 | 12 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 73.
+Toplam korpus vakası: 76.
 
 ## Deprecation kayıtları
 

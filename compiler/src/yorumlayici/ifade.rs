@@ -114,6 +114,9 @@ pub(super) fn degerlendir_async<'a>(
                     | GIZLI_COZ => {
                         kimlik_iletisim::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
+                    k if super::kodlanmis_dosya::kimlik_mi(k) => {
+                        super::kodlanmis_dosya::degerlendir(k, &degerler, io, satir)
+                    }
                     SENSOR_ACIK_MI => {
                         let [Deger::Metin(ad)] = degerler.as_slice() else {
                             return Err(ic_hata(satir));
@@ -201,6 +204,9 @@ pub(super) fn degerlendir_async<'a>(
                     (Ozellik::JsonMetin, deger) => json_yaz(&deger, satir).map(Deger::Metin),
                     (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                         html_kacisla(&m, satir).map(Deger::Metin)
+                    }
+                    (Ozellik::Sha256Ozeti, Deger::Metin(m)) => {
+                        Ok(Deger::Metin(crate::guvenlik::sha256_hex(m.as_bytes())))
                     }
                     (Ozellik::Uzunluk, Deger::Metin(m)) => {
                         Ok(Deger::TamSayi(m.chars().count() as i64))

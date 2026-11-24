@@ -26,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 37);
+    assert_eq!(kimlikler.len(), 43);
     for kimlik in [
         intrinsic::BAGLANTI_SATIR_OKU,
         intrinsic::BAGLANTI_SATIR_YAZ,
@@ -51,6 +51,26 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
     assert_eq!(imza.yetkinlik, Yetkinlik::DosyaOkuma);
     assert_eq!(imza.etki, IntrinsicEtkisi::DisOkuma);
     assert_eq!(intrinsic::DOSYA_ILK_BAYT_SINIRI, 64);
+    // K-389: aralıklı okuma dosya-okuma/DisOkuma, çözerek yazma
+    // dosya-yazma/DisYazma (eylem savepoint'i ile, T048 değil).
+    for kimlik in [
+        intrinsic::DOSYA_ARALIK_METIN,
+        intrinsic::DOSYA_ARALIK_BASE64,
+    ] {
+        let kayit = intrinsic::tanim(kimlik).expect("K-389 okuma kaydı");
+        assert_eq!(kayit.yetkinlik, Yetkinlik::DosyaOkuma);
+        assert_eq!(kayit.etki, IntrinsicEtkisi::DisOkuma);
+    }
+    for kimlik in [
+        intrinsic::DOSYA_BASE64_YAZ,
+        intrinsic::DOSYA_BASE64_EKLE,
+        intrinsic::DOSYA_QP_YAZ,
+        intrinsic::DOSYA_QP_EKLE,
+    ] {
+        let kayit = intrinsic::tanim(kimlik).expect("K-389 yazma kaydı");
+        assert_eq!(kayit.yetkinlik, Yetkinlik::DosyaYazma);
+        assert_eq!(kayit.etki, IntrinsicEtkisi::DisYazma);
+    }
 
     for (kimlik, etki) in [
         (intrinsic::HTTP_ISTEK, IntrinsicEtkisi::GeriAlinamaz),

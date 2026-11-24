@@ -175,6 +175,7 @@ fn ifade_denetle_ic(
                     Ozellik::HataMesaji => "mesajı",
                     Ozellik::HataNedeni => "nedeni",
                     Ozellik::HataVerisi => "verisi",
+                    Ozellik::Sha256Ozeti => "özeti",
                 };
                 let yapi = baglam.yapi(yapi_kimligi).ok_or_else(|| {
                     ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
@@ -197,7 +198,9 @@ fn ifade_denetle_ic(
                 .onerili("Önce listeye öğe ekle.".into())),
                 (Ozellik::Ilk, Tur::Liste(e)) | (Ozellik::Son, Tur::Liste(e)) => Ok(e.ture()),
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
-                (Ozellik::HtmlGuvenli, Tur::Metin) => Ok(Tur::Metin),
+                (Ozellik::HtmlGuvenli, Tur::Metin) | (Ozellik::Sha256Ozeti, Tur::Metin) => {
+                    Ok(Tur::Metin)
+                }
                 (Ozellik::Kirpilmis, Tur::Metin) => Ok(Tur::Metin),
                 (Ozellik::Siralanmis, Tur::Liste(oge))
                     if matches!(oge, VeriTuru::TamSayi | VeriTuru::Ondalik | VeriTuru::Metin) =>

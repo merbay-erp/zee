@@ -1,11 +1,14 @@
 # RFC-0043 — Bayt, kodlama ve özet yüzeyi
 
-- **Durum:** taslak — 24 Kasım 2026. Core freeze (K-160A/ADR-059) altında
-  uygulanmaz; uygulama ayrı `dogfood-change` K-işiyle ve depo içi
-  reproducer'la açılır. Bu taslak hiçbir dil, CLI, tanı ya da API yüzeyi
-  açmaz.
+- **Durum:** **kabul — Dilim 1 uygulandı** (K-389, [ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),
+  24 Kasım 2026: aralıklı metin/base64 okuma, base64/QP çözerek yazma ve
+  akışlı ekleme, bellekte SHA-256, C032). **Dilim 2 taslak** (ZM-F023: UTF-8
+  bayt sayısı, metin↔base64/onaltılık, kod noktası); core freeze altında
+  ayrı `dogfood-change` K-işi ve reproducer ister. Aşağıdaki "Dilim 1 kararı"
+  bölümü bu taslağın Dilim 1 açık sorularını kapatır ve önceki fikir
+  taslağının üstündedir.
 - **Tarih:** 24 Kasım 2026
-- **İş:** K-383 (taslak)
+- **İş:** K-383 (taslak), K-389 (Dilim 1 uygulaması)
 - **İlgili belgeler:** [spec/04](../spec/04-turler.md),
   [spec/06](../spec/06-hata-modeli.md),
   [spec/15](../spec/15-yapilandirilmis-hata-degeri.md),
@@ -48,6 +51,45 @@ olarak dosyaya yazılamıyor. Bu yüzden **önerilen ilk uygulama dilimi**
 olarak okuma (çoğu zaten var; eksikleri kapatılır), base64/QP içeriğini
 **çözerek dosyaya bayt-kesin yazma** ve bellekte SHA-256. Bayt sayısı,
 metin↔base64/onaltılık, kod noktası Dilim 2'dir.
+
+## Dilim 1 kararı (K-389, 24 Kasım 2026)
+
+Normatif metin [spec/26 §Kodlanmış içerik](../spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md),
+gerekçe [ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md).
+Uygulanan exact yüzey:
+
+```text
+bölüm yol dosyasının konum baytından n baytını metin olarak okumayı dene olsun   # Sonuç<Metin>
+ham yol dosyasının konum baytından n baytını base64 okumayı dene olsun          # Sonuç<Metin>
+tutamak parça base64 çözerek yol dosyasına yazmayı dene olsun                   # Sonuç<Sözlük>
+tutamak parça quoted_printable çözerek yol dosyasına yazmayı dene olsun         # Sonuç<Sözlük>
+tutamak parça base64 çözerek yol dosyasına eklemeyi dene olsun                  # akışlı ekleme
+tutamak parça quoted_printable çözerek yol dosyasına eklemeyi dene olsun
+özet metnin sha256 özeti olsun                                                   # Metin
+```
+
+Açık soruların Dilim 1 kapanışı:
+
+| # | Karar |
+|---|---|
+| 1 | Dilim 1 kelimeleri yukarıdaki gibi; `quoted-printable` sözcükleyicide tek kelime olamadığından `quoted_printable`. `hâli`/`karşılığı` seçimi Dilim 2'de (açık). |
+| 2 | Aralıklı okuma ve çağrı başına çözülen çıktı 1 MiB (1 048 576) sabit; bellekte özet ayrı tavan almaz, spec/24 metin/heap bütçesine bağlıdır. Hedef dosya toplamı spec/26 16 MiB yükleme/özet tavanı. |
+| 3, 4 | Dilim 2 (kod noktası, base64url); açık. |
+| 5 | Dilim 1 yeni doğrudan crate eklemez; tek iç katı çözücü (`compiler/src/kodlama.rs`). Üç eski iç yardımcının birleştirilmesi Dilim 2'ye bırakıldı (açık). |
+| 6 | Yeni C032 (kodlama: `tür` + `konum`); dosya/aralık/yol/no-clobber/tavan/eylem arızaları C013. |
+| 7 | QP bozuk `=` dizisi **katı ret** (`kaçış` + `konum`). |
+| 8 | Ekleme hedefi her proje dosyası (mevcut `ekle` ile aynı sınır); spec/08 atomik ekleme modeli; çağrılar arası yarım dörtlü durumu **tutulmaz**. `eklemeyi dene` eylem içinde C013; `yazmayı dene` eylem savepoint'ine kayıtlıdır. |
+| 9 | Aralık tavanı 1 MiB; mevcut `dosyasını okumayı dene` izi uyumluluk için değişmez. Yeni olaylar içeriksizdir; başarılı aralıklı okuma replay'de fail-closed. |
+| 10 | ZM-F035 K-388'de (protokol birimi sınırında bütçe yenileme); Dilim 1 ayrı kabul edildi, çok büyük iletide birikim o kararla okunur. |
+
+Kabul ölçütü 5'in (Dilim 1) kanıtı `compiler/tests/kodlanmis_dosya_testi.rs`:
+2,5 MB ikili ek MIME iletisinden 1 MiB aralıklarla okunup akışlı çözülür,
+SHA-256 özgünle eşleşir, ek RFC-0041 dosya yanıtıyla indirilir; 8bit gövde
+metin kipinde `utf8`, base64 kipinde başarı; bozuk QP/base64, 4'e
+bölünmeyen girdi, var olan hedef, tavan üstü ekleme hedefe dokunmaz; izde
+içerik yok. "25 MB / tek bağlantıda üç ileti" ölçümü 16 MiB hedef tavanı
+ve K-388 ile birlikte açık kalır. Ölçüt 4 (NIST vektörleri, dosya/metin
+özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı açık.
 
 ## Motivasyon
 
@@ -568,7 +610,7 @@ bütçesinin protokol birimi sınırında yenilenmesi (bkz. tür modeli, ürün
 ölçümü). Dilim 1 bununla aynı dalgada ya da sonra kabul edilir; aksi hâlde
 aralıklı okuma büyük iletide birikimle C024'e yürür.
 
-**Dilim 1 — önerilen ilk uygulama (ZM-F034 + ZM-F024).** Ürünün bugünkü
+**Dilim 1 — uygulandı (K-389, ADR-167; ZM-F034 + ZM-F024).** Ürünün bugünkü
 engelini (gelen ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
 64 KB) doğrudan kapatır:
 

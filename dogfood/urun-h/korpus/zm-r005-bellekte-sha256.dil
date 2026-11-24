@@ -1,0 +1,8 @@
+# K-389 (RFC-0043 Dilim 1) — ürün H reproducer ZM-R005 (ZM-F024): bellekteki
+# metnin SHA-256 özeti. DKIM `bh=`/`b=` ve ek içerik adreslemesi ister.
+# Değişiklik öncesi S015 (yalnız dosya özeti vardı); şimdi 64 küçük harf
+# onaltılık, dosya özetiyle aynı biçim. Ürün testindeki yer tutucu özet
+# yerine gerçek SHA-256 (FIPS 180-4) beklenir.
+
+gövde "Merhaba\n" olsun
+gövdenin sha256 özeti yaz

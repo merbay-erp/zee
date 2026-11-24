@@ -97,6 +97,19 @@ impl GirdiCikti for IzYenidenOynatici {
         self.metin_sonuc("dosya_sha256", sonuc)
     }
 
+    fn dosya_araligi_oku(&mut self, yol: &str, konum: i64, adet: i64) -> Result<Vec<u8>, String> {
+        self.aralik_oynat(yol, konum, adet)
+    }
+
+    fn dosyaya_bayt_yaz(
+        &mut self,
+        yol: &str,
+        baytlar: &[u8],
+        ekleme: bool,
+    ) -> Result<(String, u64), String> {
+        self.yazim_oynat(yol, baytlar, ekleme)
+    }
+
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         let sonuc = self.siradaki("dosya_ilk_baytlari", vec![yol.into(), adet.to_string()]);
         self.metin_sonuc("dosya_ilk_baytlari", sonuc)

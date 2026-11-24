@@ -5,11 +5,12 @@
 # web arayüzü (ZeeMail) oturumlu web sunucusu, dosya okuma ve SMTP gönderimi
 # kullanır; ek akışı kesiti bu politikayla derlenir. K-381: posta motorunun
 # bağlantı tarafı `ağ-dinleyici` ister (f009 reproducer'ı artık derlenir).
+# K-389: gelen iletinin ekleri çözülerek ek dosyasına yazılır (`dosya-yazma`).
 
 proje "urun-h" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "korpus/f001-ascii-katlama-elle.dil" olsun
-yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "ağ", "ağ-dinleyici" listesi olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "dosya-yazma", "ağ", "ağ-dinleyici" listesi olsun
 ağ_hedefleri "smtps://smtp.ornek.test:465" listesi olsun
 yerel_bağımlılıklar boş liste olsun

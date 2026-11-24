@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 133] = [
+const KALIP_KELIMELERI: [&str; 138] = [
     "yaz",
     "olsun",
     "ise",
@@ -149,6 +149,11 @@ const KALIP_KELIMELERI: [&str; 133] = [
     "piksele",
     "küçültmeyi",
     "onaltılık",
+    "baytından",
+    "base64",
+    "quoted_printable",
+    "çözerek",
+    "özeti",
     "türünde",
     "adıyla",
     "dinleyicisinde",
@@ -172,7 +177,7 @@ const KALIP_KELIMELERI: [&str; 133] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 79] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -246,6 +251,11 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 74] = [
     ("türünde", "Dosya yanıtının kayıtlı içerik türü (application/pdf, image/png, text/csv, application/zip, OOXML, application/xml, application/x-apple-aspen-config, application/octet-stream …); kayıtta olmayan tür C013 Sonucu.\n\n`sonuç yol dosyasını \"application/pdf\" türünde \"fatura.pdf\" adıyla ek olarak göndermeyi dene olsun`"),
     ("adıyla", "Dosya yanıtında tarayıcıya önerilen ad; çalışma zamanı `Content-Disposition: attachment` + RFC 6266 `filename*` kurar, CR/LF, tırnak, yol ve yön karakterli ad C013.\n\n`sonuç yol dosyasını \"text/csv\" türünde \"kişiler.csv\" adıyla ek olarak göndermeyi dene olsun`"),
     ("onaltılık", "Dosyanın ilk 1–64 baytını küçük harf onaltılık Metin Sonucu olarak okur (dosya-okuma); içerik imzası denetimi içindir, dosya daha kısaysa olan kadar.\n\n`imza yol dosyasının ilk 8 baytını onaltılık okumayı dene olsun`"),
+    ("baytından", "Dosyanın verilen bayt konumundan en çok 1 MiB'lık aralığını okur (dosya-okuma): `metin olarak` katı UTF-8 Metin, `base64` ikili içeriği base64 Metin olarak verir; dosya sonunda olan kadar.\n\n`bölüm yol dosyasının 0 baytından 65536 baytını metin olarak okumayı dene olsun`"),
+    ("base64", "Kodlama adı: aralıklı okumada ikili içeriği RFC 4648 base64 Metin olarak verir; `çözerek` kalıbında MIME base64'ü (CRLF/boşluk atlanır, dolgu zorunlu) baytlara çözer.\n\n`ek parça base64 çözerek yol dosyasına yazmayı dene olsun`"),
+    ("quoted_printable", "Kodlama adı: RFC 2045 quoted-printable gövdeyi baytlara çözer; yumuşak satır sonu birleşir, bozuk `=` dizisi C032 `kaçış`.\n\n`ek parça quoted_printable çözerek yol dosyasına yazmayı dene olsun`"),
+    ("çözerek", "Kodlanmış Metni (base64 ya da quoted_printable) çözüp dosyaya bayt-kesin yazar (dosya-yazma): `yazmayı dene` yeni dosya (var olan hedef ezilmez), `eklemeyi dene` sona ekler; sonuç `yol`/`sha256`/`bayt` sözlüğüdür. Bozuk kodlama C032.\n\n`ek parça base64 çözerek \"ek.bin\" dosyasına eklemeyi dene olsun`"),
+    ("özeti", "Metnin UTF-8 baytlarının SHA-256 özeti: 64 küçük harf onaltılık Metin; dosya özetiyle aynı biçim, yetkinlik istemez.\n\n`özet gövdenin sha256 özeti olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];
 
