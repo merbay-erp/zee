@@ -78,6 +78,13 @@ Bu kayıt yeni sürüm etiketi değildir.
   derlemede T036 verilir. Ters yönde, işlemin kendi `varsa` dalı çağıranın
   daraltmasını artık silmez. Göç: T036 alan program değeri işlem içinde
   `varsa` ile açmalıdır (öncesinde bu yol çalışınca C008 ile düşerdi).
+- **Hiç çağrılmayan türsüz işlem iç hata vermiyor (K-392):** parametre türü
+  yazılmamış (`sayıyı al`) ve programda hiç çağrılmayan bir işlem, kaynaktan
+  derlenen geliştirme (debug) ikilisinde `çalıştır`/`dene` sırasında C000
+  iç hatasıyla duruyordu; kurulu sürüm ikilisi ve `denetle` etkilenmiyordu.
+  Artık program normal çalışır. Böyle bir işlemin türü çağrılardan çıkarıldığı
+  için gövdesi ilk çağrıya dek denetlenmez; çağrısız da denetlensin istenen
+  işlem parametreleri `sayıyı TamSayı olarak al` biçiminde yazar. Göç: gerekmez.
 
 ## 23 Kasım 2026 — Geliştirme güncellemeleri
 
