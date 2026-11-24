@@ -1,5 +1,7 @@
 # K-179 kelime avı — skor satırı ve en iyi sonuç özeti.
 # Sürtünme (K-164/F011 tekrarı): sekme kaçışı olmadığından ayraç `|` seçildi.
+# K-164/F010 tekrarı → K-386: skor satırının ikinci alanı `parçaların 2. öğesi`
+# ile alınır (RFC-0029); sayaç döngüsü kalktı.
 
 işlem skor satırı yap
     adı Metin olarak al
@@ -24,12 +26,7 @@ işlem en iyileri özetle
             ad parçaların ilki olsun
             parça_sayısı parçaların adedi olsun
             parça_sayısı 3 e eşitse
-                sayaç 0 olsun
-                deneme_metni "" olsun
-                her parça için
-                    sayaç 1 e eşitse
-                        deneme_metni parça olsun
-                    sayacı 1 artır
+                deneme_metni parçaların 2. öğesi olsun
                 deneme deneme_metninin sayısı olsun
                 en_iyilerde ad yoksa
                     en_iyilerin ad değeri deneme olsun

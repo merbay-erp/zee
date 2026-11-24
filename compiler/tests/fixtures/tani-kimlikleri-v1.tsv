@@ -114,6 +114,8 @@ aktif	T054	tur.yetkinlik_politikasi	Program çalışma politikasında açılmaya
 aktif	T055	tur.gorunum_ifadesi	Görünüm metni/özniteliği Metin (ya da bayrak için Mantıksal) değil
 aktif	T056	tur.onbellek_yontemi	Önbelleklenebilir rota politikası GET/HEAD dışı rotada
 aktif	T057	tur.onbellek_oturumu	Önbelleklenebilir rota oturum, CSRF belirteci ya da çerez kullanıyor
+aktif	T058	tur.liste_sira_erisimi	Sıra ile öğe erişiminde tür uyuşmuyor: nesne liste değil, listenin öğe türü belli değil ya da sıra TamSayı değil
+aktif	T059	tur.sira_bir_tabanli	Sabit sıra 1'den küçük
 aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
 aktif	C001	calisma.eksik_deger	Değer bulunamadı
 aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması
@@ -145,6 +147,7 @@ aktif	C027	calisma.postgresql_commit_belirsiz	COMMIT sonucu istemci tarafından 
 aktif	C028	calisma.kriptografi_uretim_basarisiz	Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi
 aktif	C029	calisma.eposta_gonderim_basarisiz	E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir
 aktif	C030	calisma.ag_baglantisi	Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında
+aktif	C031	calisma.sira_disi	Listede o sırada öğe yok (sıra 1 ile adet aralığı dışında)
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik
@@ -174,3 +177,4 @@ aktif	Ç003	ic.oturum_deposu_reddi_nobetcisi	Web isteğinde oturum deposu yeni k
 aktif	A012	ad.lint_okunmayan_ad	Lint: ad tanımlanıyor ama okunmuyor
 aktif	S047	soz.lint_erisilemeyen_kod	Lint: erişilemeyen cümle veya sabit koşul dalı
 aktif	S048	soz.lint_eksik_rota_yaniti	Lint: rotanın yanıt üretmeyen yolu olabilir
+aktif	S049	soz.sira_eki_kalibi	Sıra eki noktası RFC-0029 kalıbına oturmuyor

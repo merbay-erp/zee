@@ -131,7 +131,7 @@ fn golden_korpus_parse_esdegerligini_korur() {
         )
         .unwrap_or_else(|hata| panic!("{:?} sonra ayrışmalı: {hata}", yol.file_name()));
     }
-    assert_eq!(girdiler.len(), 33, "sayısal golden korpus bütünü taranmalı");
+    assert_eq!(girdiler.len(), 34, "sayısal golden korpus bütünü taranmalı");
 }
 
 #[test]

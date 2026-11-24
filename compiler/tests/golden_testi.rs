@@ -346,6 +346,20 @@ fn golden_33_acik_islem_imzasi() {
 }
 
 #[test]
+fn golden_34_liste_sira_erisimi() {
+    // RFC-0029/K-386: 1 tabanlı sıra erişimi ve O(log n) ikili arama.
+    let cikti = kaynagi_calistir(&golden("34-liste-sira-erisimi.dil")).expect("34 çalışmalı");
+    assert_eq!(
+        cikti,
+        vec![
+            "Üçüncü harf: e",
+            "57 → 7. sırada, 4 adımda",
+            "Yok: listenin 11. öğesi yok (10 öğe)"
+        ]
+    );
+}
+
+#[test]
 fn temel_durumsuz_ozyineleme_reddedilir() {
     // v0.2: özyineleme serbest ama temel durum ÖNCE gelmeli (T035).
     let kaynak = "işlem kendini çağır\n    kendini çağır\n\nkendini çağır\n";

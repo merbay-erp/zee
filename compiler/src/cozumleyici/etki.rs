@@ -629,6 +629,10 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
             ifade_bilgisi(tarih, bilgi);
             ifade_bilgisi(miktar, bilgi);
         }
+        Ifade::ListeOgesi { liste, sira, .. } => {
+            ifade_bilgisi(liste, bilgi);
+            ifade_bilgisi(sira, bilgi);
+        }
         Ifade::MetinSabiti(_)
         | Ifade::SayiSabiti(_)
         | Ifade::OndalikSabiti { .. }

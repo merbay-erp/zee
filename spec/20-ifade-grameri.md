@@ -61,6 +61,16 @@ yalnız işlem-adı kuyruğunun önde artan token bırakması halinde uygulanır
 - Çağrı argümanı içindeki `ve` argüman ayırıcıdır. Boolean değeri argüman
   yapmak için bugün ara ad **ZORUNLU**dur.
 
+## Sıra erişimi (RFC-0029, K-386)
+
+- `<liste>nin <sıra>. öğesi` ve `<liste>nin <sıra>. öğesini almayı dene`
+  erişim/postfix katmanındadır ve bölgenin tamamını tüketir; liste tamlayan
+  ekli tek ad, sıra tek ad ya da TamSayı sabitidir (**TANIMLI**).
+- Hesaplanan sıra (`sıra ile 1 in toplamı`) ya da iyelik zinciri
+  (`tablonun 2. öğesinin 3. öğesi`) bu sürümde **DESTEKLENMEZ**; önce ara ad
+  **ZORUNLU**dur. Sıra eki taşıyan ama kalıba oturmayan bölge S049 verir ve
+  öneri ara ad çözümünü gösterir.
+
 ## Conformance örnekleri
 
 ```dil
@@ -92,7 +102,7 @@ adet sayıları ver adedi olsun
 
 Bağlayıcı yürütülebilir kanıtlar:
 `compiler/tests/ifade_grameri_testi.rs` ve
-`compiler/tests/bicimleyici_testi.rs`. İkinci kapı, 33 golden programın
+`compiler/tests/bicimleyici_testi.rs`. İkinci kapı, 34 golden programın
 dağınık-boşluk varyantında biçimleme öncesi/sonrası tam parser token izini
 (`SatirSonu` ve girinti yapısı dahil) eşitler ve iki tarafı da ayrıştırır.
 

@@ -177,7 +177,7 @@ internet gerekmez, katalog `dil`in içindedir.
 - Tekrar üretilebilir paket kanıtı: [`.zep` conformance rehberi](zep-conformance.md)
 - Başka bir compiler için: [morfoloji ve eşzamanlılık conformance korpusları](../conformance/README.md)
 - Oynayarak öğren: [projeler/](../projeler/) — çocuklar için proje kitaplığı
-- Dilin bütün örnekleri: [golden/](../golden/) — 33 program, kolaydan zora
+- Dilin bütün örnekleri: [golden/](../golden/) — 34 program, kolaydan zora
   numaralı, hepsi çalışır belge niteliğinde.
 - Dilin OLMADIĞI şeyler: [anti-ornekler/](../anti-ornekler/)
 - Hata sözlüğü: [hata-katalogu.md](hata-katalogu.md)
