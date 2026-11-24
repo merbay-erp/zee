@@ -135,7 +135,7 @@ fn tani_kodlari_surumler_arasi_kimligini_korur() {
 
     assert_eq!(
         fixture.len(),
-        179,
+        180,
         "şema-1 tabanı beklenmedik biçimde değişti"
     );
     assert_eq!(

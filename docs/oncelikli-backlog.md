@@ -2576,7 +2576,7 @@ boş liste, geçici hata C033 (`tür`). Üretimde yeni crate yok: kendi sınırl
 ≤ 16, TXT/TLSA ≤ 4 KiB, CNAME ≤ 8); `hickory-proto` yalnız dev/fuzz kâhini
 (Zee ⊆ hickory, 40.000 bozulmuş paket); yeni `dns_yaniti` fuzz hedefi RC
 kapısında. Stub: getrandom kimlik + rastgele kapı, eşleşmeyen paket atılır,
-TC→TCP, 5 sn / son tarih kalanı, önbellek yok. IO izi `dns_sorgula`. GB-163.
+TC→TCP, 5 sn / son tarih kalanı, önbellek yok. IO izi `dns_sorgula`. GB-164.
 
 Kanıt: `dns_teli.rs` birim testleri (sınırlar, SERVFAIL hiçbir yolda boş
 değil, CNAME döngüsü), `dns_kahin_testi.rs`, `dns_testi.rs` (hermetik
@@ -2880,6 +2880,39 @@ Açık: (A2c K-384'te kapandı)
 çok işçi grubuna adla aktarım, `dil dene` içinden betiklenmiş bağlantı,
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
+
+## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256 (ADR-167)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmeleri
+ZM-F034 (A2c blok dosyası `Metin` olarak geri okunamıyor, base64/QP ek
+gövdesi bayt olarak yazılamıyor: gelen ekler webmail'e çıkmıyor, ekli
+gönderim `554`, büyük `APPEND` 64 KB) ve ZM-F024 (bellekte SHA-256 yok;
+DKIM `bh=`). Freeze sınıfı `dogfood-change`; yeni tür ya da grammar kuralı
+yok, mevcut iyelik/`dene` kalıp ailesi genişledi.
+
+Karar (ADR-167, RFC-0043 Dilim 1 kabul): `… baytından n baytını metin
+olarak|base64 okumayı dene` (≤ 1 MiB, katı UTF-8, dosya içi `konum`),
+`… base64|quoted_printable çözerek … dosyasına yazmayı|eklemeyi dene`
+(önce saf çözüm, sonra no-clobber atomik yazım ya da spec/08 atomik ekleme;
+16 MiB hedef tavanı; `yol`/`sha256`/`bayt` tutamağı → RFC-0041 dosya
+yanıtı/SMTP eki), `metnin sha256 özeti` (saf). Yeni C032 (`tür`+`konum`);
+dosya/aralık/no-clobber/tavan/eylem arızaları C013. IO izi içeriksiz
+(`dosya_araligi_oku`, `dosyaya_bayt_yaz`); başarılı aralıklı okuma replay'de
+fail-closed. `yazmayı dene` eylem savepoint'ine kayıtlı, `eklemeyi dene`
+eylemde ret. GB-163.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs` (11 vaka; 2,5 MB ikili ek
+MIME iletisinden bayt-kesin çıkarılır, ek dosya yanıtıyla indirilir),
+`kodlama.rs` ve `kalici_dosya/cozulmus.rs` birim testleri; dogfood
+`urun-h-ek-cikarma`, `zm-r004-uzunluk-oktet-saymaz`, `zm-r005-bellekte-sha256`;
+K-167 kalıp/API/iz/tanı satırları.
+
+Açık: (1) RFC-0043 Dilim 2 (ZM-F023: UTF-8 bayt sayısı, metin↔base64/
+onaltılık, kod noktası, base64url) ve üç iç base64 yardımcısının
+birleştirilmesi. (2) 16 MiB'tan büyük ekler (yükleme/özet/dosya yanıtı
+tavanıyla birlikte değişir). (3) İçerik-adresli iz yan dosyasıyla aralıklı
+okumanın replay'i. (4) `kodlama` fuzz hedefi. (5) `message/rfc822` dosya
+yanıtı türü (RFC-0043 "sonraki küçük iş").
 
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı (ADR-031 eki)
 

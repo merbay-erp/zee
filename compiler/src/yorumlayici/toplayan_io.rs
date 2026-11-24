@@ -5,11 +5,16 @@ use super::*;
 /// zee-io-1 hermetik profilinin sabit gizli anahtarı (yalnız test/oynatma; üretim anahtarı ortam değişkenindedir).
 const HERMETIK_GIZLI_ANAHTAR: [u8; 32] = [0x5a; 32];
 
+/// Eylem başı metin ve ikili dosya tabloları.
+type DosyaTablosuYedegi = (HashMap<String, String>, HashMap<String, Vec<u8>>);
+
 pub struct ToplayanIo {
     pub girdiler: VecDeque<String>,
     pub rastgele_degerler: VecDeque<i64>,
     /// Sahte dosya sistemi: yol → içerik (testlerde determinizm).
     pub dosyalar: HashMap<String, String>,
+    /// K-389: çözerek yazılan bayt-kesin dosyalar (UTF-8 olmayabilir).
+    pub ikili_dosyalar: HashMap<String, Vec<u8>>,
     /// Sabit "şimdi" — testlerde determinizm.
     pub zaman: (i64, u32, u32, u32, u32),
     pub argumanlar: Vec<String>,
@@ -52,7 +57,8 @@ pub struct ToplayanIo {
     pub dns_sorgulari: Vec<(String, crate::dns_teli::KayitTuru, i64)>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
-    eylem_yedekleri: Vec<HashMap<String, String>>,
+    /// Eylem başı dosya tabloları (K-389: ikili tablo da geri alınır).
+    eylem_yedekleri: Vec<DosyaTablosuYedegi>,
     web_guvenligi: WebGuvenligi,
     guvenli_belirtec_sirasi: u64,
     web_istek_yedegi: Option<ToplayanWebIstekYedegi>,
@@ -106,6 +112,7 @@ impl ToplayanIo {
             girdiler: girdiler.into(),
             rastgele_degerler: VecDeque::new(),
             dosyalar: HashMap::new(),
+            ikili_dosyalar: HashMap::new(),
             zaman: (2026, 8, 31, 14, 30),
             argumanlar: Vec::new(),
             http_yanitlari: HashMap::new(),
@@ -254,6 +261,41 @@ impl GirdiCikti for ToplayanIo {
             .get(yol)
             .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))?;
         Ok(crate::guvenlik::sha256_hex(icerik.as_bytes()))
+    }
+    fn dosya_araligi_oku(&mut self, yol: &str, konum: i64, adet: i64) -> Result<Vec<u8>, String> {
+        let baytlar = match self.ikili_dosyalar.get(yol) {
+            Some(baytlar) => baytlar.as_slice(),
+            None => self
+                .dosyalar
+                .get(yol)
+                .map(String::as_bytes)
+                .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))?,
+        };
+        let bas = usize::try_from(konum)
+            .unwrap_or(usize::MAX)
+            .min(baytlar.len());
+        let adet = usize::try_from(adet).unwrap_or(0);
+        Ok(baytlar[bas..].iter().take(adet).copied().collect())
+    }
+    fn dosyaya_bayt_yaz(
+        &mut self,
+        yol: &str,
+        baytlar: &[u8],
+        ekleme: bool,
+    ) -> Result<(String, u64), String> {
+        let var = self.dosyalar.contains_key(yol) || self.ikili_dosyalar.contains_key(yol);
+        if !ekleme && var {
+            return Err(format!("\"{}\" hedef dosyası zaten var", yol));
+        }
+        if ekleme && !self.eylem_yedekleri.is_empty() {
+            return Err("çözerek eklemeyi dene eylem içinde kullanılamaz".into());
+        }
+        if ekleme && self.dosyalar.contains_key(yol) {
+            return Err(format!("\"{}\" metin dosyasına bayt eklenemez", yol));
+        }
+        let hedef = self.ikili_dosyalar.entry(yol.to_string()).or_default();
+        hedef.extend_from_slice(baytlar);
+        Ok((crate::guvenlik::sha256_hex(hedef), hedef.len() as u64))
     }
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         let icerik = self
@@ -689,12 +731,13 @@ impl GirdiCikti for ToplayanIo {
         if let Some(sonuc) = self.eylem_baslat_sonuclari.pop_front() {
             sonuc?;
         }
-        self.eylem_yedekleri.push(self.dosyalar.clone());
+        self.eylem_yedekleri
+            .push((self.dosyalar.clone(), self.ikili_dosyalar.clone()));
         Ok(())
     }
     fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         if let Some(Err(hata)) = self.eylem_tamamla_sonuclari.pop_front() {
-            self.dosyalar = self
+            (self.dosyalar, self.ikili_dosyalar) = self
                 .eylem_yedekleri
                 .pop()
                 .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))?;
@@ -706,7 +749,7 @@ impl GirdiCikti for ToplayanIo {
             .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))
     }
     fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
-        self.dosyalar = self
+        (self.dosyalar, self.ikili_dosyalar) = self
             .eylem_yedekleri
             .pop()
             .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))?;

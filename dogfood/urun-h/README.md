@@ -14,6 +14,8 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Zee kodu adlı dinleyiciden bağlantı kabul edemiyor, satır okuma istem basıyor (F009/F010; K-381, çözüldü: A2a) | `baglanti-yankisi/`, `korpus/f009-dinleyici-yok.dil` | A2a (uygulandı) |
 | Web arayüzü ek indiremiyor, JS'siz dosya yükleyemiyor, PDF/görsel dışı ek gönderemiyor (ZM-F022; K-378, çözüldü: RFC-0041 A, B, C) | `ek-akisi/` | RFC-0041 A, B, C (uygulandı) |
 | Webmail e-posta istemcisi autoconfig XML'ini ve Apple yapılandırma profilini kayıtlı türle sunamıyor (ZM-F033; K-385, çözüldü: ADR-163 eki) | `istemci-yapilandirma/` | RFC-0041 A (tür kaydı satırı) |
+| Gelen iletinin ekleri çıkarılamıyor: blok dosyası parça parça okunamıyor, base64/QP gövde bayt olarak yazılamıyor, bellekte SHA-256 yok (ZM-F034/ZM-F024; K-389, çözüldü: RFC-0043 Dilim 1) | `ek-cikarma/`, `korpus/zm-r005-bellekte-sha256.dil` | D (RFC-0043 Dilim 1) |
+| `uzunluğu` harf sayar, UTF-8 oktet saymaz (ZM-F023; açık: RFC-0043 Dilim 2) | `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | D (RFC-0043 Dilim 2) |
 | DNS sorgusu (MX/TXT/TLSA) yok; dış teslim, SPF/DKIM/DMARC ve DANE yanıtları dışarıdan verilen boş sözlükten geliyor (ZM-R006, S015; K-390, çözüldü: RFC-0044 B1a) | `korpus/zm-r006-mx-sorgusu-yok.dil` | RFC-0044 B1a (uygulandı) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355

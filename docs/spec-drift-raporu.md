@@ -26,18 +26,18 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/18-paket-yayini.md` | 14 | 13 | 1 | 0 |
 | `spec/19-registry-metadata-guveni.md` | 10 | 10 | 0 | 0 |
 | `spec/20-ifade-grameri.md` | 9 | 9 | 0 | 0 |
-| `spec/21-deterministik-io-izi.md` | 5 | 5 | 0 | 0 |
+| `spec/21-deterministik-io-izi.md` | 6 | 6 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 42 | 41 | 0 | 1 |
 | `spec/24-kaynak-guvenlik-profili.md` | 10 | 10 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 11 | 10 | 0 | 1 |
-| `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 12 | 11 | 0 | 1 |
+| `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 18 | 16 | 0 | 2 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **378** | **359** | **5** | **14** |
+| **Toplam** | **385** | **365** | **5** | **15** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -60,6 +60,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/23-yetkinlik-ve-outbound-guvenligi.md#15b3c0c87713d1ae` — AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte ro… — K-339 kapsamı dışı; canlı systemd servis kabulü ve rotasyon ürün/işletim tarafında.
 - `spec/25-postgresql-veri-erisimi.md#f94f82cb0245cf0a` — Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe … — K-169/K-173 release tatbikatı ve çok-worker toplam bütçe provası bekliyor; async driver, PostgreSQL dışı DB ve ORM vaat edilmiyor.
 - `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md#a68cd0b9bec91a87` — - Okuma 10 sn mutlak istek son tarihine (spec/11 §5) tabidir; orantılı o… — K-378/ADR-163: orantılı okuma bütçesi açılmadı; 10 sn mutlak bütçe spec/11 §5 ile kanıtlı, büyük yavaş yükleme 408 alır.
+- `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md#bfe5b0f763cf9612` — AÇIK (K-389): UTF-8 bayt sayısı, metin↔base64/onaltılık, kod noktası ve … — RFC-0043 Dilim 2 (ZM-F023): bayt sayısı, metin↔base64/onaltılık, kod noktası, base64url; çağrılar arası yarım dörtlü durumu bilinçli olarak tutulmaz (K-173 uzun ömürlü durum yok).
 - `spec/27-uyumluluk-ve-surumleme.md#285d87941dc0c3ba` — 1.0 sonrasında dondurulmuş yüzeylerde kırıcı değişiklik yalnız yeni ana … — Edition alanının `proje.dil` sözdizimi ayrı RFC ister; 1.0 öncesi bağlayıcı yalnız RFC-0028 çerçevesidir.
 - `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR ve genel gerçek ürün gecikmesi açık; tarihsel S3 66e4149e53451111d153f47283c219079a8d1cab kaynağındaki kabul korunur. S4 4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2 kaynağında ayrı 1800sn RSS ve lint açık/kapalı 1/41 belge stdio gözlemi vardır; 41 belge lint açık p95 223,698ms ile 200ms hedefi açıktır, UI/ürün SLA'sı değildir.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#a6d7f07a75d65cbb` — AÇIK: Zee yüzeyinde NXDOMAIN/NODATA ayrımı, olumsuz yanıtın doğrulanmışl… — K-390: NXDOMAIN/NODATA Zee ayrımı ve CNAME adı B4; dil dene bölge dosyası, PTR/SRV/SVCB, U-label, süreç/oturum bütçesi B2 açık.

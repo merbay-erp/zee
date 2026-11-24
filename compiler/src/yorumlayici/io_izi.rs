@@ -9,6 +9,7 @@ mod http;
 mod istemci;
 mod iz_oynatici;
 mod k181;
+mod kodlanmis;
 mod oturum;
 mod tasima;
 
@@ -61,6 +62,8 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosyalari_listele"
             | "dosya_sha256"
             | "dosya_ilk_baytlari"
+            | "dosya_araligi_oku"
+            | "dosyaya_bayt_yaz"
             | "dosya_yaniti_gonder"
             | "baglanti_kaydet"
             | "baglanti_bekle"
@@ -205,12 +208,8 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         }
         "dosyalari_listele" => metin_listesi_sonuc_semasi(olay, 1),
         "dosya_sha256" => metin_sonuc_semasi(olay, 1),
-        "dosya_ilk_baytlari" => {
-            metin_sonuc_semasi(olay, 2)?;
-            olay.argumanlar[1]
-                .parse::<i64>()
-                .map(|_| ())
-                .map_err(|_| "`dosya_ilk_baytlari` bayt sayısı tam sayı olmalı".into())
+        "dosya_ilk_baytlari" | "dosya_araligi_oku" | "dosyaya_bayt_yaz" => {
+            kodlanmis::semayi_denetle(olay)
         }
         "postgresql_oku" | "postgresql_degistir" => {
             if olay.argumanlar.is_empty() {
@@ -476,6 +475,31 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
         let sonuc = self.ic.dosya_sha256(yol);
         self.kaydet("dosya_sha256", vec![yol.into()], metin_sonuc_yaz(&sonuc));
+        sonuc
+    }
+
+    fn dosya_araligi_oku(&mut self, yol: &str, konum: i64, adet: i64) -> Result<Vec<u8>, String> {
+        let sonuc = self.ic.dosya_araligi_oku(yol, konum, adet);
+        self.kaydet(
+            "dosya_araligi_oku",
+            kodlanmis::aralik_argumanlari(yol, konum, adet),
+            kodlanmis::aralik_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn dosyaya_bayt_yaz(
+        &mut self,
+        yol: &str,
+        baytlar: &[u8],
+        ekleme: bool,
+    ) -> Result<(String, u64), String> {
+        let sonuc = self.ic.dosyaya_bayt_yaz(yol, baytlar, ekleme);
+        self.kaydet(
+            "dosyaya_bayt_yaz",
+            kodlanmis::yazim_argumanlari(yol, baytlar, ekleme),
+            kodlanmis::yazim_sonuc_yaz(&sonuc),
+        );
         sonuc
     }
 

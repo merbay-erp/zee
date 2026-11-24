@@ -8,8 +8,23 @@ use crate::intrinsic::{DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT};
 /// Tek sorgunun Zee tarafındaki en uzun bütçesi (adaptör de 5 sn ile keser).
 const SORGU_MS: i64 = 5_000;
 
+/// İntrinsic eşlemesinin son kolu (faz satır bütçesi): `dns.` önekli kimlik
+/// DNS sorgusudur, geri kalanı K-389 kodlanmış dosya işlemleridir.
+pub(super) async fn ya_da_kodlanmis_dosya(
+    kimlik: &str,
+    degerler: &[Deger],
+    io: &mut dyn GirdiCikti,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    if kimlik.starts_with("dns.") {
+        intrinsic_degerlendir(kimlik, degerler, io, satir).await
+    } else {
+        super::kodlanmis_dosya::degerlendir(kimlik, degerler, io, satir)
+    }
+}
+
 /// Görevdeyken adaptöre girmeden kardeşlere bir tur verir (HTTP_GETIR gibi).
-pub(super) async fn intrinsic_degerlendir(
+async fn intrinsic_degerlendir(
     kimlik: &str,
     degerler: &[Deger],
     io: &mut dyn GirdiCikti,

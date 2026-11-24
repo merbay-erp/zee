@@ -94,9 +94,6 @@ pub(super) fn degerlendir_async<'a>(
                         }
                         http_istek::getir(url, io, satir)
                     }
-                    k if k.starts_with("dns.") => {
-                        dns::intrinsic_degerlendir(kimlik, &degerler, io, satir).await
-                    }
                     POSTGRESQL_OKU => {
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, false)
                     }
@@ -124,7 +121,7 @@ pub(super) fn degerlendir_async<'a>(
                         };
                         Ok(Deger::Mantiksal(io.sensor_acik_mi(ad)))
                     }
-                    _ => Err(ic_hata(satir)),
+                    k => dns::ya_da_kodlanmis_dosya(k, &degerler, io, satir).await,
                 }
             }
             Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
@@ -205,6 +202,9 @@ pub(super) fn degerlendir_async<'a>(
                     (Ozellik::JsonMetin, deger) => json_yaz(&deger, satir).map(Deger::Metin),
                     (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                         html_kacisla(&m, satir).map(Deger::Metin)
+                    }
+                    (Ozellik::Sha256Ozeti, Deger::Metin(m)) => {
+                        Ok(Deger::Metin(crate::guvenlik::sha256_hex(m.as_bytes())))
                     }
                     (Ozellik::Uzunluk, Deger::Metin(m)) => {
                         Ok(Deger::TamSayi(m.chars().count() as i64))

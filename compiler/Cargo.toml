@@ -56,3 +56,11 @@ hickory-proto = { version = "=0.26.3", default-features = false, features = ["st
 
 [patch.crates-io]
 postgres-protocol = { path = "third_party/postgres-protocol" }
+
+# K-389: Linux debug `dil` gömülü DWARF ile 128 MiB'ı aştı; yürütülebilir dosya
+# özetleyen betiklerin (effect-dispatcher, modul-yoneticisi, linux-private-
+# carrier…) 128 MiB okuma tavanı bir güvenlik/kaynak sınırıdır ve korunur.
+# Hata ayıklama bilgisi `.dwo` dosyalarında kalır (macOS'ta zaten varsayılan,
+# Windows PDB etkilenmez); release profili ve sürüm artefaktı değişmez.
+[profile.dev]
+split-debuginfo = "unpacked"

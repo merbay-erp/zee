@@ -7,6 +7,7 @@ mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
+use crate::dns_teli::{DnsHataTuru, DnsHatasi, DnsSonucu, KayitTuru};
 use crate::tani::Tani;
 use crate::web_guvenligi::WebReddi;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
@@ -60,6 +61,19 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
         self.ic.dosya_ilk_baytlari(yol, adet)
+    }
+    fn dosya_araligi_oku(&mut self, yol: &str, konum: i64, adet: i64) -> Result<Vec<u8>, String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+        self.ic.dosya_araligi_oku(yol, konum, adet)
+    }
+    fn dosyaya_bayt_yaz(
+        &mut self,
+        yol: &str,
+        baytlar: &[u8],
+        ekleme: bool,
+    ) -> Result<(String, u64), String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
+        self.ic.dosyaya_bayt_yaz(yol, baytlar, ekleme)
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.simdi()
@@ -228,16 +242,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn an_ms(&mut self) -> i64 {
         self.ic.an_ms()
     }
-
-    fn dns_sorgula(
-        &mut self,
-        ad: &str,
-        tur: crate::dns_teli::KayitTuru,
-        zaman_asimi_ms: i64,
-    ) -> Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi> {
-        self.gerektir(Yetkinlik::Dns).map_err(|mesaj| {
-            crate::dns_teli::DnsHatasi::yeni(crate::dns_teli::DnsHataTuru::Ag, mesaj)
-        })?;
-        self.ic.dns_sorgula(ad, tur, zaman_asimi_ms)
+    fn dns_sorgula(&mut self, ad: &str, tur: KayitTuru, ms: i64) -> DnsSonucu {
+        let hata = |mesaj| DnsHatasi::yeni(DnsHataTuru::Ag, mesaj);
+        self.gerektir(Yetkinlik::Dns).map_err(hata)?;
+        self.ic.dns_sorgula(ad, tur, ms)
     }
 }

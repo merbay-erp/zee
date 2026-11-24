@@ -32,6 +32,7 @@ invariant	semantik	agac,faz,hir,tani	AST HIR yapisal dogrulama
 kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
+kodlama	altyapi	-	Kati MIME base64 quoted-printable ve UTF-8 cozumu; konumlu kodlama hatasi (K-389)
 lib	adapter	agac,ayristirici,cozumleyici,faz,tani,yorumlayici	Dis derleme ve yurutme cephesi
 lsp	adapter	agac,ayristirici,bicimleyici,faz,hir,kaynak_sinirlari,kimlik,lib,morfoloji,paket,proje,sozcukleyici,surum,tani	Editor protokolu ve semantic sorgular
 morfoloji	sozdizimi	guvenlik	Surumlu Turkce ek profili
@@ -57,5 +58,5 @@ web_metrikleri	adapter	-	K-257 private CLI bounded metadata counters/FIFO; Postg
 web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi
-yorumlayici	runtime	ag_satiri,agac,dns_teli,eposta,faz,guvenlik,hir,icerik_turu,intrinsic,kaynak_sinirlari,ondalik,tani,test_kapsami,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
+yorumlayici	runtime	ag_satiri,agac,dns_teli,eposta,faz,guvenlik,hir,icerik_turu,intrinsic,kaynak_sinirlari,kodlama,ondalik,tani,test_kapsami,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
 zaman	temel	-	Gregoryen takvim donusumleri

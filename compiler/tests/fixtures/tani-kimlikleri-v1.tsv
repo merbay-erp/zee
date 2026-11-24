@@ -148,6 +148,7 @@ aktif	C028	calisma.kriptografi_uretim_basarisiz	Kriptografi adaptörü parola ö
 aktif	C029	calisma.eposta_gonderim_basarisiz	E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir
 aktif	C030	calisma.ag_baglantisi	Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında
 aktif	C031	calisma.sira_disi	Listede o sırada öğe yok (sıra 1 ile adet aralığı dışında)
+aktif	C032	calisma.kodlanmis_icerik	Kodlanmış içerik çözülemedi
 aktif	C033	calisma.dns_sorgusu_gecici	DNS sorgusu geçici olarak başarısız (RFC-0044 B1)
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
