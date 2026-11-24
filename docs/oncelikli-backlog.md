@@ -2557,6 +2557,44 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-383 — Bayt/kodlama/özet ile DNS, posta kimlik doğrulama ve teslim güvenliği RFC taslakları
+
+**Durum: AÇIK (taslak).** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail;
+ZM-F023 bayt↔metin, ZM-F024 bellekte SHA-256, ZM-F025 PSL ve 23 Kasım 2026
+motor güvenlik kapsamı). bd8d44f kaynağıyla doğrulandı: `Bayt` türü yok
+(`Metin` = Rust `String`), `uzunluğu` harf sayar, base64 yalnız üç iç
+yardımcı, SHA-256 yalnız dosya/tutamak üzerinde; DNS yalnız sistem
+çözücüsüyle A/AAAA, MX/TXT/TLSA/DNSSEC/PSL yok; SPF/DKIM/DMARC/ARC,
+`Authentication-Results`, DKIM imzası, MX teslimi, MTA-STS/DANE/TLS-RPT yok.
+Ağaçta: `ring 0.17.14` (RSA/Ed25519), `sha2`, `base64 0.23.1` (geçişli),
+`flate2` (geçişli); DNS crate'i yok.
+[RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md): saf, yetkinliksiz,
+kodlama adı yazılı kalıplar; çözme `Sonuç`, katı RFC 4648/UTF-8; tür kararı
+kodlanmış `Metin` + dosya tutamağı (yeni tür ertelendi); yeni crate yok.
+[RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md):
+B1 tel biçimi crate'i + loopback doğrulayıcı çözücüye stub (`AD` biti yalnız
+loopback'ten; `SERVFAIL` asla "yok" değil), sürümlü PSL veri dosyası;
+B2 tek başlık ayrıştırıcı, SPF/DKIM/ARC host değerlendiricileri + DMARC
+politikası Zee'de, sahte A-R silme; B3 credential'dan anahtar, alan eşleşmeli
+imza, çoklu seçiciyle döndürme; B4 `smtp-teslim` önkoşulu, DANE > MTA-STS
+(TOFU önbelleği) > fırsatçı TLS, TLS-RPT. Önerilen sıra: RFC-0043 → B1a →
+B1b → B2a (A-R temizliği, güvenlik önceliği) → B2b–d → B3 → B2e → B4a–d.
+Ek (24 Kasım 2026, ZM-F034): A2c blok dosyaları ürün tarafında
+ayrıştırılamıyor (ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
+64 KB). Mevcut `dosyasını okumayı dene` 16 MiB katı UTF-8 ve CRLF korur ama
+8bit içerikte başarısız, aralık okuyamaz ve içeriği IO izine yazar; spec/08
+yazımı yalnız satır + `\n`. RFC-0043'ün önerilen ilk dilimi bu yüzden:
+aralıklı metin/base64 okuma, base64/QP çözerek no-clobber bayt yazma (+akışlı
+ekleme), bellekte SHA-256; iz içeriksiz. Sonraki küçük iş: `message/rfc822`
+dosya yanıtı türü. RFC-0039 ilke 1 ve katman E'ye RFC-0044 çapraz notu
+düşüldü (kabul ayrı). Ürün ölçümü (ZM-F035): bağlantı görevi oturum
+boyunca tek, iade edilmeyen 64 MiB heap zarfı taşıdığı için 1 MB `DATA`
+bile C024; Dilim 1'in önkoşulu bağlantıda bütçenin protokol birimi
+sınırında yenilenmesidir (ayrı correctness K-işi, spec/24).
+Core freeze altında kod, spec, test, tanı ve dil yüzeyi değişikliği yok;
+her aşama ayrı `dogfood-change` K-işi ve depo içi reproducer ister. V1 kapısı
+değildir.
+
 ## K-380 — Çağrılan işlem çağıranın akış bilgisini görmez (T053/T036)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi.
