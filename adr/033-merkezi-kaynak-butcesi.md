@@ -82,13 +82,13 @@ sınırından kaçardı.
 
 ## Ek — Düşen değerin iadesi (24 Kasım 2026, K-393)
 
-ADR-168 bu ADR'nin iade-yok ilkesini değiştirir: zarf artık düşen değerin
+ADR-169 bu ADR'nin iade-yok ilkesini değiştirir: zarf artık düşen değerin
 payını iade eder ve canlı saklanan değerlerin muhafazakâr üst sınırıdır.
 Üst sınır sözü korunur: yerinde büyüyen her yol gerçek kapasite artışını
 tüketir, iade tüketimdeki ölçüyü aşamaz ve kalan zarf 64 MiB'ı geçemez.
 Yukarıdaki "silme veya yeniden bağlamada bütçeyi geri vermez" açık sınırı ve
 K-388 ekindeki "birim içinde atılan değer zarftan geri alınmaz" cümlesi bu
-tarihten sonra geçerli değildir; gerekçe ve kanıt ADR-168'dedir.
+tarihten sonra geçerli değildir; gerekçe ve kanıt ADR-169'dedir.
 
 ## Kanıt
 

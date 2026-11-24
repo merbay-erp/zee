@@ -39,7 +39,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-030 | [Bütün AST ifadelerinde kesin kaynak aralığı](030-kesin-ast-kaynak-araliklari.md) | **kabul** (K-126/B-050) |
 | ADR-031 | [Merkezî yetkinlik politikası ve native outbound istemci](031-merkezi-yetkinlik-ve-outbound-istemci.md) | **kabul** (K-127/B-023/B-049; K-387 eki) |
 | ADR-032 | [Atomik replace metadata koruma politikası](032-atomik-replace-metadata-politikasi.md) | **kabul** (K-128/B-048; ek K-348, K-351) |
-| ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/K-130/K-131/K-132; B-025 kapalı; bağlantı birimi eki K-388; iade eki K-393/ADR-168) |
+| ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/K-130/K-131/K-132; B-025 kapalı; bağlantı birimi eki K-388; iade eki K-393/ADR-169) |
 | ADR-034 | [Kalıcı ortak web deposu ve tek-worker süreç modeli](034-web-ortak-depo-ve-worker-modeli.md) | **kabul** (K-137/B-046) |
 | ADR-035 | [Protokol-kesin LSP JSON-RPC sınırı](035-protokol-kesin-lsp-json-rpc.md) | **kabul** (K-138/B-051) |
 | ADR-036 | [Kanonik web proxy origin sınırı](036-kanonik-web-proxy-origin-siniri.md) | **kabul** (K-139/B-052) |
@@ -172,4 +172,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158; A2c eki K-384/GB-159; birim bütçesi eki K-388/GB-162) |
 | ADR-166 | [Liste sıra erişimi: dar sıra eki tokeni ve ödünç alan O(1) okuma](166-liste-sira-erisimi.md) | **kabul** (K-386, RFC-0029) |
 | ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1) |
-| ADR-168 | [C024 heap zarfı düşen değerin payını iade eder](168-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-164; ADR-033 iade-yok ilkesini değiştirir) |
+| ADR-169 | [C024 heap zarfı düşen değerin payını iade eder](169-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-165; ADR-033 iade-yok ilkesini değiştirir) |

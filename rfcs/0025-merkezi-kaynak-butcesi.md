@@ -40,7 +40,7 @@ sürümü, tehdit modeli ve üst sınırı ayrı RFC ile görünür olur.
 
 K-323 eki: web isteğinde C023/C024 yalnız o isteği 503 ile bitirir; worker
 yaşar. `x x ile y olsun` yerinde büyür ve zarftan yalnız kapasite artışını
-tüketir (iade yok, ADR-033). K-393/ADR-168 eki: düşen değerin payı iade
+tüketir (iade yok, ADR-033). K-393/ADR-169 eki: düşen değerin payı iade
 edilir; zarf canlı saklanan değerlerin üst sınırıdır.
 | Çalışma/istek çıktısı | 16 MiB ve 100.000 olay | C023 |
 | Süreç genelinde inbound+outbound ağ bağlantısı | 64 | C018 veya HTTP 503 |
@@ -64,7 +64,7 @@ hassasiyetli sayı/para, JSON ve CSV sonucu bütçeli yazıcıyla büyür; bilin
 büyüme tahsisten önce reddedilir.
 Ortam/list/sözlük yazımları ve görev ortamı klonları muhafazakâr saklama
 fişleri tüketir. Bu fiş gerçek resident-memory ölçümü değildir; üst sınırı
-güvenli tarafta tutar. K-393 (ADR-168): düşen değerin fişi iade edilir, iade
+güvenli tarafta tutar. K-393 (ADR-169): düşen değerin fişi iade edilir, iade
 tüketimdeki ölçüyü aşamaz.
 Inbound kabul ve outbound DNS/bağlantı girişleri süreç-geneli RAII izni alır;
 bütün dönüş/hata yolları izni bırakır.
