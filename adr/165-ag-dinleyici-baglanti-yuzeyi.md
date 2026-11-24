@@ -209,7 +209,7 @@ bloğu çağrısının başarısı ya da `zaman_aşımı`, `satır_uzun`, `satı
 dönen `kapandı`, `kapanıyor`, `geçersiz`, `tls`, okumadan dönen
 `boyut_aşımı`, yazma, aktarım, TLS başlatma ve `bekle` sınır değildir.
 
-DoS değerlendirmesi (GB-160): yenileme hızı ya istemcinin gönderdiği bayta
+DoS değerlendirmesi (GB-162): yenileme hızı ya istemcinin gönderdiği bayta
 (satır sınırıyla; K-381'den beri başarılı satırda aynı) ya da duvar
 saatine (süreli okuma en az 1 sn, normal okuma `bağlantı_boşta_süresi`)
 bağlıdır; istemci bunu anında dönen sonuçla hızlandıramaz. Kapalı

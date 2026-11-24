@@ -5675,6 +5675,24 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-385 — İstemci yapılandırma dosya türleri; ADR-163 eki (24 Kasım 2026)
+
+- Kaynak ZM-F033 (`urun-h`, ZeeMail): autoconfig XML'i ve `.mobileconfig`
+  kayıtlı türle sunulamıyordu. Freeze sınıfı `dogfood-change`; yalnız
+  `dil::icerik_turu` tablosuna iki web-yalnız satır. K-164 sınıfı “web
+  adaptörü yüzeyi eksik” (ZM-F022 ile aynı sınıf; RFC-0040 katman C tür
+  kaydı da aynı tabloya satır ekler, ADR-163 kararı).
+- Birincil kaynak: Thunderbird `FetchHTTP.sys.mjs` `text/xml`/`application/xml`
+  önekini kabul eder, `Content-Disposition` okumaz; RFC 7303 `application/xml`
+  önerir; Apple OTA rehberi `application/x-apple-aspen-config`; MS-OXDSCLI
+  POX Autodiscover POST'tur.
+- Reddedilen: `text/xml` (takma ad; kayıt tek yazım tutar, `text/*`
+  `charset=utf-8` eki XML bildirimini ezerdi), `inline` (ölçülen istemci
+  istemiyor; XML'i belge olarak oluşturur), SMTP adaylığı (ürün ihtiyacı
+  yok), `sandbox allow-downloads` (bütün dosya yanıtlarını değiştirir; ayrı
+  iş), Outlook için CSRF muafiyeti (RFC-0040 #5(c) ile tek model). K-385
+  kapandı.
+
 ## K-376 takibi — systemd ölçüm adımı kararlılığı (23 Kasım 2026)
 
 - CI'da `scripts/systemd-adli-soket-olcumu.py` aralıklı olarak soket birimini
