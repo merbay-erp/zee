@@ -146,7 +146,14 @@
       "file": "24-http-istemcisi.dil",
       "sha256": "59bb77e3fc74b888a0e159565902c5059331a31dc8b091b8e79433d440ceab28",
       "git_blob": "56771b12e3bdd95a3a217cb767c1676b4900f2a7",
-      "new_exit": 0
+      "new_exit": 1,
+      "security_break": {
+        "work": "K-387",
+        "expected_diagnostic": "T054",
+        "migration_flag": "--izin",
+        "migration_value": "ağ",
+        "decision": "spec/23-yetkinlik-ve-outbound-guvenligi.md"
+      }
     },
     {
       "file": "25-web-sunucusu.dil",
@@ -164,7 +171,14 @@
       "file": "27-zaman-asimi.dil",
       "sha256": "edce97f99f8c197edc4fb7c44f9ad16ce1eeb0861b567810607f83934328937c",
       "git_blob": "f848b4b81d679c529d410c35bd0f14cfd4265d75",
-      "new_exit": 0
+      "new_exit": 1,
+      "security_break": {
+        "work": "K-387",
+        "expected_diagnostic": "T054",
+        "migration_flag": "--izin",
+        "migration_value": "ağ",
+        "decision": "spec/23-yetkinlik-ve-outbound-guvenligi.md"
+      }
     },
     {
       "file": "28-cli-araci.dil",
