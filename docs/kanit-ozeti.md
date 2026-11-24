@@ -9,7 +9,7 @@ Kaynak: `regression/v2.tsv`
 | Faz | Vaka |
 | --- | --- |
 | checker | 4 |
-| cli | 8 |
+| cli | 9 |
 | concurrency | 2 |
 | hir | 4 |
 | lsp | 2 |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 62 |
+| - | 63 |
 
-Toplam 73 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 73/73.
+Toplam 74 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 74/74.
 
 ## Güvenlik bulguları
 
@@ -40,11 +40,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
-| orta | 47 | 16 | 2 | 65 |
+| orta | 48 | 16 | 2 | 66 |
 | dusuk | 45 | 30 | 1 | 76 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 160.
+Toplam bulgu: 161.
 
 ## Spec maddeleri
 
@@ -74,7 +74,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/20-ifade-grameri.md | 7 | 0 | 0 | 7 | 100 |
 | spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
-| spec/23-yetkinlik-ve-outbound-guvenligi.md | 38 | 0 | 1 | 39 | 97 |
+| spec/23-yetkinlik-ve-outbound-guvenligi.md | 41 | 0 | 1 | 42 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 9 | 0 | 0 | 9 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 10 | 0 | 1 | 11 | 90 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 11 | 0 | 1 | 12 | 91 |
@@ -82,7 +82,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 323 | 5 | 13 | 341 | 94 |
+| **Toplam** | 326 | 5 | 13 | 344 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -146,7 +146,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 82 |
-| semantic-bugfix | 38 |
+| semantic-bugfix | 39 |
 | semantic-change | 62 |
 
 | Freeze sınıfı | Beyan |
@@ -155,6 +155,6 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | correctness | 39 |
 | dogfood-change | 40 |
 | maintenance | 79 |
-| security | 18 |
+| security | 19 |
 
-Toplam: 182 compiler değişiklik beyanı, 178 core freeze beyanı.
+Toplam: 183 compiler değişiklik beyanı, 179 core freeze beyanı.
