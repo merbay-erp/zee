@@ -69,3 +69,5 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 | RFC-0040 | [Web adaptöründe WebDAV/CalDAV/CardDAV senkron istemci yüzeyi](0040-webdav-caldav-carddav-adaptoru.md) | **taslak** (K-364; core freeze sonrası, katman başına dogfood kapısı) |
 | RFC-0041 | [Web adaptöründe ikili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı](0041-ikili-yanit-ve-ek-akisi.md) | **kabul** (K-373 taslak, K-378 `dogfood-change`, ADR-163) — A, B ve C **uygulandı** |
 | RFC-0042 | [PostgreSQL sorgusunun son tarihe bağlanması](0042-postgresql-sorgu-son-tarihi.md) | **kabul, uygulandı** (K-371 taslak, K-375 correctness; spec/25 ZORUNLU/YASAK) |
+| RFC-0043 | [Bayt, kodlama ve özet yüzeyi](0043-bayt-kodlama-ve-ozet-yuzeyi.md) | **taslak** (K-383; core freeze altında, `urun-h` ZM-F023/ZM-F024 `dogfood-change` kapısı) |
+| RFC-0044 | [DNS, posta kimlik doğrulama ve teslim güvenliği](0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md) | **taslak** (K-383; B1 DNS+DNSSEC+PSL, B2 SPF/DKIM/DMARC/ARC, B3 DKIM imzası, B4 MTA-STS/DANE/TLS-RPT; aşama başına `dogfood-change`) |
