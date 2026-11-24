@@ -136,9 +136,9 @@ Kaynak: `docs/soak-gecmisi-v1.tsv`
 
 | Sonuç | Koşu |
 | --- | --- |
-| gecti | 12 |
+| gecti | 13 |
 
-Son koşu: `41135379556c24d147a6115645a09fb5909019b8` (2026-11-24, macos-aarch64, 1800 sn): derleyici %0, dillsp %0 RSS büyümesi → gecti.
+Son koşu: `cd91a1928760d396101c6cb0d5c354c2477425fd` (2026-11-24, macos-aarch64, 1800 sn): derleyici %0, dillsp %0 RSS büyümesi → gecti.
 
 ## Compiler değişiklik ve core freeze beyanları
 
