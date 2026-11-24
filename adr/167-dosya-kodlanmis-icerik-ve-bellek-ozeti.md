@@ -99,8 +99,9 @@ Core freeze yeni kalıbı varsayılan olarak reddeder; ürün kaydı etkin
 `urun-h` 25 MB'lık iletideki tek ~18 MB'lık eki kendi `ekdeposu` paketiyle
 (satıra hizalı pencereler, dil değişikliği yok) çıkarabildi; tek engel
 16 MiB hedef tavanıydı (ZM-F039). Mustafa kararıyla (24 Kasım 2026) yalnız
-bu tavan yükseltildi; dosyadan dosyaya çözme ve bayt arama yüzeyleri
-açılmadı.
+bu tavan yükseltildi. Aynı dalda önce uygulanan dosyadan dosyaya akışlı
+base64 çözme ve dosyada bayt arama yüzeyleri (`1336876`) birleştirilmeden
+geri alındı (`0adf5ef`); RFC-0043 Dilim 2 kalanıyla birlikte taslaktır.
 
 - `çözerek … yazmayı|eklemeyi dene` hedef toplamı **32 MiB**
   (33 554 432 bayt); tam sınır kabul, bir bayt fazlası C013 ve hedef
