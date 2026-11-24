@@ -54,6 +54,20 @@ Bu kayıt yeni sürüm etiketi değildir.
   aynıdır. `çok_parçalı_yükleme` açık projelerde dosyasız form ve 8 KiB'tan
   uzun metin alanı artık reddedilmez; metin toplamı aşımı 400 yerine 413'tür.
 
+- **Rota bazında gövde sınırı, yavaş büyük yüklemeler ve büyük SQL
+  parametresi (K-391):** `geniş_gövde_rotaları "/posta/gonder", "/taslak/"
+  listesi olsun` ile `geniş_gövde_sınırı 262144 olsun` birlikte yazılınca
+  yalnız bu yollara gelen POST/PUT/PATCH/DELETE formları (urlencoded ya da
+  multipart metin alanları) 64 KiB yerine verilen sınırı (en çok 1 MiB)
+  kullanır; `/` ile biten öge önek, diğeri tam yoldur. Multipart yükleme artık
+  sabit 10 saniyede kesilmez: süre gelen veriyle büyür (10 sn + her 128 KiB
+  için 1 sn, en çok 146 sn); veri göndermeden bekleyen istemci yine 10 sn'de
+  408 alır. `veritabanı_parametre_sınırı 1048576 olsun` tek SQL parametresini
+  64 KiB yerine en çok 4 MiB yapar (bütün parametrelerin toplamı 6 400 KiB).
+
+  **Göç:** Gerekmez. Alan yazmayan projede sınırlar aynıdır. Süreç çökmesinden
+  kalan geçici yükleme dosyaları artık 15 yerine 30 dakika sonra silinir.
+
 - **Dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve
   metnin SHA-256 özeti (K-389):** büyük bir dosya (ör. bağlantıdan alınmış
   bir e-posta) artık en çok 1 MiB'lık aralıklarla okunabilir:
