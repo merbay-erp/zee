@@ -89,3 +89,8 @@ Bu dalların DIŞINDA korumasız erişim **YASAK**tır (T036 — derleme hatası
 Daraltma bilinçli olarak dardır: tek koşullu kol + `değilse`; tam veri
 akışı analizi yoktur (anlaşılabilirlik ilkesi). C008/C009 çalışma zamanı
 kodları yalnız iç savunmadır; kullanıcı programı onları göremez.
+
+Daraltma çağıranın sembolüne aittir (ZORUNLU — K-380): çağrılan işlemin
+gövdesi çağıranın daraltmalarını görmez; aynı adlı yereli korumasız açmak
+T036'dır. İşlemin kendi dallarının bitişi de çağıranın daraltmasını
+kaldırmaz.

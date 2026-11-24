@@ -2557,6 +2557,52 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-380 — Çağrılan işlem çağıranın akış bilgisini görmez (T053/T036)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi.
+`her harf için` gövdesinden çağrılan işlem kendi kapsamında `harfler` adlı
+bir yerel liste kurunca (doğrudan, geçişli ya da kendi gezmesiyle) dış döngü
+için yanlış T053 veriliyordu. Ürün geçici olarak farklı ad kullanıyordu.
+Freeze sınıfı `correctness` (semantic-bugfix).
+
+Kök neden: işlem gövdesi ilk çağrıda çağıranın `Baglam`ı içinde denetlenir
+(`cagri.rs`); yeni `SembolTablosu` açılıyor ama ad anahtarlı akış kümeleri
+(`gezilen_koleksiyonlar`, `dolu_secenekler`, `basarili_sonuclar`,
+`basarisiz_sonuclar`) çağıranınkiyle paylaşılıyordu. Değer semantiğinde
+(spec/17) çağrılan işlem çağıranın koleksiyonunu göremez; denetim gerçek
+sembol yerine yüzey adını eşliyordu. Aynı sızıntı daraltmada ters yönde
+ağırdı: çağıranın `bulunan varsa` dalı callee'nin aynı adlı yerelini korumalı
+sayıp T036'yı kaçırıyordu (çalışma zamanı C008), callee'nin kendi `varsa`
+dalı bitince de çağıranın daraltmasını silip yanlış T036 veriyordu.
+
+Düzeltme: `akis::ayri_akista` işlem gövdesi denetimi boyunca dört kümeyi
+boşaltır ve sonra geri koyar. Gezilen kaynağı işlem sonucuyla yeniden bağlamak
+ya da ona eklemek T053 kalır; aynı kapsamdaki doğrudan değişiklik kuralları
+aynı.
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| döngüde çağrılan işlemin yerel `harfler` listesi | T053 | çalışır |
+| geçişli çağrı (işlem → işlem → yerel `harfler`) | T053 | çalışır |
+| çağrılan işlem kendi `harfler`ini gezer | T053 | çalışır |
+| `harfler harfler için listeyi büyüt olsun` döngüde | T053 | T053 |
+| `harflere harf için harfi ver ekle` döngüde | T053 | T053 |
+| çağıranın `varsa` dalında callee yerelini korumasız açma | C008 (çalışma zamanı) | T036 |
+| callee kendi `varsa` dalını bitirdikten sonra çağıranın erişimi | T036 (yanlış) | çalışır |
+
+Kanıt: `koleksiyon_testi.rs::cagrilan_islemin_ayni_adli_yereli_gezilen_kaynak_degildir`,
+`gezilen_kaynagi_islem_sonucuyla_degistirmek_t053_kalir`,
+`daraltma_testi.rs::cagiranin_daraltmasi_cagrilan_isleme_sizmaz`,
+`cagri_sonrasi_cagiranin_daraltmasi_korunur`; regression
+`cagri-gezme-ad-sizintisi` (run) ve `cagri-daraltma-sizintisi` (compile
+T036); spec/17 ve spec/04 K-380 maddeleri. Yerel tüketicilerde `dil denetle`
+önce/sonra farksız; ürün kaynağında ad geri değiştirilince eski derleyici
+T053, yeni derleyici temiz.
+
+Açık — ayrı hata (bu işte düzeltilmedi): türsüz parametreli ve hiç
+çağrılmayan bir işlem, programın geri kalanı geçerliyken
+`C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
+
 ## K-384 — Bağlantıda blok okuma ve bayt-kesin akış (RFC-0039 A2c)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail); 23 Kasım
