@@ -135,9 +135,9 @@ Kaynak: `docs/soak-gecmisi-v1.tsv`
 
 | Sonuç | Koşu |
 | --- | --- |
-| gecti | 9 |
+| gecti | 10 |
 
-Son koşu: `868c8c38223862c52b7faa9e4ec4f1f6abcb4bb0` (2026-11-23, macos-aarch64, 1800 sn): derleyici %0, dillsp %16 RSS büyümesi → gecti.
+Son koşu: `bd2d95c82163c80c86155fcbb7612f9fea8e3b59` (2026-11-24, macos-aarch64, 1800 sn): derleyici %0, dillsp %0 RSS büyümesi → gecti.
 
 ## Compiler değişiklik ve core freeze beyanları
 
@@ -147,14 +147,14 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 81 |
 | semantic-bugfix | 38 |
-| semantic-change | 60 |
+| semantic-change | 61 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
 | correctness | 39 |
-| dogfood-change | 38 |
+| dogfood-change | 39 |
 | maintenance | 78 |
 | security | 18 |
 
-Toplam: 179 compiler değişiklik beyanı, 175 core freeze beyanı.
+Toplam: 180 compiler değişiklik beyanı, 176 core freeze beyanı.
