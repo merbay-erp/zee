@@ -173,4 +173,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-166 | [Liste sıra erişimi: dar sıra eki tokeni ve ödünç alan O(1) okuma](166-liste-sira-erisimi.md) | **kabul** (K-386, RFC-0029) |
 | ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1) |
 | ADR-168 | [İstek boyut sınırları: multipart metin alanı, gövde aşımı rotası, rota bazlı gövde ve SQL parametre tavanı](168-istek-boyut-sinirlari-ve-govde-asimi.md) | **kabul** (K-391/GB-164; Dilim 1 uygulandı, Dilim 2 açık) |
-| ADR-169 | [C024 heap zarfı düşen değerin payını iade eder](169-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-165; ADR-033 iade-yok ilkesini değiştirir) |
+| ADR-169 | [C024 heap zarfı düşen değerin payını iade eder](169-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-166; ADR-033 iade-yok ilkesini değiştirir) |
