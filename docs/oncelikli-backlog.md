@@ -2774,6 +2774,33 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı (ADR-031 eki)
+
+**Durum: KAPALI.** Kaynak: bağımsız zee/Python/Go/Rust karşılaştırma raporu
+(bd8d44f) ve dış incelemesi. "Ağ erişimi varsayılan kapalı" iddiası yalnız
+proje kipinde doğruydu: bildirimsiz tek dosya profili `ağ`ı örtük açıp public
+HTTPS/SMTPS outbound'a izin veriyordu (g04 yoklaması: proje T054, tek dosya
+gerçek istek). Freeze sınıfı `security`; yeni kalıp, grammar, tanı kodu ve
+IO izi şeması yok. GB-161.
+
+Karar (ADR-031 eki): `YetkinlikPolitikasi::gelistirici()` artık `ağ`sız;
+`--izin ağ` (yalnız dosya işleneninden önce; `dil çalıştır`, `dil denetle`,
+`dil iz kaydet`) eski sınırı `gelistirici_agli()` ile açar. Proje kipinde,
+`--güvenli` ile, başka değerle ya da tekrarla çıkış 2. `dene` ve `iz oynat`
+gerçek ağa çıkmadığından eski profili korur. T054 önerisi tek dosya kipinde
+bayrağı gösterir. Uyarılı geçiş reddedildi: ~/IdeaProjects taramasında
+proje dışı ağ kullanan 1519 dosyanın hiçbiri tek dosya kipinde koşmuyor
+(yalnız site projesine gömülen çekirdek modül parçaları proje dışında).
+
+Kanıt: `compiler/tests/tek_dosya_ag_izni_testi.rs` (profil, CLI çalıştır/
+denetle, işlenen sonrası argüman, ret vakaları, `dene`/`iz` korunması),
+`cli/ag_izni.rs::testler`, regression `cli/tek-dosya-ag-izni.dil`, spec/23
+§"Tek dosya kipinde dış ağ — K-387", K-167 `profil cli-ag-izni`.
+
+Açık: tek dosya kipinde dosya okuma/yazma ve yerel web sunucusu bilinçli
+olarak açık kalır (geriye uyumlu geliştirici profili); bunların varsayılanı
+ayrı karar ister.
+
 ## K-385 — İstemci yapılandırma dosya türleri (ADR-163 eki)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
