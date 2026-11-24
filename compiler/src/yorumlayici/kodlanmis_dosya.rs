@@ -7,10 +7,12 @@
 
 use super::*;
 use crate::intrinsic::{
-    DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN, DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ, DOSYA_QP_EKLE,
-    DOSYA_QP_YAZ,
+    DOSYADAN_BASE64_EKLE, DOSYADA_BAYT_ARA, DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN,
+    DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ, DOSYA_QP_EKLE, DOSYA_QP_YAZ,
 };
-use crate::kodlama::{self, KodlamaHatasi, AZAMI_PARCA_BAYTI};
+use crate::kodlama::{
+    self, AkisHatasi, KodlamaHatasi, AZAMI_AKIS_ARALIGI, AZAMI_IGNE_BAYTI, AZAMI_PARCA_BAYTI,
+};
 
 /// K-389 kimlikleri; dağıtıcının kalan kolu buraya gelir, tanınmayan
 /// kimlik iç tutarlılık hatasıdır.
@@ -51,7 +53,49 @@ pub(super) fn degerlendir(
                 Err(mesaj) => dosya_hatasi(mesaj),
             })
         }
+        (
+            DOSYADAN_BASE64_EKLE,
+            [Deger::Metin(kaynak), Deger::TamSayi(konum), Deger::TamSayi(adet), Deger::Metin(hedef)],
+        ) => Ok(dosyadan_coz(io, kaynak, *konum, *adet, hedef)),
+        (DOSYADA_BAYT_ARA, [Deger::Metin(yol), Deger::TamSayi(konum), Deger::Metin(igne)]) => {
+            if *konum < 0 || igne.is_empty() || igne.len() > AZAMI_IGNE_BAYTI {
+                return Ok(dosya_hatasi(format!(
+                    "geçersiz arama: konum 0 ya da daha büyük, aranan metin 1 ile {AZAMI_IGNE_BAYTI} UTF-8 bayt arasında olmalı; konum {konum}, {} bayt verildi",
+                    igne.len()
+                )));
+            }
+            Ok(match io.dosyada_bayt_ara(yol, *konum, igne.as_bytes()) {
+                Ok(yer) => basarili(Deger::TamSayi(yer)),
+                Err(mesaj) => dosya_hatasi(mesaj),
+            })
+        }
         _ => Err(ic_hata(satir)),
+    }
+}
+
+/// K-395 (ADR-171): aralık IO'dan önce denetlenir; akış adaptörde sınırlı
+/// parçalarla yürür, sonuç K-389 tutamağı + bu çağrıda eklenen bayttır.
+fn dosyadan_coz(
+    io: &mut dyn GirdiCikti,
+    kaynak: &str,
+    konum: i64,
+    adet: i64,
+    hedef: &str,
+) -> Deger {
+    if konum < 0 || !(1..=AZAMI_AKIS_ARALIGI as i64).contains(&adet) {
+        return dosya_hatasi(format!(
+            "geçersiz aralık: konum 0 ya da daha büyük, bayt sayısı 1 ile {AZAMI_AKIS_ARALIGI} arasında olmalı; konum {konum}, bayt {adet} verildi"
+        ));
+    }
+    match io.dosyadan_base64_ekle(kaynak, konum, adet, hedef) {
+        Ok(ek) => basarili(Deger::Sozluk(vec![
+            ("yol".into(), Deger::Metin(hedef.into())),
+            ("sha256".into(), Deger::Metin(ek.sha256)),
+            ("bayt".into(), Deger::Metin(ek.toplam.to_string())),
+            ("eklenen".into(), Deger::Metin(ek.eklenen.to_string())),
+        ])),
+        Err(AkisHatasi::Kodlama(hata)) => kodlama_hatasi(hata),
+        Err(AkisHatasi::Dosya(mesaj)) => dosya_hatasi(mesaj),
     }
 }
 

@@ -3,6 +3,9 @@
 //! MIME ileti dosyasından aralıklı okuma + çözerek yazma ile çıkarılan ekin
 //! bayt-kesinliği, RFC-0041 dosya yanıtına bağlanması, no-clobber, tavan,
 //! proje dosya sınırı ve içeriksiz IO izi.
+//!
+//! K-395 (RFC-0043 Dilim 2, ADR-171): dosyadan dosyaya akışlı base64 çözme,
+//! bayt arama ve 32 MiB hedef tavanı — ürün H'nin 18 MB eki (ZM-F039).
 
 use dil::kaynagi_derle;
 use dil::yorumlayici::{self, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
@@ -558,7 +561,8 @@ ucuncu ile sonucuYaz
     std::os::unix::fs::symlink(&dis, proje.0.join("bag")).unwrap();
     std::fs::create_dir_all(proje.0.join("dizin")).unwrap();
     std::fs::write(proje.0.join("var.bin"), b"eski").unwrap();
-    let tavan = 16 * 1024 * 1024;
+    // K-395: hedef tavanı 16 → 32 MiB (ADR-171).
+    let tavan = 32 * 1024 * 1024;
     std::fs::write(proje.0.join("dolu.bin"), vec![1u8; tavan - 2]).unwrap();
     let (tamam, stdout, stderr) = proje.calistir();
     let _ = std::fs::remove_dir_all(&dis);
@@ -566,7 +570,7 @@ ucuncu ile sonucuYaz
     let satirlar: Vec<&str> = stdout.lines().collect();
     assert_eq!(satirlar[0], "C013 \"var.bin\" hedef dosyası zaten var");
     assert!(
-        satirlar[1].starts_with("C013") && satirlar[1].contains("16 MiB"),
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
         "{satirlar:?}"
     );
     assert!(satirlar[2].contains("proje dosya sınırı"), "{satirlar:?}");
@@ -671,4 +675,314 @@ GET "/ek" adresine istek geldiğinde
         "{basliklar}"
     );
     assert!(govde == ek, "indirilen ek bayt bayt aynı");
+}
+
+// ---------- K-395: dosyadan dosyaya çözme ve bayt arama ----------
+
+const K395_YARDIMCI: &str = r#"işlem sonucuYaz
+    sonucu Metin sözlüğü sonucu olarak al
+    değer döndürmez
+    sonucu başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu ile " " ile hatanın mesajı yaz
+        hatanın verisi yaz
+
+işlem konumYaz
+    sonucu TamSayı sonucu olarak al
+    değer döndürmez
+    sonucu başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu ile " " ile hatanın mesajı yaz
+
+işlem coz
+    kaynagi Metin olarak al
+    bas TamSayı olarak al
+    adet TamSayı olarak al
+    hedefi Metin olarak al
+    değer döndürmez
+    sonuç kaynagi dosyasının bas baytından adet baytını base64 çözerek hedefi dosyasına eklemeyi dene olsun
+    sonuç ile sonucuYaz
+
+işlem ara
+    yolu Metin olarak al
+    bas TamSayı olarak al
+    igne Metin olarak al
+    değer döndürmez
+    sonuç yolu dosyasında bas baytından igne aramayı dene olsun
+    sonuç ile konumYaz
+
+"#;
+
+#[test]
+fn hermetik_dosyadan_cozme_arama_konum_ve_aralik_reddi() {
+    let ana = format!(
+        r#"{K395_YARDIMCI}"m.eml" ve 0 ve "--s" ile ara
+"m.eml" ve 5 ve "--s" ile ara
+"m.eml" ve 0 ve "yok" ile ara
+"m.eml" ve 999 ve "--s" ile ara
+"m.eml" ve 0 ve "" ile ara
+"m.eml" ve -1 ve "--s" ile ara
+"m.eml" ve 4 ve 10 ve "ek.bin" ile coz
+"m.eml" ve 4 ve 10 ve "ek.bin" ile coz
+"m.eml" ve 4 ve 11 ve "bozuk.bin" ile coz
+"m.eml" ve 4 ve 8 ve "yarim.bin" ile coz
+"m.eml" ve -1 ve 4 ve "x.bin" ile coz
+"m.eml" ve 0 ve 0 ve "x.bin" ile coz
+"m.eml" ve 0 ve 50331649 ve "x.bin" ile coz
+"#
+    );
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.ikili_dosyalar
+        .insert("m.eml".into(), b"--s\nQUJD\r\nREVG!x--s--".to_vec());
+    let cikti: Vec<String> = hermetik(&ana, &mut io)
+        .into_iter()
+        .filter(|satir| !satir.is_empty())
+        .collect();
+    let abcdef = sha256(b"ABCDEF");
+    assert_eq!(cikti[..4], ["0", "16", "-1", "-1"]);
+    assert!(cikti[4].starts_with("C013 geçersiz arama"), "{cikti:?}");
+    assert!(cikti[5].starts_with("C013 geçersiz arama"), "{cikti:?}");
+    assert_eq!(
+        cikti[6],
+        format!("yol: ek.bin, sha256: {abcdef}, bayt: 6, eklenen: 6")
+    );
+    assert_eq!(
+        cikti[7],
+        format!(
+            "yol: ek.bin, sha256: {}, bayt: 12, eklenen: 6",
+            sha256(b"ABCDEFABCDEF")
+        )
+    );
+    // Konum kaynak dosyadaki mutlak bayttır: `!` 14. bayt.
+    assert_eq!(cikti[8], "C032 base64 alfabesi dışında karakter");
+    assert_eq!(cikti[9], "tür: alfabe, konum: 14");
+    assert_eq!(
+        cikti[10],
+        "C032 base64 dörtlüsü eksik; dolgu (=) zorunludur"
+    );
+    assert_eq!(cikti[11], "tür: uzunluk, konum: 12");
+    for satir in &cikti[12..15] {
+        assert!(satir.starts_with("C013 geçersiz aralık"), "{cikti:?}");
+    }
+    assert_eq!(cikti.len(), 15, "{cikti:?}");
+    assert!(!io.ikili_dosyalar.contains_key("bozuk.bin"));
+    assert!(!io.ikili_dosyalar.contains_key("yarim.bin"));
+}
+
+#[test]
+fn k395_iz_icerik_tasimaz_ve_tamamen_oynatilir() {
+    let ana = format!(
+        "{K395_YARDIMCI}\"m.eml\" ve 0 ve \"GIZLI-SINIR\" ile ara\n\"m.eml\" ve 11 ve 4 ve \"ek.bin\" ile coz\n\"m.eml\" ve 11 ve 5 ve \"ek2.bin\" ile coz\n"
+    );
+    let program = kaynagi_derle(&ana).unwrap();
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban
+        .ikili_dosyalar
+        .insert("m.eml".into(), b"GIZLI-SINIRQUJD!".to_vec());
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    yorumlayici::calistir_io(&program, &mut kaydeden).unwrap();
+    let beklenen: Vec<String> = kaydeden.ic.cikti.clone();
+    let iz = kaydeden.iz_metni().unwrap();
+    let hex = |m: &str| m.bytes().map(|b| format!("{b:02x}")).collect::<String>();
+    assert!(
+        iz.contains(&hex("dosyadan_base64_ekle")) || iz.contains("dosyadan_base64_ekle"),
+        "{iz}"
+    );
+    assert!(!iz.contains(&hex("GIZLI")) && !iz.contains("GIZLI"), "{iz}");
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).unwrap();
+    yorumlayici::calistir_io(&program, &mut oynatici).unwrap();
+    assert_eq!(oynatici.cikti, beklenen);
+    oynatici.bitir().unwrap();
+    let beklenen: Vec<&String> = beklenen.iter().filter(|s| !s.is_empty()).collect();
+    assert_eq!(beklenen[0], "0");
+    assert!(beklenen[1].ends_with("bayt: 3, eklenen: 3"), "{beklenen:?}");
+    assert_eq!(beklenen[2], "C032 base64 alfabesi dışında karakter");
+    assert_eq!(beklenen[3], "tür: alfabe, konum: 15");
+}
+
+/// ZM-F039: 25 MB'lık iletinin tek ~18 MB eki. Ürün gövde başlangıcını ve
+/// kapanış sınırını bayt olarak arar, eki tek çağrıda akışla çözer; satır
+/// satır okuma (C024) ve pencereli metin okuma gerekmez.
+#[test]
+fn zm_f039_on_sekiz_mb_ek_bayt_aranip_tek_cagrida_cikarilir() {
+    let ek = ikili(18_000_000);
+    let (m, _, _, b64_bas, b64_son) = ileti(&ek);
+    let ana = r#"ilk_arama "ileti.eml" dosyasında 0 baytından "Content-Transfer-Encoding: base64" aramayı dene olsun
+ilk_arama başarılıysa
+    baslik ilk_aramanın değeri olsun
+    satir_arama "ileti.eml" dosyasında baslik baytından "\n" aramayı dene olsun
+    satir_arama başarılıysa
+        satir_sonu satir_aramanın değeri olsun
+        artis 1 olsun
+        bos_konum satir_sonu ile artisin toplamı olsun
+        bos_arama "ileti.eml" dosyasında bos_konum baytından "\n" aramayı dene olsun
+        bos_arama başarılıysa
+            bos_satir bos_aramanın değeri olsun
+            baslangic bos_satir ile artisin toplamı olsun
+            sinir_arama "ileti.eml" dosyasında baslangic baytından "--s--" aramayı dene olsun
+            sinir_arama başarılıysa
+                bitis sinir_aramanın değeri olsun
+                baslangic yaz
+                bitis yaz
+                uzunluk bitis ile baslangicin farkı olsun
+                sonuç "ileti.eml" dosyasının baslangic baytından uzunluk baytını base64 çözerek "ekler/ek.pdf" dosyasına eklemeyi dene olsun
+                sonuç başarılıysa
+                    sonucun değeri yaz
+                değilse
+                    hata sonucun hatası olsun
+                    hatanın mesajı yaz
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    std::fs::create_dir_all(proje.0.join("ekler")).unwrap();
+    std::fs::write(proje.0.join("ileti.eml"), &m).unwrap();
+    let basla = std::time::Instant::now();
+    let (tamam, stdout, stderr) = proje.calistir();
+    let sure = basla.elapsed();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    assert_eq!(satirlar[0], b64_bas.to_string(), "{stdout}");
+    assert_eq!(satirlar[1], b64_son.to_string(), "{stdout}");
+    assert_eq!(
+        satirlar[2],
+        format!(
+            "yol: ekler/ek.pdf, sha256: {}, bayt: {}, eklenen: {}",
+            sha256(&ek),
+            ek.len(),
+            ek.len()
+        )
+    );
+    assert!(std::fs::read(proje.0.join("ekler/ek.pdf")).unwrap() == ek);
+    assert!(sure < Duration::from_secs(120), "{sure:?}");
+}
+
+#[test]
+fn dosyadan_cozme_tavan_sinirda_kacis_bozuk_ve_eylem_hedefe_dokunmaz() {
+    let tavan: usize = 32 * 1024 * 1024;
+    let ana = format!(
+        r#"{K395_YARDIMCI}eylem eylemde
+    Metin sözlüğü sonucu döndürür
+    "kod.txt" dosyasının 0 baytından 4 baytını base64 çözerek "eylem.bin" dosyasına eklemeyi dene döndür
+
+"kod.txt" ve 0 ve 4 ve "tam.bin" ile coz
+"kod.txt" ve 0 ve 4 ve "tasan.bin" ile coz
+"kod.txt" ve 0 ve 4 ve "../kacis.bin" ile coz
+"../kod.txt" ve 0 ve 4 ve "kacis.bin" ile coz
+"bozuk.txt" ve 0 ve 100 ve "tam.bin" ile coz
+"kod.txt" ve 0 ve 4 ve "kod.txt" ile coz
+"kod.txt" ve 0 ve 4 ve "dizin" ile coz
+"yok.txt" ve 0 ve 4 ve "yeni.bin" ile coz
+"kod.txt" ve 100 ve 4 ve "bos.bin" ile coz
+sonuc eylemde olsun
+sonuc ile sonucuYaz
+"#
+    );
+    let proje = Proje::yeni(DOSYA, &ana);
+    std::fs::create_dir_all(proje.0.join("dizin")).unwrap();
+    std::fs::write(proje.0.join("kod.txt"), b"QUJD").unwrap();
+    std::fs::write(proje.0.join("bozuk.txt"), b"QUJD\r\nQU*D\r\n").unwrap();
+    std::fs::write(proje.0.join("tam.bin"), vec![7u8; tavan - 3]).unwrap();
+    std::fs::write(proje.0.join("tasan.bin"), vec![7u8; tavan - 2]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().filter(|s| !s.is_empty()).collect();
+    assert!(
+        satirlar[0].ends_with(&format!("bayt: {tavan}, eklenen: 3")),
+        "tam tavanda kabul: {satirlar:?}"
+    );
+    assert!(
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
+        "{satirlar:?}"
+    );
+    assert!(satirlar[2].contains("proje dosya sınır"), "{satirlar:?}");
+    assert!(satirlar[3].contains("proje dosya sınır"), "{satirlar:?}");
+    assert_eq!(satirlar[4], "C032 base64 alfabesi dışında karakter");
+    assert_eq!(satirlar[5], "tür: alfabe, konum: 8");
+    assert!(satirlar[6].contains("hem kaynak hem hedef"), "{satirlar:?}");
+    assert!(satirlar[7].contains("normal dosya"), "{satirlar:?}");
+    assert!(satirlar[8].starts_with("C013"), "{satirlar:?}");
+    // Dosya sonunun ötesi: boş aralık, sıfır bayt eklenir.
+    assert!(satirlar[9].ends_with("bayt: 0, eklenen: 0"), "{satirlar:?}");
+    assert!(satirlar[10].contains("eylem içinde"), "{satirlar:?}");
+    assert_eq!(
+        std::fs::metadata(proje.0.join("tam.bin")).unwrap().len(),
+        tavan as u64
+    );
+    assert_eq!(
+        std::fs::metadata(proje.0.join("tasan.bin")).unwrap().len(),
+        (tavan - 2) as u64,
+        "tavanı aşan akış hedefi değiştirmez"
+    );
+    assert_eq!(std::fs::read(proje.0.join("kod.txt")).unwrap(), b"QUJD");
+    assert!(!proje.0.join("eylem.bin").exists());
+    assert!(!proje.0.join("yeni.bin").exists());
+    let kalan: Vec<String> = std::fs::read_dir(&proje.0)
+        .unwrap()
+        .map(|g| g.unwrap().file_name().to_string_lossy().into_owned())
+        .filter(|ad| ad.contains("zee") && ad.contains("tmp"))
+        .collect();
+    assert!(kalan.is_empty(), "geçici dosya kalmaz: {kalan:?}");
+}
+
+#[test]
+fn bayt_arama_parca_sinirinda_utf8_ignede_ve_tarama_sinirinda() {
+    let pencere: usize = 64 * 1024 * 1024;
+    let ana = format!(
+        r#"{K395_YARDIMCI}"sinir.bin" ve 0 ve "--çiçek" ile ara
+"sinir.bin" ve 65537 ve "--çiçek" ile ara
+"uzun.bin" ve 0 ve "yok" ile ara
+"uzun.bin" ve 1 ve "yok" ile ara
+"uzun.bin" ve 2 ve "yok" ile ara
+"../sinir.bin" ve 0 ve "--" ile ara
+"#
+    );
+    let proje = Proje::yeni(DOSYA, &ana);
+    let mut sinir = vec![b'a'; 65530];
+    sinir.extend_from_slice("--çiçek".as_bytes());
+    sinir.extend_from_slice(b"zzz");
+    std::fs::write(proje.0.join("sinir.bin"), &sinir).unwrap();
+    // Pencere + 1 bayt: konum 0'dan aramada belirsiz -1 yerine hata.
+    std::fs::write(proje.0.join("uzun.bin"), vec![0u8; pencere + 1]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().filter(|s| !s.is_empty()).collect();
+    assert_eq!(satirlar[0], "65530", "64 KiB parça sınırını aşan eşleşme");
+    assert_eq!(satirlar[1], "-1");
+    assert!(
+        satirlar[2].starts_with("C013") && satirlar[2].contains("64 MiB tarama sınırında"),
+        "{satirlar:?}"
+    );
+    assert_eq!(satirlar[3], "-1", "pencere dosya sonuna tam ulaşır");
+    assert_eq!(satirlar[4], "-1");
+    assert!(satirlar[5].contains("proje dosya sınır"), "{satirlar:?}");
+}
+
+#[test]
+fn dosyadan_cozme_kaynak_icin_dosya_okuma_ister() {
+    let proje = Proje::yeni(
+        "\"dosya-yazma\"",
+        "okuma \"kod.txt\" dosyasının 0 baytından 4 baytını base64 çözerek \"a.bin\" dosyasına eklemeyi dene olsun\nokuma başarısızsa\n    hata okumanın hatası olsun\n    hatanın kodu ile \" \" ile hatanın mesajı yaz\n",
+    );
+    std::fs::write(proje.0.join("kod.txt"), b"QUJD").unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    assert!(
+        stdout.starts_with("C013") && stdout.contains("dosya-okuma"),
+        "{stdout}"
+    );
+    assert!(!proje.0.join("a.bin").exists());
+
+    let proje = Proje::yeni(
+        "\"dosya-okuma\"",
+        "s \"kod.txt\" dosyasının 0 baytından 4 baytını base64 çözerek \"a.bin\" dosyasına eklemeyi dene olsun\n",
+    );
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(!tamam, "{stdout}");
+    assert!(
+        stderr.contains("T054") || stdout.contains("T054"),
+        "{stderr}"
+    );
 }

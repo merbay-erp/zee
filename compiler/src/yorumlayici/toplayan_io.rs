@@ -287,6 +287,65 @@ impl GirdiCikti for ToplayanIo {
         hedef.extend_from_slice(baytlar);
         Ok((crate::guvenlik::sha256_hex(hedef), hedef.len() as u64))
     }
+    fn dosyadan_base64_ekle(
+        &mut self,
+        kaynak: &str,
+        konum: i64,
+        adet: i64,
+        hedef: &str,
+    ) -> Result<crate::kalici_dosya::AkisliEkleme, crate::kodlama::AkisHatasi> {
+        use crate::kodlama::{AkisHatasi, Base64AkisCozucu};
+        let bas = u64::try_from(konum).unwrap_or(0);
+        let aralik = self
+            .dosya_araligi_oku(kaynak, konum, adet)
+            .map_err(AkisHatasi::Dosya)?;
+        let mut cozucu = Base64AkisCozucu::default();
+        let mut baytlar = Vec::new();
+        cozucu
+            .besle(&aralik, bas, &mut baytlar)
+            .and_then(|()| cozucu.bitir(bas + aralik.len() as u64))
+            .map_err(AkisHatasi::Kodlama)?;
+        let onceki = self.ikili_dosyalar.get(hedef).map_or(0, Vec::len) as u64;
+        if onceki + baytlar.len() as u64 > crate::kodlama::AZAMI_HEDEF_BAYTI {
+            return Err(AkisHatasi::Dosya(
+                "hedefin toplam boyutu 32 MiB sınırını aşıyor".into(),
+            ));
+        }
+        let (sha256, toplam) = self
+            .dosyaya_bayt_yaz(hedef, &baytlar, true)
+            .map_err(AkisHatasi::Dosya)?;
+        Ok(crate::kalici_dosya::AkisliEkleme {
+            sha256,
+            toplam,
+            eklenen: baytlar.len() as u64,
+        })
+    }
+    fn dosyada_bayt_ara(&mut self, yol: &str, konum: i64, igne: &[u8]) -> Result<i64, String> {
+        let pencere = crate::kodlama::AZAMI_TARAMA_BAYTI;
+        let bas = u64::try_from(konum).unwrap_or(0);
+        // Pencereden bir bayt fazlası okunur: dosya daha uzunsa sınır hatası.
+        let mut tarama = Vec::new();
+        let mut adim = bas;
+        while (tarama.len() as u64) <= pencere {
+            let parca = self.dosya_araligi_oku(yol, adim as i64, 1024 * 1024)?;
+            if parca.is_empty() {
+                break;
+            }
+            adim += parca.len() as u64;
+            tarama.extend_from_slice(&parca);
+        }
+        let mut arayici = crate::kodlama::BaytArayici::yeni(igne);
+        let kesim = tarama.len().min(pencere as usize);
+        match arayici.besle(&tarama[..kesim]) {
+            Some(yer) => Ok((bas + yer) as i64),
+            None if tarama.len() as u64 > pencere => Err(format!(
+                "\"{}\" dosyasında {} MiB tarama sınırında eşleşme yok; konumu ilerletip yeniden arayın",
+                yol,
+                pencere / 1024 / 1024
+            )),
+            None => Ok(-1),
+        }
+    }
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         let icerik = self
             .dosyalar

@@ -37,6 +37,24 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Büyük ekleri dosyadan dosyaya çözme ve dosyada bayt arama (K-395):**
+  25 MB'lık bir e-postanın ~18 MB'lık eki artık tek cümleyle çıkarılabilir.
+  Ekin gövdesi dosyada bayt olarak aranır:
+  `yer yol dosyasında 0 baytından "Content-Transfer-Encoding: base64" aramayı dene olsun`
+  ilk eşleşmenin bayt konumunu (yoksa `-1`) verir; arama en çok 64 MiB
+  tarar, iğne 1–1024 bayttır (`"\n"` gibi kaçışlar kullanılabilir). Sonra
+  `tutamak yol dosyasının baslangic baytından uzunluk baytını base64 çözerek "ekler/ek.pdf" dosyasına eklemeyi dene olsun`
+  aralığı belleğe `Metin` olarak almadan akışla çözer ve hedefe ekler
+  (aralık en çok 48 MiB). Sonuç K-389 tutamağına ek olarak `eklenen` (bu
+  çağrıda yazılan bayt) taşır. Bozuk base64 **C032** verir ve `konum` artık
+  kaynak dosyadaki bayttır; hata ya da sınır aşımında hedef dosya hiç
+  değişmez. Kaynak `dosya-okuma`, hedef `dosya-yazma` ister. Çözerek
+  yazma/eklemenin hedef dosya sınırı **16 MiB'tan 32 MiB'a** çıktı.
+
+  **Göç:** Gerekmez. Satır satır okuyup C024'e çarpan ya da 1 MiB'lık
+  pencerelerle çözen kod çalışmaya devam eder; büyük ekte yeni biçime
+  geçmek bellek kullanımını düşürür. Önceden bu cümleler S015 veriyordu.
+
 - **Uzun Türkçe iletiler ve “gövde çok büyük” sayfası (K-391):**
   `çok_parçalı_yükleme doğru olsun` yazan projede `enctype="multipart/form-data"`
   formu artık dosya parçası olmadan da gönderilebilir; metin alanları sıradan
@@ -69,7 +87,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   (`… adıyla ek olarak göndermeyi dene`) verilebilir. Bozuk kodlama yeni
   **C032** ile döner (`tür`: `alfabe`, `dolgu`, `uzunluk`, `kaçış`,
   `satır_sonu`, `utf8`, `boyut_aşımı`; `konum` hatalı baytı gösterir) ve
-  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir.
+  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir (K-395 ile 32 MiB).
   `özet metnin sha256 özeti olsun` bellekteki metnin özetini dosya
   özetiyle aynı biçimde (64 küçük harf onaltılık) verir. Okuma `dosya-okuma`,
   yazma `dosya-yazma` yetkinliği ister; IO izine içerik değil yalnız uzunluk

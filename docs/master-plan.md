@@ -223,11 +223,15 @@ Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 [RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md) Dilim 1) ile dosya
 ≤ 1 MiB aralıklarla katı UTF-8 ya da base64 `Metin` olarak okunur,
 base64/quoted-printable içerik katı çözülüp no-clobber yeni dosyaya ya da
-atomik eklemeyle (16 MiB hedef tavanı) yazılır; `yol`/`sha256`/`bayt`
-tutamağı RFC-0041 dosya yanıtına bağlanır; `metnin sha256 özeti` bellekte
-özet verir; kodlama hatası C032, IO izi içeriksizdir (`urun-h` ZM-F034/
-ZM-F024). **Açık:** RFC-0043 Dilim 2 (UTF-8 bayt sayısı, metin↔base64/
-onaltılık, kod noktası), DNS ve posta kimlik doğrulama/teslim güvenliği
+atomik eklemeyle (32 MiB hedef tavanı; K-395 öncesi 16 MiB) yazılır;
+`yol`/`sha256`/`bayt` tutamağı RFC-0041 dosya yanıtına bağlanır; `metnin
+sha256 özeti` bellekte özet verir; kodlama hatası C032, IO izi içeriksizdir
+(`urun-h` ZM-F034/ZM-F024). Dilim 2'nin bir kısmı da **gerçekleşti**: K-395
+([ADR-171](../adr/171-dosyadan-dosyaya-cozme-ve-bayt-arama.md), ZM-F039)
+ile ≤ 48 MiB'lık dosya aralığı `Metin` oluşmadan akışla base64 çözülüp
+hedefe atomik eklenir ve dosyada ≤ 64 MiB'lık doğrusal bayt araması yapılır;
+18 MB'lık ek tek çağrıda çıkarılır. **Açık:** RFC-0043 Dilim 2 kalanı (UTF-8
+bayt sayısı, metin↔base64/onaltılık, kod noktası, dosyadan dosyaya QP), DNS ve posta kimlik doğrulama/teslim güvenliği
 (loopback doğrulayıcı çözücüye MX/TXT/TLSA sorgusu ve DNSSEC durumu,
 sürümlü PSL ile kurumsal alan, gelen SPF/DKIM/DMARC/ARC değerlendirmesi ve
 sahte `Authentication-Results` temizliği, giden DKIM imzası ve anahtar

@@ -6041,3 +6041,26 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - İki PR: Dilim 1 (b, c) bu değişiklik; Dilim 2 (a, d, orantılı okuma
   bütçesi) ayrı PR. K-391 kısmi.
 
+## K-395 — RFC-0043 Dilim 2 (kısmi): dosyadan dosyaya çözme ve bayt arama; ADR-171 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F039 (ZM-F038/K-394 ardılı): 25 MB iletide ~18 MB ek
+  çıkarılamıyor. Mustafa kararı (24 Kasım 2026): Dilim 2'den yalnız
+  dosyadan dosyaya base64 çözme, bayt arama ve 32 MiB tavan öne alınır.
+  Freeze sınıfı `dogfood-change`; K-164 sınıfı "yerleşik yüzey eksik"
+  (ZM-F034 ile aynı aile, aynı üründe tekrar; ikinci ürün yok, backlog
+  tasarım maddesi açılmadı).
+- Karar: saf `kodlama::Base64AkisCozucu` (K-389 bellek çözücüsü de artık bu
+  durum makinesini kullanır) ve `kodlama::BaytArayici` (KMP); IO adaptörü
+  kaynak baytlarını 64 KiB parçalarla bunlara verir, hedef
+  `kalici_dosya::akisla_sona_ekle` ile geçici kopya + atomik adlandırmayla
+  yayımlanır. Sonuç tutamağına `eklenen` eklendi; C032 `konum` kaynak bayt.
+- Reddedilen: pencereli okumaya bayt konumu döndürmek (Metin zarfı yine
+  dolar), MIME parçası çıkarma kalıbı (ürün sorumluluğu), 64 MiB tavan
+  (ihtiyaç 18 MB), naif/`memmem` arama (karesel ya da yeni crate), pencere
+  sonunda `-1` (yok/bakılmadı ayrımı kaybolur), oku-birleştir-değiştirle
+  akışlı ekleme (32 MiB bellek). Yeni tanı kodu yok (C013/C032).
+- Mimari: `yorumlayici → kalici_dosya` (trait sonuç türü) ve
+  `dil_cli → kodlama` kenarları eklendi; yön temel→adaptör, döngü yok.
+  PolitikaliIo'nun K-389/K-395 kapıları satır bütçesi için
+  `yorumlayici/yetkinlik/kodlanmis.rs` makrosuna taşındı. K-395 kapandı.
+

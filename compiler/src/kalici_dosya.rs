@@ -19,7 +19,9 @@ mod adim;
 mod cozulmus;
 #[cfg(test)]
 pub(crate) use adim::{test_kancasi, Adim as YazimAdimi};
-pub use cozulmus::{sinirli_sona_ekle, yeni_dosyaya_yaz};
+pub use cozulmus::{
+    akisla_sona_ekle, sinirli_sona_ekle, yeni_dosyaya_yaz, AkisliEkleme, AkisliEklemeHatasi,
+};
 mod kilitli;
 pub use kilitli::{
     karsilastirip_cift_yaz, kilit_altinda_guncelle, CiftYazimHatasi, KilitliGuncellemeHatasi,

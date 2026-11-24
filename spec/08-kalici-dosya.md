@@ -13,8 +13,11 @@ sonuna ekler. Hedef yoksa iki biçim de dosyayı oluşturur.
 `<içerik> base64|quoted_printable çözerek "<yol>" dosyasına yazmayı dene`
 (K-389, spec/26) satır sonu eklemeden çözülmüş baytları yazar ve var olan
 hedefi ezmez; `… eklemeyi dene` aynı baytları yukarıdaki ekleme modeliyle
-sonuna ekler. Aşağıdaki atomiklik, yarış ve metadata kuralları bu iki biçim
-için de geçerlidir.
+sonuna ekler. `<yol> dosyasının <a> baytından <n> baytını base64 çözerek
+"<hedef>" dosyasına eklemeyi dene` (K-395) aynı eklemeyi bütün içeriği
+belleğe almadan, var olan içeriği geçici dosyaya akışla kopyalayıp yapar.
+Aşağıdaki atomiklik, yarış ve metadata kuralları bu biçimler için de
+geçerlidir.
 
 ## Atomiklik ve yarış
 

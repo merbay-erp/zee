@@ -73,5 +73,12 @@ kayıtlı sonucu döndürür ve dosyaya dokunmaz; başarılı aralıklı okuma i
 üretemediği için replay iz uyuşmazlığıyla fail-closed biter. Mevcut
 `dosya_oku` olayı değişmez.
 
+ZORUNLU (K-395, ADR-171): `dosyadan_base64_ekle` olayı `[kaynak, konum,
+adet, hedef]` argümanı ve `ok,<hedef sha256>,<toplam>,<eklenen> |
+hata,<mesaj> | kodlama,<tür>,<konum>,<mesaj>` sonucu; `dosyada_bayt_ara`
+olayı `[yol, konum, <iğne bayt>, <iğne sha256>]` argümanı ve `ok,<konum> |
+hata,<mesaj>` sonucu taşır. Dosya içeriği ve iğnenin kendisi izde
+TAŞIYAMAZ; iki olay da replay'de kayıtlı sonucu döndürür ve dosyaya dokunmaz.
+
 K-337 `birincil_surec` olayı argümansızdır ve tek `0`/`1` sonucu taşır; replay
 yönetici ya da işçi grubu kurmaz, kayıtlı rolü döndürür.

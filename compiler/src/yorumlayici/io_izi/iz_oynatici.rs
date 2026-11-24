@@ -110,6 +110,24 @@ impl GirdiCikti for IzYenidenOynatici {
         self.yazim_oynat(yol, baytlar, ekleme)
     }
 
+    fn dosyadan_base64_ekle(
+        &mut self,
+        kaynak: &str,
+        konum: i64,
+        adet: i64,
+        hedef: &str,
+    ) -> Result<crate::kalici_dosya::AkisliEkleme, crate::kodlama::AkisHatasi> {
+        self.akis_oynat(kaynak, konum, adet, hedef)
+    }
+
+    fn dosyada_bayt_ara(&mut self, yol: &str, konum: i64, igne: &[u8]) -> Result<i64, String> {
+        let sonuc = self.siradaki(
+            "dosyada_bayt_ara",
+            kodlanmis::arama_argumanlari(yol, konum, igne),
+        );
+        self.tamsayi_sonuc("dosyada_bayt_ara", sonuc)
+    }
+
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         let sonuc = self.siradaki("dosya_ilk_baytlari", vec![yol.into(), adet.to_string()]);
         self.metin_sonuc("dosya_ilk_baytlari", sonuc)

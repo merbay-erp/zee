@@ -97,10 +97,12 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
 /// - `YOL dosyasının KONUM baytından N baytını metin olarak okumayı dene`
 /// - `YOL dosyasının KONUM baytından N baytını base64 okumayı dene`
 /// - `İÇERİK base64|quoted_printable çözerek YOL dosyasına yazmayı|eklemeyi dene`
+/// - K-395: `YOL dosyasının A baytından N baytını base64 çözerek HEDEF dosyasına
+///   eklemeyi dene` ve `YOL dosyasında KONUM baytından İĞNE aramayı dene`
 fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     use crate::intrinsic::{
-        DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN, DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ,
-        DOSYA_QP_EKLE, DOSYA_QP_YAZ,
+        DOSYADAN_BASE64_EKLE, DOSYADA_BAYT_ARA, DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN,
+        DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ, DOSYA_QP_EKLE, DOSYA_QP_YAZ,
     };
     let kelime = |i: usize| -> Option<&str> {
         match &tokenlar.get(i)?.tur {
@@ -135,6 +137,41 @@ fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
                 tekil_ifade(tokenlar[2].clone())?,
                 tekil_ifade(tokenlar[4].clone())?,
             ],
+        }));
+    }
+    // K-395: YOL dosyasının A baytından N baytını base64 çözerek HEDEF
+    // dosyasına eklemeyi dene — dosyadan dosyaya akışlı çözme.
+    if n == 12
+        && kelime(1) == Some("dosyasının")
+        && kelime(3) == Some("baytından")
+        && kelime(5) == Some("baytını")
+        && kelime(6) == Some("base64")
+        && kelime(7) == Some("çözerek")
+        && kelime(9) == Some("dosyasına")
+        && kelime(10) == Some("eklemeyi")
+        && kelime(11) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: DOSYADAN_BASE64_EKLE.into(),
+            argumanlar: [0, 2, 4, 8]
+                .into_iter()
+                .map(|i| tekil_ifade(tokenlar[i].clone()))
+                .collect::<Result<_, _>>()?,
+        }));
+    }
+    // K-395: YOL dosyasında KONUM baytından İĞNE aramayı dene.
+    if n == 7
+        && kelime(1) == Some("dosyasında")
+        && kelime(3) == Some("baytından")
+        && kelime(5) == Some("aramayı")
+        && kelime(6) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: DOSYADA_BAYT_ARA.into(),
+            argumanlar: [0, 2, 4]
+                .into_iter()
+                .map(|i| tekil_ifade(tokenlar[i].clone()))
+                .collect::<Result<_, _>>()?,
         }));
     }
     if n != 7 || kelime(2) != Some("çözerek") || kelime(4) != Some("dosyasına") {

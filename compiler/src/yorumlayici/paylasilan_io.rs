@@ -44,6 +44,20 @@ impl GirdiCikti for PaylasilanIo<'_> {
     ) -> Result<(String, u64), String> {
         self.ic.borrow_mut().dosyaya_bayt_yaz(yol, baytlar, ekleme)
     }
+    fn dosyadan_base64_ekle(
+        &mut self,
+        kaynak: &str,
+        konum: i64,
+        adet: i64,
+        hedef: &str,
+    ) -> Result<crate::kalici_dosya::AkisliEkleme, crate::kodlama::AkisHatasi> {
+        self.ic
+            .borrow_mut()
+            .dosyadan_base64_ekle(kaynak, konum, adet, hedef)
+    }
+    fn dosyada_bayt_ara(&mut self, yol: &str, konum: i64, igne: &[u8]) -> Result<i64, String> {
+        self.ic.borrow_mut().dosyada_bayt_ara(yol, konum, igne)
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.borrow_mut().simdi()
     }
