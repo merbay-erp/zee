@@ -375,6 +375,12 @@ impl ProjeBildirimi {
     pub fn yetkinlik_politikasi(&self) -> YetkinlikPolitikasi {
         YetkinlikPolitikasi::proje(self.yetkinlikler.clone(), self.ag_hedefleri.clone())
     }
+
+    /// K-394: bildirim `veri-okuma` ya da `veri-yazma` açıyor mu.
+    pub fn veri_yetkinligi_var(&self) -> bool {
+        self.yetkinlikler.contains(&Yetkinlik::VeriOkuma)
+            || self.yetkinlikler.contains(&Yetkinlik::VeriYazma)
+    }
 }
 
 fn veritabani_bildirimini_al(

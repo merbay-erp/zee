@@ -119,8 +119,11 @@ yolunu taşıyan ortam değişkeninin ya da aynı adlı systemd credential'ın a
 bildirir (`A-Z`, `0-9`, `_`; harf ya da `_` ile başlar; en çok 128 bayt).
 Değer spec/23 K-339 credential kaynak kuralıyla (credential dizini, yoksa ortam; ikisi
 birden ret) her `veri:` çağrısında okunur; tek satır, en çok 4096 bayttır.
-Ayrı projeler aynı adı/yolu bildirerek aynı kökü paylaşabilir. Yalnız ana
-projenin bildirimi etkilidir.
+Ayrı projeler aynı adı/yolu bildirerek aynı kökü paylaşabilir. Kök yalnız
+ana projeden gelir: yerel ya da uzak paket `veri-*` ihtiyacını kökü olmadan
+bildirir (ana kümenin alt kümesi, P015) ve paketin `veri:` yolları ana
+projenin köküne çözülür; paket `veri_kökü` bildiremez, ana proje `veri-*`
+açıp kökü bildirmezse grafik P023'tür.
 
 TANIMLI: `veri:` ile başlayan dosya yolu bu köke gider; önek her kipte
 ayrılmıştır ve hiçbir kipte proje klasöründe yerel dosya adı sayılmaz.

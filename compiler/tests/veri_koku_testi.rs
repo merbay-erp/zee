@@ -397,15 +397,13 @@ fn proje_bildirimi_veri_koku_ve_yetkinlikleri_birlikte_ister() {
     .unwrap();
     assert_eq!(tamam.veri_koku_degiskeni.as_deref(), Some("UYGULAMA_DEPO"));
     assert!(tamam.yetkinlikler.contains(&Yetkinlik::VeriOkuma));
+    // Kök olmadan `veri-*` paket bildiriminde geçerlidir; ana projede grafik
+    // denetimi P023 verir (yerel_paketin_veri_yazimi_… testi).
+    assert!(bildirimi_oku(&format!(
+        "{taban}yetkinlikler \"veri-yazma\" listesi olsun\n"
+    ))
+    .is_ok());
     for (kotu, beklenen) in [
-        (
-            "yetkinlikler \"veri-okuma\" listesi olsun\n",
-            "bildirilmemiş",
-        ),
-        (
-            "yetkinlikler \"veri-yazma\" listesi olsun\n",
-            "bildirilmemiş",
-        ),
         (
             "yetkinlikler boş liste olsun\nveri_kökü \"UYGULAMA_DEPO\" olsun\n",
             "yetkinliği açık değil",
@@ -532,4 +530,107 @@ liste başarısızsa
     assert!(!proje.join("yerel.txt").exists());
     assert!(!alan.depo().join("ekler/gunluk").exists());
     assert!(!alan.depo().join("ekler/yerelden").exists());
+}
+
+/// Yerel bağımlılık paketi (`motor`) ve onu kullanan ana proje.
+fn paketli(alan: &Alan, ana_ek: &str, paket_yetkinlik: &str, paket_ek: &str) -> PathBuf {
+    let paket = alan.0.join("motor");
+    std::fs::create_dir_all(&paket).unwrap();
+    std::fs::write(
+        paket.join("proje.dil"),
+        format!(
+            "proje \"motor\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"motor.dil\" olsun\nyetkinlikler {paket_yetkinlik} olsun\nağ_hedefleri boş liste olsun\n{paket_ek}"
+        ),
+    )
+    .unwrap();
+    std::fs::write(
+        paket.join("motor.dil"),
+        r#"işlem depola
+    adi Metin olarak al
+    Metin döndürür
+    hedef "veri:ekler/" ile adi olsun
+    yazim "QUJD" base64 çözerek hedef dosyasına yazmayı dene olsun
+    yazim başarılıysa
+        tutamak yazimin değeri olsun
+        tutamağın "yol" değeri döndür
+    "ret" döndür
+"#,
+    )
+    .unwrap();
+    let ana = alan.0.join("ana");
+    std::fs::create_dir_all(&ana).unwrap();
+    std::fs::write(
+        ana.join("proje.dil"),
+        format!(
+            "proje \"ana\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nağ_hedefleri boş liste olsun\nyerel_bağımlılıklar \"../motor\" listesi olsun\n{ana_ek}"
+        ),
+    )
+    .unwrap();
+    std::fs::write(
+        ana.join("ana.dil"),
+        "motor paketini kullan\nsonuc \"ek\" ile depola olsun\nsonuc yaz\n",
+    )
+    .unwrap();
+    let kilit = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["kilitle", ana.to_str().unwrap()])
+        .output()
+        .unwrap();
+    // Bildirim/grafik reddi kilitlemede de görünür; sonuç `çalıştır` ile sınanır.
+    let _ = kilit;
+    ana
+}
+
+#[test]
+fn yerel_paketin_veri_yazimi_ana_projenin_veri_kokune_cozulur() {
+    let alan = Alan::yeni();
+    let kok = format!("yetkinlikler \"veri-okuma\", \"veri-yazma\" listesi olsun\nveri_kökü \"{DEGISKEN}\" olsun\n");
+    // Paket ihtiyacını kökü olmadan bildirir; kök ana projeden gelir.
+    let ana = paketli(&alan, &kok, "\"veri-yazma\" listesi", "");
+    let (tamam, stdout, stderr) = calistir(&ana, Some(&alan.depo()));
+    assert!(tamam, "{stdout}{stderr}");
+    assert_eq!(stdout.trim(), "veri:ekler/ek");
+    assert_eq!(std::fs::read(alan.depo().join("ekler/ek")).unwrap(), b"ABC");
+    assert!(!alan.0.join("motor/veri:ekler").exists() && !ana.join("veri:ekler").exists());
+
+    // Paket kendi kökünü bildiremez.
+    let ana = paketli(
+        &alan,
+        &kok,
+        "\"veri-yazma\" listesi",
+        "veri_kökü \"BASKA_DEPO\" olsun\n",
+    );
+    let (tamam, _, stderr) = calistir(&ana, Some(&alan.depo()));
+    assert!(!tamam);
+    assert!(
+        stderr.contains("P023") && stderr.contains("paketi `veri_kökü` bildiremez"),
+        "{stderr}"
+    );
+
+    // Ana proje veri-* açıp kök bildirmezse grafik P023 verir.
+    let ana = paketli(
+        &alan,
+        "yetkinlikler \"veri-yazma\" listesi olsun\n",
+        "\"veri-yazma\" listesi",
+        "",
+    );
+    let (tamam, _, stderr) = calistir(&ana, Some(&alan.depo()));
+    assert!(!tamam);
+    assert!(
+        stderr.contains("P023") && stderr.contains("bildirilmemiş"),
+        "{stderr}"
+    );
+
+    // Ana proje yalnız okuma veriyorsa paketin yazma ihtiyacı P015'tir.
+    let ana = paketli(
+        &alan,
+        &format!("yetkinlikler \"veri-okuma\" listesi olsun\nveri_kökü \"{DEGISKEN}\" olsun\n"),
+        "\"veri-yazma\" listesi",
+        "",
+    );
+    let (tamam, _, stderr) = calistir(&ana, Some(&alan.depo()));
+    assert!(!tamam);
+    assert!(
+        stderr.contains("P015") && stderr.contains("veri-yazma"),
+        "{stderr}"
+    );
 }

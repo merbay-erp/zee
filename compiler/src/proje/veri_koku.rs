@@ -3,26 +3,23 @@
 //! `veri_kökü "UYGULAMA_DEPO" olsun` kökün mutlak yolunu taşıyan ortam
 //! değişkeninin (ya da aynı adlı systemd credential'ın) adını bildirir; yol
 //! kaynakta yazılmaz. Alan `veri-okuma` ya da `veri-yazma` yetkinliğinden en
-//! az biriyle birlikte bulunur; bu yetkinlikler de alansız açılamaz (P023).
+//! az biriyle birlikte bulunur (P023). Ana projede `veri-*` alansız açılamaz;
+//! paket ise `veri-*` ihtiyacını kökü olmadan bildirir ve kök bildiremez
+//! (grafik denetimi, `paket.rs`).
 use super::*;
 
 pub(super) fn alani_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
     yetkinlik_yazimlari: &[String],
-    yetkinlik_satiri: usize,
+    _yetkinlik_satiri: usize,
 ) -> Result<Option<String>, Tani> {
     let veri_yetkinligi = yetkinlik_yazimlari
         .iter()
         .any(|y| y == "veri-okuma" || y == "veri-yazma");
+    // Paket bildirimi `veri-*` ihtiyacını kökü olmadan bildirir; kök yalnız
+    // ana projeden gelir. Ana projede kökün varlığı grafik düzeyinde (paket.rs)
+    // P023 ile denetlenir.
     let Some((ad, satir)) = istege_bagli_sabit_metni_al(alanlar, "veri_kökü")? else {
-        if veri_yetkinligi {
-            return Err(proje_hatasi(
-                "P023",
-                "`veri-okuma`/`veri-yazma` yetkinliği var ama `veri_kökü` bildirilmemiş.",
-                yetkinlik_satiri,
-                "Kökün mutlak yolunu taşıyan ortam değişkeni adını bildir; örnek: veri_kökü \"UYGULAMA_DEPO\" olsun",
-            ));
-        }
         return Ok(None);
     };
     let mut karakterler = ad.chars();

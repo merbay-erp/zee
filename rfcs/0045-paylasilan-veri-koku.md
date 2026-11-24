@@ -85,11 +85,12 @@ veri_kökü "POSTA_DEPO" olsun
   `$CREDENTIALS_DIRECTORY/<ad>` (systemd `LoadCredential=`/`SetCredential=`),
   yoksa ortam değişkeni; ikisi birden varsa ret. Değer tek satırdır,
   en çok 4096 bayt.
-- `veri_kökü` en az bir `veri-*` yetkinliğiyle, `veri-*` yetkinlikleri de
-  yalnız `veri_kökü` ile birlikte bulunur; aksi P023.
-- Yalnız ana projenin bildirimi etkilidir (yetkinlik ve `ağ_hedefleri`
-  gibi); paket kaynağındaki `veri:` yolu ana projenin köküne ve
-  yetkinliğine tabidir.
+- `veri_kökü` en az bir `veri-*` yetkinliğiyle bulunur; ana projede `veri-*`
+  de yalnız `veri_kökü` ile açılır; aksi P023.
+- Kök yalnız ana projeden gelir. Paket `veri-*` ihtiyacını **kökü olmadan**
+  bildirir (ana kümenin alt kümesi, P015); paket kaynağındaki `veri:` yolu
+  ana projenin köküne ve yetkinliğine tabidir. Paket `veri_kökü`
+  bildiremez; ana proje `veri-*` açıp kök bildirmezse grafik P023'tür.
 
 ### 2. Kök değerinin kuralları
 
@@ -274,7 +275,7 @@ tek dosya; bildirimsiz proje; P023; `dene`), `compiler/src/guvenlik/veri_koku/te
 (sözdizimi, kök kuralları, bağ, yokluk, hard-link, ata değişmezi, okuyucu
 yarışı, yazar yarışı, çift değiştirme), dogfood
 `dogfood/urun-h/paylasilan-depo/`, ADR-170, spec/07 §Paylaşılan veri kökü,
-GB-164.
+GB-166.
 
 ## Açık sorular / sonraki dilimler
 

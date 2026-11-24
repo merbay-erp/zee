@@ -108,6 +108,7 @@ impl ProjeGrafigi {
             dugumler: kurucu.dugumler,
         };
         grafik.paket_yetkinliklerini_denetle()?;
+        grafik.veri_kokunu_denetle()?;
         Ok(grafik)
     }
 
@@ -507,6 +508,38 @@ impl ProjeGrafigi {
                     dugum.bildirim_kaynagi.clone(),
                 ));
             }
+        }
+        Ok(())
+    }
+
+    /// K-394 (RFC-0045): paylaşılan veri kökü yalnız ana projeden gelir.
+    /// Ana proje `veri-*` açıyorsa `veri_kökü` bildirir; paket `veri-*`
+    /// ihtiyacını (ana kümenin alt kümesi olarak) bildirir ama kök bildiremez.
+    fn veri_kokunu_denetle(&self) -> Result<(), ProjeYuklemeHatasi> {
+        let ana = self.ana_dugum();
+        if ana.bildirim.veri_yetkinligi_var() && ana.bildirim.veri_koku_degiskeni.is_none() {
+            return Err(proje_hatasi(
+                "P023",
+                "`veri-okuma`/`veri-yazma` yetkinliği var ama `veri_kökü` bildirilmemiş.",
+                "Kökün mutlak yolunu taşıyan ortam değişkeni adını bildir; örnek: veri_kökü \"UYGULAMA_DEPO\" olsun",
+                ana.bildirim_yolu.clone(),
+                ana.bildirim_kaynagi.clone(),
+            ));
+        }
+        let paket = self.dugumler.values().find(|dugum| {
+            dugum.kok != self.ana_kok && dugum.bildirim.veri_koku_degiskeni.is_some()
+        });
+        if let Some(dugum) = paket {
+            return Err(proje_hatasi(
+                "P023",
+                &format!(
+                    "\"{}\" paketi `veri_kökü` bildiremez; paylaşılan veri kökü yalnız ana projeden gelir.",
+                    dugum.bildirim.ad
+                ),
+                "Paket proje.dil dosyasından `veri_kökü` alanını kaldır; paketin `veri:` yolları ana projenin köküne çözülür.",
+                dugum.bildirim_yolu.clone(),
+                dugum.bildirim_kaynagi.clone(),
+            ));
         }
         Ok(())
     }
