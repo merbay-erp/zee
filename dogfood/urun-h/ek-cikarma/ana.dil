@@ -1,0 +1,103 @@
+# K-389 (RFC-0043 Dilim 1, ZM-F034): ürün H SMTP alıcısının ek çıkarma
+# kesiti. DATA gövdesi A2c ile `.zee/baglanti-bloklari/` altına alınır; ürün
+# MIME sınırlarını Zee'de bulur, ek gövdesini satır hizalı ≤ 1 MiB aralıklarla
+# okur ve `base64 çözerek … eklemeyi dene` ile ek dosyasına akıtır. Çıktı
+# `yol`/`sha256`/`bayt` tutamağıdır; webmail eki RFC-0041 dosya yanıtıyla
+# indirir. 8bit gövde `base64 okumayı dene` ile kodlanmış Metin olarak gelir.
+# Değişiklik öncesi aralıklı okuma ve çözerek yazma kalıpları S015 verirdi;
+# `dosyasını okumayı dene` 8bit içerikte başarısızdı (ZM-F034).
+
+işlem başlık bölümünü oku
+    bloku Metin olarak al
+    Metin döndürür
+    # Başlık ve MIME sınırları ASCII'dir; ürünün MIME ayrıştırıcısı parça
+    # konumlarını bu metinden çıkarır (harf sayısı = oktet yalnız ASCII'de;
+    # UTF-8 bayt sayısı RFC-0043 Dilim 2, ZM-F023).
+    okuma bloku dosyasının 0 baytından 65536 baytını metin olarak okumayı dene olsun
+    okuma başarılıysa
+        okumanın değeri döndür
+    "" döndür
+
+işlem eki akıt
+    bloku Metin olarak al
+    baslangici TamSayı olarak al
+    uzunlugu TamSayı olarak al
+    hedefi Metin olarak al
+    Metin döndürür
+    # 78 baytlık RFC 2045 satırlarının 1 MiB altındaki en büyük katı: her
+    # ekleme tam 4'lük gruplardan oluşur.
+    adim 1048554 olsun
+    konum baslangici olsun
+    kalan uzunlugu olsun
+    sonuc "boş ek" olsun
+    devam doğru olsun
+    devam olduğu sürece
+        parca_boyu adim olsun
+        kalan adimdan küçükse
+            parca_boyu kalan olsun
+        okuma bloku dosyasının konum baytından parca_boyu baytını metin olarak okumayı dene olsun
+        okuma başarısızsa
+            hata okumanın hatası olsun
+            sonuc "554 5.6.0 ileti okunamadı: " ile hatanın kodu olsun
+            devam yanlış olsun
+        değilse
+            govde okumanın değeri olsun
+            ekleme govde base64 çözerek hedefi dosyasına eklemeyi dene olsun
+            ekleme başarısızsa
+                hata eklemenin hatası olsun
+                veri hatanın verisi olsun
+                sonuc "554 5.6.0 ek çözülemedi: " ile verinin "tür" değeri olsun
+                devam yanlış olsun
+            değilse
+                tutamak eklemenin değeri olsun
+                sonuc tutamağın "sha256" değeri olsun
+        konum konum ile parca_boyunun toplamı olsun
+        kalan kalan ile parca_boyunun farkı olsun
+        kalan 1 den küçükse
+            devam yanlış olsun
+    sonuc döndür
+
+işlem metin gövdesini çöz
+    govdesi Metin olarak al
+    hedefi Metin olarak al
+    Metin döndürür
+    yazma govdesi quoted_printable çözerek hedefi dosyasına yazmayı dene olsun
+    yazma başarılıysa
+        tutamak yazmanın değeri olsun
+        tutamağın "bayt" değeri döndür
+    değilse
+        hata yazmanın hatası olsun
+        veri hatanın verisi olsun
+        verinin "tür" değeri döndür
+
+işlem sekiz bit parçayı kodla
+    bloku Metin olarak al
+    baslangici TamSayı olarak al
+    uzunlugu TamSayı olarak al
+    Metin döndürür
+    kodlu bloku dosyasının baslangici baytından uzunlugu baytını base64 okumayı dene olsun
+    kodlu başarılıysa
+        kodlunun değeri döndür
+    "" döndür
+
+işlem dkim gövde özeti
+    govdeyi Metin olarak al
+    Metin döndürür
+    # DKIM `bh=` (RFC 6376 §3.7) kanonik gövdenin özetidir; kanonikleştirme
+    # ve base64 biçimi RFC-0044'tedir. Değişiklik öncesi S015 (ZM-F024).
+    govdenin sha256 özeti döndür
+
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    bağlantıya "220 mx.ornek.test ESMTP" satırını yaz
+    ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun
+    ileti başarılıysa
+        künye iletinin değeri olsun
+        blok künyenin "yol" değeri olsun
+        başlık blok ile başlık bölümünü oku olsun
+        govde_basi başlığın uzunluğu olsun
+        boy_metni künyenin "bayt" değeri olsun
+        boy boy_metninin sayısı olsun
+        kalan boy ile govde_basinin farkı olsun
+        sonuc blok ve govde_basi ve kalan ve "ekler/gelen.parca" ile eki akıt olsun
+        bağlantıya "250 2.0.0 " ile sonuc satırını yaz
+    bağlantıyı kapat

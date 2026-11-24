@@ -134,6 +134,58 @@ Bu işlemler sırasıyla `dosya-yazma`/`dosya-okuma` yetkinliklerine bağlıdır
 IO trace/replay'de exact argüman ve sonuçla yer alır ve eylem savepoint'ini
 korur. Aynı eylem içinde PostgreSQL ve dosya yazımı yine YASAKTIR.
 
+## Kodlanmış içerik ve aralıklı okuma — K-389
+
+Normatif kaynak: RFC-0043 Dilim 1, ADR-167.
+
+ZORUNLU (K-389): `<yol> dosyasının <konum> baytından <n> baytını metin olarak
+okumayı dene` ve `… base64 okumayı dene` `konum` ≥ 0 ve 1 ≤ `n` ≤ 1 048 576
+TamSayılarını ister; dışındaki değer dosyaya dokunmadan C013 başarısız Sonuç
+verir. Dosya sonu aşılırsa olan kadarı, konum dosya sonundaysa `""` döner.
+Okuma `dosya-okuma` yetkinliğine ve özetlemeyle aynı yol kuralına bağlıdır;
+normal dosya olmayan hedef C013'tür.
+
+YASAK (K-389): Metin kipinde geçersiz UTF-8'i `U+FFFD` ile onarmak ya da
+atlamak. Aralık çok baytlı diziyi bölerse ya da içerik UTF-8 değilse sonuç
+C032 `tür: utf8`, `konum` = ilk geçersiz baytın dosya içi konumudur; ikili
+ya da 8bit içerik `base64 okumayı dene` ile RFC 4648 §4 dolgulu base64
+`Metin` olarak alınır.
+
+ZORUNLU (K-389): `<içerik> base64 çözerek <yol> dosyasına yazmayı dene` ve
+`quoted_printable` biçimi içeriği IO'dan önce bütünüyle çözer; çözme hatası
+hedefe dokunmadan C032'dir ve `Hata` verisi `tür` (`alfabe`, `dolgu`,
+`uzunluk`, `kaçış`, `satır_sonu`, `boyut_aşımı`) ile varsa girdi içi `konum`
+taşır; mesaj girdinin kendisini taşımaz. MIME base64'te yalnız CR, LF,
+boşluk ve sekme atlanır; dolgu zorunlu ve yalnız sondadır; kanonik olmayan
+dolgu bitleri reddedilir. Quoted-printable'da `=XY` büyük/küçük onaltılıktır,
+`=`+CRLF yumuşak satır sonudur, satır sonu boşluk/sekmesi atılır, sert CRLF
+aynen yazılır; bozuk `=` dizisi, çıplak CR/LF ve yazdırılabilir ASCII dışı
+karakter katı rettir. Çağrı başına çözülen çıktı 1 MiB'ı aşamaz ve ayırmadan
+önce denetlenir.
+
+ZORUNLU (K-389): `yazmayı dene` yeni dosya yazar; var olan hedef (dosya,
+dizin ya da sembolik bağ) kilit altında görülürse ezilmeden C013 `hedef
+dosyası zaten var` döner. `eklemeyi dene` spec/08 eklemesiyle aynı kilitli,
+atomik oku-birleştir-değiştir modelidir ve hedef yoksa oluşturur. İkisi de
+hedefin toplam boyutunu bu bölümün 16 MiB yükleme/özet tavanıyla sınırlar;
+aşan çağrı hiçbir bayt yazmaz. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
+(hedefin bütün içeriği) ve `bayt` (toplam) verir — A2c ve web yükleme
+tutamağıyla aynı biçim; `yol` dosya yanıtına ve SMTP ek listesine doğrudan
+verilir. İşlem `dosya-yazma` yetkinliğine bağlıdır. Eylem içinde `yazmayı
+dene` savepoint'e yeni dosya olarak kaydedilir ve geri almada silinir;
+`eklemeyi dene` eylem içinde C013'tür; aynı eylemde PostgreSQL yazımıyla
+birlikte kullanım YASAKTIR.
+
+TANIMLI (K-389): `<metin>in sha256 özeti` UTF-8 baytlarının SHA-256'sını 64
+küçük harf onaltılık `Metin` olarak verir (satır sonu dönüşümü yok); saf ve
+yetkinliksizdir, aynı içerikli dosyanın `sha256 özetini almayı dene`
+sonucuna eşittir. Metin dışı nesne derlemede tür hatasıdır.
+
+AÇIK (K-389): UTF-8 bayt sayısı, metin↔base64/onaltılık, kod noktası ve
+base64url RFC-0043 Dilim 2'dir. Çağrılar arası yarım base64 dörtlüsü
+saklanmaz; akışlı eklemede her çağrı tam dörtlülerden, QP'de tam satırlardan
+oluşmalıdır.
+
 ## Açık sınır
 
 Dosya sistemi ile PostgreSQL arasında dağıtık ACID sözü yoktur. Ürün

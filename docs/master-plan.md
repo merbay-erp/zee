@@ -218,19 +218,23 @@ sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
 `sandbox allow-downloads`; K-391 Dilim 2 (rota bazlı gövde sınırı, orantılı
 multipart okuma bütçesi, SQL parametre tavanı). V1 sözü değildir.
 
-Bayt/kodlama/özet yapı taşları (UTF-8 bayt sayısı, katı UTF-8 çözme,
-RFC 4648 base64/onaltılık, kod noktası, bellekte SHA-256) ile DNS ve posta
-kimlik doğrulama/teslim güvenliği (loopback doğrulayıcı çözücüye MX/TXT/TLSA
-sorgusu ve DNSSEC durumu, sürümlü PSL ile kurumsal alan, gelen SPF/DKIM/
-DMARC/ARC değerlendirmesi ve sahte `Authentication-Results` temizliği,
-giden DKIM imzası ve anahtar döndürme, MTA-STS/DANE/TLS-RPT ile zorunlu
-teslim TLS'i) **açık iştir**. K-383/[RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md)
-yeni `Baytlar` türü açmadan kodlanmış `Metin` + dosya tutamağı modelini
-(ilk dilim: A2c blok dosyasından aralıklı okuma ve base64/QP çözerek bayt
-yazma, ZM-F034),
+Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
+([ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),
+[RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md) Dilim 1) ile dosya
+≤ 1 MiB aralıklarla katı UTF-8 ya da base64 `Metin` olarak okunur,
+base64/quoted-printable içerik katı çözülüp no-clobber yeni dosyaya ya da
+atomik eklemeyle (16 MiB hedef tavanı) yazılır; `yol`/`sha256`/`bayt`
+tutamağı RFC-0041 dosya yanıtına bağlanır; `metnin sha256 özeti` bellekte
+özet verir; kodlama hatası C032, IO izi içeriksizdir (`urun-h` ZM-F034/
+ZM-F024). **Açık:** RFC-0043 Dilim 2 (UTF-8 bayt sayısı, metin↔base64/
+onaltılık, kod noktası), DNS ve posta kimlik doğrulama/teslim güvenliği
+(loopback doğrulayıcı çözücüye MX/TXT/TLSA sorgusu ve DNSSEC durumu,
+sürümlü PSL ile kurumsal alan, gelen SPF/DKIM/DMARC/ARC değerlendirmesi ve
+sahte `Authentication-Results` temizliği, giden DKIM imzası ve anahtar
+döndürme, MTA-STS/DANE/TLS-RPT ile zorunlu teslim TLS'i);
 [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
-B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar; core freeze
-altında uygulanmaz, V1 sözü değildir.
+B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar. V1 sözü
+değildir.
 
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
