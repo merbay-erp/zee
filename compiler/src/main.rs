@@ -4187,6 +4187,101 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))?;
         Ok(baytlar.iter().map(|bayt| format!("{bayt:02x}")).collect())
     }
+    fn dosya_araligi_oku(&mut self, yol: &str, konum: i64, adet: i64) -> Result<Vec<u8>, String> {
+        use std::io::{Read, Seek, SeekFrom};
+
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+        // K-389: yorumlayıcı aralığı IO'dan önce denetler; adaptör ikinci kez
+        // fail-closed tutar (1 MiB, ADR-167).
+        let konum = u64::try_from(konum).map_err(|_| "konum negatif olamaz".to_string())?;
+        let adet = u64::try_from(adet)
+            .ok()
+            .filter(|adet| (1..=1024 * 1024).contains(adet))
+            .ok_or_else(|| "okunacak bayt sayısı 1 ile 1048576 arasında olmalı".to_string())?;
+        let gercek_yol = self.dosya_yolu(yol, false)?;
+        let okuma_hatasi =
+            |hata: std::io::Error| format!("\"{}\" dosyası okunamadı: {}", yol, hata);
+        let mut dosya = std::fs::File::open(&gercek_yol)
+            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
+        let boy = dosya.metadata().map_err(okuma_hatasi)?;
+        if !boy.is_file() {
+            return Err(format!("\"{}\" normal dosya değil", yol));
+        }
+        let kalan = boy.len().saturating_sub(konum).min(adet);
+        let mut baytlar = Vec::with_capacity(kalan as usize);
+        dosya.seek(SeekFrom::Start(konum)).map_err(okuma_hatasi)?;
+        dosya
+            .take(adet)
+            .read_to_end(&mut baytlar)
+            .map_err(okuma_hatasi)?;
+        Ok(baytlar)
+    }
+    fn dosyaya_bayt_yaz(
+        &mut self,
+        yol: &str,
+        baytlar: &[u8],
+        ekleme: bool,
+    ) -> Result<(String, u64), String> {
+        use sha2::{Digest, Sha256};
+
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+        if self
+            .postgresql_yazma_eylemleri
+            .iter()
+            .any(|kullandi| *kullandi)
+        {
+            return Err("aynı eylem dosya ve PostgreSQL yazımını birlikte kullanamaz; dağıtık atomiklik sözü verilmez".into());
+        }
+        let eylemde = !self.eylem_yedekleri.is_empty();
+        if eylemde && ekleme {
+            // K-389: akışlı ekleme bir çalışma dosyasıdır; geri alma için
+            // her çağrıda bütün dosyayı yedeklemek yerine eylemde reddedilir.
+            return Err(
+                "çözerek eklemeyi dene eylem içinde kullanılamaz; ekleri eylem dışında biriktirip eylemde atomik taşıyın"
+                    .into(),
+            );
+        }
+        let gercek_yol = self.dosya_yolu(yol, true)?;
+        let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+            .http()
+            .yukleme_bayti() as u64;
+        let yazim_hatasi = |hata: std::io::Error| match hata.kind() {
+            std::io::ErrorKind::AlreadyExists => format!("\"{}\" hedef dosyası zaten var", yol),
+            _ => format!("\"{}\" dosyasına yazılamadı: {}", yol, hata),
+        };
+        let hex = |ozet: &[u8]| {
+            ozet.iter()
+                .map(|bayt| format!("{bayt:02x}"))
+                .collect::<String>()
+        };
+        if !ekleme {
+            if baytlar.len() as u64 > azami {
+                return Err(format!(
+                    "\"{}\" dosyasına yazılamadı: hedefin toplam boyutu {} MiB sınırını aşıyor",
+                    yol,
+                    azami / 1024 / 1024
+                ));
+            }
+            dil::kalici_dosya::yeni_dosyaya_yaz(&gercek_yol, baytlar).map_err(yazim_hatasi)?;
+            if eylemde {
+                // Hedef kilit altında yoktu: geri alma yeni dosyayı siler.
+                self.dosya_eylem_degisimi(
+                    &gercek_yol,
+                    dil::kalici_dosya::KilitliDegisim {
+                        onceki: None,
+                        sonraki: Some(baytlar.to_vec()),
+                    },
+                );
+            }
+            return Ok((hex(&Sha256::digest(baytlar)), baytlar.len() as u64));
+        }
+        let icerik = dil::kalici_dosya::sinirli_sona_ekle(&gercek_yol, baytlar, azami)
+            .map_err(yazim_hatasi)?;
+        // Özet, kilit altında yayımlanan bütün içerikten hesaplanır.
+        Ok((hex(&Sha256::digest(&icerik)), icerik.len() as u64))
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
         let saniye = std::time::SystemTime::now()

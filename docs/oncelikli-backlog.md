@@ -873,7 +873,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
 | K-178 | **KAPALI** | Ölçüm: yorumlayıcı çerçevesi debug ~194 KiB/düzey, release ~11 KiB/düzey (macOS arm64 = Linux aarch64). Eski 32 MiB yığın debug CLI'yı 167. düzeyde doğal taşmayla düşürüyordu; resmî yığın 256 MiB rezervasyon oldu, regresyon koşucusu ve derinlik testleri resmî yığında; `derinlik-499-resmi-yiginda` vakası ve bütçe testi kapıda |
 | K-179 | **KAPALI** | ADR-074 `dogfood/kelime-avi`: üçüncü ürün (etkileşimli CLI oyunu, 3 birim/7 test, `kelime_avi_testi` hermetik); sürtünme tekrarı ölçüldü — 2 yeni (F001 iyelikli döngü adı A003, F003 `metnin satırları` T028), 4 tekrar (F010 ×3 yer, F009, F013, F011), 5 kılavuzla önlenen; compiler değişikliği yok
-| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; 21 Kasım 2026 üçüncü ürün ürün H aynı sayaç yardımcısını yazdı (K-355/F002); syntax freeze (11 Kasım) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
+| K-180 | **KAPALI → K-386** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; 21 Kasım 2026 üçüncü ürün ürün H aynı sayaç yardımcısını yazdı (K-355/F002); bağımsız karşılaştırma raporu ikili aramayı O(n log n) buldu. 24 Kasım 2026 Mustafa kararı: "freeze içinde açılmaz" kaydı dört ürün kanıtıyla `dogfood-change` istisnasına çevrildi; RFC-0029 kabul edildi ve K-386 ile uygulandı (ADR-166). F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
 | K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil |
 | K-184 | **KAPALI** | Public depo güvenliği: özel IO izi yazımı, platform izin/ACL testleri, SECURITY belgesi, Gitleaks geçmiş/ağaç CI taraması. ADR-026 ve güvenlik kayıtları GB-024/025. |
 | K-186 | **KAPALI** | ADR-077: Zee ERP korumalı rotalarında doğrulanmış kullanıcı → security-definer resolver → transaction-local `app.tenant_id`; aynı leased bağlantı, iç eylemlerde savepoint, hata/timeout rollback ve public rotada sıfır tenant bağlamı. |
@@ -2557,6 +2557,42 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-386 — Liste sıra erişimi (RFC-0029, K-180)
+
+**Durum: KAPALI.** Kaynak: K-180 dört ürün kanıtı (kanıt özeti K-164/F010,
+kelime avı K-179, ürün H K-355/F002, bağımsız karşılaştırma raporundaki
+ikili arama). 24 Kasım 2026 merkez kararı (Mustafa): syntax freeze içinde
+`dogfood-change` istisnası. Karar ADR-166, RFC-0029 kabul/uygulandı.
+
+Gerçekleşen: `<liste>nin <sıra>. öğesi` (1 tabanlı öğe kopyası) ve
+`<liste>nin <sıra>. öğesini almayı dene` (`Sonuç<T>`, `SIRA_DISI`).
+Sözcükleyicide dar sıra eki tokeni (yalnız bitişik nokta + boşluk + `öğe…`;
+öteki noktalar S001, eski programların token dizisi aynı). Yeni tanılar
+S049 (kalıp dışı sıra eki; yazma girişiminde gezme yazması önerisi), T058
+(sıra TamSayı değil / nesne liste değil / öğe türü belirsiz), T059 (sabit
+sıra < 1), C031 (aralık dışı; sıra ve adet). `harfler[0]` S001'i artık sıra
+erişimini önerir. Yorumlayıcı liste adını ödünç alır, yalnız öğeyi kopyalar
+(O(1)). İndeksle yazma bilinçli olarak açılmadı (ürün kanıtı yok; T053 ve
+`olsun` ad konumu genişlemesi). Morfoloji değişmedi (yeni ek yok).
+
+Ürünler: kanıt özeti `bilgiye çevir`/`çiftleri birleştir` iç içe sayaçtan
+kurtuldu; kelime avı `sıradaki harfi al` ve `sıradaki kelimeyi al`
+yardımcıları silindi, skor alanı `parçaların 2. öğesi`. Çıktılar bayt bayt
+aynı (ürün kaynağı değişikliği sayfayı değiştirmedi, Zee/Rust/Go bayt bayt eş; K-165 Rust/Go eşdeğerleri
+değişmedi). Korpus `f010-sira-erisimi-cozumu` (K-172).
+
+Kanıt: `compiler/tests/liste_sira_erisimi_testi.rs` (ilk/son/orta, 0/n+1/
+negatif, boş liste, iç içe liste ve yapı kopyası, T053 ile gezme, S049/S001,
+biçimleyici, test bloğu), `compiler/tests/liste_sira_bellek_testi.rs` (sayan
+ayırıcıyla O(1) kopya), `golden/34-liste-sira-erisimi.dil`, spec/01, spec/17,
+spec/20; `scripts/liste-sira-olcumu.py` ölçümü (n 400 kat → ikili arama
+süresi 1,7 kat; sayaçla n iki kat → süre 2,2 kat).
+
+Açık: hesaplanan sıra ifadesi ve iyelik zinciri (`tablonun 2. öğesinin 3.
+öğesi`, `zee-tr-2`), sıra ile yazma, listeyi işlem argümanı olarak geçerken
+O(n) değer kopyası (kopya-üzerine-yazma ayrı performans işi), K-161/K-162
+K-180 kartının insan verisiyle geriye dönük doğrulanması.
+
 ## K-391 — İstek boyut sınırları ve gövde aşımı rotası (ADR-168)
 
 **Durum: KAPALI (Dilim 1 ve Dilim 2).** Kaynak: etkin dogfood ürünü
@@ -2859,6 +2895,39 @@ Açık: (A2c K-384'te kapandı)
 çok işçi grubuna adla aktarım, `dil dene` içinden betiklenmiş bağlantı,
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
+
+## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256 (ADR-167)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmeleri
+ZM-F034 (A2c blok dosyası `Metin` olarak geri okunamıyor, base64/QP ek
+gövdesi bayt olarak yazılamıyor: gelen ekler webmail'e çıkmıyor, ekli
+gönderim `554`, büyük `APPEND` 64 KB) ve ZM-F024 (bellekte SHA-256 yok;
+DKIM `bh=`). Freeze sınıfı `dogfood-change`; yeni tür ya da grammar kuralı
+yok, mevcut iyelik/`dene` kalıp ailesi genişledi.
+
+Karar (ADR-167, RFC-0043 Dilim 1 kabul): `… baytından n baytını metin
+olarak|base64 okumayı dene` (≤ 1 MiB, katı UTF-8, dosya içi `konum`),
+`… base64|quoted_printable çözerek … dosyasına yazmayı|eklemeyi dene`
+(önce saf çözüm, sonra no-clobber atomik yazım ya da spec/08 atomik ekleme;
+16 MiB hedef tavanı; `yol`/`sha256`/`bayt` tutamağı → RFC-0041 dosya
+yanıtı/SMTP eki), `metnin sha256 özeti` (saf). Yeni C032 (`tür`+`konum`);
+dosya/aralık/no-clobber/tavan/eylem arızaları C013. IO izi içeriksiz
+(`dosya_araligi_oku`, `dosyaya_bayt_yaz`); başarılı aralıklı okuma replay'de
+fail-closed. `yazmayı dene` eylem savepoint'ine kayıtlı, `eklemeyi dene`
+eylemde ret. GB-163.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs` (11 vaka; 2,5 MB ikili ek
+MIME iletisinden bayt-kesin çıkarılır, ek dosya yanıtıyla indirilir),
+`kodlama.rs` ve `kalici_dosya/cozulmus.rs` birim testleri; dogfood
+`urun-h-ek-cikarma`, `zm-r004-uzunluk-oktet-saymaz`, `zm-r005-bellekte-sha256`;
+K-167 kalıp/API/iz/tanı satırları.
+
+Açık: (1) RFC-0043 Dilim 2 (ZM-F023: UTF-8 bayt sayısı, metin↔base64/
+onaltılık, kod noktası, base64url) ve üç iç base64 yardımcısının
+birleştirilmesi. (2) 16 MiB'tan büyük ekler (yükleme/özet/dosya yanıtı
+tavanıyla birlikte değişir). (3) İçerik-adresli iz yan dosyasıyla aralıklı
+okumanın replay'i. (4) `kodlama` fuzz hedefi. (5) `message/rfc822` dosya
+yanıtı türü (RFC-0043 "sonraki küçük iş").
 
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı (ADR-031 eki)
 

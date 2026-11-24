@@ -11,7 +11,13 @@ api	ag.baglanti_satir_oku_sureli	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub c
 api	ag.baglanti_satir_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
 api	ag.baglanti_tls_baslat	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_TLS_BASLAT: &str = "ag.baglanti_tls_baslat";
 api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
+api	dosya.aralik_base64	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_BASE64: &str = "dosya.aralik_base64";
+api	dosya.aralik_metin	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_METIN: &str = "dosya.aralik_metin";
+api	dosya.base64_cozerek_ekle	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_BASE64_EKLE: &str = "dosya.base64_cozerek_ekle";
+api	dosya.base64_cozerek_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_BASE64_YAZ: &str = "dosya.base64_cozerek_yaz";
 api	dosya.ilk_baytlar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
+api	dosya.qp_cozerek_ekle	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_QP_EKLE: &str = "dosya.qp_cozerek_ekle";
+api	dosya.qp_cozerek_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_QP_YAZ: &str = "dosya.qp_cozerek_yaz";
 api	gorsel.kucult	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GORSEL_KUCULT: &str = "gorsel.kucult";
 api	guvenlik.gizli_coz	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GIZLI_COZ: &str = "guvenlik.gizli_coz";
 api	guvenlik.gizli_sifrele	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GIZLI_SIFRELE: &str = "guvenlik.gizli_sifrele";
@@ -26,8 +32,10 @@ api	io-izi.baglanti_gunluk	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"b
 api	io-izi.baglanti_islemi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_islemi"
 api	io-izi.baglanti_kaydet	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_kaydet"
 api	io-izi.birincil_surec	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"birincil_surec"
+api	io-izi.dosya_araligi_oku	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_araligi_oku"
 api	io-izi.dosya_ilk_baytlari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_ilk_baytlari"
 api	io-izi.dosya_yaniti_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_yaniti_gonder"
+api	io-izi.dosyaya_bayt_yaz	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosyaya_bayt_yaz"
 api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
 api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
 api	io-izi.gizli_sifrele	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_sifrele"
@@ -143,8 +151,10 @@ kalip	argon2	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	artır	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	azalt	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	açık	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	base64	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bayt	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	baytı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	baytından	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıda	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıdan	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıya	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -219,6 +229,7 @@ kalip	paketini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	parçaları	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	parçasını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	piksele	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	quoted_printable	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -248,9 +259,13 @@ kalip	yok	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	yoksa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	yönlendir	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	çerezine	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	çözerek	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	çözmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	önbelleklenebilir	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	önekli	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	özeti	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	öğesi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	öğesini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	üzerinden	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	şifrelenmişi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 komut	anahtar	aktif	0.8.0-dev	compiler/src/main.rs	-

@@ -1,5 +1,6 @@
 use super::*;
 
+mod sira;
 pub(super) mod web;
 
 pub(super) fn degerlendir_async<'a>(
@@ -120,7 +121,7 @@ pub(super) fn degerlendir_async<'a>(
                         };
                         Ok(Deger::Mantiksal(io.sensor_acik_mi(ad)))
                     }
-                    _ => Err(ic_hata(satir)),
+                    k => super::kodlanmis_dosya::degerlendir(k, &degerler, io, satir),
                 }
             }
             Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
@@ -202,6 +203,9 @@ pub(super) fn degerlendir_async<'a>(
                     (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                         html_kacisla(&m, satir).map(Deger::Metin)
                     }
+                    (Ozellik::Sha256Ozeti, Deger::Metin(m)) => {
+                        Ok(Deger::Metin(crate::guvenlik::sha256_hex(m.as_bytes())))
+                    }
                     (Ozellik::Uzunluk, Deger::Metin(m)) => {
                         Ok(Deger::TamSayi(m.chars().count() as i64))
                     }
@@ -262,6 +266,9 @@ pub(super) fn degerlendir_async<'a>(
                         )
                         .onerili("Önce \"sözlükte <anahtar> varsa\" ile kontrol et.".into())
                     })
+            }
+            Ifade::ListeOgesi { liste, sira, dene } => {
+                sira::oge(liste, sira, *dene, ortam, program, io, derinlik, satir).await
             }
             Ifade::SozlukteVar {
                 sozluk,

@@ -303,6 +303,14 @@ pub enum Ifade {
         sozluk: Box<Ifade>,
         anahtar: Box<Ifade>,
     },
+    /// "harflerin 3. öğesi" / "harflerin sıra. öğesi" — 1 tabanlı sıra ile
+    /// liste öğesinin kopyası (RFC-0029, K-386); aralık dışı C031. `dene`:
+    /// "… öğesini almayı dene" → Sonuç<T>, aralık dışı `SIRA_DISI` Hata.
+    ListeOgesi {
+        liste: Box<Ifade>,
+        sira: Box<Ifade>,
+        dene: bool,
+    },
     /// "yaşlarda (anahtar) varsa/yoksa" (K-015).
     SozlukteVar {
         sozluk: Box<Ifade>,
@@ -501,6 +509,9 @@ pub enum Ozellik {
     HataNedeni,
     /// Yapılandırılmış Hata'nın Metin değerli bağlam sözlüğü (K-091).
     HataVerisi,
+    /// Metin: UTF-8 baytlarının SHA-256 özeti, 64 küçük harf onaltılık
+    /// ("metnin sha256 özeti"; K-389, RFC-0043 Dilim 1).
+    Sha256Ozeti,
 }
 
 #[derive(Debug, Clone)]

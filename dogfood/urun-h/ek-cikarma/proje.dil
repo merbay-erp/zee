@@ -1,0 +1,11 @@
+# K-389 (RFC-0043 Dilim 1): ürün H posta motorunun gelen ileti ek çıkarma
+# kesiti. A2c ile dosyaya alınmış blok aralıklı okunur, ek gövdesi çözülerek
+# bayt-kesin ek dosyasına yazılır; webmail eki RFC-0041 dosya yanıtıyla verir.
+proje "ek-cikarma" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-dinleyici", "dosya-okuma", "dosya-yazma" listesi olsun
+ağ_hedefleri boş liste olsun
+dinleyiciler "smtp_v4 0.0.0.0:25" listesi olsun
+bağlantı_blok_sınırı 26214400 olsun

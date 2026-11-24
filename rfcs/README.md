@@ -34,7 +34,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0026 | [PostgreSQL Veri Erişimi](0026-postgresql-veri-erisimi.md) | **geçici kabul** (K-163/F031 TLS ve sınırlı havuz profili) | K-163, B-073, ADR-060/062 |
 | RFC-0027 | [Binary Yükleme ve Dosya Yaşam Döngüsü](0027-binary-yukleme-ve-dosya-yasam-dongusu.md) | **geçici kabul** (K-163/F030 dogfood) | K-163, ADR-061 |
 | RFC-0028 | [Uyumluluk ve Deprecation Politikası](0028-uyumluluk-ve-deprecation-politikasi.md) | **geçici kabul** (K-167 yürütülebilir kapı; edition sözdizimi açık) | K-167, B-072, ADR-064 |
-| RFC-0029 | [Listede sıra ile öğe erişimi](0029-liste-sira-erisimi.md) | **taslak** (K-174 freeze sonrası; K-161/K-162 kartı bekler) | K-180, K-164/F010, K-179, ADR-074 |
+| RFC-0029 | [Listede sıra ile öğe erişimi](0029-liste-sira-erisimi.md) | **kabul** — **uygulandı** (K-386 `dogfood-change`, ADR-166; yalnız okuma, 1 tabanlı) | K-180, K-164/F010, K-179, K-355/F002, ADR-074 |
 
 **Durum özeti (5 Eylül 2026, K-167):** 28 RFC — 2 kabul (0001, 0010),
 24 geçici kabul (RFC-0020'nin yayın, metadata doğrulama, taşıma/cache/offline ve
@@ -69,5 +69,5 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 | RFC-0040 | [Web adaptöründe WebDAV/CalDAV/CardDAV senkron istemci yüzeyi](0040-webdav-caldav-carddav-adaptoru.md) | **taslak** (K-364; core freeze sonrası, katman başına dogfood kapısı) |
 | RFC-0041 | [Web adaptöründe ikili dosya yanıtı, multipart yükleme ve SMTP ek türü kaydı](0041-ikili-yanit-ve-ek-akisi.md) | **kabul** (K-373 taslak, K-378 `dogfood-change`, ADR-163) — A, B ve C **uygulandı** |
 | RFC-0042 | [PostgreSQL sorgusunun son tarihe bağlanması](0042-postgresql-sorgu-son-tarihi.md) | **kabul, uygulandı** (K-371 taslak, K-375 correctness; spec/25 ZORUNLU/YASAK) |
-| RFC-0043 | [Bayt, kodlama ve özet yüzeyi](0043-bayt-kodlama-ve-ozet-yuzeyi.md) | **taslak** (K-383; core freeze altında, `urun-h` ZM-F023/ZM-F024 `dogfood-change` kapısı) |
+| RFC-0043 | [Bayt, kodlama ve özet yüzeyi](0043-bayt-kodlama-ve-ozet-yuzeyi.md) | **kabul — Dilim 1 uygulandı** (K-389/ADR-167: aralıklı okuma, base64/QP çözerek yazma, bellekte SHA-256); Dilim 2 **taslak** (ZM-F023) |
 | RFC-0044 | [DNS, posta kimlik doğrulama ve teslim güvenliği](0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md) | **taslak** (K-383; B1 DNS+DNSSEC+PSL, B2 SPF/DKIM/DMARC/ARC, B3 DKIM imzası, B4 MTA-STS/DANE/TLS-RPT; aşama başına `dogfood-change`) |

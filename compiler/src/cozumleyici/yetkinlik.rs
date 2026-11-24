@@ -353,6 +353,9 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
             ifade_bilgisi(tarih, bilgi);
             ifade_bilgisi(miktar, bilgi);
         }
+        Ifade::ListeOgesi { liste, sira, .. } => [liste, sira]
+            .into_iter()
+            .for_each(|i| ifade_bilgisi(i, bilgi)),
         Ifade::MetinSabiti(_)
         | Ifade::SayiSabiti(_)
         | Ifade::OndalikSabiti { .. }

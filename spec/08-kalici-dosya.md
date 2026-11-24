@@ -10,6 +10,12 @@ tek `\n` baytını hedefin **bütün yeni içeriği** yapar.
 `"<yol>" dosyasına <değer> ekle`, var olan baytları değiştirmeden aynı satırı
 sonuna ekler. Hedef yoksa iki biçim de dosyayı oluşturur.
 
+`<içerik> base64|quoted_printable çözerek "<yol>" dosyasına yazmayı dene`
+(K-389, spec/26) satır sonu eklemeden çözülmüş baytları yazar ve var olan
+hedefi ezmez; `… eklemeyi dene` aynı baytları yukarıdaki ekleme modeliyle
+sonuna ekler. Aşağıdaki atomiklik, yarış ve metadata kuralları bu iki biçim
+için de geçerlidir.
+
 ## Atomiklik ve yarış
 
 - Başarılı tek-dosya değişikliği **atomiktir**: eşzamanlı okuyucu eski ya da
