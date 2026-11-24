@@ -4,9 +4,14 @@ Bu anonim kesit etkin `urun-h` ürününe (bkz. [KOKEN](../KOKEN.md)) bağlıdı
 Ürün deposu özeldir; sunucu adı, alan adı, adres ve yerel yol taşınmaz
 (ADR-087).
 
-| Exact ürün dosyası (ürün commit'i `@@URUN_COMMIT@@`, 24 Kasım 2026) | Git blob | SHA-256 |
+| Exact ürün dosyası (ürün commit'i `8ee251495170139b1416919e75d76954065a3c4c`, 24 Kasım 2026) | Git blob | SHA-256 |
 |---|---|---|
-| Sürtünme kaydı (`ZM-F039` satırı) | `@@URUN_BLOB@@` | `@@URUN_SHA256@@` |
+| Sürtünme kaydı (`ZM-F039` satırı) | `37c3374a7f74911218364893aa7d548729481e97` | `ef907c3a4d01a645189015089bc618c1b363d555c58e5f831ee816484556805b` |
+| Hermetik yeniden üretim (`zm-f039-yeniden-uretim.dil`) | `9e941b727c92d5112df191f4375a375f8cdd7123` | `6ddfd1aa4a087459a764113615baacd6d0ee03c73a895943bf712e74e57b85be` |
+
+Ürün yeniden üretimi K-394 `veri:` kökü üzerinde 15 MiB eki 768 KiB'lık
+pencerelerde satır satır okur ve ~4,7 MB çözdükten sonra C024 ile durur
+(çalışma değeri ~67 MB); depo içi kesit aynı ihtiyacın K-395 biçimidir.
 
 ## Sürtünme (ZM-F039)
 
