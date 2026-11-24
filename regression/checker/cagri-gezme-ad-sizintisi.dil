@@ -1,0 +1,13 @@
+işlem harfi çoğalt
+    işareti al
+    harfler boş liste olsun
+    harflere işareti ekle
+    harflere işareti ekle
+    harflerin adedini döndür
+
+harfler "a", "b" listesi olsun
+toplam 0 olsun
+her harf için
+    adet harf için harfi çoğalt olsun
+    toplamı adetle artır
+toplamı yaz
