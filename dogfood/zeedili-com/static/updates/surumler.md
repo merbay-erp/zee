@@ -44,6 +44,23 @@ Bu kayıt yeni sürüm etiketi değildir.
   göründüğünü ve alanın parametre olarak geçirilmesini söyler. Tanı kodları
   ve kabul/ret davranışı değişmedi.
 
+### Düzeltilenler
+
+- **Döngüde çağrılan işlemin aynı adlı listesi artık T053 vermiyor (K-380):**
+  `her harf için` gövdesinden çağrılan bir işlem kendi içinde `harfler` adlı
+  bir liste kurup değiştirdiğinde (doğrudan, başka bir işlem üzerinden ya da
+  o listeyi gezerek) derleyici dış döngü için yanlışlıkla
+  `"harfler" gezilirken koleksiyonun kendisi değiştirilemez` diyordu. Çağrılan
+  işlem çağıranın listesini göremez; artık kural yalnız gezilen listenin
+  kendisine uygulanır. Gezilen listeyi işlem sonucuyla yeniden bağlamak ya da
+  ona eklemek yine T053'tür.
+- **Seçenek daraltması işlem sınırını aşmıyor (K-380):** `bulunan varsa`
+  dalında çağrılan bir işlem kendi `bulunan` yerelini kontrol etmeden
+  açınca derleme geçiyor, çalışma zamanında C008 ile duruyordu; artık
+  derlemede T036 verilir. Ters yönde, işlemin kendi `varsa` dalı çağıranın
+  daraltmasını artık silmez. Göç: T036 alan program değeri işlem içinde
+  `varsa` ile açmalıdır (öncesinde bu yol çalışınca C008 ile düşerdi).
+
 ## 23 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
