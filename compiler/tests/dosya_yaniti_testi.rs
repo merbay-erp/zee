@@ -276,6 +276,26 @@ fn dosya_yaniti_kayitsiz_tur_ad_enjeksiyonu_yol_gecisi_ve_tavani_reddeder() {
             "a.xhtml",
             "kayıtlı içerik türü değil",
         ),
+        // K-385: XML yalnız `application/xml` ile; `text/xml` takma adı,
+        // XML tabanlı belge/betik türleri ve parametreli profil türü açılmaz.
+        (
+            "belge.bin",
+            "text/xml",
+            "a.xml",
+            "kayıtlı içerik türü değil",
+        ),
+        (
+            "belge.bin",
+            "application/xslt+xml",
+            "a.xsl",
+            "kayıtlı içerik türü değil",
+        ),
+        (
+            "belge.bin",
+            "application/x-apple-aspen-config; charset=utf-8",
+            "a.mobileconfig",
+            "kayıtlı içerik türü değil",
+        ),
         (
             "belge.bin",
             "text/javascript",
@@ -434,4 +454,74 @@ fn hermetik_adaptor_ayni_tur_ad_kuralini_uygular_ve_iz_oynatilir() {
 fn eylem_icinde_dosya_yaniti_t044() {
     let kaynak = "eylem indir\n    değer döndürmez\n    sonuç \"a.bin\" dosyasını \"application/pdf\" türünde \"a.pdf\" adıyla ek olarak göndermeyi dene olsun\n";
     assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T044").kod, "T044");
+}
+
+/// K-385 (ADR-163 eki, ZM-F033): e-posta istemcisi otomatik yapılandırma
+/// XML'i ve Apple yapılandırma profili sabit yollu rotadan kayıtlı türle,
+/// diğer dosya yanıtlarıyla aynı `attachment` + sandbox CSP + `nosniff`
+/// başlıklarıyla gider; gövde ayrıştırılmadan bayt bayt aynı akar.
+#[test]
+fn dosya_yaniti_autoconfig_xml_ve_apple_profili_kayitli_turle_gider() {
+    const AUTOCONFIG: &str = r#"8080 kapısında sunucu başlat
+
+GET "/.well-known/autoconfig/mail/config-v1.1.xml" adresine istek geldiğinde
+    herkese açık
+    sonuç "yapilandirma/autoconfig.xml" dosyasını "application/xml" türünde "config-v1.1.xml" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "yok" yanıtını 404 durumuyla gönder
+
+GET "/profil" adresine istek geldiğinde
+    herkese açık
+    sonuç "yapilandirma/posta.mobileconfig" dosyasını "application/x-apple-aspen-config" türünde "posta.mobileconfig" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "yok" yanıtını 404 durumuyla gönder
+"#;
+    let proje = Proje::yeni(AUTOCONFIG);
+    std::fs::create_dir(proje.0.join("yapilandirma")).expect("klasör");
+    // XXE/DTD taşıyan XML: sunucu ayrıştırmaz, gövde olduğu gibi akar.
+    let xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE x [<!ENTITY e SYSTEM \"file:///etc/passwd\">]>\n<clientConfig version=\"1.1\"><emailProvider id=\"ornek.test\">&e;</emailProvider></clientConfig>\n";
+    std::fs::write(proje.0.join("yapilandirma/autoconfig.xml"), xml).expect("xml");
+    // İmzalı profil ikili CMS'tir: UTF-8 olmayan baytlar da aynen gitmeli.
+    let profil: Vec<u8> = [0x30, 0x82, 0xff, 0x00, 0xfe]
+        .into_iter()
+        .chain(b"<plist version=\"1.0\"></plist>".iter().copied())
+        .collect();
+    std::fs::write(proje.0.join("yapilandirma/posta.mobileconfig"), &profil).expect("profil");
+    let kapi = kopma::bos_kapi();
+    let _sunucu = baslat(&proje.0, kapi);
+
+    let ortak = |basliklar: &str| {
+        assert!(basliklar.starts_with("HTTP/1.1 200 OK\r\n"), "{basliklar}");
+        assert_eq!(baslik(basliklar, "X-Content-Type-Options"), ["nosniff"]);
+        assert_eq!(
+            baslik(basliklar, "Content-Security-Policy"),
+            ["default-src 'none'; sandbox"]
+        );
+        assert_eq!(baslik(basliklar, "Cache-Control"), ["no-store"]);
+        assert_eq!(
+            baslik(basliklar, "Cross-Origin-Resource-Policy"),
+            ["same-origin"]
+        );
+    };
+
+    let (basliklar, govde) = istek(kapi, "GET", "/.well-known/autoconfig/mail/config-v1.1.xml");
+    ortak(&basliklar);
+    assert_eq!(baslik(&basliklar, "Content-Type"), ["application/xml"]);
+    assert_eq!(
+        baslik(&basliklar, "Content-Disposition"),
+        ["attachment; filename=\"config-v1.1.xml\"; filename*=UTF-8''config-v1.1.xml"]
+    );
+    assert_eq!(govde, xml.as_bytes());
+
+    let (basliklar, govde) = istek(kapi, "GET", "/profil");
+    ortak(&basliklar);
+    assert_eq!(
+        baslik(&basliklar, "Content-Type"),
+        ["application/x-apple-aspen-config"]
+    );
+    assert_eq!(
+        baslik(&basliklar, "Content-Disposition"),
+        ["attachment; filename=\"posta.mobileconfig\"; filename*=UTF-8''posta.mobileconfig"]
+    );
+    assert!(govde == profil, "profil bayt bayt aynı olmalı");
 }

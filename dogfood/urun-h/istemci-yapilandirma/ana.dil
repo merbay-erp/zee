@@ -1,0 +1,28 @@
+# K-385 (ZM-F033, ADR-163 eki): ürün H webmail'i Thunderbird autoconfig
+# XML'ini ve Apple yapılandırma profilini sunmak istiyor. K-378 kaydında
+# application/xml ve application/x-apple-aspen-config yoktu: XML rotası
+# C013 ile 404'e düşüyor, profil application/octet-stream olarak inip iOS
+# Safari'de kurulum akışını başlatmıyordu. İçerik sır taşımaz; ürün dosyayı
+# yayın sırasında üretir, sunucu gövdeyi ayrıştırmaz.
+
+8080 kapısında sunucu başlat
+
+GET "/.well-known/autoconfig/mail/config-v1.1.xml" adresine istek geldiğinde
+    herkese açık
+    sonuç "yapilandirma/autoconfig.xml" dosyasını "application/xml" türünde "config-v1.1.xml" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "Yapılandırma bulunamadı." yanıtını 404 durumuyla gönder
+
+GET "/mail/config-v1.1.xml" adresine istek geldiğinde
+    herkese açık
+    sonuç "yapilandirma/autoconfig.xml" dosyasını "application/xml" türünde "config-v1.1.xml" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "Yapılandırma bulunamadı." yanıtını 404 durumuyla gönder
+
+# Ürün profili oturum sahibine göre üretir (parola içermez) ve CSRF'li
+# form gönderimiyle indirir; değişiklik öncesi tür octet-stream'di.
+POST "/ayarlar/apple-profili" adresine istek geldiğinde
+    "kullanıcı" yetkisi gerekli
+    sonuç "yapilandirma/posta.mobileconfig" dosyasını "application/x-apple-aspen-config" türünde "posta.mobileconfig" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "Profil bulunamadı." yanıtını 404 durumuyla gönder

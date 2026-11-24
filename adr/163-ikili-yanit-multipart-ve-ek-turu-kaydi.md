@@ -5,7 +5,8 @@
 - **İlgili kayıt:** K-378, K-373, K-355 (`urun-h`, ZM-F022), RFC-0041,
   RFC-0040 katman C, RFC-0036, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-096 (ekli e-posta), ADR-159 (imza okuma), ADR-160 (rota önbelleği),
-  spec/11, spec/26, spec/23, GB-154, GB-155, GB-156
+  spec/11, spec/26, spec/23, GB-154, GB-155, GB-156; ek: K-385 (ZM-F033),
+  GB-159
 
 ## Bağlam
 
@@ -141,6 +142,74 @@ olarak girer.
   ayırt edilir (GB-156).
 - ZeeMail JS'siz formla ek ve kişi dosyası yükleyebilir; bildirimsiz
   projelerin multipart davranışı aynıdır. Sınırlar ve CSRF sırası GB-155.
+
+## Ek — K-385: istemci yapılandırma türleri (24 Kasım 2026)
+
+**Bağlam.** `urun-h` (ZeeMail) sürtünmesi ZM-F033: webmail Thunderbird
+otomatik yapılandırma XML'ini (`/.well-known/autoconfig/mail/config-v1.1.xml`,
+`autoconfig.<alan>/mail/config-v1.1.xml`) ve Apple yapılandırma profilini
+(`.mobileconfig`) sunmak istiyor. Kayıtta ikisinin türü yoktu: XML rotası
+C013 ile 404'e düşüyor, profil `application/octet-stream` olarak iniyor ve
+iOS Safari profil kurulum akışını başlatmıyordu. İçerik sır taşımaz.
+
+**Birincil kaynak ölçümü (24 Kasım 2026).**
+
+- Thunderbird (comm-central `FetchHTTP.sys.mjs`): yanıt `Content-Type`
+  değeri `text/xml`, `application/xml` ya da `text/rdf` ile başlıyorsa XML
+  olarak ayrıştırılır, aksi hâlde metin döner ve `readFromXML` yapılandırmayı
+  reddeder. İstek arka plan XHR'ıdır (GET); `Content-Disposition` hiç
+  okunmaz, CSP/sandbox belge olmayan yanıta uygulanmaz. IETF taslağı
+  (draft-ietf-mailmaint-autoconfig-07 §3) `text/xml` yazar; istemci ikisini
+  eşit kabul eder.
+- RFC 7303: `text/xml` `application/xml`'in takma adıdır; `application/xml`
+  karışıklığı önlemek için ÖNERİLİR. Kodlamayı BOM, sonra `charset`
+  parametresi belirler; UTF-8 BOM'suz ÖNERİLİR.
+- Apple (Over-the-Air Profile Delivery): Safari'nin yanıtı yapılandırma
+  profili olarak işlemesi için tür `application/x-apple-aspen-config`'tir;
+  dosya `.mobileconfig` uzantısını korur. `Content-Disposition` hakkında
+  Apple birincil kaynağı yoktur.
+- Outlook POX Autodiscover (MS-OXDSCLI §2.1, §3.2.5): istek `POST`'tur,
+  yanıt istekteki `EMailAddress` kullanıcısını anlatır; GET yalnız 302
+  yönlendirmesi içindir. Statik dosya yanıtı bu istemciye uymaz.
+
+**Karar.**
+
+1. Kayda iki satır eklenir: `xml` → `application/xml`, `mobileconfig` →
+   `application/x-apple-aspen-config`. İkisi de **yalnız web dosya
+   sınıfındadır** (`smtp_aday` yok); gövde ayrıştırılmaz, imza denetimi
+   yoktur. K-167 `bicim icerik-turu.xml` ve `bicim icerik-turu.mobileconfig`.
+2. **`text/xml` değil `application/xml`.** Kapalı kayıtta tek yazım
+   tutulur (exact eşleşme, takma ad yok). RFC 7303 önerisine uyar ve
+   kaydın `text/*` satırlarına eklediği `charset=utf-8`, XML'in kendi kodlama
+   bildirimini geçersiz kılardı. Thunderbird iki yazımı eşit kabul eder.
+   `+xml` sonekli öteki türler (XSLT, RSS, XHTML, SVG) açılmaz.
+3. **`charset` eklenmez.** XML kodlamasını BOM/bildirim taşır; imzalı profil
+   ikili CMS'tir.
+4. **Yalnız `attachment`; `inline` açılmadı.** Ölçülen istemcilerin hiçbiri
+   `Content-Disposition` okumaz (Thunderbird XHR'ı) ya da `inline` istemez
+   (Apple tür ve uzantıya bakar). `inline` XML'i tarayıcıda belge olarak
+   oluşturur; sandbox CSP betiği durdursa da gereksiz yüzeydir.
+5. **Outlook POX Autodiscover açık sınırdır.** POST rotası `_csrf` ister
+   (spec/12 §3, `herkese açık` kapatmaz) ve `--web-proxy` profilinde
+   `Origin` ZORUNLUDUR; Outlook ikisini de göndermez → 403. Aynı engel
+   RFC-0040 #5(c) CalDAV/CardDAV için doğrulanmıştır; dar CSRF muafiyeti o
+   işte tek model olarak karara bağlanır. Ürün bugün yalnız `autodiscover`
+   kaydını DNS/vekil katmanında karşılayabilir.
+
+**Güvenlik değerlendirmesi (GB-159).** XML sunucuda ayrıştırılmaz: XXE/DTD
+riski Zee tarafında yoktur. Tarayıcıda `attachment` belge oluşturmaz;
+oluşsa bile `default-src 'none'; sandbox` betik ve alt kaynak yüklemesini,
+`nosniff` tür tahminini engeller. Profilin içeriği (gömülü parola, kök
+sertifika, imza) ürün sorumluluğudur; kurulum iOS'ta kullanıcı onayı ister.
+Ölçümde görülen açık: HTML standardı yanıt CSP'sindeki `sandbox`'ı
+gezinme sandbox bayraklarına katar ve `allow-downloads` olmadan
+`attachment` indirmesini engeller; Chromium ve WebKit bugün bu denetimi
+uygulamaz (bayraklar çerçeveden alınır). Değişiklik bütün dosya yanıtlarını
+etkilediği için bu ekte yapılmadı; `sandbox allow-downloads` önerisi ayrı
+iştir. iOS cihazda profil kurulumunun insan ölçümü de açıktır.
+
+**Sonuç.** ZeeMail autoconfig XML'ini ve Apple profilini kayıtlı türle
+sunar; bildirimsiz/kalıpsız projeler ve mevcut on iki tür bayt bayt aynıdır.
 
 ## Değerlendirilen seçenekler
 

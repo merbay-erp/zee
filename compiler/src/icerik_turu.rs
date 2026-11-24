@@ -143,6 +143,31 @@ pub const TURLER: &[IcerikTuru] = &[
         smtp_aday: true,
         web_dosya: true,
     },
+    // K-385 (ADR-163 eki, ZM-F033): yalnız web dosya yanıtı. E-posta
+    // istemcisi autoconfig/autodiscover XML'i ve Apple yapılandırma profili.
+    // Ayrıştırılmaz, imza denetimi yoktur; `attachment` + sandbox CSP +
+    // `nosniff` diğer satırlarla aynıdır. `charset` eklenmez: XML kodlamasını
+    // kendi bildirimi taşır (RFC 7303), imzalı profil ikili CMS'tir.
+    IcerikTuru {
+        ad: "xml",
+        mime: "application/xml",
+        uzantilar: &["xml"],
+        metin: false,
+        imza: None,
+        smtp_varsayilan: false,
+        smtp_aday: false,
+        web_dosya: true,
+    },
+    IcerikTuru {
+        ad: "mobileconfig",
+        mime: "application/x-apple-aspen-config",
+        uzantilar: &["mobileconfig"],
+        metin: false,
+        imza: None,
+        smtp_varsayilan: false,
+        smtp_aday: false,
+        web_dosya: true,
+    },
     IcerikTuru {
         ad: "ikili",
         mime: "application/octet-stream",
@@ -316,6 +341,30 @@ mod tests {
             "text/csv; charset=utf-8"
         );
         assert_eq!(baslik_degeri(adla("zip").expect("zip")), "application/zip");
+        assert_eq!(
+            baslik_degeri(web_dosya_turu("application/xml").expect("xml")),
+            "application/xml"
+        );
+        assert_eq!(
+            web_dosya_turu("application/x-apple-aspen-config").map(|t| t.ad),
+            Some("mobileconfig")
+        );
+        // `text/xml` takma adı ve parametreli/büyük harfli yazımlar açılmaz.
+        for kotu in [
+            "text/xml",
+            "Application/XML",
+            "application/xml; charset=utf-8",
+            "application/x-apple-aspen-config; charset=utf-8",
+            "application/rss+xml",
+            "application/xslt+xml",
+        ] {
+            assert!(web_dosya_turu(kotu).is_none(), "{kotu}");
+        }
+        // Web'e özgü satırlar SMTP adayı değildir; uzantıdan SMTP seçimi yok.
+        for ad in ["xml", "mobileconfig"] {
+            let tur = adla(ad).expect(ad);
+            assert!(tur.web_dosya && !tur.smtp_aday && !tur.smtp_varsayilan);
+        }
         assert_eq!(uzantidan("Rapor.DOCX").map(|t| t.ad), Some("docx"));
         assert_eq!(uzantidan("foto.jpg").map(|t| t.ad), Some("jpeg"));
         assert!(uzantidan("uzantisiz").is_none());
