@@ -5675,6 +5675,36 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256; ADR-167 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F034 + ZM-F024: A2c blok dosyası parça parça okunamıyor,
+  base64/QP ek gövdesi bayt olarak yazılamıyor, bellekte özet yok. Freeze
+  sınıfı `dogfood-change`; K-164 sınıfı "yerleşik yüzey eksik" (ZM-F022 ile
+  aynı aile; base64 derleyicide üç iç yardımcıda tekrar ediyor, RFC-0044
+  DKIM de istiyor → iki ürün yolu, tekrar sinyali).
+- Karar: IO adaptörü yalnız ham bayt okur/yazar; aralık, katı UTF-8 ve
+  base64/QP çözümü saf `kodlama` modülünde, hata C032 `tür`+`konum`.
+  `yazmayı dene` no-clobber, `eklemeyi dene` spec/08 atomik ekleme, 16 MiB
+  hedef tavanı; iz içeriksiz. RFC-0043 Dilim 1 açık soruları kapandı
+  (QP katı ret, çağrılar arası durum yok, ekleme her proje dosyasına, 1 MiB).
+- Uygulama sırasında düzeltilen tasarım: ilk sürüm eylem içinde yazmayı
+  reddediyordu; T046 rota yazımını eyleme zorladığı için `yazmayı dene`
+  eylem savepoint'ine bağlandı. İlk ekleme `O_APPEND` idi; spec/08 okuyucu
+  atomikliği için atomik oku-birleştir-değiştir modeline geçildi.
+- Reddedilen: `base64` crate'ini doğrudan bağımlılık yapmak (konum eşleme,
+  tedarik kaydı; Dilim 2'de birleştirme ile yeniden), QP gevşek çözümü,
+  `.zee/` ile sınırlı ekleme, yarım dörtlü durumu, izde içerik. K-389 kapandı.
+- CI takibi: K-386 + K-389 sonrası Linux x86_64 debug `dil` gömülü DWARF
+  ile 128 MiB'ı aştı; yürütülebilir dosyayı özetleyen betiklerin
+  (`effect-dispatcher`, `modul-yoneticisi`, Linux taşıyıcı) 128 MiB okuma
+  tavanı `native_effect_consumer` ve `yonetilen_modul` testlerinde reddetti.
+  Ölçüm (Linux aarch64 debug): varsayılan 130,6 MB, `split-debuginfo =
+  "unpacked"` ile 56,2 MB. Karar: tavan güvenlik/kaynak sınırıdır, gevşetilmez;
+  yalnız `[profile.dev]` DWARF'ı `.dwo` dosyalarına ayırır (hata ayıklama
+  korunur, macOS'ta zaten varsayılan, Windows PDB ve release profili/sürüm
+  artefaktı değişmez). Reddedilen: tavanı on betikte artırmak, `debug =
+  "line-tables-only"` (değişken incelemesini kaybettirir).
+
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı; ADR-031 eki (24 Kasım 2026)
 
 - Kaynak: bağımsız zee/Python/Go/Rust karşılaştırma raporu (bd8d44f) ve dış

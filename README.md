@@ -201,10 +201,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **34/34** |
-| Rust + doctest vakası | **1364** |
-| Tanı kimliği | **175 etkin + 3 ayrılmış** |
-| RFC | **44** (6 kabul, 30 geçici kabul, 8 taslak) |
-| ADR | **161** (161 kabul) |
+| Rust + doctest vakası | **1382** |
+| Tanı kimliği | **176 etkin + 3 ayrılmış** |
+| RFC | **44** (7 kabul, 30 geçici kabul, 7 taslak) |
+| ADR | **162** (162 kabul) |
 | Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

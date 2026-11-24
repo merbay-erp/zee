@@ -509,6 +509,9 @@ pub enum Ozellik {
     HataNedeni,
     /// Yapılandırılmış Hata'nın Metin değerli bağlam sözlüğü (K-091).
     HataVerisi,
+    /// Metin: UTF-8 baytlarının SHA-256 özeti, 64 küçük harf onaltılık
+    /// ("metnin sha256 özeti"; K-389, RFC-0043 Dilim 1).
+    Sha256Ozeti,
 }
 
 #[derive(Debug, Clone)]

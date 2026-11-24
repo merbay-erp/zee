@@ -64,5 +64,14 @@ onluk bayt sayısı); sonuçlar başarı etiketiyle sayı/liste/özet/onaltılı
 veya hata mesajıdır. Replay hiçbir fiziksel taşıma, silme, listeleme, hashing
 ya da okuma yapmaz.
 
+ZORUNLU (K-389, ADR-167): `dosya_araligi_oku` olayı `[yol, konum, adet]`
+argümanı ve `ok,<okunan bayt>,<sha256> | hata,<mesaj>` sonucu,
+`dosyaya_bayt_yaz` olayı `[yol, yaz|ekle, <bayt>, <sha256>]` argümanı ve
+`ok,<hedef sha256>,<toplam bayt> | hata,<mesaj>` sonucu taşır; ikisi de
+dosya içeriğini ya da kodlanmış girdiyi izde TAŞIYAMAZ. Yazım olayı replay'de
+kayıtlı sonucu döndürür ve dosyaya dokunmaz; başarılı aralıklı okuma içerik
+üretemediği için replay iz uyuşmazlığıyla fail-closed biter. Mevcut
+`dosya_oku` olayı değişmez.
+
 K-337 `birincil_surec` olayı argümansızdır ve tek `0`/`1` sonucu taşır; replay
 yönetici ya da işçi grubu kurmaz, kayıtlı rolü döndürür.

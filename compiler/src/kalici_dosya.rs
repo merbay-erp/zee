@@ -16,8 +16,10 @@ use crate::kaynak_sinirlari::degistirme_penceresi::yarim_degistirme as yarim;
 use adim::{nokta, sar, Adim};
 
 mod adim;
+mod cozulmus;
 #[cfg(test)]
 pub(crate) use adim::{test_kancasi, Adim as YazimAdimi};
+pub use cozulmus::{sinirli_sona_ekle, yeni_dosyaya_yaz};
 mod kilitli;
 pub use kilitli::{
     karsilastirip_cift_yaz, kilit_altinda_guncelle, CiftYazimHatasi, KilitliGuncellemeHatasi,

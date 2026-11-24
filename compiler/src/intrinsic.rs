@@ -33,6 +33,21 @@ pub const DOSYA_SHA256: &str = "dosya.sha256";
 pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
 /// K-331: imza okumasının sabit üst sınırı (bayt).
 pub const DOSYA_ILK_BAYT_SINIRI: i64 = 64;
+/// K-389 (RFC-0043 Dilim 1): `<yol> dosyasının <konum> baytından <n> baytını
+/// metin olarak okumayı dene` — en çok 1 MiB'lık aralık, katı UTF-8 → Metin Sonucu.
+pub const DOSYA_ARALIK_METIN: &str = "dosya.aralik_metin";
+/// K-389: `<yol> dosyasının <konum> baytından <n> baytını base64 okumayı dene`
+/// — ikili aralık RFC 4648 base64 Metin Sonucu olarak.
+pub const DOSYA_ARALIK_BASE64: &str = "dosya.aralik_base64";
+/// K-389: `<içerik> base64 çözerek <yol> dosyasına yazmayı dene` — MIME base64'ü
+/// çözüp yeni dosyaya no-clobber bayt-kesin yazar → `yol`/`sha256`/`bayt` sözlüğü.
+pub const DOSYA_BASE64_YAZ: &str = "dosya.base64_cozerek_yaz";
+/// K-389: `<içerik> base64 çözerek <yol> dosyasına eklemeyi dene` — akışlı ekleme.
+pub const DOSYA_BASE64_EKLE: &str = "dosya.base64_cozerek_ekle";
+/// K-389: `<içerik> quoted_printable çözerek <yol> dosyasına yazmayı dene`.
+pub const DOSYA_QP_YAZ: &str = "dosya.qp_cozerek_yaz";
+/// K-389: `<içerik> quoted_printable çözerek <yol> dosyasına eklemeyi dene`.
+pub const DOSYA_QP_EKLE: &str = "dosya.qp_cozerek_ekle";
 /// K-378: `<yol> dosyasını <tür> türünde <ad> adıyla ek olarak göndermeyi dene`
 /// — rota yanıtını kayıtlı içerik türüyle `Content-Disposition: attachment`
 /// dosya yanıtı yapar → TamSayı Sonucu (bayt).
@@ -123,6 +138,11 @@ const IKI_METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::Metin
 const YOK: &[IntrinsicTuru] = &[];
 const SAYI: &[IntrinsicTuru] = &[IntrinsicTuru::TamSayi];
 const METIN_VE_SAYI: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::TamSayi];
+const METIN_VE_IKI_SAYI: &[IntrinsicTuru] = &[
+    IntrinsicTuru::Metin,
+    IntrinsicTuru::TamSayi,
+    IntrinsicTuru::TamSayi,
+];
 const METIN_VE_METIN_LISTESI: &[IntrinsicTuru] =
     &[IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi];
 const UC_METIN: &[IntrinsicTuru] = &[
@@ -395,6 +415,54 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::MetinSonucu,
         etki: IntrinsicEtkisi::DisOkuma,
         tur_hatasi: "Okunacak dosya yolu Metin, bayt sayısı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_ARALIK_METIN,
+        yetkinlik: Yetkinlik::DosyaOkuma,
+        arguman_turleri: METIN_VE_IKI_SAYI,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Okunacak dosya yolu Metin, konum ve bayt sayısı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_ARALIK_BASE64,
+        yetkinlik: Yetkinlik::DosyaOkuma,
+        arguman_turleri: METIN_VE_IKI_SAYI,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Okunacak dosya yolu Metin, konum ve bayt sayısı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_BASE64_YAZ,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: IKI_METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Çözülecek içerik ve hedef dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_BASE64_EKLE,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: IKI_METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Çözülecek içerik ve hedef dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_QP_YAZ,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: IKI_METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Çözülecek içerik ve hedef dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_QP_EKLE,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: IKI_METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Çözülecek içerik ve hedef dosya yolu Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_GONDER,
