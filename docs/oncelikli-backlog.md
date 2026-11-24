@@ -2577,7 +2577,7 @@ aynen geçerli (C024). Web istek bütçesi değişmedi.
 Kanıt: `compiler/tests/baglanti_butce_yenileme_testi.rs` (3 olumlu, 3
 olumsuz), regression `regression/runtime/baglanti-idle-butce-yenileme.dil`
 (yeni hermetik `baglanti` kipi), spec/12 §9 ve spec/24 normatif madde,
-ADR-033 ve ADR-165 ekleri, GB-162 (DoS değerlendirmesi), soak 1800 sn.
+ADR-033 ve ADR-165 ekleri, GB-161 (DoS değerlendirmesi), soak 1800 sn.
 
 Açık: birim içinde atılan geçici değer iadesi yok (RFC-0043 seçenek b);
 ZeeMail'in 1 MB+ `DATA` gövdesini ve 260 KB `FETCH` yanıtını tek birimde
