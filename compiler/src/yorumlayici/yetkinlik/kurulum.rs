@@ -30,6 +30,20 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
         dosya::yolu_denetle(&self.politika, self.cocuk_modu, yol, yetkinlik)
     }
 
+    /// K-394: dosyadan bağlantıya aktarımın yolu (proje dosyası ya da
+    /// `veri:`) aynı merkezî yol/yetkinlik denetiminden geçer.
+    pub(super) fn aktarim_yolunu_denetle(
+        &self,
+        islem: &super::super::BaglantiIslemi,
+    ) -> Result<(), String> {
+        match islem {
+            super::super::BaglantiIslemi::DosyaAktar(yol) => {
+                self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)
+            }
+            _ => Ok(()),
+        }
+    }
+
     pub(super) fn web_gerektir(&self) -> Result<(), String> {
         self.gerektir(Yetkinlik::AgSunucusu)
     }

@@ -95,9 +95,9 @@ dışında kalan proje kökü yolları göreli yolla adlandırılamaz; bunlara g
 klasörü içindeki, canonical hedefi proje kökü içinde kalan bir sembolik bağla
 ulaşılır.
 
-AÇIK: Kökü proje klasörüne taşıyan ya da proje başına ayrı veri kökü açan bir
-bildirim alanı bu sürümde yoktur (K-382 takip önerisi `veri_kökü`; core
-freeze altında yalnız `dogfood-change` olarak).
+AÇIK: Göreli IO kökünü proje klasörüne taşıyan bir bildirim alanı yoktur.
+Projeler arası paylaşılan veri için K-382 takip önerisi `veri_kökü`,
+K-394 ile mutlak ve işletimce verilen bir kök olarak açıldı (aşağıda).
 
 ZORUNLU: Proje dosya sınırında yol çözümü bir yokluğa çarparsa ileti bunu
 güvenlik reddi gibi göstermez: yazma/ekleme/taşıma hedefinin klasörü yoksa
@@ -111,6 +111,57 @@ hataları `dosya yolu güvenle çözülemedi` olarak kalır.
 
 TANIMLI: `dil dene` hermetik adaptörü dosya tablosunu programın verdiği yol
 metniyle anahtarlar; disk kökü kavramı yoktur.
+
+## Paylaşılan veri kökü (K-394, RFC-0045, ADR-170)
+
+TANIMLI: `proje.dil` isteğe bağlı `veri_kökü "AD" olsun` alanı, kökün mutlak
+yolunu taşıyan ortam değişkeninin ya da aynı adlı systemd credential'ın adını
+bildirir (`A-Z`, `0-9`, `_`; harf ya da `_` ile başlar; en çok 128 bayt).
+Değer spec/23 K-339 credential kaynak kuralıyla (credential dizini, yoksa ortam; ikisi
+birden ret) her `veri:` çağrısında okunur; tek satır, en çok 4096 bayttır.
+Ayrı projeler aynı adı/yolu bildirerek aynı kökü paylaşabilir. Yalnız ana
+projenin bildirimi etkilidir.
+
+TANIMLI: `veri:` ile başlayan dosya yolu bu köke gider; önek her kipte
+ayrılmıştır ve hiçbir kipte proje klasöründe yerel dosya adı sayılmaz.
+Önek sonrası `/` ile ayrılmış, boş olmayan bileşenlerdir; boş bileşen,
+`.`, `..`, baştaki `/`, ters bölü, iki nokta, NUL ve denetim karakteri
+YASAKTIR; bileşen en çok 255, toplam en çok 1024 bayttır.
+
+ZORUNLU: Kök mutlak olmalı, `/` olamaz ve `.`/`..` taşıyamaz; `/`'den her
+bileşen sembolik bağ izlenmeden açılır (yolda bağ YASAKTIR). Kökün ve üst
+klasörlerinin sahibi root ya da etkin kullanıcıdır; üst klasörler grup/diğer
+kullanıcılarca yazılamaz (yapışkan bitli klasör hariç). Linux'ta
+`fs.protected_hardlinks` kapalıysa kök reddedilir. Kök okunamaz ya da
+kurala uymazsa çağrı başarısız olur; proje klasörüne geri düşülmez.
+
+ZORUNLU: Kök altındaki her klasör sembolik bağ izlenmeden açılır. Yaprağın
+doğrudan üst klasörü dışındaki her klasör (kök dahil) root'a ya da etkin
+kullanıcıya ait olmalı ve grup/diğer kullanıcılarca yazılamamalıdır;
+paylaşılan yazma yalnız son klasörde olur. Yaprak sembolik bağ olamaz;
+var olan yaprak normal dosyadır. Okuma, sembolik bağ izlenmeden ve
+bloklamadan açılan tanıtıcıdan yapılır; tanıtıcı normal dosya ve tek
+hard-link olmalıdır. Veri kökünde klasör oluşturma işlemi yoktur; hedef
+klasör yoksa ileti klasörü işletmenin oluşturacağını söyler.
+
+TANIMLI: Desteklenen işlemler: dosya okuma, aralıklı okuma, SHA-256, ilk
+bayt imzası, dosya yanıtı, e-posta MIME eki ve bağlantıya dosya aktarımı
+(`veri-okuma`); satır yazma/ekleme, çözerek yazma/ekleme, atomik taşıma
+(veri↔veri ve proje↔veri) ve silme (`veri-yazma`). Eylem savepoint'i aynı
+yolla çalışır.
+
+AÇIK: Veri kökünde dizin listeleme, görsel küçültme, bağlantı blok
+dosyası ve `.zee/yuklemeler` geçici dizini bu sürümde yoktur (açık ret
+iletisi); Windows ve wasm hedeflerinde veri kökü desteklenmez.
+
+ZORUNLU: Bildirimsiz tek dosya kipi (`dil çalıştır dosya.dil`,
+`--deneysel-web dosya.dil`, `--izin ağ`) ve `--güvenli` kipi `veri:` yolunu
+reddeder ve yerel dosya oluşturmaz. Bildirimli projede `veri_kökü` yoksa
+`veri:` yolu `veri-*` yetkinliği reddiyle başarısız olur.
+
+TANIMLI: `dil dene` hermetik adaptörü `veri:` yolunu da metin anahtarı
+sayar; disk ve ortam okunmaz. Ret iletileri kökün mutlak yolunu taşımaz;
+programın `veri:` yolunu ve ortam adını taşır.
 
 ## Yerel paket ve kilit (TANIMLI — K-078)
 

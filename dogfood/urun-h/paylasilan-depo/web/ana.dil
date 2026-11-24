@@ -1,0 +1,11 @@
+# Ürün H webmail: ek kaydının `yol` alanı (`ekler/<kiracı>-<sha256>`)
+# paylaşılan kökten RFC-0041 dosya yanıtıyla verilir.
+8080 kapısında sunucu başlat
+
+GET "/posta/ek-indir" adresine istek geldiğinde
+    herkese açık
+    ad isteğin "ek" değeri olsun
+    yol "veri:ekler/" ile ad olsun
+    yanıt yol dosyasını "application/octet-stream" türünde "ek.bin" adıyla ek olarak göndermeyi dene olsun
+    yanıt başarısızsa
+        "Ek dosyası okunamadı." yanıtını 404 durumuyla gönder

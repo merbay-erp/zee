@@ -228,6 +228,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             baglanti: dil::proje::BaglantiAyari::default(),
             cok_parcali_yukleme: false,
             eposta_ek_turleri: None,
+            veri_koku_degiskeni: None,
         }
     );
 }

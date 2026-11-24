@@ -22,6 +22,7 @@ dilimleridir.
 | `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | ürün reproducer'ı ZM-R004 (ürün commit'i `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac`, blob `60e565e7…`) | `1` (Dilim 2 açık) |
 | `korpus/zm-r005-bellekte-sha256.dil` | ürün reproducer'ı ZM-R005 (aynı commit, blob `f994eaab…`) | S015; K-389 sonrası gerçek SHA-256 |
 | `ek-cikarma/ana.dil` | ürün ek çıkarma kesiti (ZM-F034, ürün commit'i `4f8c67cf6de936d1f17a689598f65cdca2bb4918`) | S015; K-389 sonrası temiz |
+| `paylasilan-depo/alici/ana.dil`, `paylasilan-depo/web/ana.dil` | ürün paylaşılan ek deposu kesiti (ZM-F038, ürün commit'i `35df031accc4d010ed1ca3db1f2c479df40f2916`) | P001; K-394 sonrası temiz |
 
 Reproducer'lar ürün kodundan hermetik küçültmedir; sunucu adı, alan adı,
 adres, yerel yol ve ürünün geri kalan kaynağı taşınmaz (ADR-087). Etkilenen

@@ -9,6 +9,8 @@
 mod legacy_bcrypt;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod sir_dizini;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod veri_koku;
 
 /// 256 bit işletim sistemi rastgeleliğini küçük harfli hex metne çevirir.
 #[cfg(not(target_arch = "wasm32"))]

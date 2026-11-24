@@ -18,11 +18,20 @@ Kararlı proje yazımları şunlardır:
 | `web-oturumu` | Oturum, rol, çerez ve CSRF adaptörü |
 | `kriptografi` | Parola/kriptografi adaptörü; K-210 eki 3 ile gizli değer şifreleme (`gizli_anahtar_değişkeni` ortam değişkeni, `zee1:` XChaCha20-Poly1305) |
 | `veritabanı` | Bildirilmiş exact loopback PostgreSQL adaptörü |
+| `veri-okuma` | Bildirilen paylaşılan veri kökündeki (`veri:`) dosyayı okuma, aralıklı okuma, SHA-256, dosya yanıtı, e-posta eki ve bağlantıya aktarım (K-394, spec/07) |
+| `veri-yazma` | Paylaşılan veri kökünde atomik yazma/ekleme/çözerek yazma/taşıma/silme (K-394, spec/07) |
 
 `proje.dil` içindeki `yetkinlikler` ve `ağ_hedefleri` yoksa boş listedir.
 Değerler tekil olmak ZORUNDADIR. `yerel-ağ` → `ağ`, `web-oturumu` →
 `ağ-sunucusu` bağı ZORUNLUDUR. `ağ` ancak boş olmayan `ağ_hedefleri` ile ve
 tersi birlikte bulunabilir. İhlal P015'tir.
+
+ZORUNLU (K-394): `veri-okuma` ve `veri-yazma` yalnız `veri_kökü` bildirimiyle,
+`veri_kökü` de bu ikisinden en az biriyle bulunur; ihlal P023'tür. `dosya-*`
+veri kökünü, `veri-*` proje dosya sınırını açmaz; yol sınıfı (`veri:` öneki)
+ve yetkinlik her çağrıda çalışma zamanında denetlenir. Statik T054 denetimi
+dosya gereksinimini aynı yönlü `veri-*` yetkinliğiyle de karşılanmış sayar.
+Bildirimsiz tek dosya profilleri ve `--güvenli` kipi `veri-*` içermez.
 
 `veritabanı`, bildirimsiz tek dosya geliştirici profilinde örtük açılmaz.
 Proje hedefi, bağlantı sırrı ve migration kökü spec/25'teki üçlü bildirime

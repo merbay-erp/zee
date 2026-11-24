@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
-| orta | 49 | 16 | 2 | 67 |
+| orta | 50 | 16 | 2 | 68 |
 | dusuk | 46 | 30 | 1 | 77 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 163.
+Toplam bulgu: 164.
 
 ## Spec maddeleri
 
@@ -59,8 +59,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/04-turler.md | 15 | 0 | 0 | 15 | 100 |
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
-| spec/07-birimler.md | 13 | 1 | 1 | 15 | 86 |
-| spec/08-kalici-dosya.md | 7 | 1 | 0 | 8 | 87 |
+| spec/07-birimler.md | 20 | 1 | 2 | 23 | 86 |
+| spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 24 | 0 | 0 | 24 | 100 |
@@ -75,7 +75,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/20-ifade-grameri.md | 9 | 0 | 0 | 9 | 100 |
 | spec/21-deterministik-io-izi.md | 6 | 0 | 0 | 6 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
-| spec/23-yetkinlik-ve-outbound-guvenligi.md | 41 | 0 | 1 | 42 | 97 |
+| spec/23-yetkinlik-ve-outbound-guvenligi.md | 42 | 0 | 1 | 43 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 10 | 0 | 1 | 11 | 90 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 16 | 0 | 2 | 18 | 88 |
@@ -83,7 +83,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 346 | 5 | 14 | 365 | 94 |
+| **Toplam** | 355 | 5 | 15 | 375 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -108,12 +108,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 8 | 4 | 0 | 11 | 1 | 12 |
+| urun-h | 10 | 4 | 0 | 13 | 1 | 14 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 77.
+Toplam korpus vakası: 79.
 
 ## Deprecation kayıtları
 

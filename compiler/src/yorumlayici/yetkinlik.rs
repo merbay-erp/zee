@@ -141,6 +141,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         if let Err(hata) = self.gerektir(Yetkinlik::AgDinleyici) {
             return super::BaglantiSonucu::hata("kapandı", hata);
         }
+        if let Err(hata) = self.aktarim_yolunu_denetle(islem) {
+            return super::BaglantiSonucu::hata("dosya", hata);
+        }
         self.ic.baglanti_islemi(kimlik, islem)
     }
     fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {

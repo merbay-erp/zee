@@ -1,0 +1,9 @@
+# K-394 (RFC-0045): ürün H webmail'inin ek indiren kesiti. Aynı veri kökünü
+# yalnız okur (`veri-okuma`); `veri-yazma` ve proje dosyası yetkisi yoktur.
+proje "paylasilan_depo_web" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "veri-okuma" listesi olsun
+ağ_hedefleri boş liste olsun
+veri_kökü "POSTA_DEPO" olsun

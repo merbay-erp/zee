@@ -4,7 +4,9 @@ use std::collections::BTreeSet;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 mod origin;
+mod veri_yolu;
 use origin::ayristir;
+pub use veri_yolu::{veri_yolu_bilesenleri, veri_yolu_mu, VERI_ONEKI};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Yetkinlik {
@@ -19,10 +21,13 @@ pub enum Yetkinlik {
     WebOturumu,
     Kriptografi,
     Veritabani,
+    /// K-394 (RFC-0045): paylaşılan veri kökünden (`veri:`) okuma / yazma.
+    VeriOkuma,
+    VeriYazma,
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 10] = [
+    pub const TUMU: [Self; 12] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
@@ -33,6 +38,8 @@ impl Yetkinlik {
         Self::WebOturumu,
         Self::Kriptografi,
         Self::Veritabani,
+        Self::VeriOkuma,
+        Self::VeriYazma,
     ];
 
     pub const fn yazimi(self) -> &'static str {
@@ -47,6 +54,8 @@ impl Yetkinlik {
             Self::WebOturumu => "web-oturumu",
             Self::Kriptografi => "kriptografi",
             Self::Veritabani => "veritabanı",
+            Self::VeriOkuma => "veri-okuma",
+            Self::VeriYazma => "veri-yazma",
         }
     }
 
@@ -207,7 +216,7 @@ impl YetkinlikPolitikasi {
     pub fn gelistirici_agli() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
-            .filter(|yetkinlik| !matches!(yetkinlik, Yetkinlik::YerelAg | Yetkinlik::Veritabani))
+            .filter(|yetkinlik| !veri_yolu::BILDIRIMSIZ_KAPALI.contains(yetkinlik))
             .collect();
         Self {
             izinler,
