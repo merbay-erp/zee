@@ -379,23 +379,6 @@ pub trait GirdiCikti {
     ) -> Result<(String, u64), String> {
         Err("IO adaptörü çözerek dosyaya yazmayı desteklemiyor".into())
     }
-    /// K-395: kaynağın `konum`dan en çok `adet` baytlık aralığını sınırlı
-    /// parçalarla base64 çözüp hedefe atomik ekler; Metin oluşmaz.
-    fn dosyadan_base64_ekle(
-        &mut self,
-        _kaynak: &str,
-        _konum: i64,
-        _adet: i64,
-        _hedef: &str,
-    ) -> Result<crate::kalici_dosya::AkisliEkleme, crate::kodlama::AkisHatasi> {
-        Err(crate::kodlama::AkisHatasi::Dosya(
-            "IO adaptörü dosyadan çözerek eklemeyi desteklemiyor".into(),
-        ))
-    }
-    /// K-395: `konum`dan itibaren `igne`nin ilk mutlak bayt konumu, yoksa -1.
-    fn dosyada_bayt_ara(&mut self, _yol: &str, _konum: i64, _igne: &[u8]) -> Result<i64, String> {
-        Err("IO adaptörü dosyada bayt aramayı desteklemiyor".into())
-    }
     /// Şimdiki zaman: (yıl, ay, gün, saat, dakika). v0'da UTC.
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32);
     /// Komut satırı argümanları (programa aktarılanlar).

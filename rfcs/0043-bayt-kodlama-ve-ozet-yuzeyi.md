@@ -2,16 +2,13 @@
 
 - **Durum:** **kabul — Dilim 1 uygulandı** (K-389, [ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),
   24 Kasım 2026: aralıklı metin/base64 okuma, base64/QP çözerek yazma ve
-  akışlı ekleme, bellekte SHA-256, C032). **Dilim 2 kısmen kabul** (K-395,
-  [ADR-171](../adr/171-dosyadan-dosyaya-cozme-ve-bayt-arama.md), 24 Kasım
-  2026, ZM-F039: dosyadan dosyaya akışlı base64 çözme, dosyada bayt arama,
-  32 MiB hedef tavanı). Dilim 2'nin kalanı **taslak** (ZM-F023: UTF-8 bayt
-  sayısı, metin↔base64/onaltılık, kod noktası); core freeze altında ayrı
-  `dogfood-change` K-işi ve reproducer ister. Aşağıdaki "Dilim 1 kararı" ve
-  "Dilim 2 kısmi kararı" bölümleri bu taslağın açık sorularını kapatır ve
-  önceki fikir taslağının üstündedir.
+  akışlı ekleme, bellekte SHA-256, C032). **Dilim 2 taslak** (ZM-F023: UTF-8
+  bayt sayısı, metin↔base64/onaltılık, kod noktası); core freeze altında
+  ayrı `dogfood-change` K-işi ve reproducer ister. Aşağıdaki "Dilim 1 kararı"
+  bölümü bu taslağın Dilim 1 açık sorularını kapatır ve önceki fikir
+  taslağının üstündedir.
 - **Tarih:** 24 Kasım 2026
-- **İş:** K-383 (taslak), K-389 (Dilim 1 uygulaması), K-395 (Dilim 2 kısmi)
+- **İş:** K-383 (taslak), K-389 (Dilim 1 uygulaması)
 - **İlgili belgeler:** [spec/04](../spec/04-turler.md),
   [spec/06](../spec/06-hata-modeli.md),
   [spec/15](../spec/15-yapilandirilmis-hata-degeri.md),
@@ -28,7 +25,7 @@
   [RFC-0041](0041-ikili-yanit-ve-ek-akisi.md),
   [RFC-0044](0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
 - **Freeze sınıfı adayı:** iki dilimli `dogfood-change` (`urun-h`):
-  Dilim 1 ZM-F034 + ZM-F024, Dilim 2 ZM-F023 (+ K-395 ZM-F039).
+  Dilim 1 ZM-F034 + ZM-F024, Dilim 2 ZM-F023.
 
 ## Özet
 
@@ -76,7 +73,7 @@ Açık soruların Dilim 1 kapanışı:
 | # | Karar |
 |---|---|
 | 1 | Dilim 1 kelimeleri yukarıdaki gibi; `quoted-printable` sözcükleyicide tek kelime olamadığından `quoted_printable`. `hâli`/`karşılığı` seçimi Dilim 2'de (açık). |
-| 2 | Aralıklı okuma ve çağrı başına çözülen çıktı 1 MiB (1 048 576) sabit; bellekte özet ayrı tavan almaz, spec/24 metin/heap bütçesine bağlıdır. Hedef dosya toplamı spec/26 16 MiB yükleme/özet tavanı (K-395 ile 32 MiB). |
+| 2 | Aralıklı okuma ve çağrı başına çözülen çıktı 1 MiB (1 048 576) sabit; bellekte özet ayrı tavan almaz, spec/24 metin/heap bütçesine bağlıdır. Hedef dosya toplamı spec/26 16 MiB yükleme/özet tavanı; **K-395 (24 Kasım 2026, ZM-F039) ile 32 MiB** (ADR-167 eki). |
 | 3, 4 | Dilim 2 (kod noktası, base64url); açık. |
 | 5 | Dilim 1 yeni doğrudan crate eklemez; tek iç katı çözücü (`compiler/src/kodlama.rs`). Üç eski iç yardımcının birleştirilmesi Dilim 2'ye bırakıldı (açık). |
 | 6 | Yeni C032 (kodlama: `tür` + `konum`); dosya/aralık/yol/no-clobber/tavan/eylem arızaları C013. |
@@ -91,38 +88,11 @@ SHA-256 özgünle eşleşir, ek RFC-0041 dosya yanıtıyla indirilir; 8bit gövd
 metin kipinde `utf8`, base64 kipinde başarı; bozuk QP/base64, 4'e
 bölünmeyen girdi, var olan hedef, tavan üstü ekleme hedefe dokunmaz; izde
 içerik yok. "25 MB / tek bağlantıda üç ileti" ölçümü 16 MiB hedef tavanı
-ve K-388 ile birlikte açık kalır (tek 18 MB ek K-395 ile kapandı). Ölçüt 4 (NIST vektörleri, dosya/metin
+ve K-388 ile birlikte açık kalır. K-395 (ZM-F039) hedef tavanını 32 MiB'a
+çıkardı: ürün 25 MB iletideki ~18 MB eki satıra hizalı pencerelerle dil
+değişikliği olmadan çözüyor. Dosyadan dosyaya çözme ve bayt arama önerisi
+bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). Ölçüt 4 (NIST vektörleri, dosya/metin
 özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı açık.
-
-## Dilim 2 kısmi kararı (K-395, 24 Kasım 2026)
-
-Normatif metin [spec/26 §Dosyadan dosyaya çözme](../spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md),
-gerekçe [ADR-171](../adr/171-dosyadan-dosyaya-cozme-ve-bayt-arama.md).
-Ürün 25 MB'lık iletideki 15–18 MB'lık tek base64 eki çıkaramıyordu
-(ZM-F039): satır satır okuma ~4,7 MB'ta C024 kümülatif zarfına çarpıyor
-(ayrı iş K-393), 1 MiB pencereli Dilim 1 çözümü çalışıyor (20 pencere,
-15,3 MB, 0,56 sn) ama ek gövdesinin **bayt** başlangıcı bulunamıyor (harf
-konumu ≠ bayt konumu, bayt arama yok) ve 16 MiB hedef tavanı 18 MB eke
-yetmiyor. Mustafa kararıyla (24 Kasım 2026) yalnız şu üç parça açıldı:
-
-```text
-tutamak yol dosyasının konum baytından n baytını base64 çözerek hedef dosyasına eklemeyi dene olsun   # Sonuç<Sözlük>
-yer yol dosyasında konum baytından "--sınır" aramayı dene olsun                                       # Sonuç<TamSayı>
-```
-
-| # | Karar |
-|---|---|
-| 1 | Dosyadan dosyaya çözme kaynak aralığını (≤ 48 MiB) 64 KiB parçalarla okur, akış çözücüsüyle çözer, hedefe atomik ekler; `Metin` oluşmaz, spec/24 zarfına sayılmaz. Sözlük K-389 tutamağına `eklenen` alanını ekler. |
-| 2 | C032 `konum` **kaynak dosyadaki** mutlak bayttır; ürün hatalı satırı doğrudan bulur. |
-| 3 | Bayt arama iğnesi 1–1024 UTF-8 bayt, tarama `konum`dan en çok 64 MiB, doğrusal (KMP); pencere dolup dosya sürüyorsa belirsiz `-1` yerine C013. MIME yapısı ürünün işidir. |
-| 4 | `çözerek … yazmayı|eklemeyi dene` hedef tavanı 16 → 32 MiB (GB-166: tek çağrı yine 1 MiB çözer; disk/IO yükü proje başına sınırlı). |
-| 5 | Dosyadan dosyaya quoted-printable, bayt sayısı, metin↔base64/onaltılık, kod noktası ve base64url **açık** kalır. |
-
-Kabul ölçütü: `compiler/tests/kodlanmis_dosya_testi.rs`
-`zm_f039_on_sekiz_mb_ek_bayt_aranip_tek_cagrida_cikarilir` 18 000 000
-baytlık ikili eki MIME iletisinde bayt aramayla bulup tek çağrıda çıkarır,
-SHA-256 özgünle eşleşir; tavanın tam sınırı, bozuk base64'ün kaynak konumu,
-sınır kaçışı, eylem reddi ve iz replay'i ayrı vakalardır.
 
 ## Motivasyon
 

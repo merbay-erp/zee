@@ -172,8 +172,10 @@ ZORUNLU (K-389): `yazmayı dene` yeni dosya yazar; var olan hedef (dosya,
 dizin ya da sembolik bağ) kilit altında görülürse ezilmeden C013 `hedef
 dosyası zaten var` döner. `eklemeyi dene` spec/08 eklemesiyle aynı kilitli,
 atomik oku-birleştir-değiştir modelidir ve hedef yoksa oluşturur. İkisi de
-hedefin toplam boyutunu 32 MiB (33 554 432 bayt; K-395 öncesi 16 MiB) ile
-sınırlar; aşan çağrı hiçbir bayt yazmaz. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
+hedefin toplam boyutunu 32 MiB (33 554 432 bayt; K-395 öncesi bu bölümün 16
+MiB yükleme/özet tavanı) ile sınırlar; tam sınıra ulaşan çağrı kabul edilir,
+aşan çağrı hiçbir bayt yazmaz. Yükleme, dosya yanıtı ve dosya özeti
+tavanları 16 MiB kalır. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
 (hedefin bütün içeriği) ve `bayt` (toplam) verir — A2c ve web yükleme
 tutamağıyla aynı biçim; `yol` dosya yanıtına ve SMTP ek listesine doğrudan
 verilir. İşlem `dosya-yazma` yetkinliğine bağlıdır. Eylem içinde `yazmayı
@@ -187,49 +189,9 @@ yetkinliksizdir, aynı içerikli dosyanın `sha256 özetini almayı dene`
 sonucuna eşittir. Metin dışı nesne derlemede tür hatasıdır.
 
 AÇIK (K-389): UTF-8 bayt sayısı, metin↔base64/onaltılık, kod noktası ve
-base64url RFC-0043 Dilim 2'nin kalanıdır (K-395 yalnız dosyadan dosyaya
-base64 çözme ile bayt aramayı açtı; dosyadan dosyaya quoted-printable açık).
-Çağrılar arası yarım base64 dörtlüsü saklanmaz; akışlı eklemede her çağrı tam
-dörtlülerden, QP'de tam satırlardan oluşmalıdır.
-
-## Dosyadan dosyaya çözme ve bayt arama — K-395
-
-Normatif kaynak: RFC-0043 Dilim 2 (kısmi kabul), ADR-171.
-
-ZORUNLU (K-395): `<yol> dosyasının <konum> baytından <n> baytını base64
-çözerek <hedef> dosyasına eklemeyi dene` `konum` ≥ 0 ve 1 ≤ `n` ≤ 50 331 648
-(48 MiB) TamSayılarını ister; dışındaki değer dosyalara dokunmadan C013
-başarısız Sonuç verir. Kaynak aralığı (dosya sonu aşılırsa olan kadarı)
-sınırlı parçalarla okunup akışla çözülür; aralığın kendisi hiçbir aşamada
-`Metin` olmaz ve çalışma değeri zarfına (spec/24) sayılmaz. Çözüm K-389 MIME
-base64 kurallarının aynısıdır; aralık tam dörtlülerle bitmelidir. Çözme hatası
-C032'dir ve `konum` KAYNAK dosyadaki mutlak bayttır (`uzunluk` için aralığın
-sonu). Başarı `Metin sözlüğü sonucu` `yol`, `sha256` (hedefin bütün içeriği),
-`bayt` (hedefin toplamı) ve `eklenen` (bu çağrıda çözülen bayt) verir; boş
-aralık hedefi (yoksa boş olarak) oluşturur ve `eklenen: 0` döner.
-
-ZORUNLU (K-395): Hedef kilit altında geçici dosyaya kopyalanır, çözülen
-baytlar arkasına akıtılır ve `fsync` + atomik adlandırmayla tek adımda
-yayımlanır: çözme hatası, kaynak okuma hatası ya da 32 MiB tavanını aşan akış
-hedefi hiç değiştirmez ve geçici dosya bırakmaz. Kaynak `dosya-okuma`, hedef
-`dosya-yazma` ister (derlemede `dosya-yazma`); iki yol da proje dosya sınırı
-ve sembolik bağ kuralından geçer; normal dosya olmayan kaynak ya da hedef ve
-aynı dosyayı gösteren kaynak/hedef C013'tür. Eylem içinde kullanım C013'tür
-(K-389 akışlı ekleme kuralı).
-
-ZORUNLU (K-395): `<yol> dosyasında <konum> baytından <iğne> aramayı dene`
-`konum` ≥ 0 TamSayısını ve 1–1024 UTF-8 baytlık `Metin` iğneyi ister; başarı
-`TamSayı sonucu` olarak iğnenin `konum`dan itibaren ilk eşleşmesinin dosya
-içi mutlak bayt konumudur, eşleşme yoksa `-1`. Karşılaştırma bayt bayttır
-(büyük/küçük harf ya da Unicode normalleştirmesi yok). Tarama `konum`dan
-itibaren en çok 64 MiB'tır ve doğrusal zamanlıdır; pencere dolduğunda dosya
-sürüyorsa belirsiz `-1` yerine C013 döner (ürün konumu ilerletip yeniden
-arar). `konum` dosya sonundaysa ya da ötesindeyse sonuç `-1`'dir. Arama
-`dosya-okuma` yetkinliğine ve aynı yol kuralına bağlıdır; MIME yapısı
-(sınır, başlık) dil tarafından yorumlanmaz.
-
-ZORUNLU (K-395): İki işlem IO izinde içeriksiz olay taşır (spec/21) ve hata
-mesajı dosya içeriğini ya da iğneyi taşımaz.
+base64url RFC-0043 Dilim 2'dir. Çağrılar arası yarım base64 dörtlüsü
+saklanmaz; akışlı eklemede her çağrı tam dörtlülerden, QP'de tam satırlardan
+oluşmalıdır.
 
 ## Açık sınır
 

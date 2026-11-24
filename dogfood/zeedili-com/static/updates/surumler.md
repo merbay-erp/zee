@@ -37,24 +37,6 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
-- **Büyük ekleri dosyadan dosyaya çözme ve dosyada bayt arama (K-395):**
-  25 MB'lık bir e-postanın ~18 MB'lık eki artık tek cümleyle çıkarılabilir.
-  Ekin gövdesi dosyada bayt olarak aranır:
-  `yer yol dosyasında 0 baytından "Content-Transfer-Encoding: base64" aramayı dene olsun`
-  ilk eşleşmenin bayt konumunu (yoksa `-1`) verir; arama en çok 64 MiB
-  tarar, iğne 1–1024 bayttır (`"\n"` gibi kaçışlar kullanılabilir). Sonra
-  `tutamak yol dosyasının baslangic baytından uzunluk baytını base64 çözerek "ekler/ek.pdf" dosyasına eklemeyi dene olsun`
-  aralığı belleğe `Metin` olarak almadan akışla çözer ve hedefe ekler
-  (aralık en çok 48 MiB). Sonuç K-389 tutamağına ek olarak `eklenen` (bu
-  çağrıda yazılan bayt) taşır. Bozuk base64 **C032** verir ve `konum` artık
-  kaynak dosyadaki bayttır; hata ya da sınır aşımında hedef dosya hiç
-  değişmez. Kaynak `dosya-okuma`, hedef `dosya-yazma` ister. Çözerek
-  yazma/eklemenin hedef dosya sınırı **16 MiB'tan 32 MiB'a** çıktı.
-
-  **Göç:** Gerekmez. Satır satır okuyup C024'e çarpan ya da 1 MiB'lık
-  pencerelerle çözen kod çalışmaya devam eder; büyük ekte yeni biçime
-  geçmek bellek kullanımını düşürür. Önceden bu cümleler S015 veriyordu.
-
 - **Uzun Türkçe iletiler ve “gövde çok büyük” sayfası (K-391):**
   `çok_parçalı_yükleme doğru olsun` yazan projede `enctype="multipart/form-data"`
   formu artık dosya parçası olmadan da gönderilebilir; metin alanları sıradan
@@ -170,6 +152,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 - **zeedili.com 24 Kasım haberi:** ana sayfa Gelişmeler'deki "Zee ile web dışı ağ hizmetleri" haberi K-384 ile genişletildi: büyük gövdenin ve IMAP literal'inin dosyaya akıtılması, bayt-kesin okuma, satır sonusuz yazma ve IMAP IDLE için kısa zaman aşımlı okuma. Dil davranışı değişmedi.
 
 ### Değişenler
+
+- **Çözerek eklenen ek dosyası artık 32 MiB'a kadar (K-395):**
+  `… base64|quoted_printable çözerek … dosyasına yazmayı|eklemeyi dene`
+  hedef dosyasının toplam sınırı 16 MiB'tan **32 MiB'a** çıktı; 25 MB'lık bir
+  e-postanın ~18 MB'lık eki artık parça parça eklenerek tek dosyaya
+  çıkarılabilir. Sınıra tam ulaşan ekleme kabul edilir, bir bayt fazlası
+  yine C013 verir ve dosyaya hiçbir şey yazılmaz. 16 MiB'tan büyük bir
+  dosyaya ekleme önceden okuma sınırına çarpıyordu; bu da düzeldi. Dosya
+  yükleme, dosya indirme yanıtı ve dosya özeti sınırları 16 MiB kalır.
+
+  **Göç:** Gerekmez. 16 MiB'ı aşan eki kendisi bölen ya da uyarı veren kod
+  bu sınırı 32 MiB'a çekebilir.
 
 - **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
   biten bir işlem (`işlem yanıtı yaz`) cümle olarak çağrılınca satır

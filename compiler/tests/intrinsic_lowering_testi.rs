@@ -26,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 45);
+    assert_eq!(kimlikler.len(), 43);
     for kimlik in [
         intrinsic::BAGLANTI_SATIR_OKU,
         intrinsic::BAGLANTI_SATIR_YAZ,
@@ -71,15 +71,6 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         assert_eq!(kayit.yetkinlik, Yetkinlik::DosyaYazma);
         assert_eq!(kayit.etki, IntrinsicEtkisi::DisYazma);
     }
-    // K-395: dosyadan dosyaya çözme dosya-yazma/DisYazma (kaynak çalışma
-    // zamanında ayrıca dosya-okuma), bayt arama dosya-okuma/DisOkuma.
-    let akis = intrinsic::tanim(intrinsic::DOSYADAN_BASE64_EKLE).expect("K-395 akış kaydı");
-    assert_eq!(akis.yetkinlik, Yetkinlik::DosyaYazma);
-    assert_eq!(akis.etki, IntrinsicEtkisi::DisYazma);
-    assert_eq!(akis.arguman_turleri.len(), 4);
-    let arama = intrinsic::tanim(intrinsic::DOSYADA_BAYT_ARA).expect("K-395 arama kaydı");
-    assert_eq!(arama.yetkinlik, Yetkinlik::DosyaOkuma);
-    assert_eq!(arama.etki, IntrinsicEtkisi::DisOkuma);
 
     for (kimlik, etki) in [
         (intrinsic::HTTP_ISTEK, IntrinsicEtkisi::GeriAlinamaz),

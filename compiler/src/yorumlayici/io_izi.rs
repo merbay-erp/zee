@@ -63,8 +63,6 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosya_ilk_baytlari"
             | "dosya_araligi_oku"
             | "dosyaya_bayt_yaz"
-            | "dosyadan_base64_ekle"
-            | "dosyada_bayt_ara"
             | "dosya_yaniti_gonder"
             | "baglanti_kaydet"
             | "baglanti_bekle"
@@ -208,11 +206,9 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         }
         "dosyalari_listele" => metin_listesi_sonuc_semasi(olay, 1),
         "dosya_sha256" => metin_sonuc_semasi(olay, 1),
-        "dosya_ilk_baytlari"
-        | "dosya_araligi_oku"
-        | "dosyaya_bayt_yaz"
-        | "dosyadan_base64_ekle"
-        | "dosyada_bayt_ara" => kodlanmis::semayi_denetle(olay),
+        "dosya_ilk_baytlari" | "dosya_araligi_oku" | "dosyaya_bayt_yaz" => {
+            kodlanmis::semayi_denetle(olay)
+        }
         "postgresql_oku" | "postgresql_degistir" => {
             if olay.argumanlar.is_empty() {
                 return Err("PostgreSQL izi sorgu argümanı taşımalı".into());
@@ -501,32 +497,6 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
             "dosyaya_bayt_yaz",
             kodlanmis::yazim_argumanlari(yol, baytlar, ekleme),
             kodlanmis::yazim_sonuc_yaz(&sonuc),
-        );
-        sonuc
-    }
-
-    fn dosyadan_base64_ekle(
-        &mut self,
-        kaynak: &str,
-        konum: i64,
-        adet: i64,
-        hedef: &str,
-    ) -> Result<crate::kalici_dosya::AkisliEkleme, crate::kodlama::AkisHatasi> {
-        let sonuc = self.ic.dosyadan_base64_ekle(kaynak, konum, adet, hedef);
-        self.kaydet(
-            "dosyadan_base64_ekle",
-            kodlanmis::akis_argumanlari(kaynak, konum, adet, hedef),
-            kodlanmis::akis_sonuc_yaz(&sonuc),
-        );
-        sonuc
-    }
-
-    fn dosyada_bayt_ara(&mut self, yol: &str, konum: i64, igne: &[u8]) -> Result<i64, String> {
-        let sonuc = self.ic.dosyada_bayt_ara(yol, konum, igne);
-        self.kaydet(
-            "dosyada_bayt_ara",
-            kodlanmis::arama_argumanlari(yol, konum, igne),
-            tamsayi_sonuc_yaz(&sonuc),
         );
         sonuc
     }

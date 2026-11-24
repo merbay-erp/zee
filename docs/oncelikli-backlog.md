@@ -2896,37 +2896,29 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
-## K-395 — RFC-0043 Dilim 2 (kısmi): dosyadan dosyaya base64 çözme, bayt arama, 32 MiB tavan (ADR-171)
+## K-395 — Çözerek yazma/ekleme hedef tavanı 32 MiB (ADR-167 eki)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F039
-(ZM-F038/K-394 ardılı): 25 MB'lık iletinin 15–18 MB'lık tek base64 eki
-çıkarılamıyor — satır satır okuma ~4,7 MB'ta C024 (K-393), 1 MiB pencereli
-K-389 çözümünde gövdenin bayt başlangıcı bulunamıyor (harf ≠ bayt, bayt
-arama yok), 16 MiB hedef tavanı 18 MB eke yetmiyor. Mustafa 24 Kasım
-2026'da RFC-0043 Dilim 2'den yalnız bu üç parçayı öne aldı. Freeze sınıfı
-`dogfood-change`; yeni tür ya da grammar kuralı yok.
+(ürün commit'i `8ee2514`): 25 MB'lık iletinin ~18 MB'lık tek base64 eki
+16 MiB hedef tavanına sığmıyordu. Ürün eki kendi `ekdeposu` paketiyle
+(satıra hizalı pencereler) dil değişikliği olmadan çözüyor; Mustafa kararıyla
+(24 Kasım 2026) kapsam yalnız tavana daraltıldı. Önerilen dosyadan dosyaya
+çözme ve bayt arama yüzeyleri açılmadı (RFC-0043 Dilim 2 kalanı, taslak).
+Freeze sınıfı `dogfood-change`; yeni kalıp, tür, tanı ya da fixture satırı yok.
 
-Karar (ADR-171): `<yol> dosyasının <a> baytından <n> baytını base64 çözerek
-<hedef> dosyasına eklemeyi dene` (≤ 48 MiB kaynak aralığı, 64 KiB parçalı
-akış, `Metin` yok, hedef kilitli geçici kopya + fsync + atomik adlandırma,
-C032 `konum` kaynak bayt, `eklenen` alanı, kaynak=hedef ve eylem C013);
-`<yol> dosyasında <konum> baytından <iğne> aramayı dene` (1–1024 bayt iğne,
-KMP, ≤ 64 MiB pencere, pencere sonunda belirsiz -1 yerine C013); çözerek
-yazma/ekleme hedef tavanı 16 → 32 MiB. İçeriksiz, tam oynatılabilir iz
-olayları `dosyadan_base64_ekle`, `dosyada_bayt_ara`. GB-166.
+Karar (ADR-167 eki): hedef toplamı 32 MiB; tam sınır kabul, +1 bayt C013 ve
+hedef değişmez. Ekleme var olan hedefi genel 16 MiB okuma sınırı yerine aynı
+tavanla okur (bulunan arıza: yalnız sabit yükseltilseydi 16 MiB üstü hedefe
+ekleme okuma sınırına çarpıyordu). Yükleme, dosya yanıtı, özet 16 MiB. GB-166.
 
-Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs` (+6 vaka: 18 000 000
-baytlık ek bayt aramayla bulunup tek çağrıda çıkarılır; 32 MiB tam sınır ve
-bir bayt fazlası; bozuk base64 kaynak konumu; sınır kaçışı; eylem; 64 KiB
-parça sınırını aşan eşleşme ve 64 MiB pencere; iz replay; `dosya-okuma`
-reddi), `kodlama.rs` (akış çözücüsü, KMP) ve `kalici_dosya/cozulmus.rs`
-birim testleri; dogfood `urun-h-buyuk-ek`.
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
+`eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda` (tam 32 MiB kabul, +1 bayt
+ret, 16 MiB ötesi ekleme) ve `no_clobber_tavan_yol_gecisi_ve_eylem_reddi_hedefi_bozmaz`
+(32 MiB tavanı); etkilenen ürün kesiti `dogfood/urun-h/ek-cikarma/ana.dil`.
 
-Açık: dosyadan dosyaya quoted-printable; RFC-0043 Dilim 2 kalanı (UTF-8
-bayt sayısı, metin↔base64/onaltılık, kod noktası, base64url); C024
-kümülatif zarfı (K-393); `kodlama` fuzz hedefi (akış çözücüsü + KMP);
-ekleme başına hedefin yeniden kopyalanması (tek çağrı kullanımında sorun
-değil).
+Açık: 16 MiB üstü dosya yanıtı/özet; dosyadan dosyaya akışlı çözme ve bayt
+arama (kullanıcı isterse yerel `yedek/k395-tam-yuzey` dalındaki hazırlıktan);
+C024 kümülatif zarfı (K-393).
 
 ## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256 (ADR-167)
 
@@ -2957,7 +2949,7 @@ K-167 kalıp/API/iz/tanı satırları.
 Açık: (1) RFC-0043 Dilim 2 (ZM-F023: UTF-8 bayt sayısı, metin↔base64/
 onaltılık, kod noktası, base64url) ve üç iç base64 yardımcısının
 birleştirilmesi. (2) 16 MiB'tan büyük ekler (yükleme/özet/dosya yanıtı
-tavanıyla birlikte değişir; çözerek yazma tavanı K-395 ile 32 MiB). (3) İçerik-adresli iz yan dosyasıyla aralıklı
+tavanıyla birlikte değişir). (3) İçerik-adresli iz yan dosyasıyla aralıklı
 okumanın replay'i. (4) `kodlama` fuzz hedefi. (5) `message/rfc822` dosya
 yanıtı türü (RFC-0043 "sonraki küçük iş").
 

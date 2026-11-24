@@ -14,16 +14,6 @@
 
 /// Tek çağrıda çözülen içeriğin ve aralıklı okumanın üst sınırı (1 MiB).
 pub const AZAMI_PARCA_BAYTI: usize = 1024 * 1024;
-/// K-395: çözerek yazma/eklemede hedef dosyanın toplam tavanı (32 MiB; 25 MB
-/// iletinin tek ~18 MB eki sığar, GB satırı DoS gerekçesini taşır).
-pub const AZAMI_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
-/// K-395: dosyadan dosyaya çözmede kaynak aralığının üst sınırı (48 MiB:
-/// 32 MiB çıktının 76 karakterlik satırlı base64'ü ~43,8 MiB'tır).
-pub const AZAMI_AKIS_ARALIGI: u64 = 48 * 1024 * 1024;
-/// K-395: bayt aramada konumdan itibaren taranan en çok bayt (64 MiB).
-pub const AZAMI_TARAMA_BAYTI: u64 = 64 * 1024 * 1024;
-/// K-395: aranan bayt dizisinin (iğne) üst sınırı.
-pub const AZAMI_IGNE_BAYTI: usize = 1024;
 
 /// Kodlama hatası: C032 `Hata` verisinin `tür` ve `konum` alanları.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -42,22 +32,6 @@ impl KodlamaHatasi {
             mesaj: mesaj.into(),
         }
     }
-
-    fn konumlu(tur: &'static str, konum: u64, mesaj: &str) -> Self {
-        Self {
-            tur,
-            konum: Some(konum),
-            mesaj: mesaj.into(),
-        }
-    }
-}
-
-/// K-395: dosyadan dosyaya akışın hatası — dosya/aralık/hedef (C013) ya da
-/// kodlama (C032, kaynak dosyadaki mutlak konumla).
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum AkisHatasi {
-    Dosya(String),
-    Kodlama(KodlamaHatasi),
 }
 
 fn boyut_asimi(azami: usize) -> KodlamaHatasi {
@@ -161,166 +135,45 @@ fn base64_on_tara(baytlar: &[u8]) -> Result<(usize, usize), KodlamaHatasi> {
     Ok((anlamli, dolgu))
 }
 
-/// İkinci geçiş: ön taramadan geçmiş girdiyi akış çözücüsüyle çözer.
+/// İkinci geçiş: ön taramadan geçmiş girdiyi çözer, kanonik bitleri denetler.
 fn base64_dortlulerini_coz(baytlar: &[u8], boy: usize) -> Result<Vec<u8>, KodlamaHatasi> {
     let mut cikti = Vec::with_capacity(boy);
-    let mut cozucu = Base64AkisCozucu::default();
-    cozucu.besle(baytlar, 0, &mut cikti)?;
-    cozucu.bitir(baytlar.len() as u64)?;
+    let mut grup = [0u8; 4];
+    let mut doluluk = 0usize;
+    for (konum, &bayt) in baytlar.iter().enumerate() {
+        if mime_boslugu_mu(bayt) {
+            continue;
+        }
+        grup[doluluk] = if bayt == b'=' {
+            64
+        } else {
+            base64_degeri(bayt).unwrap_or(0)
+        };
+        doluluk += 1;
+        if doluluk < 4 {
+            continue;
+        }
+        doluluk = 0;
+        let deger = |i: usize| u32::from(grup[i] & 63);
+        let n = (deger(0) << 18) | (deger(1) << 12) | (deger(2) << 6) | deger(3);
+        cikti.push((n >> 16) as u8);
+        match (grup[2], grup[3]) {
+            (64, _) if n & 0xffff != 0 => return Err(kanonik_degil(konum)),
+            (64, _) => {}
+            (_, 64) if n & 0xff != 0 => return Err(kanonik_degil(konum)),
+            (_, 64) => cikti.push((n >> 8) as u8),
+            _ => cikti.extend_from_slice(&[(n >> 8) as u8, n as u8]),
+        }
+    }
     Ok(cikti)
 }
 
-/// K-395 (ADR-171): MIME base64 akış çözücüsü. `base64_mime_coz` ile aynı
-/// katı kurallar; girdi parça parça beslenir, dörtlü ve dolgu durumu parça
-/// sınırını aşar. Hata konumu mutlaktır (`taban` + parça içi indeks).
-#[derive(Debug, Default)]
-pub struct Base64AkisCozucu {
-    grup: [u8; 4],
-    doluluk: usize,
-    anlamli: u64,
-    dolgu: u8,
-}
-
-impl Base64AkisCozucu {
-    /// `parca`yı çözüp tamamlanan dörtlülerin baytlarını `cikti`ya ekler.
-    pub fn besle(
-        &mut self,
-        parca: &[u8],
-        taban: u64,
-        cikti: &mut Vec<u8>,
-    ) -> Result<(), KodlamaHatasi> {
-        for (sira, &bayt) in parca.iter().enumerate() {
-            let konum = taban.saturating_add(sira as u64);
-            if mime_boslugu_mu(bayt) {
-                continue;
-            }
-            let deger = if bayt == b'=' {
-                self.dolgu += 1;
-                if self.dolgu > 2 || self.anlamli % 4 < 2 {
-                    return Err(KodlamaHatasi::konumlu(
-                        "dolgu",
-                        konum,
-                        "base64 dolgusu yalnız son dörtlünün 3. ya da 4. karakteri olabilir",
-                    ));
-                }
-                64
-            } else if let Some(deger) = base64_degeri(bayt) {
-                if self.dolgu > 0 {
-                    return Err(KodlamaHatasi::konumlu(
-                        "dolgu",
-                        konum,
-                        "base64 dolgusundan sonra veri gelemez",
-                    ));
-                }
-                deger
-            } else {
-                return Err(KodlamaHatasi::konumlu(
-                    "alfabe",
-                    konum,
-                    "base64 alfabesi dışında karakter",
-                ));
-            };
-            self.anlamli += 1;
-            self.grup[self.doluluk] = deger;
-            self.doluluk += 1;
-            if self.doluluk == 4 {
-                self.doluluk = 0;
-                dortluyu_coz(&self.grup, konum, cikti)?;
-            }
-        }
-        Ok(())
-    }
-
-    /// Girdi bitti: yarım dörtlü `uzunluk` hatasıdır (`son` = girdi sonu).
-    pub fn bitir(&self, son: u64) -> Result<(), KodlamaHatasi> {
-        if self.doluluk == 0 {
-            return Ok(());
-        }
-        Err(KodlamaHatasi::konumlu(
-            "uzunluk",
-            son,
-            "base64 dörtlüsü eksik; dolgu (=) zorunludur",
-        ))
-    }
-}
-
-fn dortluyu_coz(grup: &[u8; 4], konum: u64, cikti: &mut Vec<u8>) -> Result<(), KodlamaHatasi> {
-    let deger = |i: usize| u32::from(grup[i] & 63);
-    let n = (deger(0) << 18) | (deger(1) << 12) | (deger(2) << 6) | deger(3);
-    cikti.push((n >> 16) as u8);
-    match (grup[2], grup[3]) {
-        (64, _) if n & 0xffff != 0 => Err(kanonik_degil(konum)),
-        (64, _) => Ok(()),
-        (_, 64) if n & 0xff != 0 => Err(kanonik_degil(konum)),
-        (_, 64) => {
-            cikti.push((n >> 8) as u8);
-            Ok(())
-        }
-        _ => {
-            cikti.extend_from_slice(&[(n >> 8) as u8, n as u8]);
-            Ok(())
-        }
-    }
-}
-
-fn kanonik_degil(konum: u64) -> KodlamaHatasi {
-    KodlamaHatasi::konumlu(
+fn kanonik_degil(konum: usize) -> KodlamaHatasi {
+    KodlamaHatasi::yeni(
         "dolgu",
-        konum,
+        Some(konum),
         "base64 dolgu bitleri sıfır değil (kanonik olmayan kodlama)",
     )
-}
-
-/// K-395 (ADR-171): akışlı bayt arama (Knuth–Morris–Pratt). Parça sınırını
-/// aşan eşleşmeyi de bulur; bellek iğne boyuyla sınırlıdır, süre doğrusaldır
-/// (kötü niyetli girdi karesel tarama üretemez).
-#[derive(Debug)]
-pub struct BaytArayici {
-    igne: Vec<u8>,
-    geri: Vec<usize>,
-    eslesen: usize,
-    islenen: u64,
-}
-
-impl BaytArayici {
-    /// Boş olmayan `igne` için arayıcı kurar.
-    pub fn yeni(igne: &[u8]) -> Self {
-        let mut geri = vec![0usize; igne.len()];
-        let mut k = 0usize;
-        for i in 1..igne.len() {
-            while k > 0 && igne[i] != igne[k] {
-                k = geri[k - 1];
-            }
-            if igne[i] == igne[k] {
-                k += 1;
-            }
-            geri[i] = k;
-        }
-        Self {
-            igne: igne.to_vec(),
-            geri,
-            eslesen: 0,
-            islenen: 0,
-        }
-    }
-
-    /// Sıradaki parçayı tarar; ilk eşleşmenin taramanın başına göre
-    /// başlangıç konumunu verir.
-    pub fn besle(&mut self, parca: &[u8]) -> Option<u64> {
-        for &bayt in parca {
-            self.islenen += 1;
-            while self.eslesen > 0 && self.igne[self.eslesen] != bayt {
-                self.eslesen = self.geri[self.eslesen - 1];
-            }
-            if self.igne[self.eslesen] == bayt {
-                self.eslesen += 1;
-            }
-            if self.eslesen == self.igne.len() {
-                return Some(self.islenen - self.igne.len() as u64);
-            }
-        }
-        None
-    }
 }
 
 fn onaltilik_degeri(bayt: u8) -> Option<u8> {
@@ -527,53 +380,5 @@ mod testler {
             let hata = utf8_coz(bozuk, 100).unwrap_err();
             assert_eq!((hata.tur, hata.konum), ("utf8", Some(100 + gecerli)));
         }
-    }
-
-    #[test]
-    fn akis_cozucu_her_parca_sinirinda_ayni_sonucu_verir() {
-        let veri: Vec<u8> = (0..=255u8).cycle().take(1000).collect();
-        let kod: String = base64_kodla(&veri)
-            .as_bytes()
-            .chunks(76)
-            .map(|s| format!("{}\r\n", std::str::from_utf8(s).unwrap()))
-            .collect();
-        for boy in [1, 2, 3, 5, 77, 78, 4096] {
-            let mut cozucu = Base64AkisCozucu::default();
-            let mut cikti = Vec::new();
-            for (i, parca) in kod.as_bytes().chunks(boy).enumerate() {
-                cozucu.besle(parca, (i * boy) as u64, &mut cikti).unwrap();
-            }
-            cozucu.bitir(kod.len() as u64).unwrap();
-            assert_eq!(cikti, veri, "parça boyu {boy}");
-        }
-    }
-
-    #[test]
-    fn akis_cozucu_hata_konumu_mutlaktir() {
-        let mut cozucu = Base64AkisCozucu::default();
-        let mut cikti = Vec::new();
-        cozucu.besle(b"Zm9v", 1000, &mut cikti).unwrap();
-        let hata = cozucu.besle(b"Ym!", 1004, &mut cikti).unwrap_err();
-        assert_eq!((hata.tur, hata.konum), ("alfabe", Some(1006)));
-        let mut cozucu = Base64AkisCozucu::default();
-        cozucu.besle(b"Zm9vY", 7, &mut cikti).unwrap();
-        let hata = cozucu.bitir(12).unwrap_err();
-        assert_eq!((hata.tur, hata.konum), ("uzunluk", Some(12)));
-        let mut cozucu = Base64AkisCozucu::default();
-        cozucu.besle(b"Zg=", 0, &mut cikti).unwrap();
-        let hata = cozucu.besle(b"=Zg==", 3, &mut cikti).unwrap_err();
-        assert_eq!((hata.tur, hata.konum), ("dolgu", Some(4)));
-    }
-
-    #[test]
-    fn bayt_arayici_parca_sinirini_asar_ve_kmp_geri_doner() {
-        let mut arayici = BaytArayici::yeni(b"--sinir");
-        assert_eq!(arayici.besle(b"abc--si"), None);
-        assert_eq!(arayici.besle(b"nir"), Some(3));
-        let mut arayici = BaytArayici::yeni(b"aab");
-        assert_eq!(arayici.besle(b"aaaab"), Some(2));
-        let mut arayici = BaytArayici::yeni("ç".as_bytes());
-        assert_eq!(arayici.besle(&"aç".as_bytes()[..2]), None);
-        assert_eq!(arayici.besle(&"aç".as_bytes()[2..]), Some(1));
     }
 }

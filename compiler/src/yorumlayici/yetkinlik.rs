@@ -2,7 +2,6 @@
 mod dosya;
 mod http;
 mod kimlik_iletisim;
-mod kodlanmis;
 mod kurulum;
 mod web;
 
@@ -62,7 +61,19 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
         self.ic.dosya_ilk_baytlari(yol, adet)
     }
-    kodlanmis::yontemler!();
+    fn dosya_araligi_oku(&mut self, yol: &str, konum: i64, adet: i64) -> Result<Vec<u8>, String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+        self.ic.dosya_araligi_oku(yol, konum, adet)
+    }
+    fn dosyaya_bayt_yaz(
+        &mut self,
+        yol: &str,
+        baytlar: &[u8],
+        ekleme: bool,
+    ) -> Result<(String, u64), String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
+        self.ic.dosyaya_bayt_yaz(yol, baytlar, ekleme)
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.simdi()
     }

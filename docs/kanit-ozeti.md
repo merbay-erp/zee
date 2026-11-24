@@ -73,17 +73,17 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/18-paket-yayini.md | 13 | 1 | 0 | 14 | 92 |
 | spec/19-registry-metadata-guveni.md | 10 | 0 | 0 | 10 | 100 |
 | spec/20-ifade-grameri.md | 9 | 0 | 0 | 9 | 100 |
-| spec/21-deterministik-io-izi.md | 7 | 0 | 0 | 7 | 100 |
+| spec/21-deterministik-io-izi.md | 6 | 0 | 0 | 6 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 41 | 0 | 1 | 42 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 11 | 0 | 1 | 12 | 91 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 22 | 0 | 1 | 23 | 95 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 18 | 0 | 1 | 19 | 94 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 356 | 5 | 13 | 374 | 95 |
+| **Toplam** | 351 | 5 | 13 | 369 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -108,12 +108,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 11 | 4 | 0 | 14 | 1 | 15 |
+| urun-h | 10 | 4 | 0 | 13 | 1 | 14 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 80.
+Toplam korpus vakası: 79.
 
 ## Deprecation kayıtları
 

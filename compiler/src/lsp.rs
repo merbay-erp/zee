@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 141] = [
+const KALIP_KELIMELERI: [&str; 140] = [
     "yaz",
     "olsun",
     "ise",
@@ -154,7 +154,6 @@ const KALIP_KELIMELERI: [&str; 141] = [
     "quoted_printable",
     "çözerek",
     "özeti",
-    "aramayı",
     "türünde",
     "adıyla",
     "dinleyicisinde",
@@ -180,7 +179,7 @@ const KALIP_KELIMELERI: [&str; 141] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 81] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 80] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -258,8 +257,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 81] = [
     ("baytından", "Dosyanın verilen bayt konumundan en çok 1 MiB'lık aralığını okur (dosya-okuma): `metin olarak` katı UTF-8 Metin, `base64` ikili içeriği base64 Metin olarak verir; dosya sonunda olan kadar.\n\n`bölüm yol dosyasının 0 baytından 65536 baytını metin olarak okumayı dene olsun`"),
     ("base64", "Kodlama adı: aralıklı okumada ikili içeriği RFC 4648 base64 Metin olarak verir; `çözerek` kalıbında MIME base64'ü (CRLF/boşluk atlanır, dolgu zorunlu) baytlara çözer.\n\n`ek parça base64 çözerek yol dosyasına yazmayı dene olsun`"),
     ("quoted_printable", "Kodlama adı: RFC 2045 quoted-printable gövdeyi baytlara çözer; yumuşak satır sonu birleşir, bozuk `=` dizisi C032 `kaçış`.\n\n`ek parça quoted_printable çözerek yol dosyasına yazmayı dene olsun`"),
-    ("çözerek", "Kodlanmış Metni (base64 ya da quoted_printable) çözüp dosyaya bayt-kesin yazar (dosya-yazma): `yazmayı dene` yeni dosya (var olan hedef ezilmez), `eklemeyi dene` sona ekler; sonuç `yol`/`sha256`/`bayt` sözlüğüdür, hedef en çok 32 MiB. `<yol> dosyasının <a> baytından <n> baytını base64 çözerek <hedef> dosyasına eklemeyi dene` kaynak dosyanın aralığını Metin oluşturmadan akışla çözer (+`eklenen`). Bozuk kodlama C032.\n\n`ek parça base64 çözerek \"ek.bin\" dosyasına eklemeyi dene olsun`"),
-    ("aramayı", "Dosyada verilen bayt konumundan itibaren 1–1024 baytlık UTF-8 metni bayt bayt arar (dosya-okuma): ilk eşleşmenin dosya içi bayt konumu, yoksa -1; en çok 64 MiB taranır, pencere dolup dosya sürerse C013.\n\n`yer yol dosyasında 0 baytından \"--sinir\" aramayı dene olsun`"),
+    ("çözerek", "Kodlanmış Metni (base64 ya da quoted_printable) çözüp dosyaya bayt-kesin yazar (dosya-yazma): `yazmayı dene` yeni dosya (var olan hedef ezilmez), `eklemeyi dene` sona ekler; sonuç `yol`/`sha256`/`bayt` sözlüğüdür. Bozuk kodlama C032.\n\n`ek parça base64 çözerek \"ek.bin\" dosyasına eklemeyi dene olsun`"),
     ("özeti", "Metnin UTF-8 baytlarının SHA-256 özeti: 64 küçük harf onaltılık Metin; dosya özetiyle aynı biçim, yetkinlik istemez.\n\n`özet gövdenin sha256 özeti olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];

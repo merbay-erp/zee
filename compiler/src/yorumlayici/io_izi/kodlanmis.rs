@@ -4,87 +4,7 @@
 //!
 //! - `dosya_araligi_oku [yol, konum, adet] → ok,<bayt>,<sha256> | hata,<mesaj>`
 //! - `dosyaya_bayt_yaz [yol, yaz|ekle, <bayt>, <sha256>] → ok,<sha256>,<toplam> | hata,<mesaj>`
-//! - K-395 `dosyadan_base64_ekle [kaynak, konum, adet, hedef] → ok,<sha256>,<toplam>,<eklenen>
-//!   | hata,<mesaj> | kodlama,<tür>,<konum>,<mesaj>` — içerik yok, tamamen oynatılabilir.
-//! - K-395 `dosyada_bayt_ara [yol, konum, <iğne bayt>, <iğne sha256>] → ok,<konum> | hata,<mesaj>`
 use super::*;
-use crate::kalici_dosya::AkisliEkleme;
-use crate::kodlama::{AkisHatasi, KodlamaHatasi};
-
-pub(super) fn akis_argumanlari(kaynak: &str, konum: i64, adet: i64, hedef: &str) -> Vec<String> {
-    vec![
-        kaynak.into(),
-        konum.to_string(),
-        adet.to_string(),
-        hedef.into(),
-    ]
-}
-
-pub(super) fn arama_argumanlari(yol: &str, konum: i64, igne: &[u8]) -> Vec<String> {
-    vec![
-        yol.into(),
-        konum.to_string(),
-        igne.len().to_string(),
-        sha256_hex(igne),
-    ]
-}
-
-pub(super) fn akis_sonuc_yaz(sonuc: &Result<AkisliEkleme, AkisHatasi>) -> Vec<String> {
-    match sonuc {
-        Ok(ek) => vec![
-            "ok".into(),
-            ek.sha256.clone(),
-            ek.toplam.to_string(),
-            ek.eklenen.to_string(),
-        ],
-        Err(AkisHatasi::Dosya(hata)) => vec!["hata".into(), hata.clone()],
-        Err(AkisHatasi::Kodlama(hata)) => vec![
-            "kodlama".into(),
-            hata.tur.into(),
-            hata.konum.map_or_else(|| "-".into(), |k| k.to_string()),
-            hata.mesaj.clone(),
-        ],
-    }
-}
-
-fn base64_hata_turu(tur: &str) -> Option<&'static str> {
-    ["alfabe", "dolgu", "uzunluk"]
-        .into_iter()
-        .find(|bilinen| *bilinen == tur)
-}
-
-fn akis_sonuc_coz(alanlar: &[String]) -> Result<Result<AkisliEkleme, AkisHatasi>, String> {
-    let gecersiz = || {
-        "akış sonucu `ok,<sha256>,<toplam>,<eklenen>`, `hata,<mesaj>` veya `kodlama,<tür>,<konum>,<mesaj>` olmalı".to_string()
-    };
-    match alanlar {
-        [etiket, ozet, toplam, eklenen] if etiket == "ok" && ozet_mi(ozet) => {
-            let (toplam, eklenen) = (kanonik_sayi(toplam)?, kanonik_sayi(eklenen)?);
-            if eklenen > toplam {
-                return Err(gecersiz());
-            }
-            Ok(Ok(AkisliEkleme {
-                sha256: ozet.clone(),
-                toplam,
-                eklenen,
-            }))
-        }
-        [etiket, hata] if etiket == "hata" => Ok(Err(AkisHatasi::Dosya(hata.clone()))),
-        [etiket, tur, konum, mesaj] if etiket == "kodlama" => {
-            let tur = base64_hata_turu(tur).ok_or_else(gecersiz)?;
-            let konum = match konum.as_str() {
-                "-" => None,
-                sayi => Some(kanonik_sayi(sayi)?),
-            };
-            Ok(Err(AkisHatasi::Kodlama(KodlamaHatasi {
-                tur,
-                konum,
-                mesaj: mesaj.clone(),
-            })))
-        }
-        _ => Err(gecersiz()),
-    }
-}
 
 pub(super) fn aralik_argumanlari(yol: &str, konum: i64, adet: i64) -> Vec<String> {
     vec![yol.into(), konum.to_string(), adet.to_string()]
@@ -156,18 +76,6 @@ pub(super) fn semayi_denetle(olay: &IzOlay) -> Result<(), String> {
                 _ => Err(gecersiz()),
             }
         }
-        ("dosyadan_base64_ekle", [_, konum, adet, _]) => {
-            konum.parse::<i64>().map_err(|_| gecersiz())?;
-            adet.parse::<i64>().map_err(|_| gecersiz())?;
-            akis_sonuc_coz(&olay.sonuc).map(|_| ())
-        }
-        ("dosyada_bayt_ara", [_, konum, bayt, ozet]) if ozet_mi(ozet) => {
-            konum.parse::<i64>().map_err(|_| gecersiz())?;
-            kanonik_sayi(bayt)?;
-            tamsayi_sonuc_coz(&olay.sonuc)
-                .map(|_| ())
-                .map_err(|_| gecersiz())
-        }
         ("dosyaya_bayt_yaz", [_, kip, bayt, ozet])
             if matches!(kip.as_str(), "yaz" | "ekle") && ozet_mi(ozet) =>
         {
@@ -222,27 +130,6 @@ impl IzYenidenOynatici {
                 .hata
                 .clone()
                 .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
-        })
-    }
-
-    pub(super) fn akis_oynat(
-        &mut self,
-        kaynak: &str,
-        konum: i64,
-        adet: i64,
-        hedef: &str,
-    ) -> Result<AkisliEkleme, AkisHatasi> {
-        let islem = "dosyadan_base64_ekle";
-        let kayip = |oynatici: &Self, varsayilan: &str| {
-            AkisHatasi::Dosya(oynatici.hata.clone().unwrap_or_else(|| varsayilan.into()))
-        };
-        let Some(alanlar) = self.siradaki(islem, akis_argumanlari(kaynak, konum, adet, hedef))
-        else {
-            return Err(kayip(self, "IO izi uyuşmazlığı"));
-        };
-        akis_sonuc_coz(&alanlar).unwrap_or_else(|hata| {
-            self.bozuk_sonuc(islem, hata);
-            Err(kayip(self, "IO izi sonucu bozuk"))
         })
     }
 }

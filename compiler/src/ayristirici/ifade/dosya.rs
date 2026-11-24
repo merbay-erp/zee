@@ -88,9 +88,6 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
     if let Some(ifade) = kodlanmis_icerik_kalibi(tokenlar)? {
         return Ok(Some(ifade));
     }
-    if let Some(ifade) = dosya_akisi_kalibi(tokenlar)? {
-        return Ok(Some(ifade));
-    }
 
     Ok(None)
 }
@@ -157,59 +154,6 @@ fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
             tekil_ifade(tokenlar[3].clone())?,
         ],
     }))
-}
-
-/// K-395 (RFC-0043 Dilim 2 kısmi, ADR-171): dosyadan dosyaya akışlı çözme ve
-/// bayt arama kalıpları.
-///
-/// - `YOL dosyasının A baytından N baytını base64 çözerek HEDEF dosyasına
-///   eklemeyi dene`
-/// - `YOL dosyasında KONUM baytından İĞNE aramayı dene`
-fn dosya_akisi_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
-    use crate::intrinsic::{DOSYADAN_BASE64_EKLE, DOSYADA_BAYT_ARA};
-    let kelime = |i: usize| -> Option<&str> {
-        match &tokenlar.get(i)?.tur {
-            TokenTur::Kelime(k) => Some(k.as_str()),
-            _ => None,
-        }
-    };
-    let n = tokenlar.len();
-    // K-395: YOL dosyasının A baytından N baytını base64 çözerek HEDEF
-    // dosyasına eklemeyi dene — dosyadan dosyaya akışlı çözme.
-    if n == 12
-        && kelime(1) == Some("dosyasının")
-        && kelime(3) == Some("baytından")
-        && kelime(5) == Some("baytını")
-        && kelime(6) == Some("base64")
-        && kelime(7) == Some("çözerek")
-        && kelime(9) == Some("dosyasına")
-        && kelime(10) == Some("eklemeyi")
-        && kelime(11) == Some("dene")
-    {
-        return Ok(Some(Ifade::Intrinsic {
-            kimlik: DOSYADAN_BASE64_EKLE.into(),
-            argumanlar: [0, 2, 4, 8]
-                .into_iter()
-                .map(|i| tekil_ifade(tokenlar[i].clone()))
-                .collect::<Result<_, _>>()?,
-        }));
-    }
-    // K-395: YOL dosyasında KONUM baytından İĞNE aramayı dene.
-    if n == 7
-        && kelime(1) == Some("dosyasında")
-        && kelime(3) == Some("baytından")
-        && kelime(5) == Some("aramayı")
-        && kelime(6) == Some("dene")
-    {
-        return Ok(Some(Ifade::Intrinsic {
-            kimlik: DOSYADA_BAYT_ARA.into(),
-            argumanlar: [0, 2, 4]
-                .into_iter()
-                .map(|i| tekil_ifade(tokenlar[i].clone()))
-                .collect::<Result<_, _>>()?,
-        }));
-    }
-    Ok(None)
 }
 
 /// K-378: `YOL dosyasını TÜR türünde AD adıyla ek olarak göndermeyi dene`.

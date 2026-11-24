@@ -58,8 +58,7 @@ pub mod kalici_dosya;
 pub mod kaynak_sinirlari;
 #[doc(hidden)]
 pub mod kimlik;
-#[doc(hidden)]
-pub mod kodlama;
+mod kodlama;
 #[doc(hidden)]
 pub mod lsp;
 #[doc(hidden)]

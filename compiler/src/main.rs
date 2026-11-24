@@ -38,8 +38,6 @@ mod ag_izni;
 mod ag_tls;
 #[path = "cli/registry.rs"]
 mod dil_registry;
-#[path = "cli/dosya_akisi.rs"]
-mod dosya_akisi;
 #[path = "cli/systemd_bildirim.rs"]
 mod systemd_bildirim;
 mod web_cok_parcali;
@@ -3995,6 +3993,10 @@ fn program_argumanlari() -> Vec<String> {
         .collect()
 }
 
+/// K-395: `çözerek … yazmayı|eklemeyi dene` hedef dosyasının toplam tavanı
+/// (K-389'da yükleme tavanıyla eşit 16 MiB idi; ADR-167 eki).
+const COZEREK_YAZMA_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
+
 impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yazdir(&mut self, satir: String) {
         println!("{}", satir);
@@ -4246,8 +4248,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
-        // K-395: çözerek yazma/ekleme hedef tavanı 32 MiB (ADR-171, GB satırı).
-        let azami = dil::kodlama::AZAMI_HEDEF_BAYTI;
+        // K-395 (ADR-167 eki, GB satırı): hedef toplamı 32 MiB; 25 MB iletinin
+        // tek ~18 MB eki sığar. Çağrı başına çözülen çıktı yine ≤ 1 MiB.
+        let azami = COZEREK_YAZMA_HEDEF_BAYTI;
         let yazim_hatasi = |hata: std::io::Error| match hata.kind() {
             std::io::ErrorKind::AlreadyExists => format!("\"{}\" hedef dosyası zaten var", yol),
             _ => format!("\"{}\" dosyasına yazılamadı: {}", yol, hata),
@@ -4282,45 +4285,6 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .map_err(yazim_hatasi)?;
         // Özet, kilit altında yayımlanan bütün içerikten hesaplanır.
         Ok((hex(&Sha256::digest(&icerik)), icerik.len() as u64))
-    }
-    fn dosyadan_base64_ekle(
-        &mut self,
-        kaynak: &str,
-        konum: i64,
-        adet: i64,
-        hedef: &str,
-    ) -> Result<dil::kalici_dosya::AkisliEkleme, dil::kodlama::AkisHatasi> {
-        use dil::kodlama::AkisHatasi::Dosya;
-        use dil::yetkinlik::Yetkinlik::{DosyaOkuma, DosyaYazma};
-
-        self.politika.gerektir(DosyaOkuma).map_err(Dosya)?;
-        self.politika.gerektir(DosyaYazma).map_err(Dosya)?;
-        // K-395: yorumlayıcı aralığı IO'dan önce denetler; adaptör ikinci kez
-        // fail-closed tutar (48 MiB, ADR-171).
-        let konum = u64::try_from(konum).map_err(|_| Dosya("konum negatif olamaz".into()))?;
-        let adet = u64::try_from(adet)
-            .ok()
-            .filter(|adet| (1..=dil::kodlama::AZAMI_AKIS_ARALIGI).contains(adet))
-            .ok_or_else(|| Dosya("çözülecek bayt sayısı 1 ile 50331648 arasında olmalı".into()))?;
-        if self.postgresql_yazma_eylemleri.iter().any(|k| *k) || !self.eylem_yedekleri.is_empty() {
-            // K-389 akışlı eklemeyle aynı sınır: çalışma dosyası eylem dışında biriktirilir.
-            return Err(Dosya(
-                "dosyadan çözerek eklemeyi dene eylem içinde kullanılamaz; ekleri eylem dışında biriktirip eylemde atomik taşıyın".into(),
-            ));
-        }
-        let kaynak_yolu = self.dosya_yolu(kaynak, false).map_err(Dosya)?;
-        let hedef_yolu = self.dosya_yolu(hedef, true).map_err(Dosya)?;
-        dosya_akisi::base64_cozerek_ekle(&kaynak_yolu, kaynak, (konum, adet), &hedef_yolu, hedef)
-    }
-    fn dosyada_bayt_ara(&mut self, yol: &str, konum: i64, igne: &[u8]) -> Result<i64, String> {
-        self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
-        let konum = u64::try_from(konum).map_err(|_| "konum negatif olamaz".to_string())?;
-        if igne.is_empty() || igne.len() > dil::kodlama::AZAMI_IGNE_BAYTI {
-            return Err("aranan metin 1 ile 1024 bayt arasında olmalı".into());
-        }
-        let gercek_yol = self.dosya_yolu(yol, false)?;
-        dosya_akisi::bayt_ara(&gercek_yol, yol, konum, igne)
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
