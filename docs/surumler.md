@@ -5,6 +5,45 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 24 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **Bağlantıda büyük gövde, literal ve bayt-kesin akış (K-384):** adlı
+  dinleyici bağlantısında (K-381) SMTP `DATA` gövdesi ve IMAP literal'i artık
+  belleğe alınmadan geçici dosyaya akar:
+  `ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun` ve
+  `ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun` başarıda `yol`,
+  `sha256` ve `bayt` taşıyan bir Sözlük verir; dosyayı
+  `atomik taşımayı dene` ile kalıcı yerine taşırsın. Gövde yalnız birebir
+  `<CRLF>.<CRLF>` ile biter; içindeki çıplak LF/CR (SMTP smuggling) gövdeyi
+  `satır_sonu` ile reddeder ve kaçak satırlar asla komut olarak okunmaz.
+  Yeni `proje.dil` alanı `bağlantı_blok_sınırı` (varsayılan 32 MiB) aşılırsa
+  `boyut_aşımı` döner, oturum sürer. Satır sonu eklemeden yazmak için
+  `bağlantıya "+ " parçasını yaz`, tam n bayt okumak için
+  `bağlantıdan 6 bayt okumayı dene`, dosyayı bağlantıya akıtmak için
+  `bağlantıya yol dosyasını aktarmayı dene` (`dosya-okuma` da ister),
+  boşta süresinden kısa bekleyen okuma için
+  `bağlantıdan satır okumayı 30 saniye içinde dene` (IMAP IDLE yoklaması)
+  eklendi. Yeni Hata `tür` değerleri: `boyut_aşımı`, `geçersiz`, `dosya`.
+  Okuma zaman aşımı bağlantıyı kapatmaz ve yarım satırı korur; yarıda
+  kalan bir gövde ise okuma yönünü kapatır (program `421` yazıp kapatır).
+  Geçici dosyalar `.zee/baglanti-bloklari/` altında `0600` izinlidir,
+  taşınmazsa bağlantı bitince silinir.
+
+### Değişenler
+
+- **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
+  biten bir işlem (`işlem yanıtı yaz`) cümle olarak çağrılınca satır
+  yerleşik cümle olarak okunur; A001/S037 iletisi artık çakışan işlemi adıyla
+  anar ve başka ad önerir. İşlemde `bağlantının "uzak_adres" değeri` A001
+  verirse öneri, örtük `bağlantı` Sözlüğünün yalnız bağlantı bloğunda
+  göründüğünü ve alanın parametre olarak geçirilmesini söyler. Tanı kodları
+  ve kabul/ret davranışı değişmedi.
+
 ## 23 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

@@ -1718,7 +1718,7 @@ fn baglanti_ayarlari_aralikli_okunur_ve_p020_ile_reddedilir() {
         (64, 8, 1000)
     );
     let ayar = bildirimi_oku(&format!(
-        "{taban}bağlantı_sınırı 256 olsun\nuzak_adres_bağlantı_sınırı 16 olsun\nbağlantı_satır_sınırı 512 olsun\nbağlantı_boşta_süresi 60 olsun\nbağlantı_ömrü 900 olsun\nbağlantı_dolu_yanıtı \"421 4.3.2 Hizmet mesgul\" olsun\n"
+        "{taban}bağlantı_sınırı 256 olsun\nuzak_adres_bağlantı_sınırı 16 olsun\nbağlantı_satır_sınırı 512 olsun\nbağlantı_boşta_süresi 60 olsun\nbağlantı_ömrü 900 olsun\nbağlantı_dolu_yanıtı \"421 4.3.2 Hizmet mesgul\" olsun\nbağlantı_blok_sınırı 52428800 olsun\n"
     ))
     .expect("ayarlar")
     .baglanti;
@@ -1732,6 +1732,7 @@ fn baglanti_ayarlari_aralikli_okunur_ve_p020_ile_reddedilir() {
             omur_ms: 900_000,
             dolu_yaniti: Some("421 4.3.2 Hizmet mesgul".into()),
             tls: None,
+            blok_siniri: 52_428_800,
         }
     );
     // Küçük sınırda uzak adres varsayılanı sınıra çekilir.
@@ -1748,6 +1749,12 @@ fn baglanti_ayarlari_aralikli_okunur_ve_p020_ile_reddedilir() {
         ("bağlantı_ömrü 86401 olsun", "1 ile 86400"),
         ("bağlantı_dolu_yanıtı \"421 meşgul\" olsun", "ASCII"),
         ("bağlantı_dolu_yanıtı \"\" olsun", "ASCII"),
+        // K-384: blok sınırı 1 KiB ile 1 GiB arasında.
+        ("bağlantı_blok_sınırı 1023 olsun", "1024 ile 1073741824"),
+        (
+            "bağlantı_blok_sınırı 1073741825 olsun",
+            "1024 ile 1073741824",
+        ),
         (
             "bağlantı_sınırı 4 olsun\nuzak_adres_bağlantı_sınırı 5 olsun",
             "aşamaz",

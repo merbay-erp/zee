@@ -772,16 +772,9 @@ impl Ayristirici {
     fn yaz_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "yaz"
 
-        // K-381: `bağlantıya <değer> satırını yaz`.
-        if tokenlar.len() >= 3
-            && kelime_mi(&tokenlar[0], "bağlantıya")
-            && tokenlar
-                .last()
-                .is_some_and(|son| kelime_mi(son, "satırını"))
-        {
-            let son = tokenlar.len() - 1;
-            let deger = ile_ifadesi(&tokenlar[1..son], satir, &self.islem_adlari)?;
-            return Ok(Cumle::BaglantiyaYaz { deger, satir });
+        // K-381/K-384: `bağlantıya <değer> satırını yaz` / `… parçasını yaz`.
+        if let Some(cumle) = self.baglantiya_yaz(&tokenlar, satir) {
+            return cumle;
         }
 
         // Çereze yazma (K-052): `"oturum" çerezine kimlik yaz`.

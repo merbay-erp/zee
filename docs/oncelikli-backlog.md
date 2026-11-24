@@ -2557,6 +2557,50 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-384 — Bağlantıda blok okuma ve bayt-kesin akış (RFC-0039 A2c)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail); 23 Kasım
+2026 merkez kararı “Sırayla aç”, “hiç durmadan geliştir”. SMTP (19/19) ve
+IMAP (imaplib 36/36) K-381 ile gerçek TCP'de çalışınca kalan sürtünmeler:
+`DATA` gövdesi ve IMAP `APPEND` literal'i satır akışına sığmıyor;
+ZM-F031 (satır sonusuz `+ ` yazma, bayt-kesin `{n}` okuma; Zee metninde
+`\r` kaçışı yok, S040); ZM-F032 (IDLE yeni iletiyi boşta süresi dolmadan
+fark edemiyor); işlemde örtük `bağlantı` A001 ve `… yanıtı yaz`/`… yanıt
+satırlarını gönder` adlarının yerleşik `yaz`/S037 ile çakışması. Freeze
+sınıfı `dogfood-change`, karar ADR-165 A2c eki.
+
+Gerçekleşen: `bağlantıdan nokta bloğunu dosyaya almayı dene` ve
+`bağlantıdan <n> baytı dosyaya almayı dene` → `Sonuç<Sözlük>` (`yol`,
+`sha256`, `bayt`); saf `ag_satiri::BlokOkuyucu` (yalnız birebir CRLF.CRLF,
+nokta doldurma, çıplak CR/LF smuggling reddi ve sonlandırıcıya kadar
+tüketme, sınır); `0600` `.parca` dosyası `.zee/baglanti-bloklari` altında,
+SHA-256 aynı akışta, `fsync`, yarım dosya her hatada silinir, taşınmayan
+dosya sonraki blokta/bağlantı sonunda silinir, yetim süpürmesi
+`bağlantı_ömrü` + 15 dk; `bağlantı_blok_sınırı` (P020); mutlak
+`boşta + bayt/64 KiB/sn` bütçesi, yarıda kalan blok okuma yönünü kapatır.
+`bağlantıdan <n> bayt okumayı dene` (Metin), `bağlantıya X parçasını yaz`
+/ `… yazmayı dene` (satır sonusuz), `bağlantıya <yol> dosyasını aktarmayı
+dene` (`dosya-okuma`, geri basınç, kısalan dosyada kırık bağlantı),
+`bağlantıdan satır okumayı <n> saniye içinde dene` (boşta süresini aşamaz;
+zaman aşımı oturumu bitirmez, yarım satır korunur). A001/S037'ye ad seçimi
+ve örtük `bağlantı` kapsamı ipucu (kod ve davranış aynı). IO izi ve
+hermetik adaptör yeni işlemleri taşır.
+
+Kanıt: `compiler/tests/ag_blok_testi.rs` (13 hermetik vaka),
+`compiler/tests/ag_baglantisi_surec_testi.rs` (4 yeni gerçek TCP vakası:
+900 KiB DATA, 0600 dosya ve SHA-256, pipelining, smuggling, 1.1 MB sınır,
+dosyanın sonraki blokta ve bağlantı sonunda silinmesi; damla damla DATA ve
+okuma yönünün kapanması, blok ortasında kopma; `+ ` iki bayt, 70000 baytlık
+ikili literal, parola baytları ve geri aktarım; IDLE 1 sn yoklaması ve yarım
+satır), `ag_satiri` birim testleri, `proje_testi` P020, gerçek systemd 255
+ölçümü (bağlantı koşusuna kısa DATA, smuggling 554 ve IDLE yoklaması;
+koşu sonunda blok dizini boş). spec/12 §9 A2c, RFC-0039 A2c, ADR-165 eki,
+GB-159, `dogfood/urun-h/baglanti-yankisi/`.
+
+Açık: bağlantılar arası uyandırma (IDLE'ı yeni iletiyle uyandırma; RFC-0039
+adım 5), blok dosyasına yazımın senkron dilimi (Katman C), kısmi literal
+getirme ve dosya aralığı aktarımı.
+
 ## K-381 — Adlı dinleyici bağlantı yüzeyi (RFC-0039 A2a)
 
 **Durum: KAPALI (A2a, A2b).** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail);
@@ -2601,7 +2645,7 @@ yükseltme yok + kapanış (CVE-2011-0411). Kanıt:
 1.3/1.2, enjeksiyon, TLS 1.1/CBC reddi, kimlik/credential), hermetik
 STARTTLS vakaları, `proje_testi` P021; GB-158.
 
-Açık: A2c blok okuma/akıtma,
+Açık: (A2c K-384'te kapandı)
 çok işçi grubuna adla aktarım, `dil dene` içinden betiklenmiş bağlantı,
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).

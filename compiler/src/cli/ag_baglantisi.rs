@@ -8,9 +8,23 @@
 //! ve tıkanan yazma için çağrının başından mutlak boşta süresi, 64 KiB giden
 //! tampon. Sınır dolunca bağlantı kabul edilip bildirilen kibar ret satırı tek
 //! engellemeyen yazımla gönderilir ve kapatılır; Zee görevi kurulmaz.
+//!
+//! K-384 (A2c): nokta bloğu ve literal `0600` geçici `.parca` dosyasına
+//! SHA-256 aynı akışta hesaplanarak akar; yarım dosya her hatada silinir,
+//! tamamlanan dosya bir sonraki blokta ya da bağlantı bitince silinir (Zee
+//! taşımadıysa). Dosyadan bağlantıya aktarım giden tamponu geri basınçla
+//! doldurur. İkisinin de süresi çağrının başından mutlak
+//! `boşta + bayt / AKIS_ASGARI_HIZI` bütçesidir.
 
 use super::ag_tls::Kanal;
-use dil::ag_satiri::{giden_satir, BaglantiAyari, SatirOkuyucu, GIDEN_TAMPON_BAYTI, OKUMA_PARCASI};
+use super::web_yukleme::{
+    yetim_parcalari_supur_dizinde, AkanYukleme, IstekYuklemesi, BAGLANTI_BLOK_DIZINI,
+    YETIM_SUPURME_ARALIGI,
+};
+use dil::ag_satiri::{
+    akis_butcesi_ms, bayt_metni, giden_parca, giden_satir, BaglantiAyari, BlokOkuyucu,
+    SatirOkuyucu, BAYT_OKUMA_SINIRI, BLOK_SINIRI_ASILDI, GIDEN_TAMPON_BAYTI, OKUMA_PARCASI,
+};
 use dil::yorumlayici::{BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti};
 use std::collections::BTreeMap;
 use std::io::{ErrorKind, Read, Write};
@@ -25,6 +39,37 @@ const KAPANIS_BOSALTMA: Duration = Duration::from_secs(5);
 /// Tek uyanışta kabul edilen en çok bağlantı (dinleyici başına).
 const KABUL_DILIMI: usize = 64;
 const RET_GUNLUK_ARALIGI: Duration = Duration::from_secs(5);
+/// Tek blok/aktarım çağrısının bir turda işlediği en çok bayt; sonra görev
+/// scheduler'a döner (hızlı istemci kardeş bağlantıları aç bırakmaz).
+const BLOK_DILIMI: usize = 256 * 1024;
+/// Bağlantı blok dosyasının yetim sayılması için `bağlantı_ömrü`ne eklenen pay.
+const BLOK_YETIM_PAYI: Duration = Duration::from_secs(15 * 60);
+
+/// Sürmekte olan blok okuması.
+struct AcikBlok {
+    okuyucu: BlokOkuyucu,
+    yukleme: AkanYukleme,
+    baslangic: Instant,
+    /// Bütçe tabanı: literal'de bildirilen adet, nokta bloğunda 0.
+    taban: u64,
+    /// Bağlantıdan tüketilen ham bayt.
+    alinan: u64,
+}
+
+impl AcikBlok {
+    fn son(&self, bosta_ms: i64) -> Instant {
+        let butce = akis_butcesi_ms(bosta_ms, self.taban.max(self.alinan));
+        self.baslangic + Duration::from_millis(butce.max(0) as u64)
+    }
+}
+
+/// Sürmekte olan dosyadan bağlantıya aktarım.
+struct Aktarim {
+    dosya: std::fs::File,
+    kalan: u64,
+    toplam: u64,
+    son: Instant,
+}
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Ilgi {
@@ -52,6 +97,15 @@ struct Baglanti {
     el_sikisma: Option<(Instant, u16, u16)>,
     /// STARTTLS el sıkışması sürüyor.
     yukseltiliyor: bool,
+    /// K-384: sürmekte olan blok; düşünce yarım dosya silinir.
+    blok: Option<AcikBlok>,
+    /// K-384: son tamamlanan blok dosyası; sonraki blokta ya da bağlantı
+    /// bitince silinir (Zee taşıdıysa etkisiz).
+    blok_dosyasi: Option<IstekYuklemesi>,
+    /// K-384: yarıda kalan blok/literal akışı eşzamanlamayı bozdu; sonraki
+    /// okumalar `kapandı` döner, yazma ve kapatma çalışır.
+    okuma_kapali: bool,
+    aktarim: Option<Aktarim>,
 }
 
 struct Kapanan {
@@ -74,6 +128,9 @@ pub(crate) struct Reaktor {
     hazir_bildirildi: bool,
     ret_sayisi: u64,
     son_ret_gunlugu: Option<Instant>,
+    /// Göreli IO kökü (blok dosyaları `kök/.zee/baglanti-bloklari`).
+    kok: std::path::PathBuf,
+    son_supurme: Option<Instant>,
 }
 
 fn uzak_yazimi(ip: IpAddr) -> String {
@@ -125,7 +182,7 @@ fn poll_et(olaylar: &mut [libc::pollfd], zaman_asimi_ms: i64) {
 }
 
 impl Reaktor {
-    pub(crate) fn yeni(ayar: BaglantiAyari, baslangic: Instant) -> Self {
+    pub(crate) fn yeni(ayar: BaglantiAyari, baslangic: Instant, kok: std::path::PathBuf) -> Self {
         let implicit_tls = ayar
             .tls
             .as_ref()
@@ -144,6 +201,30 @@ impl Reaktor {
             hazir_bildirildi: false,
             ret_sayisi: 0,
             son_ret_gunlugu: None,
+            kok,
+            son_supurme: None,
+        }
+    }
+
+    /// K-384: süreç ölümünden kalan blok dosyalarını süpürür. Eşik en uzun
+    /// bağlantı ömrünü aştığı için canlı oturumun dosyasına dokunulmaz.
+    fn yetimleri_supur(&mut self) {
+        if self
+            .son_supurme
+            .is_some_and(|an| an.elapsed() < YETIM_SUPURME_ARALIGI)
+        {
+            return;
+        }
+        self.son_supurme = Some(Instant::now());
+        let yas = Duration::from_millis(self.ayar.omur_ms.max(0) as u64) + BLOK_YETIM_PAYI;
+        let silinen = yetim_parcalari_supur_dizinde(
+            &self.kok,
+            BAGLANTI_BLOK_DIZINI,
+            std::time::SystemTime::now(),
+            yas,
+        );
+        if silinen > 0 {
+            eprintln!("Zee bağlantı: {silinen} yetim blok geçici dosyası silindi.");
         }
     }
 
@@ -248,6 +329,10 @@ impl Reaktor {
                     zaman_asti: false,
                     el_sikisma,
                     yukseltiliyor: false,
+                    blok: None,
+                    blok_dosyasi: None,
+                    okuma_kapali: false,
+                    aktarim: None,
                 },
             );
         }
@@ -457,6 +542,7 @@ impl Reaktor {
         uyanma_an_ms: Option<i64>,
     ) -> Result<Vec<BaglantiOlayi>, String> {
         self.ilk_bekleme();
+        self.yetimleri_supur();
         let uyanma = uyanma_an_ms.map(|ms| self.an(ms));
         loop {
             if let Some(olaylar) = self.kapanisi_denetle(bekleyenler) {
@@ -477,12 +563,18 @@ impl Reaktor {
         }
     }
 
-    fn satir_oku(&mut self, kimlik: u64) -> BaglantiSonucu {
-        let bosta = self.ayar.bosta_suresi_ms;
+    /// `sure_ms`: okumanın çağrı başından mutlak süresi (boşta süresi ya da
+    /// K-384 kısa süre); zaman aşımı bağlantıyı kapatmaz, yarım satır
+    /// tamponda kalır ve sonraki okuma onu tamamlar.
+    fn satir_oku(&mut self, kimlik: u64, sure_ms: i64) -> BaglantiSonucu {
+        let bosta = sure_ms.clamp(1, self.ayar.bosta_suresi_ms.max(1));
         let kapaniyor = self.kapaniyor;
         let Some(b) = self.baglantilar.get_mut(&kimlik) else {
             return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
         };
+        if b.okuma_kapali {
+            return BaglantiSonucu::hata("kapandı", dil::ag_satiri::OKUMA_KAPALI);
+        }
         if kapaniyor {
             b.bekleme = None;
             return BaglantiSonucu::hata("kapanıyor", "sunucu kapanıyor");
@@ -508,10 +600,7 @@ impl Reaktor {
             if b.zaman_asti {
                 b.bekleme = None;
                 b.zaman_asti = false;
-                return BaglantiSonucu::hata(
-                    "zaman_aşımı",
-                    "satır bağlantı_boşta_süresi içinde tamamlanmadı",
-                );
+                return BaglantiSonucu::hata("zaman_aşımı", "satır süresi içinde tamamlanmadı");
             }
             if !Self::doldur(b) {
                 if b.bekleme.is_none() {
@@ -525,13 +614,19 @@ impl Reaktor {
         }
     }
 
-    fn satir_yaz(&mut self, kimlik: u64, metin: &str) -> BaglantiSonucu {
+    /// Satır (CRLF eklenir) ya da K-384 parça (satır sonu eklenmez) yazımı.
+    fn satir_yaz(&mut self, kimlik: u64, metin: &str, satir_sonu: bool) -> BaglantiSonucu {
         let bosta = self.ayar.bosta_suresi_ms;
         let sinir = self.ayar.satir_siniri;
         let Some(b) = self.baglantilar.get_mut(&kimlik) else {
             return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
         };
-        let bayt = match giden_satir(metin, sinir) {
+        let bayt = if satir_sonu {
+            giden_satir(metin, sinir)
+        } else {
+            giden_parca(metin, sinir)
+        };
+        let bayt = match bayt {
             Ok(bayt) => bayt,
             Err(neden) => return BaglantiSonucu::hata("yazılamadı", neden),
         };
@@ -705,10 +800,322 @@ impl Reaktor {
         BaglantiSonucu::Tamam(0)
     }
 
+    /// K-384: bayt-kesin okuma (en çok satır sınırı, bellekte).
+    fn bayt_oku(&mut self, kimlik: u64, adet: i64) -> BaglantiSonucu {
+        let bosta = self.ayar.bosta_suresi_ms;
+        let sinir = self.ayar.satir_siniri;
+        let kapaniyor = self.kapaniyor;
+        let Some(b) = self.baglantilar.get_mut(&kimlik) else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+        };
+        if b.okuma_kapali {
+            return BaglantiSonucu::hata("kapandı", dil::ag_satiri::OKUMA_KAPALI);
+        }
+        if kapaniyor {
+            b.bekleme = None;
+            return BaglantiSonucu::hata("kapanıyor", "sunucu kapanıyor");
+        }
+        let adet = adet.max(0) as usize;
+        if adet > sinir {
+            return BaglantiSonucu::hata("boyut_aşımı", BAYT_OKUMA_SINIRI);
+        }
+        loop {
+            if let Some(bayt) = b.okuyucu.bayt_al(adet) {
+                b.bekleme = None;
+                b.zaman_asti = false;
+                return match bayt_metni(bayt) {
+                    Ok(metin) => BaglantiSonucu::Satir(metin),
+                    Err(hata) => BaglantiSonucu::hata(hata.turu(), hata.mesaji()),
+                };
+            }
+            if b.eof || b.kirik {
+                b.bekleme = None;
+                b.okuma_kapali = true;
+                return BaglantiSonucu::hata("kapandı", "karşı taraf baytlar bitmeden kapattı");
+            }
+            if b.zaman_asti {
+                b.bekleme = None;
+                b.zaman_asti = false;
+                b.okuma_kapali = true;
+                return BaglantiSonucu::hata("zaman_aşımı", "baytlar süresi içinde gelmedi");
+            }
+            if !Self::doldur(b) {
+                b.bekleme.get_or_insert(Bekleme {
+                    ilgi: Ilgi::Okuma,
+                    son: Instant::now()
+                        + Duration::from_millis(akis_butcesi_ms(bosta, adet as u64) as u64),
+                });
+                return BaglantiSonucu::Bekle;
+            }
+        }
+    }
+
+    /// K-384: yarıda kalan bloğu bırakır (yarım dosya düşerken silinir) ve
+    /// okuma yönünü kapatır: eşzamanı bozuk akışın kalanı komut olamaz.
+    fn blok_kes(b: &mut Baglanti, tur: &str, mesaj: &str) -> BaglantiSonucu {
+        b.blok = None;
+        b.bekleme = None;
+        b.zaman_asti = false;
+        b.okuma_kapali = true;
+        BaglantiSonucu::hata(tur, mesaj)
+    }
+
+    fn blok_kesintisi(b: &Baglanti, kapaniyor: bool) -> Option<(&'static str, &'static str)> {
+        if kapaniyor {
+            Some(("kapanıyor", "sunucu kapanıyor; blok atıldı"))
+        } else if b.eof || b.kirik {
+            Some(("kapandı", "karşı taraf blok bitmeden kapattı"))
+        } else if b.zaman_asti {
+            Some(("zaman_aşımı", "blok süresi içinde tamamlanmadı; atıldı"))
+        } else {
+            None
+        }
+    }
+
+    /// Yeni blok: sınır denetimi, önceki taşınmamış dosyanın bırakılması
+    /// (bağlantı başına en çok bir dosya) ve `0600` geçici dosya.
+    fn blok_baslat(
+        b: &mut Baglanti,
+        kok: &std::path::Path,
+        adet: Option<i64>,
+        blok_siniri: u64,
+    ) -> Result<(), BaglantiSonucu> {
+        let adet = adet.map(|a| a.max(0) as u64);
+        if adet.is_some_and(|a| a > blok_siniri) {
+            return Err(BaglantiSonucu::hata("boyut_aşımı", BLOK_SINIRI_ASILDI));
+        }
+        b.blok_dosyasi = None;
+        let yukleme = AkanYukleme::dizinde(kok, BAGLANTI_BLOK_DIZINI)
+            .map_err(|neden| BaglantiSonucu::hata("dosya", neden))?;
+        b.blok = Some(AcikBlok {
+            okuyucu: adet.map_or_else(|| BlokOkuyucu::nokta(blok_siniri), BlokOkuyucu::bayt),
+            yukleme,
+            baslangic: Instant::now(),
+            taban: adet.unwrap_or(0),
+            alinan: 0,
+        });
+        b.bekleme = None;
+        b.zaman_asti = false;
+        Ok(())
+    }
+
+    /// Gelen tampondaki baytları çözücüye verir, çıktıyı dosyaya yazar.
+    fn blok_tamponu_isle(b: &mut Baglanti, cikti: &mut Vec<u8>) -> Result<usize, String> {
+        let Some(acik) = b.blok.as_mut() else {
+            return Ok(0);
+        };
+        cikti.clear();
+        let tuketilen = acik.okuyucu.besle(b.okuyucu.tampon(), cikti);
+        b.okuyucu.tuket_bayt(tuketilen);
+        acik.alinan += tuketilen as u64;
+        if !cikti.is_empty() && acik.okuyucu.hata().is_none() {
+            acik.yukleme.yaz(cikti)?;
+        }
+        Ok(tuketilen)
+    }
+
+    /// Biten blok: ret ya da `fsync` edilmiş dosyanın künyesi.
+    fn blok_bitir(b: &mut Baglanti) -> BaglantiSonucu {
+        b.bekleme = None;
+        b.zaman_asti = false;
+        let Some(acik) = b.blok.take() else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+        };
+        if let Some(hata) = acik.okuyucu.hata() {
+            return BaglantiSonucu::hata(hata.turu(), hata.mesaji());
+        }
+        match acik.yukleme.tamamla() {
+            Ok((bilgi, koruma)) => {
+                b.blok_dosyasi = Some(koruma);
+                BaglantiSonucu::Blok {
+                    yol: bilgi.goreli_yol,
+                    sha256: bilgi.sha256,
+                    bayt: bilgi.bayt as i64,
+                }
+            }
+            Err(neden) => BaglantiSonucu::hata("dosya", neden),
+        }
+    }
+
+    /// K-384: nokta bloğu (`adet` yok) ya da tam `adet` baytlık literal'i
+    /// geçici dosyaya akıtır.
+    fn blok_al(&mut self, kimlik: u64, adet: Option<i64>) -> BaglantiSonucu {
+        let bosta = self.ayar.bosta_suresi_ms;
+        let blok_siniri = self.ayar.blok_siniri;
+        let kapaniyor = self.kapaniyor;
+        let kok = self.kok.clone();
+        let Some(b) = self.baglantilar.get_mut(&kimlik) else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+        };
+        if b.okuma_kapali {
+            return BaglantiSonucu::hata("kapandı", dil::ag_satiri::OKUMA_KAPALI);
+        }
+        if b.blok.is_none() {
+            if kapaniyor {
+                return BaglantiSonucu::hata("kapanıyor", "sunucu kapanıyor");
+            }
+            if let Err(ret) = Self::blok_baslat(b, &kok, adet, blok_siniri) {
+                return ret;
+            }
+        }
+        let mut islenen = 0usize;
+        let mut cikti = Vec::with_capacity(OKUMA_PARCASI + 2);
+        loop {
+            match Self::blok_tamponu_isle(b, &mut cikti) {
+                Ok(tuketilen) => islenen += tuketilen,
+                Err(neden) => return Self::blok_kes(b, "dosya", &neden),
+            }
+            let Some(acik) = b.blok.as_ref() else {
+                return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+            };
+            if acik.okuyucu.bitti() {
+                return Self::blok_bitir(b);
+            }
+            if let Some((tur, mesaj)) = Self::blok_kesintisi(b, kapaniyor) {
+                return Self::blok_kes(b, tur, mesaj);
+            }
+            // Süre her turda çağrı başından yeniden hesaplanır; damla damla
+            // gelen bayt hız tabanının altında bütçeyi uzatamaz.
+            let son = acik.son(bosta);
+            if islenen >= BLOK_DILIMI || !Self::doldur(b) {
+                b.bekleme = Some(Bekleme {
+                    ilgi: Ilgi::Okuma,
+                    son,
+                });
+                if Instant::now() >= son {
+                    b.zaman_asti = true;
+                    continue;
+                }
+                return BaglantiSonucu::Bekle;
+            }
+        }
+    }
+
+    fn aktarim_ac(
+        yol: &std::path::Path,
+        blok_siniri: u64,
+        bosta: i64,
+    ) -> Result<Aktarim, BaglantiSonucu> {
+        let dosya = std::fs::File::open(yol)
+            .map_err(|hata| BaglantiSonucu::hata("dosya", format!("dosya açılamadı: {hata}")))?;
+        let bilgi = match dosya.metadata() {
+            Ok(bilgi) if bilgi.is_file() => bilgi,
+            _ => return Err(BaglantiSonucu::hata("dosya", "normal dosya değil")),
+        };
+        if bilgi.len() > blok_siniri {
+            return Err(BaglantiSonucu::hata("boyut_aşımı", BLOK_SINIRI_ASILDI));
+        }
+        let butce = akis_butcesi_ms(bosta, bilgi.len());
+        Ok(Aktarim {
+            dosya,
+            kalan: bilgi.len(),
+            toplam: bilgi.len(),
+            son: Instant::now() + Duration::from_millis(butce.max(0) as u64),
+        })
+    }
+
+    /// Dosyadan giden tampona en çok `butce` bayt; (eklenen, dosya kısaldı).
+    fn aktarim_doldur(aktarim: &mut Aktarim, giden: &mut Vec<u8>, butce: usize) -> (usize, bool) {
+        let mut parca = [0u8; 16 * 1024];
+        let mut eklenen = 0usize;
+        while aktarim.kalan > 0 && giden.len() < GIDEN_TAMPON_BAYTI && eklenen < butce {
+            let alan = (GIDEN_TAMPON_BAYTI - giden.len())
+                .min(parca.len())
+                .min(aktarim.kalan as usize);
+            match aktarim.dosya.read(&mut parca[..alan]) {
+                Ok(n) if n > 0 => {
+                    giden.extend_from_slice(&parca[..n]);
+                    aktarim.kalan -= n as u64;
+                    eklenen += n;
+                }
+                Err(e) if e.kind() == ErrorKind::Interrupted => {}
+                _ => return (eklenen, true),
+            }
+        }
+        (eklenen, false)
+    }
+
+    /// Bildirilen uzunluk tutmaz: bağlantı eşzamanı bozuldu, kırık sayılır.
+    fn aktarim_kes(b: &mut Baglanti, neden: &str) -> BaglantiSonucu {
+        b.aktarim = None;
+        b.bekleme = None;
+        b.zaman_asti = false;
+        b.kirik = true;
+        BaglantiSonucu::hata("yazılamadı", neden)
+    }
+
+    /// K-384: çözülmüş yoldaki dosyayı giden tampona geri basınçla akıtır.
+    pub(crate) fn dosya_aktar(&mut self, kimlik: u64, yol: &std::path::Path) -> BaglantiSonucu {
+        let bosta = self.ayar.bosta_suresi_ms;
+        let blok_siniri = self.ayar.blok_siniri;
+        let Some(b) = self.baglantilar.get_mut(&kimlik) else {
+            return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+        };
+        if b.kirik {
+            b.aktarim = None;
+            return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
+        }
+        if b.aktarim.is_none() {
+            match Self::aktarim_ac(yol, blok_siniri, bosta) {
+                Ok(aktarim) => b.aktarim = Some(aktarim),
+                Err(ret) => return ret,
+            }
+            b.bekleme = None;
+            b.zaman_asti = false;
+        }
+        let mut islenen = 0usize;
+        loop {
+            let Some(aktarim) = b.aktarim.as_mut() else {
+                return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
+            };
+            let (eklenen, kisaldi) =
+                Self::aktarim_doldur(aktarim, &mut b.giden, BLOK_DILIMI.saturating_sub(islenen));
+            islenen += eklenen;
+            let (kalan, toplam, son) = (aktarim.kalan, aktarim.toplam, aktarim.son);
+            if !bosalt(&mut b.kanal, &mut b.giden) {
+                return Self::aktarim_kes(b, "karşı taraf bağlantıyı kapattı");
+            }
+            if kalan == 0 {
+                b.aktarim = None;
+                b.bekleme = None;
+                b.zaman_asti = false;
+                return BaglantiSonucu::Tamam(toplam as i64);
+            }
+            if kisaldi {
+                return Self::aktarim_kes(b, "dosya aktarım sırasında kısaldı");
+            }
+            if b.zaman_asti {
+                return Self::aktarim_kes(b, "dosya süresi içinde aktarılamadı");
+            }
+            if Instant::now() >= son {
+                b.zaman_asti = true;
+                continue;
+            }
+            if islenen >= BLOK_DILIMI || b.giden.len() >= GIDEN_TAMPON_BAYTI {
+                // Dilim bitti ya da tampon dolu: görev scheduler'a döner,
+                // yazmaya hazır sokette sürer.
+                b.bekleme = Some(Bekleme {
+                    ilgi: Ilgi::Yazma,
+                    son,
+                });
+                return BaglantiSonucu::Bekle;
+            }
+        }
+    }
+
     pub(crate) fn islem(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
         match islem {
-            BaglantiIslemi::SatirOku => self.satir_oku(kimlik),
-            BaglantiIslemi::SatirYaz(metin) => self.satir_yaz(kimlik, metin),
+            BaglantiIslemi::SatirOku => self.satir_oku(kimlik, self.ayar.bosta_suresi_ms),
+            BaglantiIslemi::SatirOkuSureli(ms) => self.satir_oku(kimlik, *ms),
+            BaglantiIslemi::SatirYaz(metin) => self.satir_yaz(kimlik, metin, true),
+            BaglantiIslemi::ParcaYaz(metin) => self.satir_yaz(kimlik, metin, false),
+            BaglantiIslemi::NoktaBlogu => self.blok_al(kimlik, None),
+            BaglantiIslemi::BaytBlogu(adet) => self.blok_al(kimlik, Some(*adet)),
+            BaglantiIslemi::BaytOku(adet) => self.bayt_oku(kimlik, *adet),
+            // Yol çözümü ve `dosya-okuma` denetimi adaptörde (main.rs) yapılır.
+            BaglantiIslemi::DosyaAktar(_) => {
+                BaglantiSonucu::hata("dosya", "dosya yolu adaptörde çözülmedi")
+            }
             BaglantiIslemi::Kapat => self.kapat(kimlik),
             BaglantiIslemi::TlsBaslat => self.tls_baslat(kimlik),
             BaglantiIslemi::Engelle(son) => self.engelle(kimlik, *son),

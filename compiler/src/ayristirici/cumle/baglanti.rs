@@ -1,4 +1,5 @@
-//! K-381 (RFC-0039 A2a): bağlantı olay bloğu ve kapatma cümlesi.
+//! K-381 (RFC-0039 A2a): bağlantı olay bloğu ve kapatma cümlesi; K-384 (A2c):
+//! `… satırını yaz` / `… parçasını yaz` cümlesi.
 use super::*;
 
 impl Ayristirici {
@@ -28,5 +29,32 @@ impl Ayristirici {
             })());
         }
         None
+    }
+
+    /// `yaz` atılmış satır: `bağlantıya <değer> satırını` (CRLF eklenir) ya da
+    /// `bağlantıya <değer> parçasını` (satır sonu eklenmez); başka satırda `None`.
+    pub(crate) fn baglantiya_yaz(
+        &self,
+        tokenlar: &[Token],
+        satir: usize,
+    ) -> Option<Result<Cumle, Tani>> {
+        if tokenlar.len() < 3 || !kelime_mi(&tokenlar[0], "bağlantıya") {
+            return None;
+        }
+        let satir_sonu = match tokenlar.last() {
+            Some(son) if kelime_mi(son, "satırını") => true,
+            Some(son) if kelime_mi(son, "parçasını") => false,
+            _ => return None,
+        };
+        let son = tokenlar.len() - 1;
+        Some(
+            ile_ifadesi(&tokenlar[1..son], satir, &self.islem_adlari).map(|deger| {
+                Cumle::BaglantiyaYaz {
+                    deger,
+                    satir_sonu,
+                    satir,
+                }
+            }),
+        )
     }
 }

@@ -6,7 +6,8 @@
   ADR-059 (core freeze), ADR-064 (dil yüzeyi), ADR-162 (adlı devir),
   ADR-011 (intrinsic sınırı), spec/12 §9, spec/23, spec/09, spec/14,
   K-372 (yazım bütçesi), K-375 (son tarih), K-339 (credential), ADR-038
-  (bağımlılık politikası), GB-157, GB-158
+  (bağımlılık politikası), GB-157, GB-158; A2c eki K-384, GB-159,
+  RFC-0041/spec/26 (`.parca` modeli)
 
 ## Bağlam
 
@@ -124,6 +125,73 @@ Bu konteyner systemd'si credential dizini bağlayamadığı için ölçüm kimli
 ortamdan verdi (betik `LoadCredential=` desteğini sınayıp seçer; CI
 ubuntu-24.04'te credential yolu kullanılır).
 
+## Ek karar — A2c blok okuma ve bayt-kesin akış (24 Kasım 2026, K-384)
+
+ZeeMail SMTP (19/19) ve IMAP (imaplib 36/36) gerçek TCP'de çalıştıktan
+sonra kalan engeller: `DATA` gövdesi ve IMAP literal'i satır akışına
+sığmıyor (satır sınırı, ikili içerik, bellek), `+ ` devam yanıtı ve `{n}`
+literal'i satır sonusuz yazma ve bayt-kesin okuma istiyor (ZM-F031),
+`IDLE` boşta süresi dolmadan posta kutusunu yoklayamıyor (ZM-F032).
+
+15. **Blok dosyaya, Zee'ye yalnız künye.** `bağlantıdan nokta bloğunu
+    dosyaya almayı dene` ve `bağlantıdan <n> baytı dosyaya almayı dene`
+    içeriği belleğe almadan `0600` `.parca` dosyasına akıtır, SHA-256'yı
+    aynı akışta hesaplar, `fsync` sonrası `Sonuç<Sözlük>` (`yol`, `sha256`,
+    `bayt`) verir. Model RFC-0041/spec/26 web yüklemesiyle aynıdır; dizin
+    ayrıdır (`.zee/baglanti-bloklari`) çünkü uzun bağlantı oturumunda
+    taşınmamış dosya web süpürmesinin 15 dakikalık eşiğini aşabilir.
+    Bağlantı süpürmesinin eşiği `bağlantı_ömrü` + 15 dk; tamamlanan dosya
+    bağlantıya aittir, sonraki blokta ya da bağlantı bitince silinir.
+16. **Smuggling'e karşı tek sonlandırıcı.** Nokta bloğu yalnız birebir
+    `CRLF . CRLF` biter; çıplak CR/LF satır başı sayılmaz, blok
+    `satır_sonu` ile atılır ve akış gerçek sonlandırıcıya kadar tüketilir.
+    Sınır aşımı da tüketilerek reddedilir; iki retten sonra oturum eşzamanlı
+    sürer. Saf çözücü `dil::ag_satiri::BlokOkuyucu` gerçek reaktörle
+    hermetik adaptörün ortak kuralıdır.
+17. **Mutlak süre ve okuma yönünün kapanması.** Blok, literal ve aktarım
+    çağrı başından `boşta + bayt / 64 KiB/sn` bütçesine bağlıdır (K-372).
+    Yarıda kalan blok/literal okuma yönünü kapatır: eşzamanı bozuk akışın
+    kalanı komut olarak okunamaz; yazma sürer (`421`).
+18. **Bayt-kesin akış kaçış genişletmeden.** `bağlantıya X parçasını yaz`
+    (ve `… yazmayı dene`) satır kuralına uyan Metni satır sonu eklemeden
+    yazar; `bağlantıdan <n> bayt okumayı dene` en çok satır sınırı kadar
+    UTF-8 baytı Metin verir; `bağlantıya <yol> dosyasını aktarmayı dene`
+    dosyayı geri basınçla akıtır (`dosya-okuma` da gerekir). Zee metnine
+    `\r` kaçışı eklenmedi: CRLF'yi yalnız çalışma zamanı üretir.
+19. **Kısa süreli okuma; zaman aşımı oturumu bitirmez.** `bağlantıdan
+    satır okumayı <n> saniye içinde dene` boşta süresini aşamaz; zaman
+    aşımı (bütün okumalarda) bağlantıyı kapatmaz, yarım satırı korur.
+20. **Bağlam ipuçları, davranış aynı.** Örtük `bağlantı` Sözlüğü
+    sözcüksel kapsamda kalır; işlemde A001 parametre önerir. Yerleşik
+    `yaz`/`gönder` ile biten işlem adının cümle çağrısında A001/S037
+    çakışmayı adıyla anar. Kodlar, ret ve ifade çağrısı değişmedi.
+21. **Sınır proje bildirimi.** `bağlantı_blok_sınırı` (P020, 1 KiB–1 GiB,
+    varsayılan 32 MiB) blok ve aktarım tavanıdır.
+
+Reddedilen (A2c): blok içeriğini Metin vermek (ikili ileti, bellek), satır
+akışından blok kurmak, `\r` kaçışı ya da ham bayt değeri türü (grammar ve
+değer modeli; core freeze), bloğun içinde LF normalleştirmesi, okuma zaman
+aşımını Ç001 iptali yapmak (IDLE oturumu kaybolur), `bağlantı`yı işleme
+örtük geçirmek (gizli dinamik kapsam), yerleşik fiille biten işlem adını
+tanımda reddetmek (ifade çağrısı geçerli; uyumluluk kırılır), bağlantılar
+arası uyandırma (Katman C/E, ayrı adım).
+
+Kanıt (A2c): `compiler/tests/ag_blok_testi.rs` (hermetik: 3 MiB nokta
+bloğu 64 KiB teslimle, nokta doldurma, sınır aşımında tüketme, üç
+smuggling dizisi, kesilen bağlantı, susan istemci ve okuma yönünün
+kapanması, literal tam/eksik/fazla bayt, sınır ve `geçersiz`, parça ve
+NUL `kodlama`, kısa süreli okuma ve sanal saat, dosya aktarımı/sınır/yok,
+IO izi kaydı ve yeniden oynatma, T034, tanı ipuçları);
+`compiler/tests/ag_baglantisi_surec_testi.rs` (gerçek TCP: 900 KiB DATA
+7 KiB parçalarla, `0600` dosya ve SHA-256, pipelining, smuggling,
+1.1 MB sınır aşımı, taşınmamış dosyanın sonraki blokta ve bağlantı
+sonunda silinmesi; damla damla DATA'nın mutlak süreyle kesilip okuma
+yönünün kapanması ve yarım dosyanın silinmesi, blok ortasında kopan
+istemci; `+ ` iki bayt, 70000 baytlık ikili literal, 6 bayt parola,
+literal'in bağlantıya geri aktarımı; IDLE benzeri 1 sn yoklama ve yarım
+satırın korunması); `ag_satiri` birim testleri; `proje_testi` P020;
+gerçek systemd ölçümüne kısa DATA + IDLE yoklama adımı.
+
 ## Reddedilen seçenekler
 
 - **Bağlantı başına süreç (inetd modeli):** yalıtım güçlü ama üst düzey kod
@@ -165,6 +233,8 @@ ubuntu-24.04'te credential yolu kullanılır).
 
 ## Açık
 
-- Blok okuma ve dosyadan akıtma (A2c); sertifika yenilemede süreç içi yükleme.
+- Sertifika yenilemede süreç içi yükleme; bağlantılar arası uyandırma
+  (IDLE'ı yeni iletiyle uyandırma); kısmi literal ve dosya aralığı aktarımı;
+  blok dosyasına yazımın senkron dilimi (Katman C).
 - Çok işçi grubuna adla aktarım; binlerce boşta oturumun RSS ölçümü (H4).
 - `dil dene` içinden betiklenmiş bağlantı cümlesi.

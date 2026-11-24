@@ -197,3 +197,17 @@ pub(crate) fn tanilari_sirala_ve_sinirla(tanilar: &mut Vec<Tani>) {
     });
     tanilar.truncate(AZAMI_TANI_SAYISI);
 }
+
+/// K-384: yerleşik cümle fiilleri; bu fiille biten işlem adı cümle
+/// biçiminde çağrılamaz (satır yerleşik cümle olarak ayrıştırılır).
+pub(crate) const YERLESIK_CUMLE_FIILLERI: [&str; 2] = ["yaz", "gönder"];
+
+/// K-384: ad yerleşik bir fiille bitiyorsa çakışma ipucu (ör. `yanıtı yaz`).
+pub(crate) fn fiil_cakismasi_ipucu(islem: &str) -> Option<String> {
+    let (govde, fiil) = islem.rsplit_once(' ')?;
+    YERLESIK_CUMLE_FIILLERI.contains(&fiil).then(|| {
+        format!(
+            "\"{islem}\" işlemi yerleşik \"{fiil}\" cümlesiyle çakışıyor: \"… {fiil}\" ile biten satır her zaman yerleşik cümle olarak okunur. İşleme yerleşik fiille bitmeyen bir ad ver (ör. `işlem {govde} ilet`) ya da sonucunu ifadede kullan (`x … ile {islem} olsun`)."
+        )
+    })
+}

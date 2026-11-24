@@ -313,6 +313,38 @@ def smtp_oturumu(aile, adres, kapi):
     return satirlar
 
 
+def data_idle_oturumu(adres, kapi):
+    """K-384 (A2c): kısa DATA gövdesi dosyaya, smuggling reddi, IDLE yoklaması."""
+    satirlar = []
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(20)
+        s.connect((adres, kapi))
+        dosya = s.makefile("rb")
+        oku = lambda: dosya.readline().decode("utf-8", "replace").rstrip("\r\n")
+        satirlar.append(oku())
+        s.sendall(b"DATA\r\n")
+        satirlar.append(oku())
+        s.sendall(b"Subject: olcum\r\n\r\n..nokta\r\n.\r\n")
+        satirlar.append(oku())
+        s.sendall(b"DATA\r\n")
+        satirlar.append(oku())
+        s.sendall(b"Subject: kacak\r\n\n.\nMAIL FROM:<x@y>\r\n.\r\n")
+        satirlar.append(oku())
+        s.sendall(b"IDLE\r\n")
+        satirlar.append(oku())
+        baslangic = time.monotonic()
+        satirlar.append(oku())
+        satirlar.append(round(time.monotonic() - baslangic, 1))
+        s.sendall(b"DONE\r\n")
+        satir = oku()
+        while satir == "* yoklama":
+            satir = oku()
+        satirlar.append(satir)
+        s.sendall(b"QUIT\r\n")
+        satirlar.append(oku())
+    return satirlar
+
+
 def tls_kimligi(kok):
     """K-381 A2b: bu koşuya özel test CA + localhost yaprak (openssl)."""
     d = Path(tempfile.mkdtemp(prefix="zee-k381-tls-", dir=kok))
@@ -377,8 +409,23 @@ def tls_oturumu(baglam, smtp, smtps):
     return sonuc
 
 
+def data_idle_gecti(satirlar):
+    """K-384: 26 baytlık gövde (nokta doldurma çözülmüş), 554 smuggling,
+    IDLE'da 1 sn'lik okuma süresinde yoklama (boşta süresi 300 sn)."""
+    if not satirlar or len(satirlar) != 10:
+        return False
+    return (
+        satirlar[:7] == ["220 mx.ornek.test ESMTP", "354 ileti bitince <CRLF>.<CRLF>",
+                         "250 2.0.0 alındı 26", "354 ileti bitince <CRLF>.<CRLF>",
+                         "554 5.6.0 çıplak satır sonu", "+ idling", "* yoklama"]
+        and satirlar[7] < 5
+        and satirlar[8:] == ["OK IDLE bitti", "221 2.0.0 hoşça kal"]
+    )
+
+
 def baglanti_kosusu(dil, kok, rapor):
-    """K-381: dogfood bağlantı programı gerçek systemd altında (A2a + A2b TLS)."""
+    """K-381: dogfood bağlantı programı gerçek systemd altında (A2a + A2b TLS);
+    K-384: kısa DATA bloğu dosyaya ve IDLE benzeri kısa süreli okuma."""
     smtp = bos_kapi()
     smtps = bos_kapi()
     soketler = [("smtp_v4", f"127.0.0.1:{smtp}"), ("smtp_v6", f"[::1]:{smtp}"),
@@ -429,6 +476,10 @@ def baglanti_kosusu(dil, kok, rapor):
             sonuc["v4"] = smtp_oturumu(socket.AF_INET, "127.0.0.1", smtp)
             sonuc["v6"] = smtp_oturumu(socket.AF_INET6, "::1", smtp)
             sonuc["tls"] = tls_oturumu(tls_istemcisi(kimlik / "ca.pem"), smtp, smtps)
+            sonuc["data_idle"] = data_idle_oturumu("127.0.0.1", smtp)
+            sonuc["blok_kalintisi"] = sorted(
+                p.name for p in (proje / ".zee/baglanti-bloklari").glob("*")
+            ) if (proje / ".zee/baglanti-bloklari").is_dir() else []
         except OSError as hata:
             sonuc["oturum_hatasi"] = str(hata)
         # Açık bağlantı varken durdurma: bekleyen okuma `kapanıyor` alır.
@@ -464,6 +515,8 @@ def baglanti_kosusu(dil, kok, rapor):
         and sonuc["tls"]["implicit"][2] == "221 2.0.0 hoşça kal"
         and sonuc["tls"]["starttls"] == ["220 2.0.0 TLS için hazır", "TLSv1.3", "250 2.0.0 tamam"]
         and sonuc["tls"]["enjeksiyon"] == ["220 2.0.0 TLS için hazır", ""]
+        and data_idle_gecti(sonuc.get("data_idle"))
+        and sonuc.get("blok_kalintisi") == []
     )
     rapor["baglanti"] = sonuc
     return sonuc["gecti"]

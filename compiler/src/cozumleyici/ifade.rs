@@ -766,7 +766,8 @@ fn ifade_denetle_ic(
             sutun,
             uzunluk,
         } => {
-            let (ad, kimlik) = sembol_cozumle(ham, ortam, *satir, *sutun, *uzunluk)?;
+            let (ad, kimlik) = sembol_cozumle(ham, ortam, *satir, *sutun, *uzunluk)
+                .map_err(|tani| super::ipucu::a001_ipucu(tani, ham, baglam.islemler.keys()))?;
             // RFC-0011 §1: görev sonucuna "hepsini bekle"den önce erişilemez.
             if baglam.bekleyen_gorevler.contains(&ad) {
                 return Err(Tani::yeni(
