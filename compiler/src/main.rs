@@ -3993,6 +3993,10 @@ fn program_argumanlari() -> Vec<String> {
         .collect()
 }
 
+/// K-395: `çözerek … yazmayı|eklemeyi dene` hedef dosyasının toplam tavanı
+/// (K-389'da yükleme tavanıyla eşit 16 MiB idi; ADR-167 eki).
+const COZEREK_YAZMA_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
+
 impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yazdir(&mut self, satir: String) {
         println!("{}", satir);
@@ -4244,9 +4248,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
-        let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .http()
-            .yukleme_bayti() as u64;
+        // K-395 (ADR-167 eki, GB satırı): hedef toplamı 32 MiB; 25 MB iletinin
+        // tek ~18 MB eki sığar. Çağrı başına çözülen çıktı yine ≤ 1 MiB.
+        let azami = COZEREK_YAZMA_HEDEF_BAYTI;
         let yazim_hatasi = |hata: std::io::Error| match hata.kind() {
             std::io::ErrorKind::AlreadyExists => format!("\"{}\" hedef dosyası zaten var", yol),
             _ => format!("\"{}\" dosyasına yazılamadı: {}", yol, hata),

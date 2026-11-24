@@ -5,7 +5,7 @@
 //! oku-birleştir-değiştir modelidir: boyut kilit altında önce denetlenir,
 //! sınırı aşan parça hiç yazılmaz.
 
-use super::{atomik_degistir, atomik_icerik_yaz, mevcut_icerik, DosyaKilidi};
+use super::{atomik_degistir, atomik_icerik_yaz, DosyaKilidi};
 use std::io;
 use std::path::Path;
 
@@ -51,7 +51,13 @@ pub fn sinirli_sona_ekle(yol: &Path, icerik: &[u8], azami: u64) -> io::Result<Ve
                 ),
             )
         })?;
-    let mut yeni = mevcut_icerik(yol)?.unwrap_or_default();
+    // K-395: var olan hedef genel 16 MiB okuma sınırıyla değil, kilit altında
+    // denetlenmiş ekleme tavanıyla okunur (32 MiB hedefe ekleme).
+    let mut yeni = if onceki_boy == 0 {
+        Vec::new()
+    } else {
+        crate::kaynak_sinirlari::sinirli_bayt_oku(yol, azami as usize)?
+    };
     yeni.extend_from_slice(icerik);
     atomik_icerik_yaz(yol, &yeni, atomik_degistir)?;
     Ok(yeni)

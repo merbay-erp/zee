@@ -83,7 +83,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   (`… adıyla ek olarak göndermeyi dene`) verilebilir. Bozuk kodlama yeni
   **C032** ile döner (`tür`: `alfabe`, `dolgu`, `uzunluk`, `kaçış`,
   `satır_sonu`, `utf8`, `boyut_aşımı`; `konum` hatalı baytı gösterir) ve
-  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir.
+  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir (K-395 ile 32 MiB).
   `özet metnin sha256 özeti olsun` bellekteki metnin özetini dosya
   özetiyle aynı biçimde (64 küçük harf onaltılık) verir. Okuma `dosya-okuma`,
   yazma `dosya-yazma` yetkinliği ister; IO izine içerik değil yalnız uzunluk
@@ -152,6 +152,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 - **zeedili.com 24 Kasım haberi:** ana sayfa Gelişmeler'deki "Zee ile web dışı ağ hizmetleri" haberi K-384 ile genişletildi: büyük gövdenin ve IMAP literal'inin dosyaya akıtılması, bayt-kesin okuma, satır sonusuz yazma ve IMAP IDLE için kısa zaman aşımlı okuma. Dil davranışı değişmedi.
 
 ### Değişenler
+
+- **Çözerek eklenen ek dosyası artık 32 MiB'a kadar (K-395):**
+  `… base64|quoted_printable çözerek … dosyasına yazmayı|eklemeyi dene`
+  hedef dosyasının toplam sınırı 16 MiB'tan **32 MiB'a** çıktı; 25 MB'lık bir
+  e-postanın ~18 MB'lık eki artık parça parça eklenerek tek dosyaya
+  çıkarılabilir. Sınıra tam ulaşan ekleme kabul edilir, bir bayt fazlası
+  yine C013 verir ve dosyaya hiçbir şey yazılmaz. 16 MiB'tan büyük bir
+  dosyaya ekleme önceden okuma sınırına çarpıyordu; bu da düzeldi. Dosya
+  yükleme, dosya indirme yanıtı ve dosya özeti sınırları 16 MiB kalır.
+
+  **Göç:** Gerekmez. 16 MiB'ı aşan eki kendisi bölen ya da uyarı veren kod
+  bu sınırı 32 MiB'a çekebilir.
 
 - **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
   biten bir işlem (`işlem yanıtı yaz`) cümle olarak çağrılınca satır
