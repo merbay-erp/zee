@@ -1,0 +1,4 @@
+# K-387: bildirimsiz tek dosya kipinde dış ağ açık `--izin ağ` olmadan açılmaz.
+# cli-argumanlari: çalıştır regression/cli/tek-dosya-ag-izni.dil
+cevap "https://example.invalid/durum" adresinden gelen yanıt olsun
+cevabın durum kodu yaz

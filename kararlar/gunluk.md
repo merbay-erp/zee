@@ -5675,6 +5675,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı; ADR-031 eki (24 Kasım 2026)
+
+- Kaynak: bağımsız zee/Python/Go/Rust karşılaştırma raporu (bd8d44f) ve dış
+  incelemesi; g04 yoklaması aynı kodu projede T054, tek dosyada gerçek HTTPS
+  isteğiyle gözledi. Freeze sınıfı `security`, GB-161.
+- Karar: tek dosya profili `ağ`sız; açık `--izin ağ` (yalnız dosya
+  işleneninden önce; `çalıştır`/`denetle`/`iz kaydet`) eski public
+  HTTPS/SMTPS sınırını açar. Proje kipinde, `--güvenli` ile, başka değerle
+  ya da tekrarla çıkış 2. `dene` ve `iz oynat` gerçek ağa çıkmadığı için
+  eski profili korur. v0.7 korpusunda `24-http-istemcisi.dil` ve
+  `27-zaman-asimi.dil` kayıtlı `security_break` olarak T054 alır.
+- Reddedilen: önce uyarı + sonraki sürümde ret (yerel taramada tek dosya
+  kipinde ağ kullanan betik/servis yok; açık varsayılanı uzatmak riski
+  uzatır), genel `--izin <yetkinlik>` listesi (diğerleri ya açık ya manifest
+  ister), dosyadan sonraki bayrağı da okumak (program argümanı yetki
+  açamaz), projede bayrağı sessizce yok saymak. K-387 kapandı.
+
 ## K-385 — İstemci yapılandırma dosya türleri; ADR-163 eki (24 Kasım 2026)
 
 - Kaynak ZM-F033 (`urun-h`, ZeeMail): autoconfig XML'i ve `.mobileconfig`
