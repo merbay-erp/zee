@@ -1,14 +1,15 @@
 # RFC-0043 — Bayt, kodlama ve özet yüzeyi
 
-- **Durum:** **kabul — Dilim 1 uygulandı** (K-389, [ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),
-  24 Kasım 2026: aralıklı metin/base64 okuma, base64/QP çözerek yazma ve
-  akışlı ekleme, bellekte SHA-256, C032). **Dilim 2 taslak** (ZM-F023: UTF-8
-  bayt sayısı, metin↔base64/onaltılık, kod noktası); core freeze altında
-  ayrı `dogfood-change` K-işi ve reproducer ister. Aşağıdaki "Dilim 1 kararı"
-  bölümü bu taslağın Dilim 1 açık sorularını kapatır ve önceki fikir
-  taslağının üstündedir.
+- **Durum:** **kabul — Dilim 1 ve Dilim 2 uygulandı.** Dilim 1 (K-389,
+  [ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md), 24 Kasım
+  2026): aralıklı metin/base64 okuma, base64/QP çözerek yazma ve akışlı
+  ekleme, bellekte SHA-256, C032. Dilim 2 (K-402, ADR-167 eki, 25 Kasım
+  2026; ZM-F023): UTF-8 bayt sayısı, metin↔base64, kod noktası↔harf.
+  Onaltılık ve `base64url` ürün kanıtı olmadığından **açık**. Aşağıdaki
+  "Dilim 1 kararı" ve "Dilim 2 kararı" bölümleri açık soruları kapatır ve
+  önceki fikir taslağının üstündedir.
 - **Tarih:** 24 Kasım 2026
-- **İş:** K-383 (taslak), K-389 (Dilim 1 uygulaması)
+- **İş:** K-383 (taslak), K-389 (Dilim 1 uygulaması), K-402 (Dilim 2 uygulaması)
 - **İlgili belgeler:** [spec/04](../spec/04-turler.md),
   [spec/06](../spec/06-hata-modeli.md),
   [spec/15](../spec/15-yapilandirilmis-hata-degeri.md),
@@ -95,7 +96,42 @@ bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). K-401 (ZM-F044)
 dosya özeti ve dosya yanıtı tavanlarını da 32 MiB'a hizaladı ve eylem
 dışındaki taşımanın içeriği 16 MiB sınırıyla okuması hatasını düzeltti
 (ADR-167 eki). Ölçüt 4 (NIST vektörleri, dosya/metin
-özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı açık.
+özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı K-402 ile kapandı
+(bkz. "Dilim 2 kararı"; base16 açık).
+
+## Dilim 2 kararı (K-402, 25 Kasım 2026)
+
+Normatif metin [spec/26 §Bellekteki metin ↔ bayt](../spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md),
+gerekçe ADR-167 K-402 eki. Uygulanan exact yüzey (hepsi saf, yetkinliksiz,
+IO izi olayı yok):
+
+```text
+oktet metnin utf8 bayt sayısı olsun                     # TamSayı
+kod metnin base64 karşılığı olsun                       # Metin, dolgulu
+düz kodun base64 çözümünü almayı dene olsun             # Sonuç<Metin>, tek satır, katı UTF-8
+sayı harfin kod noktası olsun                           # TamSayı; tek harf değilse C032 çalışma hatası
+harf sayının kod noktası harfini almayı dene olsun      # Sonuç<Metin>
+```
+
+| # | Karar |
+|---|---|
+| 1 | Kodlama `karşılığı`, çözme `çözümünü almayı dene`. `hâli` şapkalı harf ve `hal` çekimleriyle belirsizdi; `karşılığı` mevcut iyelik ailesine (`kodu`, `özeti`) uyar. |
+| 2 | Çözme çıktısı 1 MiB (Dilim 1 ile aynı), ayırmadan önce. Kodlama toplamdır; girdisi spec/24 metin sınırına bağlıdır, çıktı boyu önceden hesaplanır (C024). |
+| 3 | `harfin kod noktası` boş/çok harfli metinde **çalışma hatası** (C032; `harfleri` öğesinde oluşmaz). Ters yön `Sonuç`: negatif, `> 0x10FFFF` ve vekil aralığı `kod_noktası`. |
+| 4 | `base64url` açılmadı: ürün kaydı yok (DKIM/SMTP istemez). WebAuthn/JWT ihtiyacı ürün kaydıyla gelirse ayrı ek. |
+| 5 | Yeni yüzey tek iç katı çözücüyü (`compiler/src/kodlama.rs`) kullanır, yeni crate yok. SMTP/CLI/gizli değer iç yardımcılarının birleştirilmesi davranış değiştirmeyen bakımdır; bu dilime katılmadı (açık). |
+| 6 | Yeni tanı kodu yok: C032 `tür` kümesine `kod_noktası` eklendi. |
+| — | Onaltılık ↔ metin/base64 (§1, §2 son madde, §4 `onaltılıktan`) **açık**: K-390 DKIM anahtar ve özet biçimlerini host yüzeyinde (`gövdesinin dkim gövde özeti`) karşıladı; ürünün bugünkü kodunda başka çarpan yok. |
+
+Kabul ölçütlerinin Dilim 2 kısmı: 1 (RFC 4648 base64 vektörleri; base16
+açık), 2, 3, 7 ve 8 `compiler/tests/metin_kodlama_testi.rs` ile; 6 (DKIM
+`bh=`) K-390 yüzeyiyle karşılandı. Tek satır çözmede CR/LF/boşluk da
+alfabe dışıdır (RFC 4648 §3.3; satır sonu kaçırma yüzeyi). Reproducer'lar:
+`dogfood/urun-h/korpus/zm-r004-uzunluk-oktet-saymaz.dil` (artık `1|2`) ve
+`zm-f023-imap-literal-oktet.dil`, `zm-f023-rfc2047-emoji.dil` ve
+`zm-f023-auth-plain.dil` (ürün commit'i `23af030`; değişiklik öncesi S015).
+Ürün önceliği: oktet sayısı ve kod noktası bloklayıcı, base64 kodla/çöz
+veri kaybı; onaltılık ve base64url ihtiyacı yok.
 
 ## Motivasyon
 
@@ -651,8 +687,9 @@ engelini (gelen ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
 3. Olumlu/olumsuz test, `urun-h` reproducer'ı (ekli ileti → ek dosyası →
    dosya yanıtı), GB satırı (katı çözme sınırı), `surumler.md`.
 
-**Dilim 2 (ZM-F023).** UTF-8 bayt sayısı, metin ↔ base64/onaltılık, kod
-noktası; saf `Ozellik` dalları, golden, reproducer'lar.
+**Dilim 2 — uygulandı (K-402, ADR-167 eki; ZM-F023).** UTF-8 bayt sayısı,
+metin ↔ base64, kod noktası ↔ harf; saf `Ozellik` dalları, AUTH PLAIN ve
+oktet sayısı reproducer'ları. Onaltılık ve `base64url` açık (ürün kanıtı yok).
 
 **Sonraki küçük iş (ayrı, koşullu):** `message/rfc822` dosya yanıtı türü
 (RFC-0041 A kaydı) — ürün kaydı yok; ihtiyaç doğarsa K-399 taslağı hazır.

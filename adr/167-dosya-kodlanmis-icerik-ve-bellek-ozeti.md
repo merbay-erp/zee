@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 24 Kasım 2026
-- **İlgili kayıt:** K-389, RFC-0043 (Dilim 1), ADR-059 (core freeze),
+- **İlgili kayıt:** K-389, K-402 (Dilim 2 eki), RFC-0043 (Dilim 1–2), ADR-059 (core freeze),
   ADR-159 (ilk bayt imzası), ADR-163 (dosya yanıtı ve ek türü kaydı),
   ADR-165 (A2c blok dosyası), ADR-064 (dil yüzeyi), ADR-067 (dogfood
   korpusu), spec/26, spec/08, spec/21, GB-163
@@ -142,6 +142,41 @@ indirmek. Aynı kullanıcı kararının (25 MB iletideki ekin uçtan uca
   büyümez); süre ve bant genişliği K-372 bütçesiyle sınırlıdır; izsiz taşıma
   bellek kullanmaz.
 
+## Ek — K-402: Dilim 2, bellekteki metin ↔ bayt (25 Kasım 2026)
+
+ZM-F023'ün ürün sürtünmesi (ürün commit'i `23af030`): ürün bayt sayımı,
+kod noktası ↔ harf ve base64'ü saf Zee'de U+0000–04FF kod tablosuyla
+yapıyor. Tablo dışındaki harf IMAP literal `{n}` sayımında 1 bayt
+sayılıyor (oturum kayar), RFC 2047 konusunda ve AUTH PLAIN parolasında
+U+FFFD'ye, giden B kodlamasında `?`'e dönüyor; matematik alfanümerik
+harflerle taklit konu süzgece kör geliyor.
+Karar (spec/26 §Bellekteki metin ↔ bayt):
+
+- **Beş saf kalıp, yeni tür/grammar yok.** `<metin>in utf8 bayt sayısı`
+  (TamSayı), `<metin>in base64 karşılığı` (Metin, dolgulu, toplam),
+  `<kod>un base64 çözümünü almayı dene` (Sonuç<Metin>), `<harf>in kod
+  noktası` (TamSayı), `<sayı>nın kod noktası harfini almayı dene`
+  (Sonuç<Metin>). Hepsi mevcut `Ozellik` ailesine katılır; yetkinlik ve
+  IO izi olayı yoktur (RFC-0043 ilke 4).
+- **Açık soruların kapanışı.** (1) Kelime `karşılığı` (kodlama) ve
+  `çözümünü` (çözme); `hâli` şapkalı harf ve `hal` çekimiyle belirsizdi.
+  (2) Çözme çıktısı Dilim 1 ile aynı 1 MiB, ayırmadan önce; kodlama
+  girdisi spec/24 metin sınırına bağlıdır (çıktı boyu önceden hesaplanır).
+  (3) `kod noktası` tek harf dışında **çalışma hatası** (C032): `harfleri`
+  öğesinde oluşmaz, programcı hatasıdır; ters yön `Sonuç`tur. (4)
+  `base64url` ve (onaltılık) açılmadı: ürün kaydı yok, DKIM K-390 host
+  yüzeyinde. (5) İç base64 yardımcıları: yeni yüzey tek iç çözücüyü
+  (`kodlama.rs`) kullanır; SMTP/CLI/gizli değer yardımcılarının
+  birleştirilmesi davranış değiştirmeyen bakım işidir, bu dilime
+  katılmadı (açık). (6) Yeni tanı kodu yok: C032 `tür` kümesine
+  `kod_noktası` eklendi.
+- **Tek satır katılığı.** MIME çözümünden farklı olarak CR/LF/boşluk/sekme
+  de alfabe dışıdır (RFC 4648 §3.3): protokol alanında gömülü satır sonu
+  komut kaçırma (smuggling) yüzeyidir. Çözülen baytlar katı UTF-8'dir;
+  ikili veri dosya tutamağıyla taşınır (tür modeli C + D).
+- **Gizlilik.** Hata mesajı ve `Hata` verisi girdiyi ya da çözülmüş
+  içeriği taşımaz (AUTH PLAIN parolası); GB-170.
+
 ## Değerlendirilen seçenekler
 
 - **`base64` crate'ini doğrudan bağımlılık yapmak** — Dilim 1'de
@@ -166,8 +201,9 @@ indirmek. Aynı kullanıcı kararının (25 MB iletideki ekin uçtan uca
 - Ürün gelen iletinin eklerini 1 MiB aralıklarla okuyup bayt-kesin ek
   dosyasına çıkarır; tutamak dosya yanıtıyla webmail'e, ek listesiyle SMTP'ye
   gider (`kodlanmis_dosya_testi`).
-- Bayt sayısı (`uzunluğu` harf sayar), metin↔base64/onaltılık ve kod
-  noktası RFC-0043 Dilim 2'dir; ZM-R004 bugün `1` verir (TANIMLI).
+- Bayt sayısı, metin↔base64 ve kod noktası K-402 ekiyle (RFC-0043 Dilim
+  2) açıldı; ZM-R004 `uzunluğu` için `1`, `utf8 bayt sayısı` için `2` verir.
+  Onaltılık ve base64url açık.
 - ZM-F035 (bağlantı bütçesi) K-388'dedir; çok büyük iletide birikim
   davranışı o kararla birlikte okunur.
 - Freeze yüzeyi: kalıp kelimeleri `baytından`, `base64`,
@@ -187,3 +223,9 @@ indirmek. Aynı kullanıcı kararının (25 MB iletideki ekin uçtan uca
   QP, UTF-8 konumu) ve `compiler/src/kalici_dosya/cozulmus.rs`
 - Dogfood: [`dogfood/urun-h/ek-cikarma`](../dogfood/urun-h/ek-cikarma/README.md),
   `dogfood/urun-h/korpus/zm-r004…`, `zm-r005…`
+- K-402: `compiler/tests/metin_kodlama_testi.rs` (10 vaka: oktet sayısı,
+  RFC 4648 vektörleri, katı çözme retleri, UTF-8 olumsuz vektörleri, AUTH
+  PLAIN gidiş-dönüşü ve gizli hata yolu, 1 MiB tavanı, kod noktası sınırları
+  ve çalışma hatası, tür hataları, saflık/IO izi); dogfood
+  `korpus/zm-f023-imap-literal-oktet.dil`, `zm-f023-rfc2047-emoji.dil`,
+  `zm-f023-auth-plain.dil`

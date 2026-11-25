@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 146] = [
+const KALIP_KELIMELERI: [&str; 151] = [
     "yaz",
     "olsun",
     "ise",
@@ -154,6 +154,11 @@ const KALIP_KELIMELERI: [&str; 146] = [
     "quoted_printable",
     "çözerek",
     "özeti",
+    "utf8",
+    "karşılığı",
+    "çözümünü",
+    "noktası",
+    "harfini",
     "türünde",
     "adıyla",
     "dinleyicisinde",
@@ -185,7 +190,7 @@ const KALIP_KELIMELERI: [&str; 146] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 81] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 85] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -266,6 +271,10 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 81] = [
     ("quoted_printable", "Kodlama adı: RFC 2045 quoted-printable gövdeyi baytlara çözer; yumuşak satır sonu birleşir, bozuk `=` dizisi C032 `kaçış`.\n\n`ek parça quoted_printable çözerek yol dosyasına yazmayı dene olsun`"),
     ("çözerek", "Kodlanmış Metni (base64 ya da quoted_printable) çözüp dosyaya bayt-kesin yazar (dosya-yazma): `yazmayı dene` yeni dosya (var olan hedef ezilmez), `eklemeyi dene` sona ekler; sonuç `yol`/`sha256`/`bayt` sözlüğüdür. Bozuk kodlama C032.\n\n`ek parça base64 çözerek \"ek.bin\" dosyasına eklemeyi dene olsun`"),
     ("özeti", "Metnin UTF-8 baytlarının SHA-256 özeti: 64 küçük harf onaltılık Metin; dosya özetiyle aynı biçim, yetkinlik istemez.\n\n`özet gövdenin sha256 özeti olsun`"),
+    ("utf8", "Metnin UTF-8 oktet sayısı (TamSayı): `uzunluğu` harf sayar, bu bayt sayar — SMTP/IMAP oktet sınırları için; yetkinlik istemez.\n\n`oktet satırın utf8 bayt sayısı olsun`"),
+    ("karşılığı", "Metnin UTF-8 baytlarının dolgulu RFC 4648 base64'ü (Metin, satır kırmadan); yetkinlik istemez.\n\n`kod alanın base64 karşılığı olsun`"),
+    ("çözümünü", "Tek satır base64'ü katı çözer → Sonuç<Metin>: dolgu zorunlu, boşluk/satır sonu yok, çıktı ≤ 1 MiB ve geçerli UTF-8; bozuk girdi C032 (`tür`, `konum`), mesaj girdiyi taşımaz.\n\n`düz kodun base64 çözümünü almayı dene olsun`"),
+    ("noktası", "`harfin kod noktası` tek harfin Unicode değeri (TamSayı; tek harf değilse C032 çalışma hatası); `sayının kod noktası harfini almayı dene` ters yön → Sonuç<Metin> (vekil ve 1114111 üstü C032).\n\n`nul 0 kod noktası harfini almayı dene olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];
 

@@ -1,0 +1,9 @@
+# K-402 (RFC-0043 Dilim 2) — ürün H ZM-F023: IMAP literal `{n}` oktet sayar
+# (RFC 9051 §4.3). Ürün (commit 23af030, `imap/kaynak/ana.dil` blob 25cf0e4,
+# istemci literal'i okuma ve literal bütçesi) baytı U+0000–04FF kod tablosuyla
+# sayıyor; tablo dışı harf 1 bayt sayılıyor ("Fatura 😀 hazır" 15) ve emoji/CJK
+# içeren literal'de oturum kayıyor. Değişiklik öncesi S015; şimdi 18.
+
+satır "Fatura 😀 hazır" olsun
+satırın uzunluğu yaz
+satırın utf8 bayt sayısı yaz
