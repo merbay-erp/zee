@@ -10,6 +10,27 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
+  bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
+  satırları olarak (76 karakter + satır sonu) belleğe alınmadan
+  gönderilebilir:
+  `n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`.
+  Kodlanmış çıktının bir parçası da gönderilebilir (IMAP kısmi getirme):
+  `n yol dosyasının base64 satırlarının 0 baytından 1024 baytını bağlantıya aktarmayı dene olsun`.
+  Sonuç yazılan bayt sayısıdır; tam çıktının boyu `b` baytlık dosya için
+  e = 4·⌈b/3⌉ olmak üzere e + 2·⌈e/76⌉'dır, böylece boyu dosyayı açmadan
+  önceden hesaplayabilirsiniz. Yol için `dosya-okuma` (ya da `veri:` yolu
+  için `veri-okuma`) yetkinliği gerekir. Kaynak dosya en çok 32 MiB
+  olabilir (çözerek yazma tavanıyla aynı); daha büyük dosya hiç bayt
+  gönderilmeden `boyut_aşımı` ile döner. 16 MB'lık ek artık bir saniyenin
+  altında gider; önceki 57 baytlık okuma döngüsü yavaştı ve bellek
+  sınırına takılıyordu.
+
+  **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
+  kalıpla değiştirebilirsiniz.
+
 ### Değişenler
 
 - **Dosya özeti ve dosya indirme yanıtı artık 32 MiB'a kadar (K-401):**
@@ -31,6 +52,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   yerine taşınamıyordu. Artık eylem dışında içerik okunmaz ve boyut sınırı
   yoktur; var olan hedefi ezmeme ve proje kökü kuralları aynıdır. Eylem
   içindeki taşıma geri alma için içeriği tuttuğundan 16 MiB sınırı kalır.
+
+### Site
+
+- **zeedili.com 25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-394 projeler arasında paylaşılan veri kökü (`veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045), K-395/K-401 çözerek yazılan ek, dosya özeti ve dosya indirme için 32 MiB sınırı ve K-393 atılan değerlerin C024 bellek zarfına payını iade etmesi haberleri eklendi. Dil davranışı değişmedi.
 
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
@@ -64,24 +89,6 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
-- **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
-  bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
-  satırları olarak (76 karakter + satır sonu) belleğe alınmadan
-  gönderilebilir:
-  `n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`.
-  Kodlanmış çıktının bir parçası da gönderilebilir (IMAP kısmi getirme):
-  `n yol dosyasının base64 satırlarının 0 baytından 1024 baytını bağlantıya aktarmayı dene olsun`.
-  Sonuç yazılan bayt sayısıdır; tam çıktının boyu `b` baytlık dosya için
-  e = 4·⌈b/3⌉ olmak üzere e + 2·⌈e/76⌉'dır, böylece boyu dosyayı açmadan
-  önceden hesaplayabilirsiniz. Yol için `dosya-okuma` (ya da `veri:` yolu
-  için `veri-okuma`) yetkinliği gerekir. Kaynak dosya en çok 32 MiB
-  olabilir (çözerek yazma tavanıyla aynı); daha büyük dosya hiç bayt
-  gönderilmeden `boyut_aşımı` ile döner. 16 MB'lık ek artık bir saniyenin
-  altında gider; önceki 57 baytlık okuma döngüsü yavaştı ve bellek
-  sınırına takılıyordu.
-
-  **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
-  kalıpla değiştirebilirsiniz.
 - **DNS sorgusu: MX, TXT, TLSA ve adres kayıtları (K-390):** Zee programı
   artık aynı makinedeki doğrulayıcı DNS çözücüsüne (ör. unbound) sorgu
   yapabilir:
