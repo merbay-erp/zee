@@ -6087,7 +6087,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   (çerçeve, gezme kopyası, üzerine yazma, kapsam sonu kalıcı tüketim).
 - Seçenekler: (a) yalnız tanı/spec dili — programlar yine iş miktarıyla
   düşer; (b) düşen değerin iadesi; (c) kopyaları saymamak — üst sınır
-  sözünü bozar. Karar (b), ADR-169.
+  sözünü bozar. Karar (b), ADR-173.
 - Güvenlik: ölçü ≤ tüketim değişmezi; yerinde büyüme gerçek kapasite
   artışını tüketir, gezme geri yazımı artık tüketir, iade 64 MiB'a kırpılır.
   Çerçeve iadesi bütçe farkıyla değil ölçüyle (eşzamanlı görevler ortak
