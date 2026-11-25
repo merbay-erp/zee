@@ -60,7 +60,9 @@ olarak girer.
 5. **Yol ve tavan.** spec/26 proje dosya sınırı + SMTP ek okuyucusunun
    `dosyayi_guvenle_ac`'ı (readonly, `O_NOFOLLOW`, açılış öncesi/sonrası kimlik
    karşılaştırması). Tavan 16 MiB (`yukleme_bayti`, yüklemeyle simetrik);
-   proje bildirimiyle yükseltme açılmadı.
+   proje bildirimiyle yükseltme açılmadı. K-401 (ADR-167 eki, 25 Kasım
+   2026) dosya yanıtı tavanını çözerek yazma hedef tavanıyla eşit 32 MiB'a
+   çıkardı; yükleme 16 MiB kalır.
 6. **Yazım bütçesi (RFC-0041 açık sorusu).** Ayrı formül açılmadı: K-372
    mutlak bütçesi `10 sn + bayt / 128 KiB/s` (16 MiB için ~138 sn) ve 10 sn
    ilerlemesizlik kesmesi başlık + gövdenin tamamına tek son tarih olarak

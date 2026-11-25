@@ -7,7 +7,7 @@
 //! K-395 (ADR-167 eki, ZM-F039): çözerek yazma/ekleme hedef tavanı 32 MiB;
 //! tam sınır kabul, bir bayt fazlası hedefe dokunmadan ret.
 //!
-//! K-395b (ZM-F044): dosya özeti tavanı 32 MiB; eylem dışındaki atomik taşıma
+//! K-401 (ZM-F044): dosya özeti tavanı 32 MiB; eylem dışındaki atomik taşıma
 //! içeriği belleğe okumaz.
 
 use dil::kaynagi_derle;
@@ -733,7 +733,7 @@ fn eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda() {
     );
 }
 
-/// K-395b (ZM-F044): eylem dışındaki `atomik taşımayı dene` içeriği belleğe
+/// K-401 (ZM-F044): eylem dışındaki `atomik taşımayı dene` içeriği belleğe
 /// okumaz; 16 MiB veri okuma sınırını aşan 19 MiB'lık dosya taşınır. No-clobber
 /// ve proje kökü kuralları aynen geçerlidir. Eylem içinde geri alma kaydı
 /// içeriği tuttuğu için taşıma 16 MiB veri okuma sınırına bağlı kalır ve
@@ -794,7 +794,7 @@ değilse
     assert!(!proje.0.join("ekler/c.bin").exists());
 }
 
-/// K-395b: `… dosyasının sha256 özetini almayı dene` 32 MiB'ı akışla okur;
+/// K-401: `… dosyasının sha256 özetini almayı dene` 32 MiB'ı akışla okur;
 /// tam sınırdaki dosyanın özeti verilir, bir bayt fazlası C013 `32 MiB`.
 #[test]
 fn dosya_ozeti_tavani_32_mib_tam_sinirda() {

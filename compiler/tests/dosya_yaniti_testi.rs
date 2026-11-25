@@ -3,7 +3,7 @@
 //! attachment` + RFC 6266 `filename*`, `nosniff`, sandbox CSP, CORP, bayt
 //! tavanı ve proje dosya sınırı uçtan uca sınanır.
 //!
-//! K-395b (ZM-F044): tavan 32 MiB; tam sınırdaki dosya akışla bayt bayt iner
+//! K-401 (ZM-F044): tavan 32 MiB; tam sınırdaki dosya akışla bayt bayt iner
 //! ve worker'ın yerleşik belleği aktarım boyunca dosya boyu kadar büyümez.
 
 use std::io::{Read, Write};
@@ -542,7 +542,7 @@ fn yerlesik_kib(pid: u32) -> u64 {
         .expect("RSS KiB")
 }
 
-/// K-395b: 32 MiB'lık dosya yanıtı tam sınırda kabul edilir ve 16 KiB
+/// K-401: 32 MiB'lık dosya yanıtı tam sınırda kabul edilir ve 16 KiB
 /// parçalarla akar. Aktarım boyunca örneklenen yerleşik bellek tepesi
 /// tabandan dosya boyunun dörtte birinden (8 MiB) az büyür; dosyayı belleğe
 /// alan bir uygulama en az 32 MiB büyürdü. Bir bayt fazlası yukarıdaki ret
