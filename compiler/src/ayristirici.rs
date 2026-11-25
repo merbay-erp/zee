@@ -11,9 +11,11 @@ mod ifade;
 mod kaynak;
 mod kimlik_iletisim;
 mod kurtarma;
+mod parametre;
 
 use self::ifade::*;
 use self::kaynak::konumlu_ifade;
+use self::parametre::parametre_adi;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
@@ -1289,17 +1291,5 @@ impl Ayristirici {
             degilse,
             satir,
         })
-    }
-}
-
-/// Parametre bağlama adı (K-398): `yalin_ad` gövdesi, sözlük kökü
-/// (`kalıbı`→`kalıp`, `metni`→`metin`) morfoloji aday kümesindeyse o köke
-/// bağlanır. Profil çıktısı değişmez; seçim yalnız aday kümesinden yapılır.
-/// Eski yumuşamış yazım (`kalıb`) çözümleyicide aynı sembole çözülür.
-fn parametre_adi(ekli: &str) -> String {
-    let govde = yalin_ad(ekli);
-    match crate::morfoloji::baglama_koku(&govde) {
-        Some(kok) if crate::morfoloji::kok_adaylari(ekli).contains(&kok) => kok,
-        _ => govde,
     }
 }

@@ -1054,8 +1054,7 @@ pub(super) fn tamlayan_ekli(kelime: &str) -> bool {
 /// Belirtme eki almış adı yalın hale getirir ("sayıları"→"sayılar", "adı"→"ad").
 /// Tanım anında kapsam olmadığı için yapısaldır: yalnız ek atılır, ünsüz
 /// yumuşaması geri çevrilmez ("sonucu"→"sonuc"); çözümleyicinin aday üretimi
-/// iki yönü de denediğinden gövde içi başvurular tutarlı çözülür. Parametre
-/// satırı bunun üstüne sözlük kökünü seçer (K-398, `ayristirici::parametre_adi`).
+/// iki yönü de denediğinden gövde içi başvurular tutarlı çözülür.
 pub(super) fn yalin_ad(ekli: &str) -> String {
     for ek in ["yı", "yi", "yu", "yü", "ı", "i", "u", "ü"] {
         if let Some(kok) = ekli.strip_suffix(ek) {

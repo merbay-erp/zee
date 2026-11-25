@@ -26,7 +26,7 @@ gösterdi). Kullanıcı kararı (25 Kasım 2026): düşük riskli yol — profil
 
 1. **Seçim aday kümesinden yapılır.** `morfoloji::baglama_koku` yapısal
    gövdeden (`yalin_ad`) sözlük kökünü kurallı olarak türetir; ayrıştırıcı
-   (`parametre_adi`) bu kökü yalnız ekli yazımın `kok_adaylari` kümesinde
+   (`ayristirici::parametre::parametre_adi`) bu kökü yalnız ekli yazımın `kok_adaylari` kümesinde
    ise seçer, değilse gövdeyi korur. `cozumleri_bul`, `kok_adaylari`,
    `ek_uydur`, profil dökümü ve uyumluluk kaydı (`e6034e73…`) değişmez.
 2. **Kurallar sözlüksüzdür ve son ad parçasına bakar** (spec/03):
