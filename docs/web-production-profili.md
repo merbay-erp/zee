@@ -74,6 +74,61 @@ Bu adaptör aynı makine veya güvenilir, kilit ve atomik replace semantiği ayn
 olan ortak dosya sistemi içindir. Birden çok host için vaat edilen harici depo
 adaptörü henüz yoktur.
 
+## Parola değişiminde öteki oturumları kapatma (K-404)
+
+Parola değiştirildiğinde ya da sıfırlandığında kullanıcının öteki cihazlardaki
+oturumları kapatılmalı, işlemi yapan oturum korunmalı ya da döndürülmelidir.
+Bunun için yeni bir dil ifadesi yoktur ve gerekmez: K-188 listeleme/iptal
+ifadeleri ile `oturuma al` döndürmesi yeterlidir (spec/12 §2, K-404 maddesi).
+
+```text
+POST "/parola" adresine istek geldiğinde
+    oturum gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
+    mevcut oturumun "kimlik" değeri olsun
+    # ... eski parolayı doğrula, yeni özeti eylem içinde kaydet ...
+    sonuç kullanıcı ile web oturumlarını listelemeyi dene olsun
+    sonuç başarılıysa
+        girdiler sonucun değeri olsun
+        her girdi için
+            kimlik girdinin "kimlik" değeri olsun
+            kimlik mevcut a eşit değilse
+                iptal kimlik ile web oturumunu iptal etmeyi dene olsun
+        kullanıcı kullanıcısını rol rolüyle oturuma al
+        "/hesap" adresine yönlendir
+    değilse
+        "oturumlar kapatılamadı" yanıtını 503 durumuyla gönder
+```
+
+- Son `oturuma al` satırı geçerli oturumu yeni belirteç ve CSRF ile döndürür;
+  oturumu aynı belirteçle tutmak isteyen uygulama bu satırı atlar. Döndürme
+  önerilir: parola değişimi bir yetki değişimidir.
+- Hepsi tek istek transaction'ıdır. Rota başarıyla biterse parola eylemi,
+  iptaller ve döndürme birlikte commit edilir; hata olursa hiçbiri uygulanmaz
+  ve kullanıcı yeniden deneyebilir. İptal başarısız `Sonuç` döndürürse rota
+  başarı yanıtı vermemeli, 503 ile bitmelidir.
+- Oturumsuz "parolamı unuttum" akışında `mevcut` yoktur; aynı liste koşulsuz
+  iptal edilir.
+- Yalnız aynı kullanıcının oturumları listelenir; başka kullanıcı etkilenmez.
+  N işçi ve restart aynı `.zee/web-durumu-v1.json` durumunu gördüğü için iptal
+  bütün işçilerde hemen 401 olur.
+- Bilinçli sınır: listeleme yalnız commit edilmiş oturumları görür. Eski
+  parolayı bilen biri, değişim isteği sürerken eski parolayla girişini
+  tamamlarsa o oturum listeye girmeyebilir. Bu pencere değişim isteğinin
+  süresi kadardır ve saldırganın o anda eski parolayı bilmesini ister.
+  Uygulama giriş ve parola değişimini PostgreSQL'de aynı kullanıcı satırı
+  üzerinde `SELECT … FOR UPDATE` ile sıraya sokarak ve girişte doğrulanan özeti
+  koşul alan `UPDATE … WHERE parola_ozeti = $2` ile daraltabilir. İstek başına
+  denetlenen kullanıcı oturum kuşağı gibi bir çalışma zamanı ilkeli yoktur;
+  gerçek ürün kanıtı olmadan core freeze altında eklenmez.
+
+Kanıt: `compiler/tests/web_testi.rs`
+`parola_degisiminde_oteki_oturumlar_mevcut_yuzeyle_kapatilir` (aynı
+kullanıcının iki öteki oturumu 401, eski belirteç 401, yeni belirteç 200,
+başka kullanıcı 200, ikinci değişim idempotent; iptallerden sonra rota
+hatası 500 ve hiçbir oturum kapanmaz).
+
 ## Proxy güven sözleşmesi
 
 Reverse proxy:

@@ -12,6 +12,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
+- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
+  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
+  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
+  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
+  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
+  tek istek içinde güvenle yapar. Desen ve sınırları
+  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
+  maddesinde ve testte. Davranış değişmedi.
+
+  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
+  ekleyin.
+
 - **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
   (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
   dinliyordu, ama gelen isteğin `Host` başlığına bakmıyordu. Bu yüzden
