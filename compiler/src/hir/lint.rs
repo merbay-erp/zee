@@ -49,10 +49,11 @@ impl HirProgram {
                 if let Some(bilgi) = self.ifade_bilgisi(yol) {
                     kapsamlar.insert((1usize << 31) + bilgi.kimlik().sirasi());
                 }
-                blok(govde, &mut sonuc);
+                // K-403: rota gövdesinde yanıt/yönlendirme rotayı bitirir.
+                blok_ic(govde, &mut sonuc, true);
                 if !cagri_etkisi_belirsiz && !yanit_var(govde) && !belirsiz_cagri(govde) {
                     ekle(&mut sonuc, Tani::yeni("S048", "Bu rotanın bazı yolları yanıt veya yönlendirme üretmeden bitebilir.".into(), *satir, 1, 1)
-                        .onerili("Her dala uygun yanıt ekle; örnek: değilse → girintili `\"Geçersiz istek\" yanıtını 400 durumuyla gönder`. Yanıt göndermek bloğu sonlandırmaz.".into()));
+                        .onerili("Her dala uygun yanıt ekle; örnek: değilse → girintili `\"Geçersiz istek\" yanıtını 400 durumuyla gönder`. Yanıt veya yönlendirme rotayı orada bitirir.".into()));
                 }
             }
         }
@@ -104,7 +105,14 @@ fn yerel(sahibi: Option<&str>, ana: Option<&str>) -> bool {
 }
 
 fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
+    blok_ic(cs, out, false);
+}
+
+/// `rota` doğruysa blok bir rota gövdesine aittir: K-403 uyarınca orada
+/// `yanıtını gönder`/`yönlendir` de kesin sondur.
+fn blok_ic(cs: &[Cumle], out: &mut Vec<Tani>, rota: bool) {
     let mut bitti = false;
+    let mut yanitla_bitti = false;
     for c in cs {
         // İşlem/test/rota tanımları üst düzey çalışma akışının cümlesi değildir.
         if matches!(
@@ -116,6 +124,11 @@ fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
                 | Cumle::BaglantiGeldiginde { .. }
         ) {
             continue;
+        }
+        if bitti && yanitla_bitti {
+            ekle(out, Tani::yeni("S047", "Bu cümleye ulaşılamaz: önceki yanıt veya yönlendirme rotayı bitirir.".into(), satir(c), 1, 1)
+                .onerili("Yanıttan sonra çalışması gereken işi yanıttan önceye taşı; yalnız yanıt yolunda kalmayacak kodu `değilse` dalına al.".into()));
+            break;
         }
         if bitti {
             ekle(out, Tani::yeni("S047", "Bu cümleye önceki kesin dönüş veya program sonlandırması nedeniyle ulaşılamaz.".into(), satir(c), 1, 1)
@@ -144,7 +157,7 @@ fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
                             );
                         }
                     } else {
-                        blok(&kol.govde, out);
+                        blok_ic(&kol.govde, out, rota);
                     }
                     secildi |= matches!(kol.kosul.turu(), Ifade::MantiksalSabiti(true));
                 }
@@ -168,7 +181,7 @@ fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
                             );
                         }
                     } else {
-                        blok(d, out);
+                        blok_ic(d, out, rota);
                     }
                 }
             }
@@ -176,34 +189,37 @@ fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
                 kollar, degilse, ..
             } => {
                 for (_, b) in kollar {
-                    blok(b, out);
+                    blok_ic(b, out, rota);
                 }
                 if let Some(b) = degilse {
-                    blok(b, out);
+                    blok_ic(b, out, rota);
                 }
             }
             Cumle::KezTekrarla { govde, .. }
             | Cumle::HerBiri { govde, .. }
             | Cumle::AralikDongusu { govde, .. }
             | Cumle::OlduguSurece { govde, .. }
-            | Cumle::OlanaKadar { govde, .. } => blok(govde, out),
+            | Cumle::OlanaKadar { govde, .. } => blok_ic(govde, out, rota),
             Cumle::IcindeBlogu {
                 govde, yetismezse, ..
             } => {
-                blok(govde, out);
+                blok_ic(govde, out, rota);
                 if let Some(b) = yetismezse {
-                    blok(b, out);
+                    blok_ic(b, out, rota);
                 }
             }
             _ => {}
         }
-        bitti = kesin_son(c);
+        bitti = kesin_son(c, rota);
+        yanitla_bitti = bitti && !kesin_son(c, false);
     }
 }
 
-fn kesin_son(c: &Cumle) -> bool {
+fn kesin_son(c: &Cumle, rota: bool) -> bool {
+    let kesin_son = |c: &Cumle| kesin_son(c, rota);
     match c {
         Cumle::Dondur { .. } | Cumle::HataDondur { .. } | Cumle::ProgramiBitir { .. } => true,
+        Cumle::YanitGonder { .. } | Cumle::Yonlendir { .. } => rota,
         Cumle::Ise {
             kollar, degilse, ..
         } => {
@@ -228,7 +244,7 @@ fn kesin_son(c: &Cumle) -> bool {
     }
 }
 
-// Yanıt yazmak kontrol akışını sonlandırmaz; yalnız bütün olağan yollarda
+// K-403 sonrası yanıt rotayı bitirir; burada yalnız bütün olağan yollarda
 // en az bir yanıtın bulunup bulunmadığı incelenir. Döngü çalışabilir/çalışmayabilir.
 fn yanit_var(cs: &[Cumle]) -> bool {
     cs.iter().any(|c| match c {

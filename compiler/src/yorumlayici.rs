@@ -23,6 +23,7 @@ mod kimlik_iletisim;
 mod kodlanmis_dosya;
 mod metin;
 mod paylasilan_io;
+mod rota_sonu;
 mod siralama;
 mod toplayan_baglanti;
 mod toplayan_io;

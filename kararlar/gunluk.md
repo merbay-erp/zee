@@ -6146,6 +6146,25 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
 
 
+## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir; ADR-178 (25 Kasım 2026)
+
+- Kaynak: `urun-h` (ZeeMail) güvenlik denetimi, "Yüksek" (23.11, ürün
+  `8888734`; repro `POST "/ayarlar/temsilci"`: yeniden doğrulama
+  yönlendirmesine rağmen temsilci eylemi koştu), bağımsız dış incelemede
+  yinelendi (25.11, ürün `89edf15`). Erken yönlendirmeyi yetki koruması olarak kullanan her
+  Zee web uygulaması (filo dahil) aynı sınıfa açıktı.
+- Seçenek (a) çalışma zamanı sonlandırma birincil düzeltme: koruma
+  kalıbında yönlendirme `ise` bloğunun son cümlesidir, sonraki kod başka
+  yolda erişilebilirdir; yalnız ulaşılamaz-kod tanısı (b) onu yakalamaz.
+  (b) ikincil olarak S047'nin rota kipi oldu (yeni tanı kodu yok).
+- Uygulama Ç000 (`programı bitir`) yayılım yolunu kullanır: Ç004 `Err`
+  ile işlem çerçeveleri dahil yükselir, yalnız `web_istegini_calistir` olağan
+  bitiş sayar. Eylem içinde yanıt zaten T044; eşzamanlı görevde nöbetçi
+  sarmalanmaz (Ç öneki). Rota dışında bayrak kapalı.
+- Önceki semantikte ikinci yanıt zaten etkisizdi; uyumluluk farkı yalnız ilk
+  yanıttan sonraki yan etkilerdir. 37/6 895 vaka incelendi; bilinçli
+  yanıt-sonrası mutation yok. K-403 kapandı.
+
 ## K-401 — Özet/dosya yanıtı 32 MiB, eylem dışında izsiz taşıma; ADR-167 eki (25 Kasım 2026)
 
 - Kaynak `urun-h` ZM-F044 (ürün `eda6b33`): yerel birleşik derlemede 19 MiB

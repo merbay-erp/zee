@@ -50,7 +50,9 @@ açılır. Başarılı derlemenin uyarıları CLI JSON'da ayrı `uyarilar` dizis
 başarı çıkış koduyla, LSP'de severity 2 ile gösterilmek ZORUNDADIR. Derleme
 hatası varken lint tahmini yapılmaz. A012 hiç okunmayan semantic adı, S047
 kanıtlanmış erişilemeyen cümleyi, S048 yapısal olarak eksik rota yanıt yolunu
-bildirir. Yanıt göndermek akışı sonlandırmaz. İfade HIR bağlarında kullanıcı
+bildirir. Rota gövdesinde yanıt göndermek ve yönlendirmek rotayı bitirir
+(spec/11 K-403); S047 orada kesin yanıttan sonraki cümleyi de bildirir, işlem
+gövdesinde ve rota dışında yanıt kesin son sayılmaz. İfade HIR bağlarında kullanıcı
 işlem çağrısı varsa yanıt etkisi tahmin edilmez ve S048 program boyunca
 bastırılır. Gölgeleme spec/03 gereği yoktur.
 

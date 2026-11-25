@@ -1017,8 +1017,8 @@ fn zaman_asimi_tamponlu_yaniti_cerezi_ve_oturum_mutasyonunu_birlikte_geri_alir()
 POST \"/gec\" adresine istek geldiğinde
     herkese açık
     \"Mustafa\" kullanıcısını \"yönetici\" rolüyle oturuma al
-    \"erken başarı\" yanıtını gönder
     31 saniye bekle
+    \"geç başarı\" yanıtını gönder
 
 GET \"/korumali\" adresine istek geldiğinde
     oturum gerekli
@@ -1031,7 +1031,7 @@ GET \"/korumali\" adresine istek geldiğinde
     assert_eq!(io.sunucu_durumlari, vec![504, 401]);
     assert_eq!(
         io.sunucu_yanitlari[0].1, "istek 30 saniyelik son tarihini aştı",
-        "tamponlanmış erken başarı timeout'ta yayımlanmamalı"
+        "zaman aşımı yanıtı sabit 504 olmalı (K-403: yanıt rotayı bitirdiğinden bekleme yanıttan önce)"
     );
     assert!(
         io.yazilan_cerezler.is_empty(),
@@ -1047,15 +1047,19 @@ fn rota_hatasi_tamponlu_yaniti_cerezi_ve_oturum_mutasyonunu_geri_alir() {
 POST \"/bozuk\" adresine istek geldiğinde
     herkese açık
     \"Mustafa\" kullanıcısını \"yönetici\" rolüyle oturuma al
-    \"erken başarı\" yanıtını gönder
+    erken \"erken.txt\" dosyasını \"text/plain\" türünde \"e.txt\" adıyla ek olarak göndermeyi dene olsun
     sonuç 1 in 0 a bölümü olsun
 
 GET \"/korumali\" adresine istek geldiğinde
     oturum gerekli
     \"oturum sızdı\" yanıtını gönder
 ";
+    // K-403: `yanıtını gönder` artık rotayı bitirdiğinden tamponlanmış yanıt
+    // sonrası hata, rotayı bitirmeyen dosya yanıtı (`Sonuç`) ile kurulur.
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
+    io.dosyalar
+        .insert("erken.txt".into(), "erken başarı".into());
     io.istekler.push_back("GET /__test-csrf".into());
     assert!(io.istek_al().is_some());
     let csrf = io.csrf_belirteci().expect("CSRF oturumu");
