@@ -295,6 +295,14 @@ zamanı tamponunda kalır, Zee yol/özet/uzunluk ve `Metin` sonuç görür.
   loopback'ten güvenilir ve yalnız DANE kararına bağlanır;
   `hickory-resolver` ve `res_query` reddedildi. RFC-0044 kabul edilirse bu
   madde onunla güncellenecek.
+  **Güncelleme (K-390, 24 Kasım 2026):** RFC-0044 B1a kabul edildi
+  ([ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md), spec/31
+  §1). Bu maddenin yerini o alır: çözücü bildirilmiş loopback doğrulayıcı
+  çözücüye dar stub (systemd-resolved değil; öneri unbound), tel biçimi
+  üretimde yeni crate olmadan kendi sınırlı ayrıştırıcımız, DNSSEC doğrulaması
+  yerel çözücüde, `AD` biti `dns_dnssec "zorunlu"` kipinde açılışta sınanır ve
+  yalnız (B4) DANE kararına bağlanır. Yetkinlik `ağ` değil yeni `dns`'tir;
+  PTR açık kalır.
   **Durum: ZeeOS sağlamalı; bugün yalnız statik laboratuvar çözücüsü var
   (QEMU user-net); sahada kullanılamaz (ZeeOS P0-Z3 açık).** Düzeltme
   (ZeeOS ADR-076, 21 Kasım 2026): imajın systemd-resolved taşıdığı yönündeki

@@ -229,6 +229,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             cok_parcali_yukleme: false,
             eposta_ek_turleri: None,
             govde_siniri: Default::default(),
+            dns: None,
         }
     );
 }

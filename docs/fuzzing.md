@@ -6,7 +6,9 @@ sözleşmesidir. Lexer/parser hedefi geçerli her UTF-8 kaynağın token/AST ya 
 Türkçe tanı üretmesini; morfoloji hedefi geçerli her üretilmiş kök+ek zincirinin
 aynı soyut çözüme dönmesini ve çoklu köklerin sessizce seçilmemesini;
 `http_istegi` hedefi ise her byte dizisinin exact bir HTTP/1.x isteği ya da
-fail-closed hata olmasını arar. `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
+fail-closed hata olmasını arar. `dns_yaniti` (K-390/ADR-169) her byte
+dizisinin sınırlı bir DNS yanıtı ya da hata olmasını ve Zee'nin kabul ettiği
+her paketin bağımsız `hickory-proto` kâhininde de aynı okunmasını arar. `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
 uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 
 ## Kalıcı katmanlar
@@ -31,6 +33,14 @@ uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 - `compiler/tests/http_istegi_testi.rs`: kalıcı HTTP korpusunu ve adlandırılmış
   CRLF/obs-fold/NUL/target/TE-CL/UTF-8 framing saldırılarını her ana testte
   yeniden oynatır.
+- `compiler/fuzz/fuzz_targets/dns_yaniti.rs`: ham yanıtı `dns_teli`
+  ayrıştırıcısından ve her tür için çözüm adımından geçirir; ortak
+  `compiler/tests/ortak/dns_kahini.rs` ile Zee kabul kümesinin hickory kabul
+  kümesinin alt kümesi olduğunu ve cevap bölümünün aynı okunduğunu denetler.
+- `compiler/fuzz/corpus/dns_yaniti/`: sıkıştırmalı MX + OPT, parçalı TXT,
+  NXDOMAIN + SOA, CNAME + AAAA, TLSA ve kendine işaretçi döngüsü tohumları
+  (`.gitattributes` ile ikili). `compiler/tests/dns_kahin_testi.rs` korpusu
+  ve 40.000 deterministik bozulmuş paketi her ana testte yeniden oynatır.
 - `compiler/fuzz/fuzz_targets/wasm_abi.rs`: kayıtlı girdinin yanında null,
   iç/kayıt dışı pointer, yanlış/taşkın uzunluk, keyfî UTF-8, kaynak/soru kipi
   ve yanlış+çift bırakma sıralarını yürütür; her canlı sonuç kaydının uzunluk
