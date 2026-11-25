@@ -130,6 +130,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 ### Site
 
 - **zeedili.com 25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-394 projeler arasında paylaşılan veri kökü (`veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045), K-395/K-401 çözerek yazılan ek, dosya özeti ve dosya indirme için 32 MiB sınırı ve K-393 atılan değerlerin C024 bellek zarfına payını iade etmesi haberleri eklendi. Dil davranışı değişmedi.
+- **zeedili.com 25 Kasım akşam haberleri:** ana sayfa Gelişmeler bölümüne K-397 giden bağlantı ve istemci STARTTLS (RFC-0044), K-396 dosyanın bağlantıya base64 satırlarıyla akıtılması (RFC-0039), K-398 parametre adının sözlük köküne bağlanması (ADR-175) ve K-400 deneysel web'in yalnız localhost'a yanıt vermesi haberleri eklendi. Dil davranışı değişmedi.
 
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
