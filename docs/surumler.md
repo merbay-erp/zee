@@ -5,6 +5,33 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 25 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Değişenler
+
+- **Dosya özeti ve dosya indirme yanıtı artık 32 MiB'a kadar (K-401):**
+  `… dosyasının sha256 özetini almayı dene` ve
+  `… dosyasını … adıyla ek olarak göndermeyi dene` sınırı 16 MiB'tan
+  **32 MiB'a** çıktı; çözerek yazılan ~18 MB'lık bir e-posta eki artık
+  özetlenip web arayüzünden indirilebilir. Sınıra tam ulaşan dosya kabul
+  edilir, bir bayt fazlası C013 verir (indirmede yanıt başlığı yazılmadan).
+  İndirme 16 KiB parçalarla akar, dosya belleğe alınmaz. Dosya yükleme
+  sınırı 16 MiB kalır.
+
+  **Göç:** Gerekmez.
+
+### Düzeltilenler
+
+- **16 MiB'tan büyük dosya taşınabiliyor (K-401):** eylem dışındaki
+  `… dosyasını … yoluna atomik taşımayı dene` dosya içeriğini gereksiz yere
+  belleğe okuyup 16 MiB veri okuma sınırına çarpıyordu; çözülmüş büyük ek
+  yerine taşınamıyordu. Artık eylem dışında içerik okunmaz ve boyut sınırı
+  yoktur; var olan hedefi ezmeme ve proje kökü kuralları aynıdır. Eylem
+  içindeki taşıma geri alma için içeriği tuttuğundan 16 MiB sınırı kalır.
+
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

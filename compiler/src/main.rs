@@ -4055,6 +4055,10 @@ fn program_argumanlari() -> Vec<String> {
         .collect()
 }
 
+/// K-401: `… dosyasının sha256 özetini almayı dene` akışla okuduğu en çok
+/// bayt; çözerek yazma hedef tavanına hizalı (önce yükleme tavanı 16 MiB idi).
+const DOSYA_OZETI_BAYTI: usize = 32 * 1024 * 1024;
+
 /// K-395: `çözerek … yazmayı|eklemeyi dene` hedef dosyasının toplam tavanı
 /// (K-389'da yükleme tavanıyla eşit 16 MiB idi; ADR-167 eki).
 const COZEREK_YAZMA_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
@@ -4126,17 +4130,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if hedef_yolu.exists() {
             return Err(format!("\"{}\" hedef dosyası zaten var", hedef));
         }
+        let tasima_hatasi = |hata: std::io::Error| match hata.kind() {
+            std::io::ErrorKind::NotFound => {
+                format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata)
+            }
+            _ => format!("dosya atomik taşınamadı: {}", hata),
+        };
+        // K-401: eylem dışında geri alma kaydı yoktur; taşıma içeriği okumaz,
+        // 16 MiB veri okuma sınırına bağlı değildir (silmedeki izsiz yolun eşi).
+        if self.eylem_yedekleri.is_empty() {
+            return dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
+                .map(|()| 1)
+                .map_err(tasima_hatasi);
+        }
         // K-347: içerik iki klasör kilidi altında, adlandırmayla aynı
         // pencerede yakalanır; kilit dışı yedek araya giren yazarı görmüyordu.
-        let icerik =
-            dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu).map_err(|hata| {
-                match hata.kind() {
-                    std::io::ErrorKind::NotFound => {
-                        format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata)
-                    }
-                    _ => format!("dosya atomik taşınamadı: {}", hata),
-                }
-            })?;
+        let icerik = dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu)
+            .map_err(tasima_hatasi)?;
         let kaynak_degisimi = dil::kalici_dosya::KilitliDegisim {
             onceki: Some(icerik.clone()),
             sonraki: None,
@@ -4214,9 +4224,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let mut dosya = self.okuma_icin_ac(yol)?;
         let mut ozet = Sha256::new();
         let mut toplam = 0usize;
-        let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .http()
-            .yukleme_bayti();
+        let sinir = DOSYA_OZETI_BAYTI;
         let mut parca = [0u8; 16 * 1024];
         loop {
             let okunan = dosya

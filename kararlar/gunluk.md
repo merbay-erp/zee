@@ -5695,7 +5695,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   1 GiB olsa da aşılmaz; +1 bayt bayt yazmadan `boyut_aşımı`.
 - Temiz dal: ilk PR'daki K-394 ön commit'leri açık-depo kapısına takıldı;
   K-394 #109 birleştikten sonra yalnız K-396 değişiklikleri master'a taşındı.
-- Kanıt: 10 yeni test vakası + 2 birim; 16 MiB ek 0,87 sn (debug). GB-169.
+- Kanıt: 10 yeni test vakası + 2 birim; 16 MiB ek 0,87 sn (debug). GB-170.
 
 ## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045, ADR-170 (24 Kasım 2026)
 
@@ -6145,3 +6145,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Reddedilen: yükleme/dosya yanıtı/özet tavanlarını da 32 MiB yapmak (web
   işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
 
+
+## K-401 — Özet/dosya yanıtı 32 MiB, eylem dışında izsiz taşıma; ADR-167 eki (25 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F044 (ürün `eda6b33`): yerel birleşik derlemede 19 MiB
+  ek çözülerek yazıldı, ardından taşıma, özet ve indirme 16 MiB'ta kaldı.
+  K-395 günlüğündeki "yükleme/dosya yanıtı/özet 32 MiB reddedildi (ürün
+  ihtiyacı yok)" kararı bu kanıtla özet ve dosya yanıtı için kaldırıldı;
+  yükleme 16 MiB kalır.
+- Taşıma hatası: K-347 eylem içi geri alma için içeriği kilit altında
+  okumaya başlamıştı; eylem dışı taşıma da aynı izli yoldan geçip 16 MiB veri
+  okuma sınırına çarpıyordu (K-347 öncesinde de içerik okunuyordu,
+  `introduced_by` bilinmiyor). Silmedeki `eylem_yedekleri.is_empty()`
+  ayrımı taşımaya da uygulandı.
+- Dosya yanıtı zaten 16 KiB parçalarla akıyordu; tavanı yükseltmek bellek
+  tepesini değiştirmez, testle örneklendi. K-372 bütçesi 32 MiB için ~266 sn.
+- K-396 (bağlantıya base64 aktarım) master'da değil; kaynak tavanı K-396
+  oturumunun kendi PR'ında 32 MiB'a hizalanır. GB-169. Dosya yanıtı tavanı
+  artık sabit olduğundan `icerik_turu → kaynak_sinirlari` kenarı kalktı
+  (katman fixture'ı güncellendi; temel → adaptör yönü değişmedi). K-401 kapandı.

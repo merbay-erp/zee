@@ -205,7 +205,7 @@ Web arayüzünde ek indirme, JS'siz yükleme ve genişletilmiş SMTP ek türleri
 K-378 ile `dogfood-change` olarak açılıyor ([RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
 kabul, ADR-163). **Gerçekleşen:** katman A — rotadan kayıtlı türle
 `attachment` dosya yanıtı (kapalı `icerik_turu` kaydı RFC-0040 katman C ile
-tek model; sandbox CSP, 16 MiB, K-372 bütçesi). Katman B — proje bildirimiyle
+tek model; sandbox CSP, 32 MiB (K-401; önce 16 MiB), K-372 bütçesi). Katman B — proje bildirimiyle
 açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytından
 önce, spec/26 `.parca` modeli). Katman C — proje bildirimli SMTP ek türleri
 (`e_posta_ek_türleri`, makro/yürütülebilir yapısal yasak, imza/UTF-8,

@@ -116,6 +116,32 @@ kapatıldı); RFC-0043 Dilim 2 kalanıyla birlikte taslaktır.
   içerik + yeni baytlar), disk proje başına iki katı; tavan ürünün 25 MB
   ileti sınırına göre seçildi.
 
+## Ek — K-401: özet ve dosya yanıtı 32 MiB, izsiz taşıma (25 Kasım 2026)
+
+K-395 sonrasında `urun-h` 19 MiB'lık eki çözerek yazabildi ama sonraki üç
+adım 16 MiB'ta kaldı (ZM-F044): eki yerine taşımak, özetlemek ve webmail'den
+indirmek. Aynı kullanıcı kararının (25 MB iletideki ekin uçtan uca
+çalışması) devamı olarak:
+
+- `… dosyasının sha256 özetini almayı dene` en çok **32 MiB**'ı 16 KiB
+  parçalarla okur; tam sınır özetlenir, bir bayt fazlası C013.
+- `… ek olarak göndermeyi dene` dosya yanıtı tavanı **32 MiB** (ADR-163 §5
+  güncellendi). Gövde zaten 16 KiB parçalarla akıyordu; tam sınırda işçinin
+  yerleşik bellek tepesinin büyümediği gerçek süreçte örneklenerek
+  sınanır. K-372 yazım bütçesi 32 MiB için ~266 sn olur.
+- **Hata düzeltmesi:** eylem dışındaki `atomik taşımayı dene` de geri alma
+  için içeriği 16 MiB veri okuma sınırıyla belleğe okuyordu; çözülmüş büyük
+  ek taşınamıyordu. Silmedeki gibi eylem dışında izsiz taşıma kullanılır:
+  içerik okunmaz, boyut sınırı yoktur; no-clobber ve proje kökü kuralları
+  aynıdır. Eylem içinde geri alma kaydı içeriği tuttuğundan 16 MiB sınırı
+  kalır (spec/26). Regresyon: `regression/runtime/buyuk-dosya-izsiz-tasima.dil`.
+- Yükleme tavanı 16 MiB kalır (web gövdesi; ayrı karar). Bağlantıya base64
+  aktarımın (K-396, master'da değil) kaynak tavanı kendi PR'ında 32 MiB'a
+  hizalanır.
+- DoS gerekçesi GB-169: dosya yanıtı ve özet akışlıdır (bellek tepesi
+  büyümez); süre ve bant genişliği K-372 bütçesiyle sınırlıdır; izsiz taşıma
+  bellek kullanmaz.
+
 ## Değerlendirilen seçenekler
 
 - **`base64` crate'ini doğrudan bağımlılık yapmak** — Dilim 1'de
