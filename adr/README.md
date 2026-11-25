@@ -171,7 +171,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-164 | [Satır içi betik CSP özeti yalnız kaynak değişmezinden](164-satir-ici-betik-csp-ozeti.md) | **kabul** (K-379/GB-153) |
 | ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158; A2c eki K-384/GB-159; birim bütçesi eki K-388/GB-162) |
 | ADR-166 | [Liste sıra erişimi: dar sıra eki tokeni ve ödünç alan O(1) okuma](166-liste-sira-erisimi.md) | **kabul** (K-386, RFC-0029) |
-| ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1) |
+| ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1; K-395 eki 32 MiB hedef tavanı/GB-167) |
 | ADR-168 | [İstek boyut sınırları: multipart metin alanı, gövde aşımı rotası, rota bazlı gövde ve SQL parametre tavanı](168-istek-boyut-sinirlari-ve-govde-asimi.md) | **kabul** (K-391/GB-164, GB-165; Dilim 1 ve 2 uygulandı) |
 | ADR-169 | [DNS stub çözücü, loopback AD biti ve kendi tel biçimi sınırı](169-dns-stub-cozucu-ve-tel-bicimi-siniri.md) | **kabul** (K-390/GB-166) |
-| ADR-175 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-167; RFC-0044 B1b, B2b) |
+| ADR-175 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-168; RFC-0044 B1b, B2b) |

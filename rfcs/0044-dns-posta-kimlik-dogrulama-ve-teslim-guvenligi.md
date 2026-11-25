@@ -183,7 +183,7 @@ Bunlar olmadan:
 > Zee'dedir; host yalnız `p=` ayrıştırma, bit sınırı ve imza doğrulamasıdır
 > (`<b> dkim imzasını <veri> verisi için <p> anahtarıyla <a> olarak doğrulamayı
 > dene`, C034). B2a'dan (başlık ayrıştırıcısı) önce alındı; "Ayrıştırıcı
-> tutarlılığı" riski B2a gelene dek Zee kodundadır (GB-167).
+> tutarlılığı" riski B2a gelene dek Zee kodundadır (GB-168).
 > (3) Zee'de `\r` olmadığından veri LF'si imza girdisinde CRLF'dir; aynı
 > kuralla `<x> gövdesinin dkim gövde özeti` `bh=` biçiminde gövde özetini
 > verir (DKIM'e özgü, genel özet API'si değil).

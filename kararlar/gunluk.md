@@ -6029,7 +6029,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Merkez kararı (b) dogfood-minimal: PSL veri dosyası + `kurumsal alanı`;
   DKIM doğrulama ilkeli rsa-sha256/ed25519-sha256 ring ile; rsa-sha1 ve
   1024 altı / 4096 üstü anahtar reddi; kanonikleştirme Zee'de; SHA-256 için
-  K-389 yüzeyi; A-R host'ta yok. ADR-175, GB-167, C034.
+  K-389 yüzeyi; A-R host'ta yok. ADR-175, GB-168, C034.
 - Uygulama günü sürtünmesi: Zee metin sabitinde `\r` yok, bağlantı satır
   okuyucuları CRLF'yi atar; DKIM ise CRLF ister. Karar: veri LF'si imza
   girdisinde CRLF (TANIMLI; SMTP çıplak LF reddine bağlı), veride CR ret.
@@ -6100,4 +6100,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   örtük en kötü değer (6 400 KiB), tek mesaj boyu büyümez. Akışlı/parçalı SQL
   API'si reddedildi (4 MiB'a kadar metin tek parametreyle sığar; büyük içerik
   dosyaya ait). K-391 kapandı.
+
+## K-395 — Çözerek yazma/ekleme hedef tavanı 32 MiB; ADR-167 eki (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F039 (ürün `8ee2514`): 25 MB iletide ~18 MB ek 16 MiB
+  tavanına sığmıyor. İlk tasarım (dosyadan dosyaya akışlı base64 çözme +
+  dosyada bayt arama + 32 MiB) uygulandı ve PR #100'de açıldı (birleştirilmeden kapatıldı, yerine yalnız tavanı taşıyan ayrı dal); ürün eki
+  `ekdeposu` paketiyle dil değişikliği olmadan çözünce Mustafa kapsamı
+  yalnız tavana daralttı (core freeze: yeni yüzeyin kanıtlı ihtiyacı kalmadı).
+  Geniş hazırlık yerel `yedek/k395-tam-yuzey` dalında, push edilmedi.
+- Uygulamada bulunan: `sinirli_sona_ekle` var olan hedefi genel 16 MiB veri
+  okuma sınırıyla okuyordu; tavanı tek başına yükseltmek 16 MiB üstü hedefe
+  eklemeyi bozuk bırakırdı. Okuma, kilit altında önceden denetlenen ekleme
+  tavanına bağlandı.
+- Reddedilen: yükleme/dosya yanıtı/özet tavanlarını da 32 MiB yapmak (web
+  işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
 
