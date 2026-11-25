@@ -34,7 +34,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Site
 
-- **zeedili.com 25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-394 projeler arasında paylaşılan veri kökü (`veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045) ile K-395/K-401 çözerek yazılan ek, dosya özeti ve dosya indirme için 32 MiB sınırı haberleri eklendi. Dil davranışı değişmedi.
+- **zeedili.com 25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-394 projeler arasında paylaşılan veri kökü (`veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045), K-395/K-401 çözerek yazılan ek, dosya özeti ve dosya indirme için 32 MiB sınırı ve K-393 atılan değerlerin C024 bellek zarfına payını iade etmesi haberleri eklendi. Dil davranışı değişmedi.
 
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
@@ -249,6 +249,19 @@ Bu kayıt yeni sürüm etiketi değildir.
   ve kabul/ret davranışı değişmedi.
 
 ### Düzeltilenler
+
+- **Atılan değerler artık 64 MiB bellek zarfını doldurmuyor (K-393):**
+  C024 (“heap sınırını aşıyor”) canlı bellek yerine o ana kadar yapılan
+  bütün tahsisleri sayıyordu. Bir listeyi bir işleme binlerce kez vermek,
+  aynı değişkenin üzerine döngüde yazmak ya da 1.000 öğelik kabarcık
+  sıralama, programın gerçekte ~15 MB kullandığı anda “yaklaşık 67 MB” diyerek
+  duruyordu. Artık değer düşünce payı geri verilir: üzerine yazılan değişken,
+  sözlük değeri ya da yapı alanı, blok sonunda düşen ad, işlem bitince
+  parametre ve yerel adlar, `her … için` kopyası ve `sil` ile çıkan öğe.
+  Sınır aynıdır: **canlı** tuttuğunuz değerler (büyüyen liste, sözlük, dönen
+  değeri saklamak) 64 MiB'ı aşınca C024 yine çalışmayı ya da yalnız o web
+  isteğini (503) durdurur. Göç: gerekmez; eskiden C024'e takılan programlar
+  değişmeden çalışır.
 
 - **Uzun bağlantı oturumları artık bellek sınırına yürümüyor (K-388):** adlı
   dinleyici bağlantısında (K-381) çalışma bütçesi yalnız başarılı okumada
