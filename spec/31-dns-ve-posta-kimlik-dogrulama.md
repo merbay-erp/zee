@@ -77,4 +77,8 @@ TANIMLI: VERİ'deki her LF imza girdisinde CRLF olur; VERİ CR içerirse C034 `v
 
 TANIMLI: `X gövdesinin dkim gövde özeti` (`kriptografi`) Zee'nin kanonikleştirdiği gövdenin aynı LF→CRLF kuralıyla elde edilen baytlarının SHA-256'sını base64 Metin olarak verir (`bh=` biçimi; boş simple gövde `"\n"`, boş relaxed gövde `""`). Gövde CR içerirse yürütme C034 ile durur. İmza tarafı aynı özeti ve aynı imza girdisi kuralını kullanır.
 
+TANIMLI: Gövde özetinin C034 duruşu yalnız o işi sonlandırır: bağlantı görevinde yalnız o bağlantı kapanır ve tanı günlüğe yazılır; sunucu, dinleyici ve diğer bağlantı görevleri etkilenmez.
+
+ZORUNLU: Ürün kodu CR içeren girdiyi (ör. dosyadan okunmuş ileti) kanonikleştirmeden önce reddeder; gövde özeti ve doğrulama ilkeli CR'yi yalnız son savunma olarak yakalar (özette duruş, doğrulamada `veri_bozuk` ret Sonucu).
+
 AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; `psl` ve DKIM anahtarı fuzz hedefleri; IDN kuralları ve DMARCbis ağaç yürüyüşü.

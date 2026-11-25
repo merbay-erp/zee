@@ -364,3 +364,45 @@ fn gercek_surec_ozeti_tutan_listeyi_yukler_tutmayani_reddeder() {
     assert_eq!(kod, 2);
     assert!(hata.contains("kural yok"), "{hata}");
 }
+
+/// Gövde özeti duruşu (C034) yalnız o bağlantı görevini sonlandırır: CR'li
+/// gövdeyi (dosyadan okunmuş) özetleyen bağlantı kapanır, sonraki bağlantı
+/// aynı dinleyicide normal yanıt alır.
+#[test]
+fn govde_ozeti_cr_durusu_yalniz_kendi_baglanti_gorevini_sonlandirir() {
+    use dil::yorumlayici::{calistir_io_kodla, SahteBaglanti};
+    let kaynak = r#"
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    komut başarılıysa
+        yol komutun değeri olsun
+        okuma yol dosyasının 0 baytından 100 baytını metin olarak okumayı dene olsun
+        okuma başarılıysa
+            gövde okumanın değeri olsun
+            bh gövde gövdesinin dkim gövde özeti olsun
+            bağlantıya "250 " ile bh satırını yaz
+"#;
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.ikili_dosyalar
+        .insert("cr.eml".into(), b"Merhaba\r\n".to_vec());
+    io.ikili_dosyalar.insert("lf.eml".into(), b"\n".to_vec());
+    for (adres, yol) in [("192.0.2.7", "cr.eml"), ("192.0.2.8", "lf.eml")] {
+        io.baglanti
+            .bekleyenler
+            .push_back(SahteBaglanti::satirlarla("smtp_v4", adres, &[yol]));
+    }
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    calistir_io_kodla(&program, &mut io).expect("sunucu durmamalı");
+    assert!(io.baglanti.baglantilar[0].giden.is_empty());
+    assert_eq!(
+        io.baglanti.baglantilar[1].giden,
+        ["250 frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY="]
+    );
+    assert_eq!(io.baglanti.gunluk.len(), 1);
+    assert!(
+        io.baglanti.gunluk[0].1.contains("C034"),
+        "{:?}",
+        io.baglanti.gunluk
+    );
+    assert!(io.baglanti.baglantilar.iter().all(|b| b.kapandi));
+}

@@ -107,6 +107,10 @@ Uygulama günü iki sürtünme ortaya çıktı:
    Gövde CR içerirse yürütme C034 ile durur; SMTP gövdesi çıplak CR
    taşıyamadığı için bu bir ürün kanonikleştirme hatasıdır, saldırgan girdisi
    değil.
+   - Duruş yalnız o işi sonlandırır; bağlantı görevinde yalnız o bağlantı
+     kapanır, sunucu ve diğer bağlantılar sürer (merkez onayı: `almayı dene`
+     biçimi minimalite gereği eklenmedi). Ürün CR'yi kanonikleştirmeden önce
+     reddetmekle yükümlüdür (spec/31 §3, ZORUNLU).
    - Bu genel bir özet API'si değildir: yalnız DKIM'e özgü CRLF kuralını
      taşır. Simple/relaxed gövde kanonikleştirmesi ve `l=` Zee'dedir.
    - Önce düşünülen `base64 metninin onaltılık karşılığı` dönüşümü
