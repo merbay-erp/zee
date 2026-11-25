@@ -2,6 +2,9 @@
 
 use super::*;
 
+mod iade;
+pub(in crate::yorumlayici) use iade::*;
+
 enum Ziyaret<'a> {
     Deger(&'a Deger),
     Hata(&'a HataDegeri),
@@ -65,35 +68,17 @@ pub(super) fn ortama_yazma_butcesini_tuket(
     heap_butcesini_tuket(bayt, satir)
 }
 
-pub(super) fn deger_tahsis_butcesini_tuket(deger: &Deger, satir: usize) -> Result<(), Tani> {
-    heap_butcesini_tuket(deger_heap_bayti(deger, satir)?, satir)
-}
-
-pub(super) fn koleksiyon_yazma_butcesini_tuket(
-    deger: &Deger,
-    anahtar: Option<&str>,
-    satir: usize,
-) -> Result<(), Tani> {
-    let mut bayt = deger_heap_bayti(deger, satir)?;
-    bayt = bayt
-        .checked_add(match anahtar {
-            Some(anahtar) => anahtar.len() + std::mem::size_of::<(String, Deger)>() * 2,
-            None => std::mem::size_of::<Deger>() * 2,
-        })
-        .ok_or_else(|| heap_hatasi(usize::MAX, heap_siniri(), satir))?;
-    heap_butcesini_tuket(bayt, satir)
-}
-
 pub(super) fn gorev_ortami_butcesini_tuket(
     ortam: &HashMap<String, Deger>,
     gorev_sayisi: usize,
     satir: usize,
-) -> Result<(), Tani> {
+) -> Result<usize, Tani> {
     let tek = ortam_heap_bayti(ortam, satir)?;
     let toplam = tek
         .checked_mul(gorev_sayisi.saturating_add(1))
         .ok_or_else(|| heap_hatasi(usize::MAX, heap_siniri(), satir))?;
-    heap_butcesini_tuket(toplam, satir)
+    heap_butcesini_tuket(toplam, satir)?;
+    Ok(toplam)
 }
 
 fn ortam_heap_bayti(ortam: &HashMap<String, Deger>, satir: usize) -> Result<usize, Tani> {

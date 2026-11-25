@@ -15,7 +15,7 @@ Kaynak: `regression/v2.tsv`
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 18 |
+| runtime | 20 |
 | security | 30 |
 
 | Tanı | Vaka |
@@ -29,9 +29,9 @@ Kaynak: `regression/v2.tsv`
 | T017 | 1 |
 | T036 | 1 |
 | T054 | 2 |
-| - | 67 |
+| - | 69 |
 
-Toplam 79 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 79/79.
+Toplam 81 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 81/81.
 
 ## Güvenlik bulguları
 
@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 19 | 0 | 0 | 19 |
-| orta | 53 | 16 | 2 | 71 |
+| orta | 54 | 16 | 2 | 72 |
 | dusuk | 48 | 30 | 1 | 79 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 170.
+Toplam bulgu: 171.
 
 ## Spec maddeleri
 
@@ -137,9 +137,9 @@ Kaynak: `docs/soak-gecmisi-v1.tsv`
 
 | Sonuç | Koşu |
 | --- | --- |
-| gecti | 12 |
+| gecti | 13 |
 
-Son koşu: `41135379556c24d147a6115645a09fb5909019b8` (2026-11-24, macos-aarch64, 1800 sn): derleyici %0, dillsp %0 RSS büyümesi → gecti.
+Son koşu: `cd91a1928760d396101c6cb0d5c354c2477425fd` (2026-11-24, macos-aarch64, 1800 sn): derleyici %0, dillsp %0 RSS büyümesi → gecti.
 
 ## Compiler değişiklik ve core freeze beyanları
 
@@ -147,16 +147,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 116 |
-| semantic-bugfix | 43 |
+| maintenance | 123 |
+| semantic-bugfix | 44 |
 | semantic-change | 72 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
-| correctness | 42 |
+| correctness | 43 |
 | dogfood-change | 49 |
-| maintenance | 113 |
+| maintenance | 120 |
 | security | 20 |
 
-Toplam: 231 compiler değişiklik beyanı, 227 core freeze beyanı.
+Toplam: 239 compiler değişiklik beyanı, 235 core freeze beyanı.

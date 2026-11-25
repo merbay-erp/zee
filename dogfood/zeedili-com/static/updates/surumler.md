@@ -268,6 +268,19 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Atılan değerler artık 64 MiB bellek zarfını doldurmuyor (K-393):**
+  C024 (“heap sınırını aşıyor”) canlı bellek yerine o ana kadar yapılan
+  bütün tahsisleri sayıyordu. Bir listeyi bir işleme binlerce kez vermek,
+  aynı değişkenin üzerine döngüde yazmak ya da 1.000 öğelik kabarcık
+  sıralama, programın gerçekte ~15 MB kullandığı anda “yaklaşık 67 MB” diyerek
+  duruyordu. Artık değer düşünce payı geri verilir: üzerine yazılan değişken,
+  sözlük değeri ya da yapı alanı, blok sonunda düşen ad, işlem bitince
+  parametre ve yerel adlar, `her … için` kopyası ve `sil` ile çıkan öğe.
+  Sınır aynıdır: **canlı** tuttuğunuz değerler (büyüyen liste, sözlük, dönen
+  değeri saklamak) 64 MiB'ı aşınca C024 yine çalışmayı ya da yalnız o web
+  isteğini (503) durdurur. Göç: gerekmez; eskiden C024'e takılan programlar
+  değişmeden çalışır.
+
 - **Uzun bağlantı oturumları artık bellek sınırına yürümüyor (K-388):** adlı
   dinleyici bağlantısında (K-381) çalışma bütçesi yalnız başarılı okumada
   yenileniyordu; IMAP IDLE yoklamasının zaman aşımı ya da çok uzun satıra
