@@ -5675,6 +5675,57 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık; RFC-0039 A2d, ADR-172 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F040 (ürün commit'i `171f6b2`, SQL tarafı `c455cc8`):
+  IMAP `BODY[n]` gövdesi RFC 2045 base64 satırları ister; 57 baytlık okuma
+  döngüsü 16 MB ekte 29,6 sn + C024. Kullanıcı onayı 24 Kasım ~23:15
+  (merkez), aralıklı biçim dahil. Freeze sınıfı `dogfood-change`; K-164
+  sınıfı "yerleşik yüzey eksik".
+- Ev: RFC-0039 A2d (RFC-0043 değil): güvenlik sınırı bağlantı akışı
+  (geri basınç, süre, yarım yazım, C030); RFC-0043 süreç içi `Metin` ve
+  değer zarfını yönetir, A2d o zarfın dışında kalmalı. Ayrı ADR-172: formül
+  ve aralık semantiği ürünün SQL'ine sızan kalıcı sözleşme.
+- Karar: aralık kodlanmış akış (CRLF dahil) üzerinde, RFC 3501/9051
+  kırpması; gerçekleme `⌊K/78⌋·57` ham konuma `seek` eder. Satır uzunluğu
+  parametresi, QP kodlama ve ham aralık reddedildi. `kodlama` CLI'ye
+  `#[doc(hidden)]` iç modül olarak açıldı (katman kenarı `dil_cli → kodlama`).
+- Kaynak dosya tavanı 32 MiB (25 Kasım merkez kararı; K-395 32 MiB yazma
+  tavanıyla hizalı, ZeeMail 25 MB iletide ~18 MB ek): `bağlantı_blok_sınırı`
+  1 GiB olsa da aşılmaz; +1 bayt bayt yazmadan `boyut_aşımı`.
+- Temiz dal: ilk PR'daki K-394 ön commit'leri açık-depo kapısına takıldı;
+  K-394 #109 birleştikten sonra yalnız K-396 değişiklikleri master'a taşındı.
+- Kanıt: 10 yeni test vakası + 2 birim; 16 MiB ek 0,87 sn (debug). GB-171.
+
+## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045, ADR-170 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F038: ekleri yazan SMTP/gönderim/IMAP hizmetleri ile
+  sunan web ayrı proje kökleri (ayrı veritabanı rolleri); proje dosya sınırı
+  paylaşılan depoyu engelliyor, ek görünür uyarı / `554` ile kalıyor.
+  Freeze sınıfı `dogfood-change`; K-164 sınıfı "yerleşik yüzey eksik";
+  K-382 `veri_kökü` takip önerisinin ikinci gerçek tüketicisi (kabul eşiği).
+- Karar: kökün yolu kaynakta değil; `proje.dil` yalnız ortam/credential
+  adını taşır (K-339 kaynağı). `veri:` öneki her kipte ayrılmış; ayrı
+  `veri-okuma`/`veri-yazma` (RFC-0039 §G "veri kökü yazımı"), P023 tutarlılık
+  tanısı; statik T054 `veri-*`yi dosya gereksinimine sayar, kesin denetim
+  çalışma zamanında. Kök ve ara klasörler `openat(O_NOFOLLOW)` yürüyüşü;
+  **ata değişmezi** (yaprağın üst klasörü dışındaki klasörler başkasınca
+  yazılamaz) ara bileşen yarışını kapatır; yaprak bağ olamaz, okuma
+  `O_NOFOLLOW|O_NONBLOCK` tanıtıcıdan, tek hard-link; Linux
+  `protected_hardlinks` zorunlu.
+- Uygulama sırasında bulunan: spec/08 kilit altındaki iç okumalar yaprak
+  bağını izliyordu; eş yazar yaprağı bağ→normal dosya çevirerek kök dışı
+  içeriği paylaşılan hedefe kopyalatabiliyordu (deterministik enjeksiyon
+  testi düzeltmesiz kodda sırrı kopyaladı). İç okumalar ve kilit dosyası
+  `O_NOFOLLOW` oldu (spec/08 ZORUNLU, GB-168).
+- Reddedilen: proje köküne göreli `veri_kökü "depo"` (ayrı kökleri
+  birleştirmez), kök dışı canonical hedefli bağa izin, genel mutlak yol
+  yetkinliği, yolun kaynağa yazılması, `openat2(RESOLVE_BENEATH)` (macOS
+  yok; spec/08 yol tabanlı), hizmetleri web köküne taşımak, `bytea`.
+- Açık: dizin listeleme, görsel küçültme, bağlantı blok dosyası ve
+  `.zee/yuklemeler`in veri kökünde açılması, Windows; macOS'ta yazar iç
+  okuması için hard-link kalan riski. K-394 kapandı.
+
 ## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256; ADR-167 (24 Kasım 2026)
 
 - Kaynak `urun-h` ZM-F034 + ZM-F024: A2c blok dosyası parça parça okunamıyor,
@@ -6079,6 +6130,54 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   API'si reddedildi (4 MiB'a kadar metin tek parametreyle sığar; büyük içerik
   dosyaya ait). K-391 kapandı.
 
+## K-395 — Çözerek yazma/ekleme hedef tavanı 32 MiB; ADR-167 eki (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F039 (ürün `8ee2514`): 25 MB iletide ~18 MB ek 16 MiB
+  tavanına sığmıyor. İlk tasarım (dosyadan dosyaya akışlı base64 çözme +
+  dosyada bayt arama + 32 MiB) uygulandı ve PR #100'de açıldı (birleştirilmeden kapatıldı, yerine yalnız tavanı taşıyan ayrı dal); ürün eki
+  `ekdeposu` paketiyle dil değişikliği olmadan çözünce Mustafa kapsamı
+  yalnız tavana daralttı (core freeze: yeni yüzeyin kanıtlı ihtiyacı kalmadı).
+  Geniş hazırlık yerel `yedek/k395-tam-yuzey` dalında, push edilmedi.
+- Uygulamada bulunan: `sinirli_sona_ekle` var olan hedefi genel 16 MiB veri
+  okuma sınırıyla okuyordu; tavanı tek başına yükseltmek 16 MiB üstü hedefe
+  eklemeyi bozuk bırakırdı. Okuma, kilit altında önceden denetlenen ekleme
+  tavanına bağlandı.
+- Reddedilen: yükleme/dosya yanıtı/özet tavanlarını da 32 MiB yapmak (web
+  işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
+
+
+## K-401 — Özet/dosya yanıtı 32 MiB, eylem dışında izsiz taşıma; ADR-167 eki (25 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F044 (ürün `eda6b33`): yerel birleşik derlemede 19 MiB
+  ek çözülerek yazıldı, ardından taşıma, özet ve indirme 16 MiB'ta kaldı.
+  K-395 günlüğündeki "yükleme/dosya yanıtı/özet 32 MiB reddedildi (ürün
+  ihtiyacı yok)" kararı bu kanıtla özet ve dosya yanıtı için kaldırıldı;
+  yükleme 16 MiB kalır.
+- Taşıma hatası: K-347 eylem içi geri alma için içeriği kilit altında
+  okumaya başlamıştı; eylem dışı taşıma da aynı izli yoldan geçip 16 MiB veri
+  okuma sınırına çarpıyordu (K-347 öncesinde de içerik okunuyordu,
+  `introduced_by` bilinmiyor). Silmedeki `eylem_yedekleri.is_empty()`
+  ayrımı taşımaya da uygulandı.
+- Dosya yanıtı zaten 16 KiB parçalarla akıyordu; tavanı yükseltmek bellek
+  tepesini değiştirmez, testle örneklendi. K-372 bütçesi 32 MiB için ~266 sn.
+- K-396 (bağlantıya base64 aktarım) master'da değil; kaynak tavanı K-396
+  oturumunun kendi PR'ında 32 MiB'a hizalanır. GB-169. Dosya yanıtı tavanı
+  artık sabit olduğundan `icerik_turu → kaynak_sinirlari` kenarı kalktı
+  (katman fixture'ı güncellendi; temel → adaptör yönü değişmedi). K-401 kapandı.
+
+## K-393 — C024 heap zarfı iadesi (24 Kasım 2026)
+
+- Karşılaştırma v2 B4: kabarcık sıralama 1.000 öğe ve 700×5.000 işlem
+  çağrısı ~15 MB RSS'te "~67 MB" C024. Kök neden: zarf yalnız düşüyordu
+  (çerçeve, gezme kopyası, üzerine yazma, kapsam sonu kalıcı tüketim).
+- Seçenekler: (a) yalnız tanı/spec dili — programlar yine iş miktarıyla
+  düşer; (b) düşen değerin iadesi; (c) kopyaları saymamak — üst sınır
+  sözünü bozar. Karar (b), ADR-171.
+- Güvenlik: ölçü ≤ tüketim değişmezi; yerinde büyüme gerçek kapasite
+  artışını tüketir, gezme geri yazımı artık tüketir, iade 64 MiB'a kırpılır.
+  Çerçeve iadesi bütçe farkıyla değil ölçüyle (eşzamanlı görevler ortak
+  bütçe paylaşır). Negatif testler canlı birikimin C024 ile durduğunu sınar.
+- K-388 testleri geçici çöple değil canlı birikimle yenilemeyi sınar.
 ## K-398 — Parametre bağlama adı sözlük köküne; ZM-F030, ADR-175 (25 Kasım 2026)
 
 - `urun-h` ZM-F030 iki kez geldi (`kalıbı`→`kalıb`, `metni`→`metn`); kullanıcı

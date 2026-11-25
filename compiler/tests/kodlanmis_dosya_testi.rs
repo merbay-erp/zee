@@ -3,6 +3,12 @@
 //! MIME ileti dosyasından aralıklı okuma + çözerek yazma ile çıkarılan ekin
 //! bayt-kesinliği, RFC-0041 dosya yanıtına bağlanması, no-clobber, tavan,
 //! proje dosya sınırı ve içeriksiz IO izi.
+//!
+//! K-395 (ADR-167 eki, ZM-F039): çözerek yazma/ekleme hedef tavanı 32 MiB;
+//! tam sınır kabul, bir bayt fazlası hedefe dokunmadan ret.
+//!
+//! K-401 (ZM-F044): dosya özeti tavanı 32 MiB; eylem dışındaki atomik taşıma
+//! içeriği belleğe okumaz.
 
 use dil::kaynagi_derle;
 use dil::yorumlayici::{self, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
@@ -558,7 +564,8 @@ ucuncu ile sonucuYaz
     std::os::unix::fs::symlink(&dis, proje.0.join("bag")).unwrap();
     std::fs::create_dir_all(proje.0.join("dizin")).unwrap();
     std::fs::write(proje.0.join("var.bin"), b"eski").unwrap();
-    let tavan = 16 * 1024 * 1024;
+    // K-395: hedef tavanı 16 → 32 MiB.
+    let tavan = 32 * 1024 * 1024;
     std::fs::write(proje.0.join("dolu.bin"), vec![1u8; tavan - 2]).unwrap();
     let (tamam, stdout, stderr) = proje.calistir();
     let _ = std::fs::remove_dir_all(&dis);
@@ -566,7 +573,7 @@ ucuncu ile sonucuYaz
     let satirlar: Vec<&str> = stdout.lines().collect();
     assert_eq!(satirlar[0], "C013 \"var.bin\" hedef dosyası zaten var");
     assert!(
-        satirlar[1].starts_with("C013") && satirlar[1].contains("16 MiB"),
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
         "{satirlar:?}"
     );
     assert!(satirlar[2].contains("proje dosya sınırı"), "{satirlar:?}");
@@ -671,4 +678,150 @@ GET "/ek" adresine istek geldiğinde
         "{basliklar}"
     );
     assert!(govde == ek, "indirilen ek bayt bayt aynı");
+}
+
+/// K-395 (ADR-167 eki, ZM-F039): 25 MB iletinin ~18 MB eki için hedef tavanı
+/// 32 MiB. Tam 32 MiB'a ulaşan ekleme kabul, bir bayt fazlası reddedilir ve
+/// hedef değişmez; eski 16 MiB sınırının ötesi artık geçerlidir.
+#[test]
+fn eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda() {
+    let tavan: usize = 32 * 1024 * 1024;
+    let ana = r#"işlem sonaEkle
+    yolu Metin olarak al
+    değer döndürmez
+    sonuç "QUJD" base64 çözerek yolu dosyasına eklemeyi dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu ile " " ile hatanın mesajı yaz
+
+"tam.bin" ile sonaEkle
+"tasan.bin" ile sonaEkle
+"eski-sinir.bin" ile sonaEkle
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    std::fs::write(proje.0.join("tam.bin"), vec![7u8; tavan - 3]).unwrap();
+    std::fs::write(proje.0.join("tasan.bin"), vec![7u8; tavan - 2]).unwrap();
+    std::fs::write(proje.0.join("eski-sinir.bin"), vec![7u8; 16 * 1024 * 1024]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    let mut tam = vec![7u8; tavan - 3];
+    tam.extend_from_slice(b"ABC");
+    assert_eq!(
+        satirlar[0],
+        format!("yol: tam.bin, sha256: {}, bayt: {tavan}", sha256(&tam)),
+        "tam 32 MiB kabul"
+    );
+    assert!(
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
+        "{satirlar:?}"
+    );
+    assert!(
+        satirlar[2].ends_with(&format!("bayt: {}", 16 * 1024 * 1024 + 3)),
+        "16 MiB ötesi artık geçerli: {satirlar:?}"
+    );
+    assert_eq!(
+        std::fs::metadata(proje.0.join("tam.bin")).unwrap().len(),
+        tavan as u64
+    );
+    assert_eq!(
+        std::fs::metadata(proje.0.join("tasan.bin")).unwrap().len(),
+        (tavan - 2) as u64,
+        "bir bayt fazlası hedefe hiç yazmaz"
+    );
+}
+
+/// K-401 (ZM-F044): eylem dışındaki `atomik taşımayı dene` içeriği belleğe
+/// okumaz; 16 MiB veri okuma sınırını aşan 19 MiB'lık dosya taşınır. No-clobber
+/// ve proje kökü kuralları aynen geçerlidir. Eylem içinde geri alma kaydı
+/// içeriği tuttuğu için taşıma 16 MiB veri okuma sınırına bağlı kalır ve
+/// aşan dosyada kaynak yerinde kalır.
+#[test]
+fn eylem_disi_tasima_buyuk_dosyayi_okumadan_tasir_eylem_ici_sinirli() {
+    let buyuk: usize = 19 * 1024 * 1024;
+    let ana = r#"işlem taşı
+    kaynağı Metin olarak al
+    hedefi Metin olarak al
+    değer döndürmez
+    sonuç kaynağı dosyasını hedefi yoluna atomik taşımayı dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu yaz
+
+eylem eylemdeTaşı
+    TamSayı sonucu döndürür
+    "gelen/c.bin" dosyasını "ekler/c.bin" yoluna atomik taşımayı dene döndür
+
+"gelen/a.bin" ve "ekler/a.bin" ile taşı
+"gelen/b.bin" ve "ekler/a.bin" ile taşı
+"gelen/b.bin" ve "../dis.bin" ile taşı
+eylemde eylemdeTaşı olsun
+eylemde başarılıysa
+    eylemdenin değeri yaz
+değilse
+    hata eylemdenin hatası olsun
+    hatanın kodu yaz
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    std::fs::create_dir_all(proje.0.join("gelen")).unwrap();
+    std::fs::create_dir_all(proje.0.join("ekler")).unwrap();
+    let icerik = ikili(buyuk);
+    std::fs::write(proje.0.join("gelen/a.bin"), &icerik).unwrap();
+    std::fs::write(proje.0.join("gelen/b.bin"), b"b").unwrap();
+    std::fs::write(proje.0.join("gelen/c.bin"), vec![3u8; 17 * 1024 * 1024]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    assert_eq!(satirlar, ["1", "C013", "C013", "C013"], "{stderr}");
+    assert!(!proje.0.join("gelen/a.bin").exists());
+    assert!(
+        std::fs::read(proje.0.join("ekler/a.bin")).unwrap() == icerik,
+        "19 MiB bayt bayt taşındı"
+    );
+    assert_eq!(std::fs::read(proje.0.join("gelen/b.bin")).unwrap(), b"b");
+    assert!(!proje.0.parent().unwrap().join("dis.bin").exists());
+    assert_eq!(
+        std::fs::metadata(proje.0.join("gelen/c.bin"))
+            .unwrap()
+            .len(),
+        17 * 1024 * 1024,
+        "eylem içi sınır aşımında kaynak yerinde kalır"
+    );
+    assert!(!proje.0.join("ekler/c.bin").exists());
+}
+
+/// K-401: `… dosyasının sha256 özetini almayı dene` 32 MiB'ı akışla okur;
+/// tam sınırdaki dosyanın özeti verilir, bir bayt fazlası C013 `32 MiB`.
+#[test]
+fn dosya_ozeti_tavani_32_mib_tam_sinirda() {
+    let tavan: usize = 32 * 1024 * 1024;
+    let ana = r#"işlem özetle
+    yolu Metin olarak al
+    değer döndürmez
+    sonuç yolu dosyasının sha256 özetini almayı dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu ile " " ile hatanın mesajı yaz
+
+"tam.bin" ile özetle
+"tasan.bin" ile özetle
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    let tam = ikili(tavan);
+    std::fs::write(proje.0.join("tam.bin"), &tam).unwrap();
+    std::fs::write(proje.0.join("tasan.bin"), vec![1u8; tavan + 1]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    assert_eq!(satirlar[0], sha256(&tam), "tam 32 MiB özetlenir");
+    assert!(
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
+        "{satirlar:?}"
+    );
 }

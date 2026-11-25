@@ -20,6 +20,8 @@ mod lsp_utf16_fixture;
 
 #[path = "semantic_regresyon/native_ayri_port_birincil.rs"]
 mod native_ayri_port_birincil_fixture;
+#[path = "semantic_regresyon/native_buyuk_dosya_tasima.rs"]
+mod native_buyuk_dosya_tasima_fixture;
 #[path = "semantic_regresyon/native_coken_degistirme.rs"]
 mod native_coken_degistirme_fixture;
 #[path = "semantic_regresyon/native_dosya_exdev.rs"]
@@ -111,6 +113,7 @@ const KIPLER: &[&str] = &[
     "native-registry-durum-cekismesi",
     "native-unicode-kimlik",
     "native-proje-dosya-koku",
+    "native-buyuk-dosya-tasima",
 ];
 
 #[derive(Debug, Clone)]
@@ -282,6 +285,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
                 | "native-proje-dosya-koku"
+                | "native-buyuk-dosya-tasima"
         ),
         "concurrency" => kip == "run",
         "security" => matches!(
@@ -507,6 +511,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-unicode-kimlik" {
         let (cikis, cikti) = native_unicode_kimlik_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-buyuk-dosya-tasima" {
+        let (cikis, cikti) = native_buyuk_dosya_tasima_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -1000,6 +1012,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-coken-degistirme"
                 | "native-yedek-artigi"
                 | "native-proje-dosya-koku"
+                | "native-buyuk-dosya-tasima"
                 | "native-web-depo-cekismesi"
                 | "native-web-oturum-deposu"
                 | "native-isci-kabul-term"
@@ -1903,5 +1916,35 @@ fn native_web_yukleme_regresyonu_gercek_worker_ile_korunur() {
             vaka.ad
         );
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: yükleme sonucu", vaka.ad);
+    }
+}
+
+#[test]
+fn native_buyuk_dosya_tasima_kipi_yalniz_runtime_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-buyuk-dosya-tasima"));
+    assert!(faz_kipi_kabul_eder("runtime", "native-buyuk-dosya-tasima"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-buyuk-dosya-tasima"));
+    }
+}
+
+/// K-401: eylem dışındaki taşıma içeriği belleğe okumaz; 16 MiB veri okuma
+/// sınırını aşan dosya gerçek native süreçte taşınır.
+#[test]
+fn native_buyuk_dosya_tasima_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-buyuk-dosya-tasima")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "büyük dosya taşıma regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: taşıma", vaka.ad);
     }
 }

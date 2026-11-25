@@ -27,12 +27,22 @@ ZORUNDADIR; yerel sabit yalnız ortak değere bağlı geriye uyum alias'ı olabi
   değer metni, keyfî hassasiyetli sayı/para, JSON ve CSV üretimi sonucu
   kurmadan bütçeli büyümelidir.
 - Çalışma veya web isteği, ortam/koleksiyon yazımları ve görev ortamı klonları
-  için yaklaşık 64 MiB, iade edilmeyen saklanan değer tahsis zarfı taşır.
-  Muhafazakâr fazla sayım TANIMLIDIR; aşım C024'tür.
+  için yaklaşık 64 MiB saklanan değer zarfı taşır; aşım C024'tür. Zarf canlı
+  saklanan değerlerin muhafazakâr üst sınırıdır (K-393): düşen değerin payı
+  iade edilir — üzerine yazılan değişken, koleksiyon öğesi ya da yapı alanı;
+  kapsam sonunda düşen ad; işlem çerçevesi bitince parametre ve yerel adlar;
+  gezme kopyası ve görev ortamı klonları iş bitince; listeden/sözlükten
+  silinen öğe. İade, değerin tüketimdeki ölçüsünü AŞAMAZ: yerinde büyüme
+  (ekleme, `x x ile y olsun`) tamponun gerçek kapasite artışını tüketir ve
+  kalan zarf başlangıç zarfını hiçbir zaman geçmez. Bu yüzden canlı
+  biriktirme yine 64 MiB'da C024 üretmek ZORUNDADIR; iade edilmeyen bir
+  pay (ör. hata ile yarıda kalan çerçeve) yalnız fazla sayımdır ve
+  TANIMLIDIR. Tanıdaki sayı tüketilen zarftır; allocator/RSS ölçümü değildir.
 - Kendisiyle başlayan metin birleştirmesiyle yeniden bağlanan metin değişkenin
   (`x x ile y olsun`) yerinde büyümesi TANIMLIDIR: zarftan yalnız tampon
   kapasitesindeki artış tüketilir, böylece döngü birikimi canlı metnin
-  kapasitesiyle sınırlı ve doğrusal kalır. Zarf yine iade edilmez. Sağ
+  kapasitesiyle sınırlı ve doğrusal kalır. Değişken düşünce kapasitesi iade
+  edilir (K-393). Sağ
   parçalar `Birlestir` sırası ve 16 MiB metin tanısıyla değerlendirilir; bütçe tükenirse değişken değişmeden C024 üretilir.
 - `yaz`, soru istemi ve web yanıtı toplam 16 MiB veya 100.000 çıktı olayını
   aşarsa aşan olay IO'ya verilmeden C023 üretilir.
@@ -53,8 +63,10 @@ outbound'da C018 nedeni, inbound'da HTTP 503'tür.
 Adlı dinleyici bağlantı görevi (spec/12 §9, K-388) web isteğinin bağlantıdaki
 karşılığı olarak bağımsız adım/çıktı/heap bütçesiyle başlar; bütçe her protokol
 birimi sınırında (girdi tüketen ya da süresini dolduran bağlantı okuma dönüşü)
-taze kurulmak ZORUNDADIR. Zarf birim içinde iade edilmez: tek birimde 64 MiB
-aşımı C024, adım ya da çıktı aşımı C023 olarak yalnız o bağlantıyı kapatır.
+taze kurulmak ZORUNDADIR. Birim içinde düşen değerin payı K-393 kuralıyla
+iade edilir, birim sınırını aşan değer yeni zarfa yeniden sayılmaz; tek birimde
+64 MiB canlı aşımı C024, adım ya da çıktı aşımı C023 olarak yalnız o bağlantıyı
+kapatır.
 Sınır olmayan dönüşler (anında `kapandı`, okumadan `boyut_aşımı`, yazma,
 `bekle`) bütçeyi yenilemez.
 
@@ -115,5 +127,5 @@ sözleşmesi B-026'nın ayrı kapsamıdır.
 
 Form/text HTTP gövdesi 64 KiB kalır. Exact `application/octet-stream` için
 ayrı 16 MiB yükleme zarfı vardır; tahsis bu boyutta yapılmaz, 16 KiB parçalar
-temp dosya ve SHA-256 durumuna akar. Dosya SHA-256 işlemi de 16 MiB'ta
-fail-closed olur. Bu zarf metin heap limitini genişletmez.
+temp dosya ve SHA-256 durumuna akar. Dosya SHA-256 işlemi 32 MiB'ta
+(K-401) fail-closed olur. Bu zarf metin heap limitini genişletmez.

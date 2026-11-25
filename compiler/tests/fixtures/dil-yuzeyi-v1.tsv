@@ -1,6 +1,8 @@
 # zee-dil-yuzeyi-1
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
+api	ag.baglanti_base64_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BASE64_AKTAR: &str = "ag.baglanti_base64_aktar";
+api	ag.baglanti_base64_aralik_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar";
 api	ag.baglanti_bayt_blogu	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BAYT_BLOGU: &str = "ag.baglanti_bayt_blogu";
 api	ag.baglanti_bayt_oku	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BAYT_OKU: &str = "ag.baglanti_bayt_oku";
 api	ag.baglanti_dosya_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
@@ -238,6 +240,8 @@ kalip	quoted_printable	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	satırlarının	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	satırlarıyla	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	satırını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -371,6 +375,8 @@ profil	runtime-ayar-v1	aktif	0.8.0-dev	compiler/src/cli/ayar.rs	pub(super) const
 profil	runtime-metrics	aktif	0.8.0-dev	scripts/worker-supervisor.py	--runtime-metrics
 profil	systemd-bildirimi-v1	aktif	1.0.0-dev	compiler/src/cli/systemd_bildirim.rs	gonder("READY=1");
 profil	tls-bildirimi-v1	aktif	1.0.0-dev	compiler/src/proje/baglanti.rs	"tls_dinleyicileri",
+profil	veri-koku-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "veri_kökü"
+profil	veri-yolu-oneki-v1	aktif	1.0.0-dev	compiler/src/yetkinlik/veri_yolu.rs	pub const VERI_ONEKI: &str = "veri:";
 profil	veritabani-parametre-siniri-v1	aktif	1.0.0-dev	compiler/src/proje/govde_siniri.rs	"veritabanı_parametre_sınırı"
 profil	web-activate-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-activate-fd"
 profil	web-generation	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-generation"
@@ -384,6 +390,8 @@ profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
 profil	yetkinlik-ag-dinleyici	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::AgDinleyici => "ağ-dinleyici",
 profil	yetkinlik-dns	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::Dns => "dns",
+profil	yetkinlik-veri-okuma	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::VeriOkuma => "veri-okuma",
+profil	yetkinlik-veri-yazma	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::VeriYazma => "veri-yazma",
 profil	zee-ayar.isci-sayisi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"isci-sayisi"
 profil	zee-ayar.saglik-port	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"saglik-port"
 profil	zee-ayar.systemd-soketi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"systemd-soketi"

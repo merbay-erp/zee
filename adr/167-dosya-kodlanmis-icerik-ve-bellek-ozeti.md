@@ -72,7 +72,7 @@ Core freeze yeni kalıbı varsayılan olarak reddeder; ürün kaydı etkin
      değiştir modelidir; hedef yoksa oluşturulur.
    - **Tavan:** hedefin toplam boyutu spec/26 yükleme/özet tavanını (16 MiB;
      dosya yanıtı ve `sha256 özetini almayı dene` ile aynı) aşamaz; aşan
-     çağrı hiçbir bayt yazmaz.
+     çağrı hiçbir bayt yazmaz. **K-395 eki:** tavan 32 MiB'a çıktı (aşağıda).
    - **Eylem:** `yazmayı dene` eylem savepoint'ine yeni dosya olarak
      kaydedilir (geri almada silinir; GET/HEAD rotasında T045, rota
      gövdesinde T046 her dosya yazımı gibi). `eklemeyi dene` eylem içinde
@@ -93,6 +93,54 @@ Core freeze yeni kalıbı varsayılan olarak reddeder; ürün kaydı etkin
    taşımaz. Yazım olayı replay'de exact sonucu döndürür; **başarılı aralıklı
    okuma replay'de içerik üretemez** ve iz uyuşmazlığıyla fail-closed biter.
    Mevcut `dosya_oku` olayı değişmez (uyumluluk).
+
+## Ek — K-395: hedef tavanı 32 MiB (24 Kasım 2026)
+
+`urun-h` 25 MB'lık iletideki tek ~18 MB'lık eki kendi `ekdeposu` paketiyle
+(satıra hizalı pencereler, dil değişikliği yok) çıkarabildi; tek engel
+16 MiB hedef tavanıydı (ZM-F039). Mustafa kararıyla (24 Kasım 2026) yalnız
+bu tavan yükseltildi. Önce hazırlanan dosyadan dosyaya akışlı base64 çözme
+ve dosyada bayt arama yüzeyleri birleştirilmeden geri çekildi (PR #100
+kapatıldı); RFC-0043 Dilim 2 kalanıyla birlikte taslaktır.
+
+- `çözerek … yazmayı|eklemeyi dene` hedef toplamı **32 MiB**
+  (33 554 432 bayt); tam sınır kabul, bir bayt fazlası C013 ve hedef
+  değişmez. Çağrı başına çözülen çıktı 1 MiB kalır.
+- Ekleme var olan hedefi artık genel 16 MiB okuma sınırıyla değil, kilit
+  altında önceden denetlenen bu tavanla okur (aksi hâlde 16 MiB üstü hedefe
+  ekleme okuma sınırına çarpıyordu).
+- Yükleme, dosya yanıtı ve dosya özeti tavanları 16 MiB kalır: 18 MB'lık ek
+  dosya yanıtıyla indirilemez ve özetlenemez; ürün tutamağın `sha256`
+  alanını kullanır (açık sınır, ayrı karar).
+- DoS gerekçesi GB-167: bellek tepe noktası ekleme başına ~32 MiB (mevcut
+  içerik + yeni baytlar), disk proje başına iki katı; tavan ürünün 25 MB
+  ileti sınırına göre seçildi.
+
+## Ek — K-401: özet ve dosya yanıtı 32 MiB, izsiz taşıma (25 Kasım 2026)
+
+K-395 sonrasında `urun-h` 19 MiB'lık eki çözerek yazabildi ama sonraki üç
+adım 16 MiB'ta kaldı (ZM-F044): eki yerine taşımak, özetlemek ve webmail'den
+indirmek. Aynı kullanıcı kararının (25 MB iletideki ekin uçtan uca
+çalışması) devamı olarak:
+
+- `… dosyasının sha256 özetini almayı dene` en çok **32 MiB**'ı 16 KiB
+  parçalarla okur; tam sınır özetlenir, bir bayt fazlası C013.
+- `… ek olarak göndermeyi dene` dosya yanıtı tavanı **32 MiB** (ADR-163 §5
+  güncellendi). Gövde zaten 16 KiB parçalarla akıyordu; tam sınırda işçinin
+  yerleşik bellek tepesinin büyümediği gerçek süreçte örneklenerek
+  sınanır. K-372 yazım bütçesi 32 MiB için ~266 sn olur.
+- **Hata düzeltmesi:** eylem dışındaki `atomik taşımayı dene` de geri alma
+  için içeriği 16 MiB veri okuma sınırıyla belleğe okuyordu; çözülmüş büyük
+  ek taşınamıyordu. Silmedeki gibi eylem dışında izsiz taşıma kullanılır:
+  içerik okunmaz, boyut sınırı yoktur; no-clobber ve proje kökü kuralları
+  aynıdır. Eylem içinde geri alma kaydı içeriği tuttuğundan 16 MiB sınırı
+  kalır (spec/26). Regresyon: `regression/runtime/buyuk-dosya-izsiz-tasima.dil`.
+- Yükleme tavanı 16 MiB kalır (web gövdesi; ayrı karar). Bağlantıya base64
+  aktarımın (K-396, master'da değil) kaynak tavanı kendi PR'ında 32 MiB'a
+  hizalanır.
+- DoS gerekçesi GB-169: dosya yanıtı ve özet akışlıdır (bellek tepesi
+  büyümez); süre ve bant genişliği K-372 bütçesiyle sınırlıdır; izsiz taşıma
+  bellek kullanmaz.
 
 ## Değerlendirilen seçenekler
 

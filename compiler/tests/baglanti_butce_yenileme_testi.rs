@@ -3,22 +3,27 @@
 //! dolduran her okuma dönüşüdür (başarı, `zaman_aşımı`, `satır_uzun`,
 //! `satır_sonu`, `kodlama`, nokta bloğunda `boyut_aşımı`). Anında dönen
 //! `kapandı` ve okumadan dönen `boyut_aşımı` sınır değildir; tek birimdeki
-//! 64 MiB zarf aynen geçerlidir.
+//! 64 MiB zarf aynen geçerlidir. K-393: birim içinde düşen değer iade edilir,
+//! canlı birikim zarfı tüketir.
 
 use dil::yorumlayici::{calistir_io_kodla, SahteBaglanti, ToplayanIo};
 
-/// Her birim ~25 MiB iade edilmeyen geçici metin üretir: üç birim tek
-/// bütçeyle 64 MiB zarfını aşar, birim başına yenilenen bütçeyle aşmaz.
+/// Her birim ~22 MiB canlı değer üretir ve bağlantı boyunca tutar
+/// (`tutulan`). K-393'ten beri atılan değer zarfa iade edildiğinden yenileme
+/// geçici çöple değil canlı birikimle sınanır: iki birim tek bütçeyle 64 MiB
+/// zarfını aşar, birim başına yenilenen bütçeyle aşmaz (birim sınırını aşan
+/// değer yeni zarfa yeniden sayılmaz — K-381 sınırı).
 const CALKALA: &str = r#"
 işlem çalkala
     adı al
     blok "0123456789" olsun
     7 kez tekrarla
         blok blok ile blok olsun
-    sayaç ad olsun
-    20000 kez tekrarla
-        geçici blok ile sayaç olsun
-    sayacı döndür
+    parçalar boş liste olsun
+    parçalara ad ekle
+    17000 kez tekrarla
+        parçalara blok ekle
+    parçaları döndür
 "#;
 
 fn calistir(govde: &str, io: &mut ToplayanIo) {
@@ -44,10 +49,12 @@ fn idle_yoklamasi_zaman_asiminda_butceyi_yeniler() {
     calistir(
         r#"
 "imap_v4" dinleyicisinde bağlantı geldiğinde
+    tutulan boş liste olsun
     ilk bağlantıdan satır okumayı dene olsun
     4 kez tekrarla
         yoklama bağlantıdan satır okumayı 1 saniye içinde dene olsun
         t "x" için çalkala olsun
+        tutulana t ekle
     bağlantıya "A1 OK bitti" satırını yaz
 "#,
         &mut io,
@@ -70,6 +77,7 @@ fn girdi_tuketen_ret_birim_sinirdir() {
     calistir(
         r#"
 "smtp_v4" dinleyicisinde bağlantı geldiğinde
+    tutulan boş liste olsun
     açık doğru olsun
     açık olduğu sürece
         komut bağlantıdan satır okumayı dene olsun
@@ -77,6 +85,7 @@ fn girdi_tuketen_ret_birim_sinirdir() {
             açık yanlış olsun
         değilse
             t "x" için çalkala olsun
+            tutulana t ekle
             bağlantıya "500 uzun" satırını yaz
     bağlantıya "221 hoşça kal" satırını yaz
 "#,
@@ -100,11 +109,13 @@ fn cok_komutlu_oturum_basarili_okumada_yenilenir() {
     calistir(
         r#"
 "smtp_v4" dinleyicisinde bağlantı geldiğinde
+    tutulan boş liste olsun
     açık doğru olsun
     açık olduğu sürece
         komut bağlantıdan satır okumayı dene olsun
         komut başarılıysa
             t "x" için çalkala olsun
+            tutulana t ekle
             bağlantıya "250 tamam" satırını yaz
         değilse
             açık yanlış olsun
@@ -126,9 +137,11 @@ fn tek_birimde_zarf_asimi_yine_c024() {
     calistir(
         r#"
 "smtp_v4" dinleyicisinde bağlantı geldiğinde
+    tutulan boş liste olsun
     komut bağlantıdan satır okumayı dene olsun
     3 kez tekrarla
         t "x" için çalkala olsun
+        tutulana t ekle
     bağlantıya "250 tamam" satırını yaz
 "#,
         &mut io,
@@ -147,9 +160,11 @@ fn kapandi_donusu_butceyi_yenilemez() {
     calistir(
         r#"
 "smtp_v4" dinleyicisinde bağlantı geldiğinde
+    tutulan boş liste olsun
     3 kez tekrarla
         komut bağlantıdan satır okumayı dene olsun
         t "x" için çalkala olsun
+        tutulana t ekle
     bağlantıya "yanlış: kapandı döngüsü bitti" satırını yaz
 "#,
         &mut io,
@@ -168,10 +183,12 @@ fn okumadan_donen_boyut_asimi_butceyi_yenilemez() {
     calistir(
         r#"
 "imap_v4" dinleyicisinde bağlantı geldiğinde
+    tutulan boş liste olsun
     ilk bağlantıdan satır okumayı dene olsun
     3 kez tekrarla
         ek bağlantıdan 4096 baytı dosyaya almayı dene olsun
         t "x" için çalkala olsun
+        tutulana t ekle
     bağlantıya "yanlış: boyut döngüsü bitti" satırını yaz
 "#,
         &mut io,
