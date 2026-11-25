@@ -317,6 +317,19 @@ köküne yazılmadığını ve proje kökündeki klasöre dokunulmadığını de
 Düzeltme öncesi kaynakta iki satır da `dosya yolu güvenle çözülemedi: …`dir.
 Toplu replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder.
 
+## Native büyük dosya taşıma kipi (K-401)
+
+`runtime` fazındaki `native-buyuk-dosya-tasima` kipi Cargo hedef klasöründe
+girişi `kaynak/ana.dil` olan, `dosya-okuma` ve `dosya-yazma` yetkinlikli bir
+proje kurar, `kaynak/gelen/ek.bin` olarak 19 MiB'lık (genel 16 MiB veri
+okuma sınırının üstünde) bir dosya bırakır ve gerçek native
+`dil çalıştır <proje>` sürecini başka bir çalışma klasöründen çalıştırır.
+Çıktı programın stdout satırlarıdır; `taşındı` gözlenirse harness kaynağın
+silindiğini ve hedefin bayt bayt aynı içerikle durduğunu, ret gözlenirse
+hedefin oluşmadığını ayrıca denetler. Düzeltme öncesi eylem dışındaki
+taşıma da içeriği 16 MiB sınırıyla okuduğundan çıktı `taşıma reddedildi`dir.
+Toplu replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder.
+
 ## Native dosya okuma penceresi kipi (K-342)
 
 `runtime` fazındaki `native-dosya-okuma-penceresi` kipi gerçek native `dil`

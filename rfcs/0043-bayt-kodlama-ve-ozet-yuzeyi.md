@@ -91,7 +91,10 @@ içerik yok. "25 MB / tek bağlantıda üç ileti" ölçümü 16 MiB hedef tavan
 ve K-388 ile birlikte açık kalır. K-395 (ZM-F039) hedef tavanını 32 MiB'a
 çıkardı: ürün 25 MB iletideki ~18 MB eki satıra hizalı pencerelerle dil
 değişikliği olmadan çözüyor. Dosyadan dosyaya çözme ve bayt arama önerisi
-bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). Ölçüt 4 (NIST vektörleri, dosya/metin
+bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). K-401 (ZM-F044)
+dosya özeti ve dosya yanıtı tavanlarını da 32 MiB'a hizaladı ve eylem
+dışındaki taşımanın içeriği 16 MiB sınırıyla okuması hatasını düzeltti
+(ADR-167 eki). Ölçüt 4 (NIST vektörleri, dosya/metin
 özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı açık.
 
 ## Motivasyon

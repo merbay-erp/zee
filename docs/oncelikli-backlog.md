@@ -2929,6 +2929,27 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-401 — Dosya özeti/dosya yanıtı 32 MiB ve izsiz atomik taşıma (ADR-167 eki)
+
+K-395 devamı (aynı kullanıcı kararı, aşağıdaki K-395 kaydı). Çalışma adı K-395b; ilk iki commit mesajı bu adı kullanır.
+
+**Durum:** kapalı (25 Kasım 2026). Kaynak `urun-h` ZeeMail sürtünmesi
+**ZM-F044** (ürün commit'i `eda6b33`): K-395 sonrasında 19 MiB'lık ek
+çözülerek yazılabildi ama taşıma, özet ve dosya yanıtı 16 MiB'ta kaldı.
+Aynı kullanıcı kararının (25 MB iletideki ek uçtan uca) devamı.
+
+Karar (ADR-167 eki): özet ve dosya yanıtı 32 MiB (tam sınır kabul, +1 bayt
+C013; yanıt akışlı, bellek tepesi büyümez). Hata: eylem dışındaki taşıma da
+içeriği 16 MiB veri okuma sınırıyla okuyordu; eylem dışında izsiz taşıma,
+eylem içinde izli yol ve 16 MiB kalır. Yükleme 16 MiB. K-396 aktarım tavanı
+kendi PR'ında. GB-169.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
+`eylem_disi_tasima_buyuk_dosyayi_okumadan_tasir_eylem_ici_sinirli`,
+`dosya_ozeti_tavani_32_mib_tam_sinirda`; `compiler/tests/dosya_yaniti_testi.rs`
+`dosya_yaniti_32_mib_tam_sinirda_akar_bellek_tepesi_buyumez` ve 32 MiB+1 ret;
+regression `buyuk-dosya-izsiz-tasima` (`native-buyuk-dosya-tasima`).
+
 ## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma` (RFC-0045, ADR-170)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F038
