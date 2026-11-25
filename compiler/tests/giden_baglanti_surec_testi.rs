@@ -129,18 +129,17 @@ fn kimlikler() -> Kimlikler {
         "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:mx.zee.test\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n",
     )
     .unwrap();
-    for (ad, zaman) in [
-        ("gecerli", ["-days", "2", "", ""]),
-        (
-            "dolmus",
-            [
-                "-not_before",
-                "20190101000000Z",
-                "-not_after",
-                "20200101000000Z",
-            ],
-        ),
-    ] {
+    // `openssl x509 -req -not_before/-not_after` yalnız OpenSSL 3.4+'tadır
+    // (ubuntu-24.04 3.0); geçmiş tarihli yaprak her sürümde bulunan
+    // `openssl ca -startdate/-enddate` ile imzalanır.
+    std::fs::write(
+        kok.join("ca.cnf"),
+        "[ca]\ndefault_ca=zk\n[zk]\ndatabase=index.txt\nnew_certs_dir=.\nserial=serial\ndefault_md=sha256\npolicy=pol\nunique_subject=no\n[pol]\ncommonName=supplied\n",
+    )
+    .unwrap();
+    std::fs::write(kok.join("index.txt"), "").unwrap();
+    std::fs::write(kok.join("serial"), "1000\n").unwrap();
+    for ad in ["gecerli", "dolmus"] {
         let mut istek = vec!["req"];
         istek.extend(EC);
         let anahtar = format!("{ad}.key");
@@ -156,21 +155,19 @@ fn kimlikler() -> Kimlikler {
         openssl(&kok, &istek);
         let pem = format!("{ad}.pem");
         let mut imza = vec![
-            "x509",
-            "-req",
-            "-in",
-            &csr,
-            "-CA",
-            "ca.pem",
-            "-CAkey",
-            "ca.key",
-            "-CAcreateserial",
-            "-out",
-            &pem,
-            "-extfile",
-            "ek.cnf",
+            "ca", "-batch", "-notext", "-config", "ca.cnf", "-cert", "ca.pem", "-keyfile",
+            "ca.key", "-in", &csr, "-out", &pem, "-extfile", "ek.cnf",
         ];
-        imza.extend(zaman.iter().filter(|z| !z.is_empty()));
+        if ad == "dolmus" {
+            imza.extend([
+                "-startdate",
+                "20190101000000Z",
+                "-enddate",
+                "20200101000000Z",
+            ]);
+        } else {
+            imza.extend(["-days", "2"]);
+        }
         openssl(&kok, &imza);
     }
     let mut kendi = vec!["req", "-x509"];
