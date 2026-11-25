@@ -6,6 +6,9 @@
 //!
 //! K-395 (ADR-167 eki, ZM-F039): çözerek yazma/ekleme hedef tavanı 32 MiB;
 //! tam sınır kabul, bir bayt fazlası hedefe dokunmadan ret.
+//!
+//! K-395b (ZM-F044): dosya özeti tavanı 32 MiB; eylem dışındaki atomik taşıma
+//! içeriği belleğe okumaz.
 
 use dil::kaynagi_derle;
 use dil::yorumlayici::{self, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
@@ -782,9 +785,43 @@ değilse
     assert_eq!(std::fs::read(proje.0.join("gelen/b.bin")).unwrap(), b"b");
     assert!(!proje.0.parent().unwrap().join("dis.bin").exists());
     assert_eq!(
-        std::fs::metadata(proje.0.join("gelen/c.bin")).unwrap().len(),
+        std::fs::metadata(proje.0.join("gelen/c.bin"))
+            .unwrap()
+            .len(),
         17 * 1024 * 1024,
         "eylem içi sınır aşımında kaynak yerinde kalır"
     );
     assert!(!proje.0.join("ekler/c.bin").exists());
+}
+
+/// K-395b: `… dosyasının sha256 özetini almayı dene` 32 MiB'ı akışla okur;
+/// tam sınırdaki dosyanın özeti verilir, bir bayt fazlası C013 `32 MiB`.
+#[test]
+fn dosya_ozeti_tavani_32_mib_tam_sinirda() {
+    let tavan: usize = 32 * 1024 * 1024;
+    let ana = r#"işlem özetle
+    yolu Metin olarak al
+    değer döndürmez
+    sonuç yolu dosyasının sha256 özetini almayı dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu ile " " ile hatanın mesajı yaz
+
+"tam.bin" ile özetle
+"tasan.bin" ile özetle
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    let tam = ikili(tavan);
+    std::fs::write(proje.0.join("tam.bin"), &tam).unwrap();
+    std::fs::write(proje.0.join("tasan.bin"), vec![1u8; tavan + 1]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    assert_eq!(satirlar[0], sha256(&tam), "tam 32 MiB özetlenir");
+    assert!(
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
+        "{satirlar:?}"
+    );
 }

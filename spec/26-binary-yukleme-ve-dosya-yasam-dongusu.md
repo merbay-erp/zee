@@ -112,7 +112,7 @@ worker'ı düşürmez. Taşıma var olan hedefi ASLA ezmez ve aynı dosya sistem
 içindeki rename görünürlük sınırını kullanır. Silme bulunmayan hedefte başarılı
 `0`, sildiğinde `1` döndürür. Listeleme yalnız dizinin doğrudan normal
 dosyalarını, göreli ve sıralı verir; symlink/dizin döndürmez. Özetleme en çok
-16 MiB'ı akışla okur.
+32 MiB'ı akışla okur (K-395b; önce yükleme tavanı 16 MiB idi).
 
 ZORUNLU (K-395b): Eylem dışındaki taşıma geri alma kaydı tutmaz ve içeriği
 belleğe OKUMAZ; boyut sınırı yoktur, 16 MiB veri okuma sınırını aşan dosya da
@@ -181,8 +181,8 @@ dosyası zaten var` döner. `eklemeyi dene` spec/08 eklemesiyle aynı kilitli,
 atomik oku-birleştir-değiştir modelidir ve hedef yoksa oluşturur. İkisi de
 hedefin toplam boyutunu 32 MiB (33 554 432 bayt; K-395 öncesi bu bölümün 16
 MiB yükleme/özet tavanı) ile sınırlar; tam sınıra ulaşan çağrı kabul edilir,
-aşan çağrı hiçbir bayt yazmaz. Yükleme, dosya yanıtı ve dosya özeti
-tavanları 16 MiB kalır. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
+aşan çağrı hiçbir bayt yazmaz. Dosya yanıtı ve dosya özeti tavanları da
+K-395b ile 32 MiB'tır; yükleme tavanı 16 MiB kalır. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
 (hedefin bütün içeriği) ve `bayt` (toplam) verir — A2c ve web yükleme
 tutamağıyla aynı biçim; `yol` dosya yanıtına ve SMTP ek listesine doğrudan
 verilir. İşlem `dosya-yazma` yetkinliğine bağlıdır. Eylem içinde `yazmayı

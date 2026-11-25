@@ -4004,6 +4004,10 @@ fn program_argumanlari() -> Vec<String> {
         .collect()
 }
 
+/// K-395b: `… dosyasının sha256 özetini almayı dene` akışla okuduğu en çok
+/// bayt; çözerek yazma hedef tavanına hizalı (önce yükleme tavanı 16 MiB idi).
+const DOSYA_OZETI_BAYTI: usize = 32 * 1024 * 1024;
+
 /// K-395: `çözerek … yazmayı|eklemeyi dene` hedef dosyasının toplam tavanı
 /// (K-389'da yükleme tavanıyla eşit 16 MiB idi; ADR-167 eki).
 const COZEREK_YAZMA_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
@@ -4157,9 +4161,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
         let mut ozet = Sha256::new();
         let mut toplam = 0usize;
-        let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .http()
-            .yukleme_bayti();
+        let sinir = DOSYA_OZETI_BAYTI;
         let mut parca = [0u8; 16 * 1024];
         loop {
             let okunan = dosya

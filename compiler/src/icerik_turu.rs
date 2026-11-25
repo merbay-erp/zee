@@ -180,10 +180,10 @@ pub const TURLER: &[IcerikTuru] = &[
     },
 ];
 
-/// Web dosya yanıtının bayt tavanı: spec/26 yükleme tavanıyla simetrik 16 MiB.
-pub const WEB_DOSYA_YANITI_BAYTI: u64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-    .http()
-    .yukleme_bayti() as u64;
+/// Web dosya yanıtının bayt tavanı: K-395b ile çözerek yazma hedef tavanına
+/// hizalı 32 MiB (yükleme tavanı 16 MiB kalır). Yanıt 16 KiB parçalarla
+/// akar; tavan bellek tepesini değil yanıt süresini/bant genişliğini sınırlar.
+pub const WEB_DOSYA_YANITI_BAYTI: u64 = 32 * 1024 * 1024;
 
 /// Dosya adının (UTF-8) azami bayt uzunluğu.
 pub const DOSYA_ADI_AZAMI_BAYT: usize = 255;

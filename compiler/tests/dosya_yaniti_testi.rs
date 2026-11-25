@@ -2,6 +2,9 @@
 //! `dil` web sürecinde. Kayıtlı içerik türü, `Content-Disposition:
 //! attachment` + RFC 6266 `filename*`, `nosniff`, sandbox CSP, CORP, bayt
 //! tavanı ve proje dosya sınırı uçtan uca sınanır.
+//!
+//! K-395b (ZM-F044): tavan 32 MiB; tam sınırdaki dosya akışla bayt bayt iner
+//! ve worker'ın yerleşik belleği aktarım boyunca dosya boyu kadar büyümez.
 
 use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream};
@@ -243,7 +246,7 @@ fn dosya_yaniti_kayitsiz_tur_ad_enjeksiyonu_yol_gecisi_ve_tavani_reddeder() {
     // Tavanın bir bayt üstü (seyrek dosya; disk harcamaz).
     std::fs::File::create(proje.0.join("buyuk.bin"))
         .expect("büyük")
-        .set_len(16 * 1024 * 1024 + 1)
+        .set_len(32 * 1024 * 1024 + 1)
         .expect("boyut");
     let dis = std::env::temp_dir().join(format!("zee-k378-dis-{}.txt", std::process::id()));
     std::fs::write(&dis, "proje dışı gizli").expect("dış dosya");
@@ -341,7 +344,7 @@ fn dosya_yaniti_kayitsiz_tur_ad_enjeksiyonu_yol_gecisi_ve_tavani_reddeder() {
         ("yok.bin", "application/pdf", "a.pdf", "bulunamadı"),
         ("klasor", "application/pdf", "a.pdf", "normal dosya"),
         // Tavan: başlık yazılmadan beklenen hata.
-        ("buyuk.bin", "application/zip", "a.zip", "16 MiB"),
+        ("buyuk.bin", "application/zip", "a.zip", "32 MiB"),
     ];
     if cfg!(unix) {
         vakalar.push(("/etc/hosts", "application/pdf", "a.pdf", "göreli yol"));
@@ -524,4 +527,80 @@ GET "/profil" adresine istek geldiğinde
         ["attachment; filename=\"posta.mobileconfig\"; filename*=UTF-8''posta.mobileconfig"]
     );
     assert!(govde == profil, "profil bayt bayt aynı olmalı");
+}
+
+/// Worker sürecinin yerleşik belleği (KiB).
+#[cfg(unix)]
+fn yerlesik_kib(pid: u32) -> u64 {
+    let cikti = std::process::Command::new("ps")
+        .args(["-o", "rss=", "-p", &pid.to_string()])
+        .output()
+        .expect("ps");
+    String::from_utf8_lossy(&cikti.stdout)
+        .trim()
+        .parse()
+        .expect("RSS KiB")
+}
+
+/// K-395b: 32 MiB'lık dosya yanıtı tam sınırda kabul edilir ve 16 KiB
+/// parçalarla akar. Aktarım boyunca örneklenen yerleşik bellek tepesi
+/// tabandan dosya boyunun dörtte birinden (8 MiB) az büyür; dosyayı belleğe
+/// alan bir uygulama en az 32 MiB büyürdü. Bir bayt fazlası yukarıdaki ret
+/// vakasında (`32 MiB`) sınanır.
+#[cfg(unix)]
+#[test]
+fn dosya_yaniti_32_mib_tam_sinirda_akar_bellek_tepesi_buyumez() {
+    let tavan: usize = 32 * 1024 * 1024;
+    let proje = Proje::yeni(ANA);
+    let icerik: Vec<u8> = (0..tavan).map(|i| (i % 251) as u8).collect();
+    std::fs::write(proje.0.join("tam.bin"), &icerik).expect("32 MiB dosya");
+    std::fs::write(proje.0.join("belge.bin"), b"%PDF-1.4 ornek").expect("ısınma dosyası");
+    let kapi = kopma::bos_kapi();
+    let sunucu = baslat(&proje.0, kapi);
+    let pid = sunucu.0.id();
+    // Isınma: ilk isteğin bir kerelik tahsisleri tabana girsin.
+    let (basliklar, _) = ek(kapi, "GET", "belge.bin", "application/pdf", "a.pdf");
+    assert!(basliklar.starts_with("HTTP/1.1 200 "), "{basliklar}");
+    let taban = yerlesik_kib(pid);
+
+    let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+    let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(5)).expect("bağlantı");
+    akis.set_read_timeout(Some(Duration::from_secs(60)))
+        .expect("okuma süresi");
+    write!(
+        akis,
+        "GET /ek?yol=tam.bin&tur=application%2Fzip&ad=tam.zip HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.9;proto=https;host=panel.example\r\nConnection: close\r\n\r\n"
+    )
+    .expect("istek");
+    let mut ham = Vec::with_capacity(tavan + 4096);
+    let mut tampon = vec![0u8; 64 * 1024];
+    let mut tepe = taban;
+    let mut sonraki_ornek = 0usize;
+    loop {
+        let okunan = akis.read(&mut tampon).expect("yanıt");
+        if okunan == 0 {
+            break;
+        }
+        ham.extend_from_slice(&tampon[..okunan]);
+        if ham.len() >= sonraki_ornek {
+            tepe = tepe.max(yerlesik_kib(pid));
+            sonraki_ornek += 2 * 1024 * 1024;
+        }
+    }
+    let son = ham
+        .windows(4)
+        .position(|p| p == b"\r\n\r\n")
+        .expect("başlık sonu")
+        + 4;
+    let basliklar = String::from_utf8(ham[..son].to_vec()).expect("başlık UTF-8");
+    assert!(basliklar.starts_with("HTTP/1.1 200 OK\r\n"), "{basliklar}");
+    assert_eq!(
+        baslik(&basliklar, "Content-Length"),
+        [tavan.to_string().as_str()]
+    );
+    assert!(ham[son..] == icerik[..], "32 MiB bayt bayt iner");
+    assert!(
+        tepe.saturating_sub(taban) < 8 * 1024,
+        "yerleşik bellek tepesi akış boyunca büyümemeli: taban {taban} KiB, tepe {tepe} KiB"
+    );
 }

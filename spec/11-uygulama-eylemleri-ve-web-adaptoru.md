@@ -137,7 +137,8 @@ GET "/ek" adresine istek geldiğinde
 - Yol spec/26 proje dosya sınırıyla çözülür (mutlak yol, `..`, kök dışına
   çıkan bağ reddi); son bileşen sembolik bağ, dizin, FIFO ya da normal olmayan
   dosya olamaz ve dosya readonly/`O_NOFOLLOW` açılır. Çağrı anındaki uzunluk
-  16 MiB'ı (`yukleme_bayti`) aşarsa C013'tür. Gövde 16 KiB parçalarla akar,
+  32 MiB'ı (K-395b; önce 16 MiB `yukleme_bayti`) aşarsa C013'tür; tam
+  32 MiB kabul edilir. Gövde 16 KiB parçalarla akar,
   belleğe alınmaz ve heap zarfına girmez; yazım K-372 mutlak bütçesine
   (`10 sn + bayt / 128 KiB/s`, 10 sn ilerlemesizlik) tabidir. Akış sırasında
   dosya kısalır ya da son parçada uzunluğu değişirse bağlantı eksik
