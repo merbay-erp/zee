@@ -230,6 +230,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             eposta_ek_turleri: None,
             govde_siniri: Default::default(),
             dns: None,
+            veri_koku_degiskeni: None,
         }
     );
 }

@@ -993,11 +993,18 @@ impl Reaktor {
 
     fn aktarim_ac(
         yol: &std::path::Path,
+        veri: Option<&str>,
         blok_siniri: u64,
         bosta: i64,
     ) -> Result<Aktarim, BaglantiSonucu> {
-        let dosya = std::fs::File::open(yol)
-            .map_err(|hata| BaglantiSonucu::hata("dosya", format!("dosya açılamadı: {hata}")))?;
+        // K-394: `veri:` yaprağı bağ izlenmeden, tek hard-link olarak açılır.
+        let dosya = match veri {
+            Some(veri_yolu) => dil::guvenlik::veri_koku::okuma_icin_ac(yol, veri_yolu)
+                .map_err(|neden| BaglantiSonucu::hata("dosya", neden))?,
+            None => std::fs::File::open(yol).map_err(|hata| {
+                BaglantiSonucu::hata("dosya", format!("dosya açılamadı: {hata}"))
+            })?,
+        };
         let bilgi = match dosya.metadata() {
             Ok(bilgi) if bilgi.is_file() => bilgi,
             _ => return Err(BaglantiSonucu::hata("dosya", "normal dosya değil")),
@@ -1045,7 +1052,12 @@ impl Reaktor {
     }
 
     /// K-384: çözülmüş yoldaki dosyayı giden tampona geri basınçla akıtır.
-    pub(crate) fn dosya_aktar(&mut self, kimlik: u64, yol: &std::path::Path) -> BaglantiSonucu {
+    pub(crate) fn dosya_aktar(
+        &mut self,
+        kimlik: u64,
+        yol: &std::path::Path,
+        veri: Option<&str>,
+    ) -> BaglantiSonucu {
         let bosta = self.ayar.bosta_suresi_ms;
         let blok_siniri = self.ayar.blok_siniri;
         let Some(b) = self.baglantilar.get_mut(&kimlik) else {
@@ -1056,7 +1068,7 @@ impl Reaktor {
             return BaglantiSonucu::hata("yazılamadı", "karşı taraf bağlantıyı kapattı");
         }
         if b.aktarim.is_none() {
-            match Self::aktarim_ac(yol, blok_siniri, bosta) {
+            match Self::aktarim_ac(yol, veri, blok_siniri, bosta) {
                 Ok(aktarim) => b.aktarim = Some(aktarim),
                 Err(ret) => return ret,
             }

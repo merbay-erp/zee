@@ -220,6 +220,17 @@ sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
 hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
 
+Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
+([ADR-170](../adr/170-paylasilan-veri-koku.md),
+[RFC-0045](../rfcs/0045-paylasilan-veri-koku.md)) ile `proje.dil`
+`veri_kökü` kökün mutlak yolunu taşıyan ortam/credential adını bildirir,
+program `veri:` önekiyle adlandırır, okuma `veri-okuma` ve yazma
+`veri-yazma` ister (P023). Kök/ara klasörler `O_NOFOLLOW` yürüyüşü ve ata
+değişmeziyle, yaprak bağsız ve tek hard-link'li okunur; spec/08 iç okumaları
+da bağ izlemez (`urun-h` ZM-F038, GB-167). **Açık:** veri kökünde dizin
+listeleme, görsel küçültme, bağlantı blok dosyası, Windows. V1 sözü
+değildir.
+
 Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 ([ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),
 [RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md) Dilim 1) ile dosya

@@ -2929,6 +2929,41 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma` (RFC-0045, ADR-170)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F038
+(ekleri yazan SMTP/gönderim/IMAP hizmetleri ile sunan web ayrı proje
+kökleri; proje dosya sınırı paylaşılan depoyu engelliyor, ek görünür uyarı
+ve `554` ile kalıyor). K-382 `veri_kökü` takip önerisinin ikinci gerçek
+tüketicisi. Freeze sınıfı `dogfood-change`; yeni kalıp, tür ya da grammar
+kuralı yok.
+
+Karar (RFC-0045 kabul, ADR-170): `proje.dil` `veri_kökü "AD" olsun` kökün
+mutlak yolunu taşıyan ortam değişkeni / systemd credential adını bildirir;
+program `veri:` önekiyle adlandırır; okuma `veri-okuma`, yazma
+`veri-yazma` ister (P023 tutarlılık). Kök ve ara klasörler `openat(O_NOFOLLOW)`
+yürüyüşü, ata değişmezi (yaprağın üst klasörü dışındaki klasörler başkasınca
+yazılamaz), yaprak bağ olamaz, okuma `O_NOFOLLOW|O_NONBLOCK` tanıtıcıdan tek
+hard-link, Linux `protected_hardlinks` zorunlu. Uygulamada spec/08 iç
+okumalarının yaprak bağını izlediği ve eş yazarın çift değiştirmeyle kök dışı
+içeriği kopyalatabildiği bulundu; kilit dosyası ve iç okumalar `O_NOFOLLOW`
+oldu. Tek dosya/`--güvenli` kipi `veri:` reddeder; `dil dene` metin anahtarı.
+GB-167.
+
+Kanıt: `compiler/tests/veri_koku_testi.rs` (10 vaka; iki proje aynı kökü
+paylaşır, salt okur web eki bayt-kesin sunar, bağ/hard-link 404, yazma
+yetkisiz, eksik/güvensiz kök, kaçış, ata klasörü, tek dosya, bildirimsiz
+proje, P023, işlem ailesi, `dene`), `compiler/src/guvenlik/veri_koku/testler.rs`
+(9 vaka; okuyucu ve yazar yarışı, deterministik çift değiştirme); dogfood
+`urun-h-paylasilan-depo-alici`, `urun-h-paylasilan-depo-web`; K-167
+`veri-koku-v1`, `veri-yolu-oneki-v1`, `yetkinlik-veri-okuma`,
+`yetkinlik-veri-yazma`, P023.
+
+Açık: (1) veri kökünde dizin listeleme; (2) görsel küçültme; (3) bağlantı
+blok dosyası ve `.zee/yuklemeler`in doğrudan veri kökünde açılması;
+(4) Windows; (5) tanıtıcı tabanlı spec/08 ile ata değişmezinin gevşetilmesi;
+(6) macOS'ta yazar iç okuması için hard-link kalan riski.
+
 ## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256 (ADR-167)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmeleri
@@ -3127,8 +3162,10 @@ Kanıt: `main.rs::proje_dosya_yolu_kok_ve_yokluk_iletisi`, regression
 reddedilir, dosya `kaynak/` altına yazılır), spec/07 K-382 bölümü, spec/23 ve
 spec/26 ifade düzeltmesi, hata kataloğu C013.
 
-Açık — takip önerisi (`dogfood-change`, ayrı iş; core freeze altında yeni
-yüzey): `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
+Takip önerisi **K-394 ile kapandı** (RFC-0045, ADR-170): ikinci tüketici
+ZM-F038 geldi; tasarım proje köküne göreli klasör yerine mutlak, işletimce
+verilen ve projeler arası paylaşılabilir köke dönüştü. Aşağıdaki ilk taslak
+tarihseldir: `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
 sözleşme: değer proje köküne göre göreli, `..`/mutlak/sürücü öneki yasak
 (P003/P004 sınıfı), proje kökü içinde var olan klasör; verilirse göreli dosya
 IO kökü ve `.zee/yuklemeler` bu klasöre geçer, verilmezse bugünkü giriş

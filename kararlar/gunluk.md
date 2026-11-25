@@ -5675,6 +5675,35 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045, ADR-170 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F038: ekleri yazan SMTP/gönderim/IMAP hizmetleri ile
+  sunan web ayrı proje kökleri (ayrı veritabanı rolleri); proje dosya sınırı
+  paylaşılan depoyu engelliyor, ek görünür uyarı / `554` ile kalıyor.
+  Freeze sınıfı `dogfood-change`; K-164 sınıfı "yerleşik yüzey eksik";
+  K-382 `veri_kökü` takip önerisinin ikinci gerçek tüketicisi (kabul eşiği).
+- Karar: kökün yolu kaynakta değil; `proje.dil` yalnız ortam/credential
+  adını taşır (K-339 kaynağı). `veri:` öneki her kipte ayrılmış; ayrı
+  `veri-okuma`/`veri-yazma` (RFC-0039 §G "veri kökü yazımı"), P023 tutarlılık
+  tanısı; statik T054 `veri-*`yi dosya gereksinimine sayar, kesin denetim
+  çalışma zamanında. Kök ve ara klasörler `openat(O_NOFOLLOW)` yürüyüşü;
+  **ata değişmezi** (yaprağın üst klasörü dışındaki klasörler başkasınca
+  yazılamaz) ara bileşen yarışını kapatır; yaprak bağ olamaz, okuma
+  `O_NOFOLLOW|O_NONBLOCK` tanıtıcıdan, tek hard-link; Linux
+  `protected_hardlinks` zorunlu.
+- Uygulama sırasında bulunan: spec/08 kilit altındaki iç okumalar yaprak
+  bağını izliyordu; eş yazar yaprağı bağ→normal dosya çevirerek kök dışı
+  içeriği paylaşılan hedefe kopyalatabiliyordu (deterministik enjeksiyon
+  testi düzeltmesiz kodda sırrı kopyaladı). İç okumalar ve kilit dosyası
+  `O_NOFOLLOW` oldu (spec/08 ZORUNLU, GB-167).
+- Reddedilen: proje köküne göreli `veri_kökü "depo"` (ayrı kökleri
+  birleştirmez), kök dışı canonical hedefli bağa izin, genel mutlak yol
+  yetkinliği, yolun kaynağa yazılması, `openat2(RESOLVE_BENEATH)` (macOS
+  yok; spec/08 yol tabanlı), hizmetleri web köküne taşımak, `bytea`.
+- Açık: dizin listeleme, görsel küçültme, bağlantı blok dosyası ve
+  `.zee/yuklemeler`in veri kökünde açılması, Windows; macOS'ta yazar iç
+  okuması için hard-link kalan riski. K-394 kapandı.
+
 ## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256; ADR-167 (24 Kasım 2026)
 
 - Kaynak `urun-h` ZM-F034 + ZM-F024: A2c blok dosyası parça parça okunamıyor,
