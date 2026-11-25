@@ -119,6 +119,25 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez. Alan yazmayan projede sınırlar aynıdır. Süreç çökmesinden
   kalan geçici yükleme dosyaları artık 15 yerine 30 dakika sonra silinir.
 
+- **Projeler arasında paylaşılan veri kökü (K-394):** aynı uygulamanın ayrı
+  projeleri (ör. e-postayı alan hizmet ile eki sunan web paneli) artık ortak
+  bir veri klasörünü paylaşabilir. `proje.dil` klasörün yolunu değil, yolu
+  taşıyan ortam değişkeninin ya da systemd credential'ın adını bildirir:
+  `veri_kökü "UYGULAMA_DEPO" olsun`. Program o klasördeki dosyaları `veri:`
+  önekiyle adlandırır: `"veri:ekler/k1-1f…" dosyasını okumayı dene`. Okumak
+  için `veri-okuma`, yazmak/taşımak/silmek için ayrıca `veri-yazma`
+  yetkinliği gerekir; yalnız okuyan web paneli böylece yazamaz. Kök mutlak,
+  sembolik bağsız olmalı ve başka kullanıcılarca yazılamamalıdır; paylaşılan
+  yazma yalnız son klasörde (ör. `ekler/`) olabilir, sembolik bağ ve çok
+  hard-link'li dosya izlenmez. Ayrıntı ve yerleşim örneği RFC-0045'tedir.
+  Tutarsız bildirim yeni **P023** tanısıdır. Tek dosya kipinde `veri:` yolu
+  reddedilir.
+
+  **Göç:** Mevcut projeler değişmeden çalışır. `veri:` ile başlayan dosya
+  adları artık ayrılmıştır ve proje klasöründe aranmaz (bilinen kullanım
+  yok). Kalıcı dosya yazımı artık hedef sembolik bağ olduğunda eylem içi
+  taşıma/silmede de C013 verir (önceden bağı izliyordu).
+
 - **Dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve
   metnin SHA-256 özeti (K-389):** büyük bir dosya (ör. bağlantıdan alınmış
   bir e-posta) artık en çok 1 MiB'lık aralıklarla okunabilir:

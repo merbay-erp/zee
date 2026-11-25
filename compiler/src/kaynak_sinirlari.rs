@@ -12,7 +12,7 @@ mod veritabani;
 mod web;
 
 pub use baglanti::{baglanti_izni_al, BaglantiIzni};
-pub(crate) use okuma::{kaynak_boyutunu_denetle, sinirli_bayt_oku, token_sayisini_denetle};
+pub(crate) use okuma::{bagsiz_okuma, kaynak_boyutunu_denetle, token_sayisini_denetle};
 pub use okuma::{kaynak_dosyasi_oku, veri_dosyasi_baytlarini_oku, veri_dosyasi_oku};
 pub use posta::EpostaSinirlari;
 pub use profiller::{

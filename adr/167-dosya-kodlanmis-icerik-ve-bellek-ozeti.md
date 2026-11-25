@@ -138,7 +138,7 @@ indirmek. Aynı kullanıcı kararının (25 MB iletideki ekin uçtan uca
 - Yükleme tavanı 16 MiB kalır (web gövdesi; ayrı karar). Bağlantıya base64
   aktarımın (K-396, master'da değil) kaynak tavanı kendi PR'ında 32 MiB'a
   hizalanır.
-- DoS gerekçesi GB-168: dosya yanıtı ve özet akışlıdır (bellek tepesi
+- DoS gerekçesi GB-169: dosya yanıtı ve özet akışlıdır (bellek tepesi
   büyümez); süre ve bant genişliği K-372 bütçesiyle sınırlıdır; izsiz taşıma
   bellek kullanmaz.
 
