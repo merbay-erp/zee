@@ -6110,4 +6110,6 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Dosya yanıtı zaten 16 KiB parçalarla akıyordu; tavanı yükseltmek bellek
   tepesini değiştirmez, testle örneklendi. K-372 bütçesi 32 MiB için ~266 sn.
 - K-396 (bağlantıya base64 aktarım) master'da değil; kaynak tavanı K-396
-  oturumunun kendi PR'ında 32 MiB'a hizalanır. GB-168. K-401 kapandı.
+  oturumunun kendi PR'ında 32 MiB'a hizalanır. GB-168. Dosya yanıtı tavanı
+  artık sabit olduğundan `icerik_turu → kaynak_sinirlari` kenarı kalktı
+  (katman fixture'ı güncellendi; temel → adaptör yönü değişmedi). K-401 kapandı.

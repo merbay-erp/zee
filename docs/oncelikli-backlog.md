@@ -2931,7 +2931,7 @@ binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 
 ## K-401 — Dosya özeti/dosya yanıtı 32 MiB ve izsiz atomik taşıma (ADR-167 eki)
 
-Çalışma adı K-395b (kaynak yorumları ve ilk iki commit mesajı bu adı kullanır).
+K-395 devamı (aynı kullanıcı kararı, aşağıdaki K-395 kaydı). Çalışma adı K-395b; ilk iki commit mesajı bu adı kullanır.
 
 **Durum:** kapalı (25 Kasım 2026). Kaynak `urun-h` ZeeMail sürtünmesi
 **ZM-F044** (ürün commit'i `eda6b33`): K-395 sonrasında 19 MiB'lık ek
