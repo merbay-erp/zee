@@ -172,8 +172,10 @@ ZORUNLU (K-389): `yazmayı dene` yeni dosya yazar; var olan hedef (dosya,
 dizin ya da sembolik bağ) kilit altında görülürse ezilmeden C013 `hedef
 dosyası zaten var` döner. `eklemeyi dene` spec/08 eklemesiyle aynı kilitli,
 atomik oku-birleştir-değiştir modelidir ve hedef yoksa oluşturur. İkisi de
-hedefin toplam boyutunu bu bölümün 16 MiB yükleme/özet tavanıyla sınırlar;
-aşan çağrı hiçbir bayt yazmaz. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
+hedefin toplam boyutunu 32 MiB (33 554 432 bayt; K-395 öncesi bu bölümün 16
+MiB yükleme/özet tavanı) ile sınırlar; tam sınıra ulaşan çağrı kabul edilir,
+aşan çağrı hiçbir bayt yazmaz. Yükleme, dosya yanıtı ve dosya özeti
+tavanları 16 MiB kalır. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
 (hedefin bütün içeriği) ve `bayt` (toplam) verir — A2c ve web yükleme
 tutamağıyla aynı biçim; `yol` dosya yanıtına ve SMTP ek listesine doğrudan
 verilir. İşlem `dosya-yazma` yetkinliğine bağlıdır. Eylem içinde `yazmayı
