@@ -202,6 +202,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 ### Site
 
 - **zeedili.com 24 Kasım haberi:** ana sayfa Gelişmeler'deki "Zee ile web dışı ağ hizmetleri" haberi K-384 ile genişletildi: büyük gövdenin ve IMAP literal'inin dosyaya akıtılması, bayt-kesin okuma, satır sonusuz yazma ve IMAP IDLE için kısa zaman aşımlı okuma. Dil davranışı değişmedi.
+- **zeedili.com 24–25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-390 DNS sorgusu (MX, TXT, TLSA, adres; RFC-0044), K-391 uzun iletiler ve rota bazında gövde sınırı, K-389 dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve metnin SHA-256 özeti (RFC-0043), K-386 listede sıra ile öğe erişimi (RFC-0029), K-387 tek dosya kipinde `--izin ağ` ile açılan dış ağ ve K-380/K-392/K-388 derleyici ve bağlantı bütçesi düzeltmeleri haberleri eklendi. Dil davranışı değişmedi.
 
 ### Değişenler
 

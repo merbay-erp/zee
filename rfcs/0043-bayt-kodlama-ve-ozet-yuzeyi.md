@@ -114,9 +114,12 @@ kaydı) iki maddeyi bu RFC'ye bağlar:
   sınırlarını ayrıştırmak, (2) parçanın base64/QP gövdesini çözüp **bayt
   olarak** ek dosyasına yazmak istiyor. Ürünün bildirdiği etki: SMTP/IMAP
   ile gelen ekler webmail'e çıkarılamıyor, istemciden ekli gönderim `554`
-  ile düşüyor, IMAP `APPEND` 64 KB'ta takılıyor. Ürün ayrıca ham iletinin
-  `.eml` olarak indirilebilmesi için dosya yanıtı tür kaydına
-  `message/rfc822` istiyor (bkz. "RFC-0041 ile ilişki").
+  ile düşüyor, IMAP `APPEND` 64 KB'ta takılıyor. Ham iletiyi `.eml` olarak
+  indirmek için `message/rfc822` dosya yanıtı türü bu taslakta ürün
+  ihtiyacı sanılmıştı; **düzeltme (25 Kasım 2026):** ürün sürtünme
+  kaydında buna ait ZM kimliği yoktur ve `.eml` indirme rotası yazılmamıştır
+  (ZM-F034 satırı bunu içermez). İhtiyaç ürün kaydıyla doğarsa K-399
+  taslağı hazırdır (bkz. "RFC-0041 ile ilişki").
 
 ### Bugünkü durum (bd8d44f üzerinde doğrulandı)
 
@@ -522,8 +525,9 @@ V1 kapı listesine eklenmez; V1 sözü değildir.
 - **`message/rfc822` (sonraki küçük iş, bu RFC'nin dışında):** ham iletiyi
   `.eml` olarak indirmek için RFC-0041 katman A / ADR-163 dosya yanıtı tür
   kaydına `message/rfc822` satırı (yalnız `attachment`, `nosniff`, sandbox
-  CSP; K-385 `application/xml` ekiyle aynı desen). Ayrı K-işi adayı;
-  ürün reproducer'ı ile açılır.
+  CSP; K-385 `application/xml` ekiyle aynı desen). Bugün ürün kaydı yoktur;
+  yalnız yeni ZM kaydı, ürün commit/blob'u ve reproducer ile açılır. K-399
+  taslağı (kayıt satırı, testler, ADR-163 eki) birleştirilmeden bekler.
 
 ## Dört soru süzgeci
 
@@ -644,8 +648,8 @@ engelini (gelen ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
 **Dilim 2 (ZM-F023).** UTF-8 bayt sayısı, metin ↔ base64/onaltılık, kod
 noktası; saf `Ozellik` dalları, golden, reproducer'lar.
 
-**Sonraki küçük iş (ayrı):** `message/rfc822` dosya yanıtı türü (RFC-0041
-A kaydı).
+**Sonraki küçük iş (ayrı, koşullu):** `message/rfc822` dosya yanıtı türü
+(RFC-0041 A kaydı) — ürün kaydı yok; ihtiyaç doğarsa K-399 taslağı hazır.
 
 Bağımlılığı yoktur; RFC-0044 B2/B3 bunların üstüne kurulur.
 

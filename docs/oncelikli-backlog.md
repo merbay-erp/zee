@@ -2992,7 +2992,8 @@ onaltılık, kod noktası, base64url) ve üç iç base64 yardımcısının
 birleştirilmesi. (2) 16 MiB'tan büyük ekler (yükleme/özet/dosya yanıtı
 tavanıyla birlikte değişir). (3) İçerik-adresli iz yan dosyasıyla aralıklı
 okumanın replay'i. (4) `kodlama` fuzz hedefi. (5) `message/rfc822` dosya
-yanıtı türü (RFC-0043 "sonraki küçük iş").
+yanıtı türü (RFC-0043 "sonraki küçük iş"; 25 Kasım 2026: ürün kaydı yok,
+yalnız yeni ZM kaydıyla açılır, K-399 taslağı birleştirilmeden bekler).
 
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı (ADR-031 eki)
 
