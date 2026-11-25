@@ -24,6 +24,7 @@ dilimleridir.
 | `korpus/zm-r005-bellekte-sha256.dil` | ürün reproducer'ı ZM-R005 (aynı commit, blob `f994eaab…`) | S015; K-389 sonrası gerçek SHA-256 |
 | `ek-cikarma/ana.dil` | ürün ek çıkarma kesiti (ZM-F034, ürün commit'i `4f8c67cf6de936d1f17a689598f65cdca2bb4918`) | S015; K-389 sonrası temiz |
 | `paylasilan-depo/alici/ana.dil`, `paylasilan-depo/web/ana.dil` | ürün paylaşılan ek deposu kesiti (ZM-F038, ürün commit'i `35df031accc4d010ed1ca3db1f2c479df40f2916`) | P001; K-394 sonrası temiz |
+| `imap-govde-base64/ana.dil` | ürün IMAP FETCH gövde akışı kesiti (ZM-F040, ürün commit'leri `171f6b2a8dc5fcbb2f42c4f769f94a8ced968eca`, `c455cc8d1780ade481adc44752700bf6c9fdef8c`) | S015; K-396 sonrası temiz |
 
 Reproducer'lar ürün kodundan hermetik küçültmedir; sunucu adı, alan adı,
 adres, yerel yol ve ürünün geri kalan kaynağı taşınmaz (ADR-087). Etkilenen

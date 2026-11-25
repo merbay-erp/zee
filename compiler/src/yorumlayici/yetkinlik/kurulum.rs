@@ -40,7 +40,8 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
         self.gerektir(Yetkinlik::AgDinleyici)
             .map_err(|hata| ("kapandı", hata))?;
         match islem {
-            super::super::BaglantiIslemi::DosyaAktar(yol) => self
+            super::super::BaglantiIslemi::DosyaAktar(yol)
+            | super::super::BaglantiIslemi::Base64Aktar { yol, .. } => self
                 .dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)
                 .map_err(|hata| ("dosya", hata)),
             _ => Ok(()),
