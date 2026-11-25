@@ -7,11 +7,22 @@
 //! TLS 1.2 ve 1.3, yalnız ileri gizlilikli AEAD takımları, yeniden müzakere
 //! ve sıkıştırma yok, istemci sertifikası yok. Yükleme kaynak yürütülmeden
 //! önce yapılır; hata çıkış 2'dir.
+//!
+//! K-397 (RFC-0044 B4a, ADR-173): giden bağlantıda istemci TLS'i. Aynı sabit
+//! sağlayıcı ve sürüm politikası; kökler `webpki-roots`. PKIX sonucu el
+//! sıkışmayı durdurmaz, `KayitliDogrulayici` ile kayda yazılır (DANE-EE ve
+//! fırsatçı TLS bunu ister); el sıkışma imzası her durumda `WebPkiServerVerifier`
+//! ile doğrulanır, yani karşı taraf raporlanan SPKI'nin anahtarına sahiptir.
 
 use dil::guvenlik::sir_dizini::{gizli_deger_oku, SatirProfili};
+use dil::yorumlayici::TlsIstemciKaydi;
+use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
+use rustls::client::WebPkiServerVerifier;
 use rustls::pki_types::pem::PemObject;
-use rustls::pki_types::{CertificateDer, PrivateKeyDer};
-use std::sync::{Arc, OnceLock};
+use rustls::pki_types::{CertificateDer, PrivateKeyDer, ServerName, UnixTime};
+use rustls::{CertificateError, DigitallySignedStruct, SignatureScheme};
+use sha2::{Digest, Sha256};
+use std::sync::{Arc, Mutex, OnceLock};
 
 /// PEM zinciri ve anahtarı için okuma üst sınırı.
 const AZAMI_PEM_BAYTI: usize = 64 * 1024;
@@ -86,11 +97,122 @@ pub(crate) fn yapilandirma() -> Option<Arc<rustls::ServerConfig>> {
     YAPILANDIRMA.get().cloned()
 }
 
-/// Bağlantının bayt kanalı: düz TCP ya da `rustls` sunucu oturumu. `Read`/
-/// `Write` düz metin verir; TLS kayıtları engellemeyen sokete taşınır.
+/// K-397: istemci TLS kökleri (süreç başına bir kez).
+static ISTEMCI_KOKLERI: OnceLock<Arc<rustls::RootCertStore>> = OnceLock::new();
+
+fn istemci_kokleri() -> Arc<rustls::RootCertStore> {
+    Arc::clone(ISTEMCI_KOKLERI.get_or_init(|| {
+        let mut kokler = rustls::RootCertStore::empty();
+        kokler.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+        test_koklerini_ekle(&mut kokler);
+        Arc::new(kokler)
+    }))
+}
+
+/// Yalnız hata ayıklama derlemesinde (testler): `ZEE_TEST_TLS_KOKLERI` PEM
+/// dosyasındaki ek kökler. Sürüm derlemesi bu değişkeni hiç okumaz.
+#[cfg(debug_assertions)]
+fn test_koklerini_ekle(kokler: &mut rustls::RootCertStore) {
+    let Some(yol) = std::env::var_os("ZEE_TEST_TLS_KOKLERI") else {
+        return;
+    };
+    if let Ok(pem) = std::fs::read(yol) {
+        for kok in CertificateDer::pem_slice_iter(&pem).flatten() {
+            let _ = kokler.add(kok);
+        }
+    }
+}
+
+#[cfg(not(debug_assertions))]
+fn test_koklerini_ekle(_: &mut rustls::RootCertStore) {}
+
+type DogrulamaSonucu = Arc<Mutex<Option<Result<(), rustls::Error>>>>;
+
+/// PKIX sonucunu kaydedip el sıkışmayı sürdüren doğrulayıcı. İmza
+/// doğrulamaları iç doğrulayıcıya bırakılır (atlanmaz).
+#[derive(Debug)]
+struct KayitliDogrulayici {
+    ic: Arc<WebPkiServerVerifier>,
+    sonuc: DogrulamaSonucu,
+}
+
+impl ServerCertVerifier for KayitliDogrulayici {
+    fn verify_server_cert(
+        &self,
+        uc: &CertificateDer<'_>,
+        araciler: &[CertificateDer<'_>],
+        ad: &ServerName<'_>,
+        ocsp: &[u8],
+        simdi: UnixTime,
+    ) -> Result<ServerCertVerified, rustls::Error> {
+        if araciler.len() >= dil::ag_satiri::AZAMI_TLS_ZINCIRI {
+            return Err(rustls::Error::InvalidCertificate(
+                CertificateError::BadEncoding,
+            ));
+        }
+        let sonuc = self
+            .ic
+            .verify_server_cert(uc, araciler, ad, ocsp, simdi)
+            .map(|_| ());
+        if let Ok(mut yuva) = self.sonuc.lock() {
+            *yuva = Some(sonuc);
+        }
+        Ok(ServerCertVerified::assertion())
+    }
+
+    fn verify_tls12_signature(
+        &self,
+        mesaj: &[u8],
+        sertifika: &CertificateDer<'_>,
+        imza: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, rustls::Error> {
+        self.ic.verify_tls12_signature(mesaj, sertifika, imza)
+    }
+
+    fn verify_tls13_signature(
+        &self,
+        mesaj: &[u8],
+        sertifika: &CertificateDer<'_>,
+        imza: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, rustls::Error> {
+        self.ic.verify_tls13_signature(mesaj, sertifika, imza)
+    }
+
+    fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
+        self.ic.supported_verify_schemes()
+    }
+}
+
+/// PKIX hatasının Zee'ye giden kararlı adı.
+fn dogrulama_hatasi_adi(hata: &rustls::Error) -> &'static str {
+    match hata {
+        rustls::Error::InvalidCertificate(neden) => match neden {
+            CertificateError::NotValidForName | CertificateError::NotValidForNameContext { .. } => {
+                "ad_uyuşmuyor"
+            }
+            CertificateError::Expired | CertificateError::ExpiredContext { .. } => "süresi_dolmuş",
+            CertificateError::NotValidYet | CertificateError::NotValidYetContext { .. } => {
+                "henüz_geçerli_değil"
+            }
+            CertificateError::UnknownIssuer => "bilinmeyen_yayıncı",
+            CertificateError::Revoked => "iptal",
+            _ => "geçersiz_sertifika",
+        },
+        _ => "geçersiz_sertifika",
+    }
+}
+
+fn onaltilik(bayt: &[u8]) -> String {
+    bayt.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+/// Bağlantının bayt kanalı: düz TCP ya da `rustls` sunucu/istemci oturumu.
+/// `Read`/`Write` düz metin verir; TLS kayıtları engellemeyen sokete taşınır.
 pub(crate) struct Kanal {
     pub(crate) akis: std::net::TcpStream,
-    tls: Option<Box<rustls::ServerConnection>>,
+    tls: Option<Box<rustls::Connection>>,
+    /// K-397: istemci oturumunun PKIX sonucu ve istenen sunucu adı.
+    istemci: Option<(DogrulamaSonucu, String)>,
 }
 
 fn tls_hatasi(_: rustls::Error) -> std::io::Error {
@@ -100,7 +222,81 @@ fn tls_hatasi(_: rustls::Error) -> std::io::Error {
 
 impl Kanal {
     pub(crate) fn duz(akis: std::net::TcpStream) -> Self {
-        Self { akis, tls: None }
+        Self {
+            akis,
+            tls: None,
+            istemci: None,
+        }
+    }
+
+    /// K-397: giden bağlantıda istemci oturumu (SNI = `sunucu_adi`).
+    pub(crate) fn tls_istemci_ac(&mut self, sunucu_adi: &str) -> Result<(), String> {
+        let ad = ServerName::try_from(sunucu_adi.to_string())
+            .map_err(|_| "TLS sunucu adı geçersiz".to_string())?;
+        let saglayici = Arc::new(saglayici());
+        let ic =
+            WebPkiServerVerifier::builder_with_provider(istemci_kokleri(), Arc::clone(&saglayici))
+                .build()
+                .map_err(|_| "TLS doğrulayıcısı kurulamadı".to_string())?;
+        let sonuc: DogrulamaSonucu = Arc::new(Mutex::new(None));
+        let mut yapilandirma = rustls::ClientConfig::builder_with_provider(saglayici)
+            .with_protocol_versions(&[&rustls::version::TLS13, &rustls::version::TLS12])
+            .map_err(|_| "TLS sürüm politikası kurulamadı".to_string())?
+            .dangerous()
+            .with_custom_certificate_verifier(Arc::new(KayitliDogrulayici {
+                ic,
+                sonuc: Arc::clone(&sonuc),
+            }))
+            .with_no_client_auth();
+        yapilandirma.enable_early_data = false;
+        yapilandirma.resumption = rustls::client::Resumption::disabled();
+        let mut oturum = rustls::ClientConnection::new(Arc::new(yapilandirma), ad)
+            .map_err(|_| "TLS oturumu kurulamadı".to_string())?;
+        oturum.set_buffer_limit(Some(dil::ag_satiri::GIDEN_TAMPON_BAYTI));
+        self.tls = Some(Box::new(rustls::Connection::Client(oturum)));
+        self.istemci = Some((sonuc, sunucu_adi.to_ascii_lowercase()));
+        Ok(())
+    }
+
+    /// K-397: tamamlanan istemci el sıkışmasının kaydı.
+    pub(crate) fn istemci_kaydi(&self) -> TlsIstemciKaydi {
+        let mut kayit = TlsIstemciKaydi::default();
+        let (Some(tls), Some((sonuc, ad))) = (self.tls.as_ref(), self.istemci.as_ref()) else {
+            return kayit;
+        };
+        let pkix = sonuc.lock().ok().and_then(|mut yuva| yuva.take());
+        match pkix {
+            Some(Ok(())) => kayit.dogrulandi = true,
+            Some(Err(hata)) => kayit.dogrulama_hatasi = dogrulama_hatasi_adi(&hata).into(),
+            None => kayit.dogrulama_hatasi = "geçersiz_sertifika".into(),
+        }
+        kayit.sunucu_adi = ad.clone();
+        kayit.surum = tls
+            .protocol_version()
+            .map_or_else(|| "?".into(), |s| format!("{s:?}"));
+        kayit.takim = tls
+            .negotiated_cipher_suite()
+            .map_or_else(|| "?".into(), |s| format!("{:?}", s.suite()));
+        for sertifika in tls.peer_certificates().unwrap_or_default() {
+            kayit
+                .zincir_sha256
+                .push(onaltilik(&Sha256::digest(sertifika.as_ref())));
+            let spki = dil::ag_satiri::x509::spki_dilimi(sertifika.as_ref())
+                .map(|spki| onaltilik(&Sha256::digest(spki)))
+                .unwrap_or_default();
+            kayit.zincir_spki_sha256.push(spki);
+        }
+        kayit.sertifika_sha256 = kayit.zincir_sha256.first().cloned().unwrap_or_default();
+        kayit.spki_sha256 = kayit
+            .zincir_spki_sha256
+            .first()
+            .cloned()
+            .unwrap_or_default();
+        if kayit.spki_sha256.is_empty() && kayit.dogrulandi {
+            kayit.dogrulandi = false;
+            kayit.dogrulama_hatasi = "geçersiz_sertifika".into();
+        }
+        kayit
     }
 
     /// Implicit TLS ya da STARTTLS için sunucu oturumu başlatır.
@@ -110,7 +306,7 @@ impl Kanal {
         let mut oturum = rustls::ServerConnection::new(yapilandirma)
             .map_err(|_| "TLS oturumu kurulamadı".to_string())?;
         oturum.set_buffer_limit(Some(dil::ag_satiri::GIDEN_TAMPON_BAYTI));
-        self.tls = Some(Box::new(oturum));
+        self.tls = Some(Box::new(rustls::Connection::Server(oturum)));
         Ok(())
     }
 

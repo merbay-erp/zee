@@ -5,7 +5,7 @@ use crate::tani::Tani;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
 type Konum = (usize, usize, usize);
 mod bilgi;
-use bilgi::Bilgi;
+use bilgi::{statik_izin, Bilgi};
 pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Result<(), Tani> {
     let mut bilgi = Bilgi::default();
     blok_bilgisi(&program.cumleler, &mut bilgi);
@@ -15,10 +15,11 @@ pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Resu
     for test in &program.testler {
         blok_bilgisi(&test.govde, &mut bilgi);
     }
+    bilgi.baglanti_gereksinimini_coz(politika);
     let reddedilen = bilgi
         .yetkinlikler
         .iter()
-        .filter(|(yetkinlik, _)| !politika.izin_verir(**yetkinlik))
+        .filter(|(yetkinlik, _)| !statik_izin(politika, **yetkinlik))
         .min_by_key(|(_, konum)| **konum);
     if let Some((yetkinlik, (satir, sutun, uzunluk))) = reddedilen {
         return Err(Tani::yeni(
@@ -255,11 +256,9 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
     match ifade.turu() {
         Ifade::IslemCagrisi { argumanlar, .. } | Ifade::Intrinsic { argumanlar, .. } => {
             if let Ifade::Intrinsic { kimlik, .. } = ifade.turu() {
-                if let Some(tanim) = intrinsic::tanim(kimlik) {
-                    bilgi.ekle(tanim.yetkinlik, ifade_konumu(ifade));
-                }
-                // K-384: dosyadan bağlantıya aktarım dosyayı da okur.
-                if kimlik == intrinsic::BAGLANTI_DOSYA_AKTAR {
+                bilgi.intrinsic_ekle(kimlik, ifade_konumu(ifade));
+                // K-384/K-396: dosyadan bağlantıya aktarım dosyayı da okur.
+                if intrinsic::baglantiya_dosya_aktarir(kimlik) {
                     bilgi.ekle(Yetkinlik::DosyaOkuma, ifade_konumu(ifade));
                 }
                 if kimlik == HTTP_GETIR || kimlik == intrinsic::HTTP_ISTEK {

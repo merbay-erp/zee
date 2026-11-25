@@ -4,7 +4,9 @@
 //! uyanma] → ok + olaylar | hata`, `baglanti_islemi [kimlik, işlem, …] →
 //! satir|tamam|bekle|hata`, `baglanti_gunluk [kimlik, neden] → ∅`.
 use super::*;
-use crate::yorumlayici::{BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti};
+use crate::yorumlayici::{
+    BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, TlsIstemciKaydi, YeniBaglanti,
+};
 
 pub(super) fn bekle_argumanlari(bekleyenler: &[u64], uyanma: Option<i64>) -> Vec<String> {
     vec![
@@ -105,11 +107,23 @@ pub(super) fn islem_argumanlari(kimlik: u64, islem: &BaglantiIslemi) -> Vec<Stri
         BaglantiIslemi::BaytOku(adet) => alanlar.extend(["bayt".into(), adet.to_string()]),
         BaglantiIslemi::ParcaYaz(metin) => alanlar.extend(["parca".into(), metin.clone()]),
         BaglantiIslemi::DosyaAktar(yol) => alanlar.extend(["aktar".into(), yol.clone()]),
+        // K-396: içeriksiz iz — yalnız yol ve kodlanmış aralık.
+        BaglantiIslemi::Base64Aktar { yol, aralik } => alanlar.extend([
+            "aktar_b64".into(),
+            yol.clone(),
+            aralik.map_or_else(|| "tum".into(), |(k, n)| format!("{k}+{n}")),
+        ]),
         BaglantiIslemi::SatirOkuSureli(ms) => alanlar.extend(["oku_sure".into(), ms.to_string()]),
         BaglantiIslemi::Engelle(son) => alanlar.extend([
             "engelle".into(),
             son.map_or_else(|| "yok".into(), |an| an.to_string()),
         ]),
+        BaglantiIslemi::GidenBaglan(adres, son) => alanlar.extend([
+            "baglan".into(),
+            adres.clone(),
+            son.map_or_else(|| "yok".into(), |an| an.to_string()),
+        ]),
+        BaglantiIslemi::TlsIstemci(ad) => alanlar.extend(["tls_istemci".into(), ad.clone()]),
     }
     alanlar
 }
@@ -120,14 +134,26 @@ pub(super) fn islem_semasi(argumanlar: &[String]) -> Result<(), String> {
             kanonik_tamsayi::<u64>(kimlik)
                 && matches!(islem.as_str(), "oku" | "kapat" | "tls" | "nokta")
         }
-        [kimlik, islem, _] if matches!(islem.as_str(), "yaz" | "parca" | "aktar") => {
+        [kimlik, islem, son] if islem == "engelle" => {
+            kanonik_tamsayi::<u64>(kimlik) && (son == "yok" || kanonik_tamsayi::<i64>(son))
+        }
+        [kimlik, islem, _, son] if islem == "baglan" => {
+            kimlik == "0" && (son == "yok" || kanonik_tamsayi::<i64>(son))
+        }
+        [kimlik, islem, _]
+            if matches!(islem.as_str(), "yaz" | "parca" | "aktar" | "tls_istemci") =>
+        {
             kanonik_tamsayi::<u64>(kimlik)
         }
         [kimlik, islem, sayi] if matches!(islem.as_str(), "blok" | "bayt" | "oku_sure") => {
             kanonik_tamsayi::<u64>(kimlik) && kanonik_tamsayi::<i64>(sayi)
         }
-        [kimlik, islem, son] if islem == "engelle" => {
-            kanonik_tamsayi::<u64>(kimlik) && (son == "yok" || kanonik_tamsayi::<i64>(son))
+        [kimlik, islem, _, aralik] if islem == "aktar_b64" => {
+            kanonik_tamsayi::<u64>(kimlik)
+                && (aralik == "tum"
+                    || aralik.split_once('+').is_some_and(|(k, n)| {
+                        kanonik_tamsayi::<u64>(k) && kanonik_tamsayi::<u64>(n)
+                    }))
         }
         _ => false,
     };
@@ -147,7 +173,33 @@ pub(super) fn sonuc_yaz(sonuc: &BaglantiSonucu) -> Vec<String> {
         BaglantiSonucu::Blok { yol, sha256, bayt } => {
             vec!["blok".into(), yol.clone(), sha256.clone(), bayt.to_string()]
         }
+        BaglantiSonucu::Giden(y) => vec![
+            "giden".into(),
+            y.kimlik.to_string(),
+            y.uzak_adres.clone(),
+            y.uzak_kapi.to_string(),
+            y.yerel_kapi.to_string(),
+        ],
+        BaglantiSonucu::TlsIstemci(k) => vec![
+            "tls_istemci".into(),
+            bool_yaz(k.dogrulandi),
+            k.dogrulama_hatasi.clone(),
+            k.surum.clone(),
+            k.takim.clone(),
+            k.sunucu_adi.clone(),
+            k.sertifika_sha256.clone(),
+            k.spki_sha256.clone(),
+            k.zincir_sha256.join(" "),
+            k.zincir_spki_sha256.join(" "),
+        ],
     }
+}
+
+fn ozet_listesi(alan: &str) -> Vec<String> {
+    alan.split(' ')
+        .filter(|parca| !parca.is_empty())
+        .map(str::to_string)
+        .collect()
 }
 
 pub(super) fn sonuc_coz(alanlar: &[String]) -> Result<BaglantiSonucu, String> {
@@ -173,6 +225,37 @@ pub(super) fn sonuc_coz(alanlar: &[String]) -> Result<BaglantiSonucu, String> {
                 sha256: sha256.clone(),
                 bayt: bayt.parse().unwrap_or(0),
             })
+        }
+        [etiket, kimlik, adres, uzak, yerel]
+            if etiket == "giden" && kanonik_tamsayi::<u64>(kimlik) && kimlik != "0" =>
+        {
+            let kapi = |alan: &str| alan.parse::<u16>().ok().filter(|n| n.to_string() == alan);
+            match (kapi(uzak), kapi(yerel)) {
+                (Some(uzak_kapi), Some(yerel_kapi)) => Ok(BaglantiSonucu::Giden(YeniBaglanti {
+                    kimlik: kimlik.parse().unwrap_or(0),
+                    dinleyici: String::new(),
+                    uzak_adres: adres.clone(),
+                    uzak_kapi,
+                    yerel_kapi,
+                    tls: false,
+                })),
+                _ => Err("giden bağlantı kapısı kanonik değil".into()),
+            }
+        }
+        [etiket, dogrulandi, hata, surum, takim, ad, sertifika, spki, zincir, zincir_spki]
+            if etiket == "tls_istemci" =>
+        {
+            Ok(BaglantiSonucu::TlsIstemci(Box::new(TlsIstemciKaydi {
+                dogrulandi: bool_coz(dogrulandi)?,
+                dogrulama_hatasi: hata.clone(),
+                surum: surum.clone(),
+                takim: takim.clone(),
+                sunucu_adi: ad.clone(),
+                sertifika_sha256: sertifika.clone(),
+                spki_sha256: spki.clone(),
+                zincir_sha256: ozet_listesi(zincir),
+                zincir_spki_sha256: ozet_listesi(zincir_spki),
+            })))
         }
         _ => Err("bağlantı işlem sonucu geçersiz".into()),
     }

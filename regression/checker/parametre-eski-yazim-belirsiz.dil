@@ -1,0 +1,9 @@
+# K-398: kökle yeniden atanan parametreye eski yazımla başvuru A002 olur.
+işlem başlık yap
+    başlığı Metin olarak al
+    Metin döndürür
+
+    başlık "## " ile başlığ olsun
+    başlığ döndür
+
+"a" için başlık yap yaz

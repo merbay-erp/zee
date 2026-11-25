@@ -3,8 +3,13 @@
 use std::collections::BTreeSet;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
+mod giden;
 mod origin;
+mod veri_yolu;
+pub use giden::{GidenHedefHatasi, MTA_STS_YOLU};
+use giden::{MTA_STS_JOKERI, TCP_JOKERI};
 use origin::ayristir;
+pub use veri_yolu::{veri_yolu_bilesenleri, veri_yolu_mu, VERI_ONEKI};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Yetkinlik {
@@ -21,10 +26,13 @@ pub enum Yetkinlik {
     Veritabani,
     /// K-390: bildirilmiş loopback doğrulayıcı çözücüye DNS sorgusu (RFC-0044 B1).
     Dns,
+    /// K-394 (RFC-0045): paylaşılan veri kökünden (`veri:`) okuma / yazma.
+    VeriOkuma,
+    VeriYazma,
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 11] = [
+    pub const TUMU: [Self; 13] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
@@ -36,6 +44,8 @@ impl Yetkinlik {
         Self::Kriptografi,
         Self::Veritabani,
         Self::Dns,
+        Self::VeriOkuma,
+        Self::VeriYazma,
     ];
 
     pub const fn yazimi(self) -> &'static str {
@@ -51,6 +61,8 @@ impl Yetkinlik {
             Self::Kriptografi => "kriptografi",
             Self::Veritabani => "veritabanı",
             Self::Dns => "dns",
+            Self::VeriOkuma => "veri-okuma",
+            Self::VeriYazma => "veri-yazma",
         }
     }
 
@@ -75,6 +87,8 @@ pub enum AgSemasi {
     Smtp,
     /// K-210: implicit TLS SMTP (465).
     Smtps,
+    /// K-397 (ADR-173): ham giden TCP; kapı zorunlu, varsayılan yok.
+    Tcp,
 }
 
 impl AgSemasi {
@@ -84,6 +98,7 @@ impl AgSemasi {
             Self::Https => "https",
             Self::Smtp => "smtp",
             Self::Smtps => "smtps",
+            Self::Tcp => "tcp",
         }
     }
 
@@ -93,6 +108,7 @@ impl AgSemasi {
             Self::Https => 443,
             Self::Smtp => 587,
             Self::Smtps => 465,
+            Self::Tcp => 0, // kapı zorunlu, yazımda hep görünür
         }
     }
 
@@ -113,7 +129,7 @@ pub struct AgHedefi {
 
 impl AgHedefi {
     pub fn bildirimden(yazim: &str) -> Result<Self, String> {
-        let (hedef, kuyruk) = ayristir(yazim)?;
+        let (hedef, kuyruk) = ayristir(yazim, true)?;
         if !kuyruk.is_empty() && kuyruk != "/" {
             return Err("ağ hedefi yol, sorgu veya parça taşıyamaz; yalnız origin yaz".into());
         }
@@ -121,7 +137,7 @@ impl AgHedefi {
     }
 
     pub fn istekten(yazim: &str) -> Result<Self, String> {
-        let (hedef, _) = ayristir(yazim)?;
+        let (hedef, _) = ayristir(yazim, false)?;
         Ok(hedef)
     }
 
@@ -148,6 +164,11 @@ impl AgHedefi {
 
     pub fn konagi(&self) -> &str {
         &self.konak
+    }
+
+    /// K-397: `tcp://*:25` ya da `https://mta-sts.*` bildirimi.
+    pub fn joker_mu(&self) -> bool {
+        self.konak == TCP_JOKERI || self.konak == MTA_STS_JOKERI
     }
 
     pub const fn kapisi(&self) -> u16 {
@@ -212,12 +233,7 @@ impl YetkinlikPolitikasi {
     pub fn gelistirici_agli() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
-            .filter(|yetkinlik| {
-                !matches!(
-                    yetkinlik,
-                    Yetkinlik::YerelAg | Yetkinlik::Veritabani | Yetkinlik::Dns
-                )
-            })
+            .filter(|yetkinlik| !veri_yolu::BILDIRIMSIZ_KAPALI.contains(yetkinlik))
             .collect();
         Self {
             izinler,
@@ -288,20 +304,8 @@ impl YetkinlikPolitikasi {
     }
 
     pub fn ag_istegini_denetle(&self, url: &str) -> Result<AgHedefi, String> {
-        self.gerektir(Yetkinlik::Ag)?;
-        let hedef = AgHedefi::istekten(url)?;
-        match &self.ag_hedefleri {
-            AgHedefKapsami::Kapali => Err("outbound ağ hedefleri kapalı".into()),
-            AgHedefKapsami::Yalniz(hedefler) if hedefler.contains(&hedef) => Ok(hedef),
-            AgHedefKapsami::Yalniz(_) => Err(format!(
-                "{} proje bildirimindeki `ağ_hedefleri` listesinde yok",
-                hedef.yazimi()
-            )),
-            AgHedefKapsami::GenelInternet if hedef.semasi().sifreli() => Ok(hedef),
-            AgHedefKapsami::GenelInternet => Err(
-                "bildirimsiz geliştirici ağında yalnız https:// ve smtps:// kullanılabilir".into(),
-            ),
-        }
+        self.ag_istegini_ayrintili_denetle(url)
+            .map(|(hedef, _)| hedef)
     }
 
     pub fn alt_politikayi_denetle(&self, alt: &Self) -> Result<(), String> {
@@ -362,7 +366,7 @@ fn yerel_ip_mi(ip: IpAddr) -> bool {
     }
 }
 
-fn public_ip_mi(ip: IpAddr) -> bool {
+pub(super) fn public_ip_mi(ip: IpAddr) -> bool {
     match ip {
         IpAddr::V4(ip) => public_ipv4_mi(ip),
         IpAddr::V6(ip) => public_ipv6_mi(ip),

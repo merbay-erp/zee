@@ -3,10 +3,14 @@
 - **Durum:** taslak — 24 Kasım 2026. Aşama **B1a kabul edildi ve
   uygulandı** (K-390, ADR-169, spec/31 §1); **B1b (PSL) ve B2b (DKIM
   doğrulama ilkeli) kabul edildi ve uygulandı** (K-390 ikinci dilimi,
-  ADR-175, spec/31 §2–§3); B2a/B2c/B2d/B2e, B3, B4 taslak. Core freeze (K-160A/ADR-059) altında her aşama
-  ayrı `dogfood-change` K-işi, ADR'si ve depo içi reproducer'ıyla açılır.
+  ADR-175, spec/31 §2–§3); **B4a uygulandı** (K-397 Dilim 1, ADR-173);
+  B2a/B2c/B2d/B2e, B3 (K-397 Dilim 2, ADR-174) ve B4'ün kalanı taslak. Core
+  freeze (K-160A/ADR-059) altında her aşama ayrı `dogfood-change` K-işi,
+  ADR'si ve depo içi reproducer'ıyla açılır.
+- **Uygulama:** K-397 Dilim 1 (B4a giden TCP + istemci STARTTLS, ADR-173)
+  ve Dilim 2 (B3 DKIM imza ilkeli, ADR-174) — bkz. "Uygulama kararı — K-397".
 - **Tarih:** 24 Kasım 2026
-- **İş:** K-383 (taslak), K-390 (B1a uygulandı)
+- **İş:** K-383 (taslak), K-390 (B1a uygulandı), K-397 (B4a/B3 uygulaması)
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
   [spec/09](../spec/09-son-tarih-ve-iptal.md),
   [spec/12](../spec/12-web-guvenlik-profili.md) (§9 ağ dinleyicisi),
@@ -633,6 +637,195 @@ Her ikisi de yayımlıysa DANE uygulanabildiğinde öne alınır (RFC 8461 §2).
 5. Gerçek internette (insan adımı): DANE yayımlayan ve MTA-STS yayımlayan
    birer alıcıya teslim, oturum kaydı sürüm kanıtında.
 6. Soak (K-173) 1800 sn önbellek büyümesi sınırında.
+
+## Uygulama kararı — K-397 (24 Kasım 2026)
+
+ZeeMail'in `zeemail/disteslim` hizmeti (ZeeOS'ta 25 kapısına çıkışı olan tek
+hizmet) teslim motorunu Zee'de taşır: SMTP istemci durum makinesi, MX sırası,
+yeniden deneme, MTA-STS/DANE/TLS-RPT kararı, DSN ve ileti kurma. Dilden
+istediği yalnız dört dar yapı taşıdır. K-397 bunları iki dilimde açar
+(görev metnindeki "B3 TCP+STARTTLS / B4 DKIM" adlandırması bu RFC'nin
+**B4a** ve **B3** aşamalarına karşılık gelir):
+
+| Dilim | RFC aşaması | Yüzey | ADR |
+|---|---|---|---|
+| 1 | B4a | `ağ_hedefleri` `tcp://` biçimi, giden TCP, istemci STARTTLS, MTA-STS ilke indirmesi için `https://mta-sts.*` | ADR-173 |
+| 2 | B3 | DKIM imza ilkeli (`rsa-sha256`, `ed25519-sha256`), anahtar credential'dan | ADR-174 |
+
+### Taslaktan bilinçli sapmalar
+
+1. **`smtp-teslim` yetkinliği açılmaz.** Giden bağlantı mevcut `ağ`
+   yetkinliği ve `ağ_hedefleri` listesine iki yeni biçimle bağlanır; tek
+   outbound politika noktası (RFC-0024) korunur, yeni yetkinlik/P015 bağı
+   gerekmez. Teslim politikası (MX sırası, MTA-STS, DANE, fırsatçı TLS)
+   ürünün Zee kodudur; dil yalnız "hangi IP'ye, hangi kapıya" sınırını ve
+   kriptografiyi taşır.
+2. **MTA-STS indirmesi `smtp-teslim` alt işlemi değildir.** Mevcut HTTP
+   istemcisi zaten yönlendirme izlemez, çözümleme sonrası IP'yi denetler,
+   PKIX doğrular, gövdeyi ve süreyi sınırlar. Eksik olan yalnız önceden
+   bilinmeyen `mta-sts.<alan>` origin'idir; bunun için dar joker
+   `https://mta-sts.*` eklenir (yalnız 443, yalnız
+   `/.well-known/mta-sts.txt` yolu, yalnız public IP).
+3. **DKIM imzası kanonikleştirilmiş bayt üzerinde atılır.** Kanonikleştirme,
+   başlık seçimi ve `bh=` ZeeMail'dedir (ürünün B2 doğrulayıcısıyla aynı
+   kod). İmza kâhini önlemi taslaktaki "yalnız dosya tutamağı" yerine imza
+   girdisinin kendisi üzerinden kurulur (Dilim 2, aşağıda).
+
+### Dilim 1 — giden TCP (B4a)
+
+```text
+# proje.dil
+yetkinlikler "ağ" listesi olsun
+ağ_hedefleri "tcp://*:25", "https://mta-sts.*" listesi olsun
+
+# Zee
+sonuç "mx1.alici.ornek:25" adresine bağlanmayı dene olsun   # Sonuç<Sözlük>
+selam bağlantıdan satır okumayı dene olsun
+bağlantıya "EHLO gonderen.ornek" satırını yaz
+…
+tls bağlantıda TLS istemcisi başlatmayı dene "mx1.alici.ornek" ile olsun
+bağlantıyı kapat
+```
+
+- **Hedef biçimleri.** `tcp://<konak>:<kapı>` tam hedeftir (kapı zorunlu,
+  varsayılan yok); çözülen IP'ler spec/23 kuralına göre denetlenir
+  (`yerel-ağ` yetkinliği varsa yerel adres de olabilir — test ve iç röle
+  için). `tcp://*:25` **yalnız 25 kapısında** geçerli jokerdir: her public
+  IP, `yerel-ağ` açık olsa bile yalnız public. Başka kapıda joker P-hatası.
+- **SSRF ve yeniden bağlama.** Hedef ad ise süreç çözücüsüyle bir kez
+  çözülür ve en çok 16 adres sınıflandırılır; **biri bile** izinsizse
+  `hedef_yasak` (fail-closed, HTTP istemcisinin kuralıyla aynı). Bağlantı **denetlenen IP'ye** açılır (ad ikinci kez
+  çözülmez); TOCTOU penceresi yoktur. Public sayılmayan aralıklar:
+  0/8, 10/8, 100.64/10 (CGNAT), 127/8, 169.254/16, 172.16/12, 192.0.0/24,
+  192.0.2/24, 192.88.99/24, 192.168/16, 198.18/15, 198.51.100/24,
+  203.0.113/24, 224/4 ve üstü (multicast/ayrılmış/yayın); IPv6'da
+  2000::/3 dışı her şey, ::1, fc00::/7, fe80::/10, 2001::/23, 2001:db8::/32,
+  2002::/16 (6to4), 3fff::/20 ve **IPv4-mapped `::ffff:0:0/96` (her
+  profilde ret)**; 64:ff9b::/96 (NAT64) 2000::/3 dışında olduğu için ret.
+  Metadata/link-local her profilde yasak (mevcut kural).
+- **Son tarih ve sınırlar.** Bağlanma `min(Zee son tarihi, 30 sn)`; okuma,
+  yazma ve TLS el sıkışması mevcut bağlantı ayarlarıyla (`bağlantı_boşta_süresi`
+  varsayılan 300 sn, satır sınırı 1000, giden tampon 64 KiB). Görev başına
+  aynı anda **bir** giden bağlantı (ikinci çağrı `zaten_bağlı`); süreç
+  başına **en çok 16** eşzamanlı giden bağlantı (`sınır`). Görev ya da
+  program biterken açık giden bağlantı kapatılır.
+- **Kalıp yeniden kullanımı.** Bağlantı değer değildir (ADR-165): başarılı
+  bağlanma o görevin bağlantısı olur ve A2/A2c kalıpları (satır oku/yaz,
+  süreli okuma, bayt okuma, parça yazma, dosya aktarma, nokta bloğu) aynen
+  çalışır. Bu kalıplar artık `ağ-dinleyici` **ya da** `ağ` yetkinliğiyle
+  derlenir; gerçek kapı bağlantıyı açan adımdır. Dinleyici görevinin
+  içinden giden bağlantı açılamaz (`geçersiz`): gelen oturumun bağlantısı
+  sessizce değiştirilemez.
+- **Sonuç ve hatalar.** Başarı `Sözlük{uzak_adres, uzak_kapı, yerel_kapı}`
+  (Metin). Ret `C030` Sonuç'u, `tür` ∈ `geçersiz` (biçim), `hedef_yasak`
+  (politika/IP), `çözülemedi`, `bağlanamadı` (ret/erişilemez), `zaman_aşımı`,
+  `zaten_bağlı`, `sınır`.
+
+### Dilim 1 — istemci STARTTLS (B4a)
+
+```text
+tls bağlantıda TLS istemcisi başlatmayı dene "mx1.alici.ornek" ile olsun
+# → Sonuç<Sözlük>{doğrulandı: evet|hayır, doğrulama_hatası, sürüm, takım,
+#                 sunucu_adı, sertifika_sha256, spki_sha256,
+#                 zincir_sha256, zincir_spki_sha256}
+```
+
+- `rustls 0.23` + `ring`, sunucu tarafıyla aynı sabit sürüm ve takım
+  politikası (TLS 1.2/1.3, ileri gizlilikli AEAD). Kök deposu
+  `webpki-roots` (kilitli ağaçta; doğrudan bağımlılığa yükseltme).
+- **Doğrulama sessiz değildir.** PKIX sonucu (zincir, süre, ad) kayda
+  ayrı alan olarak yazılır: `doğrulandı` `evet` ya da `hayır`;
+  `hayır` ise `doğrulama_hatası` ∈ `ad_uyuşmuyor`, `süresi_dolmuş`,
+  `henüz_geçerli_değil`, `bilinmeyen_yayıncı` (kendinden imzalı dahil),
+  `iptal`, `geçersiz_sertifika`. El sıkışma PKIX başarısızken de tamamlanır,
+  çünkü DANE-EE(3) ve fırsatçı TLS (RFC 7672, RFC 3207 pratiği) bunu ister;
+  **el sıkışma imzası her durumda doğrulanır**: karşı taraf raporlanan
+  SPKI'nin özel anahtarına sahiptir. MTA-STS `enforce` için ürün
+  `doğrulandı = evet` olmadan teslim etmez; TLSA eşlemesi ürünün kodudur.
+- **Özetler.** `sertifika_sha256` uç sertifikanın DER'inin, `spki_sha256`
+  onun `SubjectPublicKeyInfo` DER'inin SHA-256'sı (TLSA `3 0 1`/`3 1 1`);
+  `zincir_*` sunucunun gönderdiği sırayla bütün sertifikaların aynı
+  özetleri, boşlukla ayrık (DANE-TA(2) `2 0 1`/`2 1 1`). Eşleme türü 2
+  (SHA-512) ve 0 (tam) sağlanmaz; ürün bunları "kullanılamaz" sayar.
+  SPKI çıkarımı yeni, sınırlı bir DER yürüyücüsüdür (aşağıda fuzz notu).
+- **Sunucu adı.** ASCII DNS adı olmalı (IP, boş, 253 üstü → `geçersiz`);
+  SNI ve PKIX ad denetimi bu addır. Yanlış SNI `ad_uyuşmuyor` verir.
+- **Yanıt enjeksiyonu.** STARTTLS'e verilen `220`den sonra ara bellekte
+  düz metin varsa (CVE-2011-1575 sınıfı) yükseltme yapılmaz, bağlantı
+  kapanır, `tür=tls`. Zaten TLS olan bağlantı `tür=tls`.
+
+### Dilim 2 — DKIM imza ilkeli (B3)
+
+```text
+# proje.dil
+yetkinlikler "kriptografi", … listesi olsun
+dkim_anahtarı "ornek.test" "z2026a" "ed25519-sha256" "zeemail_dkim_anahtari" olsun
+
+# Zee
+b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasını almayı dene olsun
+# → Sonuç<Metin>: `b=` değeri (base64, satır kırma yok)
+```
+
+- Girdi, RFC 6376 §3.7'nin imza girdisidir: kanonikleştirilmiş imzalı
+  başlıklar ve sonda `b=` boş, CRLF'siz `DKIM-Signature` başlığı.
+  Kanonikleştirme ve `bh=` ZeeMail'dedir.
+- **İmza kâhini önlemi (host'ta, kanonikleştirmeyi bilmeden):** girdinin
+  son başlığı `dkim-signature` olmalı ve onun `d=`, `s=`, `a=` etiketleri
+  bildirilmiş anahtarla birebir eşleşmeli, `h=` `from` içermeli, `b=` boş
+  ve son etiket olmalı; girdide tam bir `from:` başlığı bulunmalı ve
+  adresinin alanı `d=` ya da onun alt alanı olmalı (gevşek hizalama). Aksi
+  `geçersiz`; anahtar başka alan adına ya da keyfî bayta imza atmaz.
+- **Anahtar.** PKCS#8 PEM, K-339 sözleşmesiyle credential dizininden (yoksa
+  ortam; aynı ad ikisinde → ret). Açılışta bir kez okunur ve doğrulanır:
+  RSA 2048–4096 bit, Ed25519; `rsa-sha1`, 1024 bit, bozuk PEM, eksik
+  credential → çıkış 2, tanı yalnız seçiciyi anar. Anahtar baytı Zee
+  değeri, IO izi, günlük ya da tanı olmaz; okuma tamponu `zeroize` edilir.
+- B2 doğrulayıcısı (K-390 B2) ve K-389 `sha256` ile tek kripto yüzeyi:
+  hepsi `ring`; DKIM özeti `ring::digest::SHA256`, base64 RFC-0043 kodlayıcısı.
+
+### Tehdit modeli (K-397)
+
+| Tehdit | Önlem | Kalan risk |
+|---|---|---|
+| **SSRF** — Zee kodu (ya da MX kaydını denetleyen saldırgan) giden bağlantıyı iç hizmete (127.0.0.1:25, 10.x, metadata, unix socket) yöneltir | Hedef yalnız `ağ_hedefleri`; joker yalnız 25 ve yalnız public IP; IPv4-mapped, NAT64, 6to4, Teredo ve dokümantasyon aralıkları ret; metadata her profilde ret | Public internetteki keyfî bir 25 kapısına bağlanma — hizmetin işi budur; oran/hacim ürünün kuyruğu |
+| **DNS yeniden bağlama** — ad denetimde public, bağlanırken private çözülür | Tek çözümleme; bağlantı denetlenen `SocketAddr`'a açılır | — |
+| **Kapı kaçırma** — joker 25'i 22/6379'a genişletme | Joker kapısı sabit 25; başka kapıda P-hatası; tam hedefte kapı zorunlu | — |
+| **STARTTLS soyma** | Dil yalnız mekanizmadır; DANE/MTA-STS varken düz metne düşmeme ürün politikası (B4 tablosu) | Ürün hatası; ZeeMail testleri |
+| **Sessiz doğrulama hatası** | `doğrulandı`/`doğrulama_hatası` her sonuçta; doğrulanmamış el sıkışma da imzayı doğrular | Ürün alanı okumazsa fırsatçı TLS'e düşer — RFC 8461 testlerinde ürün kanıtı |
+| **Anahtar sahipliği taklidi** (DANE için yanlış SPKI raporu) | SPKI uç sertifikadan, el sıkışma imzası o anahtarla doğrulanmadan kayıt verilmez | — |
+| **Yanıt enjeksiyonu** (CVE-2011-1575) | `220` sonrası tampon boş değilse kapanış | — |
+| **Kaynak tüketimi** (yavaş MX, sonsuz satır, dev zincir) | Bağlanma 30 sn, boşta süresi, satır sınırı, 64 KiB giden tampon, TLS kayıt tamponu 64 KiB; süreç başına 16 giden bağlantı; zincir en çok 10 sertifika, DER yürüyücüsü derinlik/uzunluk sınırlı | Teslim gecikmesi |
+| **MTA-STS indirmesinde SSRF/exfil** | Joker yalnız `mta-sts.` ön ekli ad, 443, sabit yol, public IP, yönlendirme yok | Saldırganın alanındaki `mta-sts.` sunucusuna sabit yollu istek — RFC 8461 gereği |
+| **DKIM imza kâhini** | Girdi `d=`/`s=`/`a=` ve From hizalaması host'ta denetlenir | Ürün kendi alanı adına yanlış içeriği imzalayabilir — gönderim yetkilendirmesi ürünün |
+| **Anahtar sızıntısı** | Credential tercih, `zeroize`, tanılarda yalnız seçici; IO izinde yalnız seçici ve girdi özeti | Süreç belleği ve çekirdek dökümü — ZeeOS birimi `LimitCORE=0` |
+| **Zayıf anahtar** | RSA < 2048 ve > 4096, `rsa-sha1` açılışta ret | — |
+
+### Deterministik IO ve fuzz
+
+- Giden bağlanma (hedef, seçilen IP, sonuç), TLS istemci sonucu (bütün kayıt
+  alanları) ve DKIM imzası (seçici, girdi SHA-256'sı, imza) IO izine girer;
+  replay ağa gitmez. `dil dene` hermetik adaptörü betiklenmiş sahte uzak
+  sunucu ve sahte TLS kaydı verir; politika denetimi hermetikte de aynı
+  koddur.
+- Yeni ayrıştırıcılar: X.509 SPKI DER yürüyücüsü (Dilim 1) ve DKIM imza
+  girdisi etiket denetimi (Dilim 2). İkisi saf modüldür; birim testleri
+  bozuk/kesik/aşırı uzun DER'i ve etiket kenar durumlarını kapsar. Fuzz
+  hedefleri (`x509_spki`, `dkim_imza_girdisi`) aday olarak ADR-173/174'te
+  kayıtlıdır; RC fuzz kapısına alınmaları açık iştir (ayrıştırıcılar
+  saldırganın gönderdiği sertifikayı yalnız rustls/webpki kabul ettikten
+  sonra görür).
+
+### Dilim 1 kabul ölçütleri
+
+1. `tcp://` tam hedef ve `tcp://*:25` joker: bütün özel aralıklar, IPv4-mapped,
+   izinsiz kapı ve listede olmayan hedef reddi (hermetik + birim).
+2. Yeniden bağlama: bağlantının denetlenen IP'ye açıldığını gösteren test.
+3. Gerçek TCP: loopback yankı sunucusuyla satır/parça/süreli okuma/aktarım.
+4. Gerçek TLS: geçerli zincir `doğrulandı=evet`; kendinden imzalı, süresi
+   dolmuş, yanlış SNI `doğrulandı=hayır` + doğru neden; SPKI özeti
+   `openssl` ile bağımsız hesaplanan değere eşit.
+5. Görev başına ikinci bağlantı `zaten_bağlı`; dinleyici görevinde ret.
+6. MTA-STS joker: yol dışı istek, 443 dışı kapı, `mta-sts.` önekisiz ad reddi.
 
 ## Bağımlılık seçimi
 

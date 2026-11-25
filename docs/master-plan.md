@@ -185,10 +185,13 @@ TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
 ve IMAP literal'i belleğe alınmadan `0600` geçici dosyaya akar (yalnız
 birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
 yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
-süreli okuma vardır. K-388 ile bağlantı görevinin çalışma bütçesi her
+süreli okuma vardır. A2d (K-396, ADR-172) ile dosya RFC 2045 base64
+satırları olarak (T = e + 2·⌈e/76⌉) ve kodlanmış çıktı aralığıyla belleğe
+alınmadan bağlantıya akar (IMAP `BODY[n]`, `BODY[n]<o.n>`; kaynak en çok 32 MiB). K-388 ile bağlantı görevinin çalışma bütçesi her
 protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
 dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
-zarfı aynen geçerlidir. Bağlantılar arası uyandırma ve diğer katmanlar
+zarfı aynen geçerlidir. K-393 (ADR-171) ile zarf düşen değerin payını iade
+eder; C024 artık iş miktarını değil canlı saklanan değerleri sınırlar. Bağlantılar arası uyandırma ve diğer katmanlar
 açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV
@@ -203,7 +206,7 @@ Web arayüzünde ek indirme, JS'siz yükleme ve genişletilmiş SMTP ek türleri
 K-378 ile `dogfood-change` olarak açılıyor ([RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
 kabul, ADR-163). **Gerçekleşen:** katman A — rotadan kayıtlı türle
 `attachment` dosya yanıtı (kapalı `icerik_turu` kaydı RFC-0040 katman C ile
-tek model; sandbox CSP, 16 MiB, K-372 bütçesi). Katman B — proje bildirimiyle
+tek model; sandbox CSP, 32 MiB (K-401; önce 16 MiB), K-372 bütçesi). Katman B — proje bildirimiyle
 açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytından
 önce, spec/26 `.parca` modeli). Katman C — proje bildirimli SMTP ek türleri
 (`e_posta_ek_türleri`, makro/yürütülebilir yapısal yasak, imza/UTF-8,
@@ -219,6 +222,31 @@ sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
 (`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
 hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
+
+Giden teslimin ağ tarafı **gerçekleşti**: K-397
+([ADR-173](../adr/173-giden-tcp-ve-istemci-starttls.md),
+[RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
+B4a) ile `"<ana>:<kapı>" adresine bağlanmayı dene` `ağ_hedefleri`
+`tcp://` tam hedefine ya da yalnız 25 kapısında `tcp://*:25` jokerine (yalnız
+public IP, tek çözümleme, denetlenen IP'ye sabitleme) giden TCP açar; A2/A2c
+bağlantı kalıpları bu bağlantıda çalışır. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemci STARTTLS'idir; PKIX sonucu açık
+alan, SPKI/sertifika özetleri DANE için. MTA-STS ilkesi `https://mta-sts.*`
+ile mevcut HTTP istemcisinden. MX → IP yolu K-390 B1a çözücüsüdür; IP
+değişmeziyle bağlanma ikinci ad çözümü yapmaz. **Açık:** B3 DKIM imza ilkeli (ADR-174,
+K-397 Dilim 2); gerçek
+internette DANE/MTA-STS teslim kanıtı. V1 sözü değildir.
+
+Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
+([ADR-170](../adr/170-paylasilan-veri-koku.md),
+[RFC-0045](../rfcs/0045-paylasilan-veri-koku.md)) ile `proje.dil`
+`veri_kökü` kökün mutlak yolunu taşıyan ortam/credential adını bildirir,
+program `veri:` önekiyle adlandırır, okuma `veri-okuma` ve yazma
+`veri-yazma` ister (P023). Kök/ara klasörler `O_NOFOLLOW` yürüyüşü ve ata
+değişmeziyle, yaprak bağsız ve tek hard-link'li okunur; spec/08 iç okumaları
+da bağ izlemez (`urun-h` ZM-F038, GB-168). **Açık:** veri kökünde dizin
+listeleme, görsel küçültme, bağlantı blok dosyası, Windows. V1 sözü
+değildir.
 
 Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 ([ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),

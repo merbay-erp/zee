@@ -349,6 +349,7 @@ dependencies = [
  "sha2",
  "unicode-normalization",
  "ureq",
+ "webpki-roots",
 ]
 
 [[package]]

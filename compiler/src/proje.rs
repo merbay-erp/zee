@@ -23,6 +23,7 @@
 //! e_posta_ek_türleri "pdf", "docx", "csv" listesi olsun
 //! dns_çözücü "127.0.0.1:53" olsun
 //! dns_dnssec "zorunlu" olsun
+//! veri_kökü "UYGULAMA_DEPO" olsun
 //! ```
 
 mod baglanti;
@@ -35,6 +36,7 @@ mod form_yukleme;
 mod govde_siniri;
 mod http_istek;
 mod kimlik_iletisim;
+mod veri_koku;
 mod web_oturumu;
 
 pub use crate::ag_satiri::TlsBildirimi;
@@ -93,6 +95,9 @@ pub struct ProjeBildirimi {
     pub govde_siniri: GovdeSiniriAyari,
     /// K-390: `dns` yetkinliğinin loopback çözücüsü ve DNSSEC kipi.
     pub dns: Option<crate::dns_teli::DnsAyari>,
+    /// K-394: `veri_kökü` — paylaşılan veri kökünün mutlak yolunu taşıyan
+    /// ortam değişkeni / systemd credential adı (RFC-0045).
+    pub veri_koku_degiskeni: Option<String>,
     /// K-390 B1b: kamu son ek listesi (PSL) dosyası ve exact SHA-256'sı.
     pub kamu_son_ekleri: Option<KamuSonEkiBildirimi>,
 }
@@ -183,7 +188,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, gövde_aşımı_rotası, geniş_gövde_rotaları, geniş_gövde_sınırı, veritabanı_parametre_sınırı, dns_çözücü, dns_dnssec, kamu_son_ekleri, kamu_son_ekleri_özeti.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, gövde_aşımı_rotası, geniş_gövde_rotaları, geniş_gövde_sınırı, veritabanı_parametre_sınırı, dns_çözücü, dns_dnssec, veri_kökü, kamu_son_ekleri, kamu_son_ekleri_özeti.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -222,6 +227,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let cok_parcali_yukleme = form_yukleme::alani_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let govde_siniri = govde_siniri::alanlari_al(&mut alanlar, veritabani.is_some())?;
     let dns = dns::alanlari_al(&mut alanlar, &yetkinlik_yazimlari, yetkinlik_satiri)?;
+    let veri_koku_degiskeni =
+        veri_koku::alani_al(&mut alanlar, &yetkinlik_yazimlari, yetkinlik_satiri)?;
     let kamu_son_ekleri = dns::kamu_son_eklerini_al(&mut alanlar, dns.is_some())?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
@@ -371,6 +378,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         eposta_ek_turleri,
         govde_siniri,
         dns,
+        veri_koku_degiskeni,
         kamu_son_ekleri,
     })
 }
@@ -378,6 +386,12 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
 impl ProjeBildirimi {
     pub fn yetkinlik_politikasi(&self) -> YetkinlikPolitikasi {
         YetkinlikPolitikasi::proje(self.yetkinlikler.clone(), self.ag_hedefleri.clone())
+    }
+
+    /// K-394: bildirim `veri-okuma` ya da `veri-yazma` açıyor mu.
+    pub fn veri_yetkinligi_var(&self) -> bool {
+        self.yetkinlikler.contains(&Yetkinlik::VeriOkuma)
+            || self.yetkinlikler.contains(&Yetkinlik::VeriYazma)
     }
 }
 
@@ -1055,6 +1069,7 @@ fn bilinen_alan(ad: &str) -> bool {
             | "e_posta_ek_türleri"
             | "dns_çözücü"
             | "dns_dnssec"
+            | "veri_kökü"
             | "kamu_son_ekleri"
             | "kamu_son_ekleri_özeti"
     ) || baglanti::ALANLAR.contains(&ad)

@@ -74,9 +74,33 @@ pub const BAGLANTI_BAYT_OKU: &str = "ag.baglanti_bayt_oku";
 pub const BAGLANTI_PARCA_YAZ: &str = "ag.baglanti_parca_yaz";
 /// K-384: `bağlantıya <yol> dosyasını aktarmayı dene` → TamSayı Sonucu.
 pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
+/// K-396 (RFC-0039 A2d, ZM-F040): `<yol> dosyasını base64 satırlarıyla
+/// bağlantıya aktarmayı dene` — RFC 2045 satırlı base64 akışı → TamSayı Sonucu.
+pub const BAGLANTI_BASE64_AKTAR: &str = "ag.baglanti_base64_aktar";
+/// K-396: `<yol> dosyasının base64 satırlarının <konum> baytından <n> baytını
+/// bağlantıya aktarmayı dene` — kodlanmış çıktı üzerinde aralık (IMAP partial).
+pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar";
+
+/// K-384/K-396: dosyayı bağlantıya akıtan (dolayısıyla dosyayı da okuyan)
+/// intrinsic mi.
+pub fn baglantiya_dosya_aktarir(kimlik: &str) -> bool {
+    [
+        BAGLANTI_DOSYA_AKTAR,
+        BAGLANTI_BASE64_AKTAR,
+        BAGLANTI_BASE64_ARALIK_AKTAR,
+    ]
+    .contains(&kimlik)
+}
 /// K-384 (ZM-F032): `bağlantıdan satır okumayı <n> saniye içinde dene` —
 /// kısa okuma süresi; zaman aşımı oturumu kapatmaz → Metin Sonucu.
 pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
+/// K-397 (RFC-0044 B4a): `"<ana>:<kapı>" adresine bağlanmayı dene` —
+/// `ağ_hedefleri` `tcp://` hedefine giden TCP; başarıda görevin bağlantısı
+/// olur → Metin sözlüğü Sonucu (`uzak_adres`, `uzak_kapı`, `yerel_kapı`).
+pub const GIDEN_BAGLAN: &str = "ag.giden_baglan";
+/// K-397: `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile` — giden
+/// bağlantıda istemci STARTTLS → Metin sözlüğü Sonucu (`doğrulandı`, …).
+pub const BAGLANTI_TLS_ISTEMCI: &str = "ag.baglanti_tls_istemci";
 /// K-390 (RFC-0044 B1): `<ad> için MX kayıtlarını sorgulamayı dene` →
 /// kayıt başına satırlı Metin sözlük listesi Sonucu (C033 `tür` verili ret).
 pub const DNS_MX: &str = "dns.mx_sorgula";
@@ -110,6 +134,28 @@ pub const GIZLI_SIFRELE: &str = "guvenlik.gizli_sifrele";
 pub const GIZLI_COZ: &str = "guvenlik.gizli_coz";
 
 pub use crate::yetkinlik::Yetkinlik;
+
+/// K-397: o anki bağlantı üzerinde çalışan kalıplar. Tabloda `ağ-dinleyici`
+/// görünürler ama derleme denetimi `ağ-dinleyici` **ya da** `ağ` ile
+/// karşılanır: bağlantı ya dinleyiciden kabul edilir ya da `ağ` +
+/// `ağ_hedefleri` ile açılır; gerçek kapı bağlantıyı açan adımdır.
+pub fn baglanti_islemi_mi(kimlik: &str) -> bool {
+    matches!(
+        kimlik,
+        BAGLANTI_SATIR_OKU
+            | BAGLANTI_SATIR_YAZ
+            | BAGLANTI_TLS_BASLAT
+            | BAGLANTI_TLS_ISTEMCI
+            | BAGLANTI_NOKTA_BLOGU
+            | BAGLANTI_BAYT_BLOGU
+            | BAGLANTI_BAYT_OKU
+            | BAGLANTI_PARCA_YAZ
+            | BAGLANTI_DOSYA_AKTAR
+            | BAGLANTI_BASE64_AKTAR
+            | BAGLANTI_BASE64_ARALIK_AKTAR
+            | BAGLANTI_SATIR_OKU_SURELI
+    )
+}
 
 /// Intrinsic imzalarında kullanılabilen çekirdek türlerin kapalı kümesi.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -302,12 +348,44 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         tur_hatasi: "Bağlantıya aktarılacak dosya yolu Metin olmalı.",
     },
     IntrinsicTanimi {
+        kimlik: BAGLANTI_BASE64_AKTAR,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Base64 satırlarıyla aktarılacak dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_BASE64_ARALIK_AKTAR,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN_VE_IKI_SAYI,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Aktarılacak dosya yolu Metin, konum ve bayt sayısı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
         kimlik: BAGLANTI_SATIR_OKU_SURELI,
         yetkinlik: Yetkinlik::AgDinleyici,
         arguman_turleri: SAYI,
         donus_turu: IntrinsicTuru::MetinSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Okuma süresi saniye cinsinden TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: GIDEN_BAGLAN,
+        yetkinlik: Yetkinlik::Ag,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlanılacak adres `\"<ana>:<kapı>\"` biçiminde Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_TLS_ISTEMCI,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "TLS istemcisinin sunucu adı Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_MIME_GONDER,

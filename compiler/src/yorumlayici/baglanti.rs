@@ -12,6 +12,14 @@
 //! K-384 (A2c): blok okuma (SMTP nokta bloğu ve IMAP literal'i geçici
 //! dosyaya), bayt-kesin okuma, satır sonusuz parça, dosyadan bağlantıya
 //! aktarım ve kısa süreli satır okuması aynı işlem kanalından geçer.
+//!
+//! K-397 (RFC-0044 B4a, ADR-173): giden bağlantı. `"<ana>:<kapı>" adresine
+//! bağlanmayı dene` host'ta `ağ_hedefleri` ve IP politikasından geçer; başarıda
+//! bağlantı o görevin bağlantısı olur ve yukarıdaki bütün kalıplar onun
+//! üzerinde çalışır. Görev başına aynı anda bir giden bağlantı vardır;
+//! dinleyici görevi giden bağlantı açamaz. `bağlantıda TLS istemcisi
+//! başlatmayı dene "<ad>" ile` istemci STARTTLS'idir ve PKIX sonucunu açık
+//! alanla bildirir.
 
 use super::*;
 
@@ -32,6 +40,30 @@ pub enum BaglantiSonucu {
         sha256: String,
         bayt: i64,
     },
+    /// K-397: açılan giden bağlantı (kimlik sıfırdan büyük).
+    Giden(YeniBaglanti),
+    /// K-397: istemci TLS el sıkışmasının sonucu (kutulu: kayıt büyük).
+    TlsIstemci(Box<TlsIstemciKaydi>),
+}
+
+/// K-397: istemci STARTTLS kaydı. PKIX sonucu ayrı alandır; el sıkışma
+/// imzası her durumda raporlanan SPKI'nin anahtarıyla doğrulanmıştır.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct TlsIstemciKaydi {
+    pub dogrulandi: bool,
+    /// Boş ya da `ad_uyuşmuyor`, `süresi_dolmuş`, `henüz_geçerli_değil`,
+    /// `bilinmeyen_yayıncı`, `iptal`, `geçersiz_sertifika`.
+    pub dogrulama_hatasi: String,
+    pub surum: String,
+    pub takim: String,
+    pub sunucu_adi: String,
+    /// Uç sertifika DER'inin SHA-256'sı (küçük harf onaltılık).
+    pub sertifika_sha256: String,
+    /// Uç sertifikanın `SubjectPublicKeyInfo` DER'inin SHA-256'sı.
+    pub spki_sha256: String,
+    /// Sunucunun gönderdiği sırayla bütün sertifikaların özetleri.
+    pub zincir_sha256: Vec<String>,
+    pub zincir_spki_sha256: Vec<String>,
 }
 
 impl BaglantiSonucu {
@@ -58,12 +90,23 @@ pub enum BaglantiIslemi {
     ParcaYaz(String),
     /// K-384: dosyayı bağlantıya akıtma; yol Zee yoludur, adaptör çözer.
     DosyaAktar(String),
+    /// K-396 (A2d): dosyanın RFC 2045 satırlı base64 akışı; `aralik` kodlanmış
+    /// çıktı üzerinde (konum, adet), yorumlayıcıda negatif olmadığı denetlenir.
+    Base64Aktar {
+        yol: String,
+        aralik: Option<(u64, u64)>,
+    },
     /// K-384: süresi (ms) `bağlantı_boşta_süresi`nden kısa olabilen satır
     /// okuması; zaman aşımı bağlantıyı kapatmaz.
     SatirOkuSureli(i64),
     /// Scheduler dışından (iç içe eşzamanlı görev) engelleyerek hazırlık
     /// bekler; argüman Zee son tarihinin mutlak anıdır.
     Engelle(Option<i64>),
+    /// K-397: kimlik 0 ile çağrılır; `"<ana>:<kapı>"` hedefine giden bağlantı.
+    /// İkinci alan Zee son tarihinin mutlak anı (ms).
+    GidenBaglan(String, Option<i64>),
+    /// K-397: istemci STARTTLS; argüman SNI ve PKIX ad denetimi için sunucu adı.
+    TlsIstemci(String),
 }
 
 /// Hostun kabul ettiği yeni bağlantı.
@@ -93,8 +136,11 @@ pub enum BaglantiOlayi {
 pub const BOSALTMA_SURESI_MS: i64 = 10_000;
 
 thread_local! {
-    /// Scheduler bir bağlantı görevini poll ederken o görevin bağlantısı.
+    /// Scheduler bir bağlantı görevini poll ederken o görevin bağlantısı;
+    /// K-397 ile ana akışın ya da eşzamanlı görevin giden bağlantısı.
     static GECERLI_BAGLANTI: Cell<Option<u64>> = const { Cell::new(None) };
+    /// K-397: açık giden bağlantıların kimlikleri (dinleyici bağlantısından ayırt).
+    static GIDEN_BAGLANTILAR: RefCell<Vec<u64>> = const { RefCell::new(Vec::new()) };
     /// Yalnız bağlantı görevinin kendi poll'u sırasında dolu: IO beklemesi
     /// bu kanala işaret bırakıp Pending döner.
     static BAGLANTI_IO_SINYALI: RefCell<Option<Rc<Cell<bool>>>> =
@@ -118,10 +164,55 @@ fn baglanti_tanisi(mesaj: String, satir: usize) -> Tani {
 fn gecerli_baglanti(satir: usize) -> Result<u64, Tani> {
     GECERLI_BAGLANTI.with(Cell::get).ok_or_else(|| {
         baglanti_tanisi(
-            "Bağlantı kalıbı yalnız `\"<ad>\" dinleyicisinde bağlantı geldiğinde` bloğunda (ya da onun çağırdığı işlemde) kullanılabilir.".into(),
+            "Bağlantı kalıbı yalnız `\"<ad>\" dinleyicisinde bağlantı geldiğinde` bloğunda (ya da onun çağırdığı işlemde) ya da başarılı `\"<ana>:<kapı>\" adresine bağlanmayı dene` sonrasında kullanılabilir.".into(),
             satir,
         )
     })
+}
+
+/// K-397: eşzamanlı görev scheduler'ı her görev için kendi bağlantı yuvasını
+/// takar; dönen değer önceki yuvadır.
+pub(super) fn gecerli_baglantiyi_degistir(yeni: Option<u64>) -> Option<u64> {
+    GECERLI_BAGLANTI.with(|yuva| yuva.replace(yeni))
+}
+
+pub(super) fn gorevin_baglantisi() -> Option<u64> {
+    GECERLI_BAGLANTI.with(|yuva| yuva.get())
+}
+
+pub(super) fn giden_mi(kimlik: u64) -> bool {
+    GIDEN_BAGLANTILAR.with(|liste| liste.borrow().contains(&kimlik))
+}
+
+fn giden_birak(kimlik: u64) {
+    GIDEN_BAGLANTILAR.with(|liste| liste.borrow_mut().retain(|k| *k != kimlik));
+}
+
+/// K-397: program koşusunun giden durumu (yuva, açık giden kimlikler).
+pub(super) type GidenKapsami = (Option<u64>, Vec<u64>);
+
+pub(super) fn giden_kapsamini_ac() -> GidenKapsami {
+    (
+        GECERLI_BAGLANTI.with(|yuva| yuva.replace(None)),
+        GIDEN_BAGLANTILAR.with(|liste| std::mem::take(&mut *liste.borrow_mut())),
+    )
+}
+
+pub(super) fn giden_kapsamini_kapat(io: &mut dyn GirdiCikti, onceki: GidenKapsami) {
+    let acik = GIDEN_BAGLANTILAR.with(|liste| std::mem::take(&mut *liste.borrow_mut()));
+    for kimlik in acik {
+        let _ = io.baglanti_islemi(kimlik, &BaglantiIslemi::Kapat);
+    }
+    GECERLI_BAGLANTI.with(|yuva| yuva.set(onceki.0));
+    GIDEN_BAGLANTILAR.with(|liste| *liste.borrow_mut() = onceki.1);
+}
+
+/// K-397: görev biterken kendi açtığı giden bağlantıyı kapatır.
+pub(super) fn gideni_kapat(io: &mut dyn GirdiCikti, kimlik: u64) {
+    if giden_mi(kimlik) {
+        giden_birak(kimlik);
+        let _ = io.baglanti_islemi(kimlik, &BaglantiIslemi::Kapat);
+    }
 }
 
 struct IoBeklemeNoktasi {
@@ -306,7 +397,25 @@ async fn bayt_yaz(
     })
 }
 
-/// K-384 (A2c) intrinsic'lerinin dağıtımı (tür denetimi derleme zamanında).
+/// `a2c_yurut`un dağıttığı kimlikler (K-384 A2c, K-396 A2d ve K-397 giden bağlantı).
+pub(super) fn a2c_mi(kimlik: &str) -> bool {
+    use crate::intrinsic as i;
+    [
+        i::BAGLANTI_NOKTA_BLOGU,
+        i::BAGLANTI_BAYT_BLOGU,
+        i::BAGLANTI_BAYT_OKU,
+        i::BAGLANTI_SATIR_OKU_SURELI,
+        i::BAGLANTI_PARCA_YAZ,
+        i::BAGLANTI_DOSYA_AKTAR,
+        i::BAGLANTI_BASE64_AKTAR,
+        i::BAGLANTI_BASE64_ARALIK_AKTAR,
+        i::GIDEN_BAGLAN,
+        i::BAGLANTI_TLS_ISTEMCI,
+    ]
+    .contains(&kimlik)
+}
+
+/// K-384 (A2c), K-396 ve K-397 intrinsic'lerinin dağıtımı (tür denetimi derleme zamanında).
 pub(super) async fn a2c_yurut(
     kimlik: &str,
     degerler: &[Deger],
@@ -330,6 +439,22 @@ pub(super) async fn a2c_yurut(
         (i::BAGLANTI_DOSYA_AKTAR, [yol]) => {
             let yol = metne_sinirli(yol, satir)?;
             bayt_yaz(io, BaglantiIslemi::DosyaAktar(yol), satir).await
+        }
+        // K-397: giden bağlanma ve istemci STARTTLS.
+        (i::GIDEN_BAGLAN, [adres]) => giden_baglan(io, metne_sinirli(adres, satir)?, satir).await,
+        (i::BAGLANTI_TLS_ISTEMCI, [ad]) => tls_istemci(io, metne_sinirli(ad, satir)?, satir).await,
+        (i::BAGLANTI_BASE64_AKTAR, [yol]) => {
+            let yol = metne_sinirli(yol, satir)?;
+            let islem = BaglantiIslemi::Base64Aktar { yol, aralik: None };
+            bayt_yaz(io, islem, satir).await
+        }
+        (i::BAGLANTI_BASE64_ARALIK_AKTAR, [yol, Deger::TamSayi(konum), Deger::TamSayi(adet)]) => {
+            let (Ok(konum), Ok(adet)) = (u64::try_from(*konum), u64::try_from(*adet)) else {
+                return Ok(gecersiz_sonuc("konum ve bayt sayısı negatif olamaz"));
+            };
+            let yol = metne_sinirli(yol, satir)?;
+            let aralik = Some((konum, adet));
+            bayt_yaz(io, BaglantiIslemi::Base64Aktar { yol, aralik }, satir).await
         }
         _ => Err(ic_hata(satir)),
     }
@@ -386,12 +511,100 @@ pub(super) async fn yaz_cumlesi(
     }
 }
 
-/// `bağlantıyı kapat`.
+/// `bağlantıyı kapat`. Giden bağlantıda yuva boşalır (yeni bağlantı açılabilir).
 pub(super) async fn kapat(io: &mut dyn GirdiCikti, satir: usize) -> Result<(), Tani> {
-    match islemi_yurut(io, BaglantiIslemi::Kapat, satir).await? {
+    let kimlik = gecerli_baglanti(satir)?;
+    let sonuc = islemi_yurut(io, BaglantiIslemi::Kapat, satir).await?;
+    if giden_mi(kimlik) {
+        giden_birak(kimlik);
+        GECERLI_BAGLANTI.with(|yuva| yuva.set(None));
+    }
+    match sonuc {
         BaglantiSonucu::Tamam(_) | BaglantiSonucu::Hata(..) => Ok(()),
         _ => Err(ic_hata(satir)),
     }
+}
+
+/// K-397: `"<ana>:<kapı>" adresine bağlanmayı dene` → `Sonuç<Sözlük>`
+/// (`uzak_adres`, `uzak_kapı`, `yerel_kapı`). Bağlanma tek host çağrısıdır;
+/// süresi host'ta `min(Zee son tarihi, 30 sn)` ile sınırlıdır.
+async fn giden_baglan(io: &mut dyn GirdiCikti, adres: String, satir: usize) -> Result<Deger, Tani> {
+    son_tarihi_denetle(io, satir)?;
+    match GECERLI_BAGLANTI.with(Cell::get) {
+        Some(kimlik) if giden_mi(kimlik) => {
+            return Ok(hata_sonucu(
+                "zaten_bağlı".into(),
+                "bu görevin açık giden bağlantısı var; önce `bağlantıyı kapat`".into(),
+            ))
+        }
+        Some(_) => return Ok(gecersiz_sonuc(
+            "dinleyici görevinde giden bağlantı açılamaz; gelen oturumun bağlantısı değiştirilemez",
+        )),
+        None => {}
+    }
+    let son = etkin_son_tarih().map(|son| son.an_ms);
+    Ok(
+        match io.baglanti_islemi(0, &BaglantiIslemi::GidenBaglan(adres, son)) {
+            BaglantiSonucu::Giden(yeni) if yeni.kimlik > 0 => {
+                GIDEN_BAGLANTILAR.with(|liste| liste.borrow_mut().push(yeni.kimlik));
+                GECERLI_BAGLANTI.with(|yuva| yuva.set(Some(yeni.kimlik)));
+                basari(Deger::Sozluk(vec![
+                    ("uzak_adres".into(), Deger::Metin(yeni.uzak_adres)),
+                    ("uzak_kapı".into(), Deger::Metin(yeni.uzak_kapi.to_string())),
+                    (
+                        "yerel_kapı".into(),
+                        Deger::Metin(yeni.yerel_kapi.to_string()),
+                    ),
+                ]))
+            }
+            BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+            _ => return Err(ic_hata(satir)),
+        },
+    )
+}
+
+/// K-397: `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile` →
+/// `Sonuç<Sözlük>`. PKIX başarısızlığı `doğrulandı=hayır` ile açıkça döner
+/// (DANE-EE ve fırsatçı TLS el sıkışmayı ister); TLS kurulamazsa `tür=tls`.
+async fn tls_istemci(
+    io: &mut dyn GirdiCikti,
+    sunucu_adi: String,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    let kimlik = gecerli_baglanti(satir)?;
+    if !giden_mi(kimlik) {
+        return Ok(gecersiz_sonuc(
+            "TLS istemcisi yalnız giden bağlantıda başlatılır; gelen bağlantıda `bağlantıda TLS başlatmayı dene`",
+        ));
+    }
+    Ok(
+        match islemi_yurut(io, BaglantiIslemi::TlsIstemci(sunucu_adi), satir).await? {
+            BaglantiSonucu::TlsIstemci(kayit) => basari(tls_kaydi_sozlugu(*kayit)),
+            BaglantiSonucu::Hata(tur, mesaj) => hata_sonucu(tur, mesaj),
+            _ => return Err(ic_hata(satir)),
+        },
+    )
+}
+
+fn tls_kaydi_sozlugu(k: TlsIstemciKaydi) -> Deger {
+    let metin = |m: String| Deger::Metin(m);
+    Deger::Sozluk(vec![
+        (
+            "doğrulandı".into(),
+            metin(if k.dogrulandi { "evet" } else { "hayır" }.into()),
+        ),
+        ("doğrulama_hatası".into(), metin(k.dogrulama_hatasi)),
+        ("sürüm".into(), metin(k.surum)),
+        ("takım".into(), metin(k.takim)),
+        ("sunucu_adı".into(), metin(k.sunucu_adi)),
+        ("sertifika_sha256".into(), metin(k.sertifika_sha256)),
+        ("spki_sha256".into(), metin(k.spki_sha256)),
+        ("zincir_sha256".into(), metin(k.zincir_sha256.join(" "))),
+        (
+            "zincir_spki_sha256".into(),
+            metin(k.zincir_spki_sha256.join(" ")),
+        ),
+    ])
 }
 
 /// K-381 cümlelerinin yürütülmesi (bağlantı bloğu kaydı, yazma, kapatma).
@@ -454,8 +667,8 @@ fn kaydet(
             satir,
         )
     })?;
-    ortam.insert(anahtar, Deger::TamSayi(omur));
-    ortam.insert("(bağlantı)".into(), Deger::Mantiksal(true));
+    ortama_yaz(ortam, &anahtar, Deger::TamSayi(omur), satir)?;
+    ortama_yaz(ortam, "(bağlantı)", Deger::Mantiksal(true), satir)?;
     Ok(())
 }
 
@@ -556,12 +769,12 @@ fn gorevi_poll_et(
     CALISTIRMA_BUTCESI.with(|yuva| *yuva.borrow_mut() = gorev.butce.take());
     GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = Some(Rc::clone(&gorev.zaman_sinyali)));
     BAGLANTI_IO_SINYALI.with(|yuva| *yuva.borrow_mut() = Some(Rc::clone(&gorev.io_sinyali)));
-    GECERLI_BAGLANTI.with(|yuva| yuva.set(Some(gorev.kimlik)));
+    let onceki = GECERLI_BAGLANTI.with(|yuva| yuva.replace(Some(gorev.kimlik)));
     let poll = match gorev.gelecek.as_mut() {
         Some(gelecek) => gelecek.as_mut().poll(baglam),
         None => Poll::Ready(Err(ic_hata(1))),
     };
-    GECERLI_BAGLANTI.with(|yuva| yuva.set(None));
+    GECERLI_BAGLANTI.with(|yuva| yuva.set(onceki));
     BAGLANTI_IO_SINYALI.with(|yuva| *yuva.borrow_mut() = None);
     GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = None);
     gorev.butce = CALISTIRMA_BUTCESI.with(|yuva| yuva.borrow_mut().take());

@@ -2557,6 +2557,75 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-398 — Parametre bağlama adı sözlük köküne bağlanır (ZM-F030, ADR-175)
+
+**Durum: KAPALI (25 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-h`
+(ZeeMail) sürtünmesi ZM-F030, iki kez bildirildi (23 ve 24 Kasım; ürün commit
+`a180e0c`, `imap/kaynak/ana.dil` `kalıbı` yerine `deseni`); aynı sınıf
+`kanit-ozeti` K-164/F006 olarak korpustaydı. Kullanıcı onayı 25 Kasım 07:55,
+önerilen düşük riskli yol: profil çıktısı değil bağlama adı seçimi değişir.
+Freeze sınıfı `dogfood-change`.
+
+**Karar ([ADR-175](../adr/175-parametre-baglama-adi-sozluk-koku.md),
+[spec/03](../spec/03-adlar-ve-kapsam.md)).** `kalıbı al` → `kalıp`,
+`belirteci` → `belirteç`, `eşiği` → `eşik`, `adedi` → `adet`, `içeriği` →
+`içerik`, `ucu` → `uç`, `metni` → `metin`: `morfoloji::baglama_koku`
+sözlüksüz kurallarla kökü türetir, ayrıştırıcı onu yalnız yazımın `zee-tr-1`
+aday kümesindeyse seçer. Profil, aday kümesi ve uyumluluk kaydı değişmez.
+Eski yumuşamış yazım (`kalıb`, `kalıb … olsun`) yalnız parametre için aynı
+sembole çözülür; sözlük köküne farklı türde atama önerili T002, kökle yeniden
+atanmış parametreye eski yazımla başvuru A002.
+
+Ölçüm: ZM-F030'un yedi adı ve 50 benzer adın aday kümesi; 1 773 dosyalık
+korpusun (depo + 21 yerel proje + ZeeMail) 19 450 parametre satırının 752'si
+(53 ad) yeni köke bağlanır; eski/yeni `dil denetle` farkı yalnız F006 (A001 → başarı).
+
+Kanıt: `parametre_baglama_adi_testi.rs` (yedi olumlu/olumsuz vaka, profil
+parmak izi), regression `checker/parametre-sozluk-koku` ve
+`checker/parametre-eski-yazim-belirsiz`, dogfood `zm-f030-yumusak-parametre`
+(urun-h) ve F006 beklentisi (kanit-ozeti).
+
+Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü düşmesi
+(`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
+(`ip_adresini`); sözlük ya da `zee-tr-2` ister.
+
+## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173)
+
+**Durum: Dilim 1 KAPALI (B4a); Dilim 2 (B3 DKIM imza ilkeli, ADR-174) AÇIK.**
+Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) `zeemail/disteslim` hizmeti;
+ZeeOS'ta 25 kapısına çıkış yalnız bu hizmete açıktır, teslim motoru (SMTP
+istemci durum makinesi, MX sırası, yeniden deneme, MTA-STS/DANE/TLS-RPT
+kararı, DSN) Zee'dedir. Freeze sınıfı `dogfood-change`; gramer değişmedi,
+iki contextual Sonuç kalıbı eklendi.
+
+Dilim 1: `ağ_hedefleri` `tcp://<konak>:<kapı>` tam hedefi ve yalnız 25
+kapısında `tcp://*:25` jokeri (yalnız public IP), `https://mta-sts.*` (443,
+sabit `/.well-known/mta-sts.txt`, public IP). `"<ana>:<kapı>" adresine
+bağlanmayı dene` tek çözümleme + fail-closed IP denetimi + denetlenen adrese
+sabitleme; başarılı bağlantı görevin bağlantısıdır ve A2/A2c kalıpları onun
+üzerinde çalışır (artık `ağ` ile de derlenir). Görev başına tek giden
+bağlantı, süreçte 16, bağlanma ≤ 30 sn. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemcisi; PKIX sonucu `doğrulandı` /
+`doğrulama_hatası` ile açık, SPKI/sertifika/zincir SHA-256'ları DANE için.
+GB-172.
+
+Kanıt: `yetkinlik/giden.rs` (7 birim: joker biçimi, SSRF aralıkları
+`yerel-ağ` açıkken, kapı, tek çözümleme, karışık yanıt, mta-sts jokeri),
+`ag_satiri/x509.rs` (3 birim: SPKI, bozuk/kesik/kanonik olmayan DER,
+5000 rastgele çevirme), `giden_baglanti_testi.rs` (11 hermetik: SMTP
+oturumu, açık doğrulama hatası ve yanlış SNI, SSRF, yeniden bağlama,
+görev/dinleyici kuralı, yanıt enjeksiyonu, geçersiz SNI, T054, politika
+sarmalayıcısı, IO izi replay'i, eşzamanlı görevler),
+`giden_baglanti_surec_testi.rs` (5 gerçek süreç: rustls sunucusuna geçerli
+zincir + SPKI openssl eşliği, yanlış SNI/kendinden imzalı/süresi dolmuş,
+kök yokken bilinmeyen yayıncı, joker yerel adrese soket açmaz, düz bağlantıda
+parça/aktarım/süreli okuma).
+
+Açık: Dilim 2 (DKIM imza ilkeli, `kriptografi`, credential anahtar,
+K-390 B2 doğrulayıcısıyla tek kripto yüzeyi); `x509_spki` fuzz hedefinin RC
+kapısına alınması; gerçek internette DANE/MTA-STS teslim kanıtı (insan adımı);
+ürün reproducer'ı ve provenance (ZeeMail'den bekleniyor).
+
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
 
 **Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2b KAPALI (25 Kasım
@@ -2957,6 +3026,95 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040
+(IMAP istemcileri veri kökündeki ekleri `BODY[n]` ile alamıyor; 57 baytlık
+`base64 okumayı dene` döngüsü 16 MB ekte 29,6 sn sürüp C024 ile kesiliyor).
+Freeze sınıfı `dogfood-change`; yeni tür, anahtar kelime, koşul grameri ya da
+tanı kodu yok; iki kalıp kelimesi (`satırlarıyla`, `satırlarının`) ve iki
+intrinsic.
+
+Karar (RFC-0039 A2d, ADR-172): `<yol> dosyasını base64 satırlarıyla
+bağlantıya aktarmayı dene` ve `<yol> dosyasının base64 satırlarının <konum>
+baytından <adet> baytını bağlantıya aktarmayı dene` → `Sonuç<TamSayı>`.
+RFC 2045 satırları (76 + CRLF, son satır dahil); T = e + 2·⌈e/76⌉,
+e = 4·⌈b/3⌉ normatif (spec/12 §9). Aralık kodlanmış akış üzerinde, sonda
+kırpılır, negatif `geçersiz`. Akışlı (Metin yok, zarf yok), A2c geri basınç
+ve süre bütçesi; kaynak yol `dosya-okuma`/`veri-okuma` merkezî denetimi.
+Kaynak dosya tavanı 32 MiB (K-395 yazma tavanıyla hizalı; merkez kararı
+25 Kasım, ZeeMail 25 MB iletide ~18 MB ek): tam 32 MiB geçer, +1 bayt hiç
+bayt yazılmadan `boyut_aşımı`. RFC-0039'a bağlandı (güvenlik sınırı bağlantı akışı), saf kodlayıcı
+RFC-0043 Dilim 1 `kodlama` modülünde. GB-171.
+
+Kanıt: `compiler/tests/ag_blok_testi.rs` (5 yeni vaka: bağımsız başvuru
+kodlayıcıyla 0/1/2/3/57/58/114/1000/70000 bayt ve formül, 12 aralık kenarı,
+negatif/yok/blok sınırı, T034 ve iz replay), `compiler/tests/ag_baglantisi_surec_testi.rs`
+(5 yeni vaka: 32 MiB tavan geçer/+1 bayt reddi, 16 MiB + 5 baytlık ikili ek gerçek TCP'de bayt bayt ve
+0,87 sn, aralık, kaçış ve yokluk, yetkinlik yok T054, `veri:` kökü ve
+`veri:../` reddi, kopan karşı taraf `yazılamadı`), `kodlama::testler`
+(satır kodlayıcı ve pencere her kenarda dilim eşitliği); dogfood
+`urun-h-imap-govde-base64`; K-167 iki kalıp ve iki API satırı.
+
+Açık: ham dosya baytlarının kısmi aktarımı (`BODY[]<o.n>` ham); RFC-0043
+Dilim 2 ile iç base64 yardımcılarının birleşmesi.
+
+## K-401 — Dosya özeti/dosya yanıtı 32 MiB ve izsiz atomik taşıma (ADR-167 eki)
+
+K-395 devamı (aynı kullanıcı kararı, aşağıdaki K-395 kaydı). Çalışma adı K-395b; ilk iki commit mesajı bu adı kullanır.
+
+**Durum:** kapalı (25 Kasım 2026). Kaynak `urun-h` ZeeMail sürtünmesi
+**ZM-F044** (ürün commit'i `eda6b33`): K-395 sonrasında 19 MiB'lık ek
+çözülerek yazılabildi ama taşıma, özet ve dosya yanıtı 16 MiB'ta kaldı.
+Aynı kullanıcı kararının (25 MB iletideki ek uçtan uca) devamı.
+
+Karar (ADR-167 eki): özet ve dosya yanıtı 32 MiB (tam sınır kabul, +1 bayt
+C013; yanıt akışlı, bellek tepesi büyümez). Hata: eylem dışındaki taşıma da
+içeriği 16 MiB veri okuma sınırıyla okuyordu; eylem dışında izsiz taşıma,
+eylem içinde izli yol ve 16 MiB kalır. Yükleme 16 MiB. K-396 aktarım tavanı
+kendi PR'ında. GB-169.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
+`eylem_disi_tasima_buyuk_dosyayi_okumadan_tasir_eylem_ici_sinirli`,
+`dosya_ozeti_tavani_32_mib_tam_sinirda`; `compiler/tests/dosya_yaniti_testi.rs`
+`dosya_yaniti_32_mib_tam_sinirda_akar_bellek_tepesi_buyumez` ve 32 MiB+1 ret;
+regression `buyuk-dosya-izsiz-tasima` (`native-buyuk-dosya-tasima`).
+
+## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma` (RFC-0045, ADR-170)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F038
+(ekleri yazan SMTP/gönderim/IMAP hizmetleri ile sunan web ayrı proje
+kökleri; proje dosya sınırı paylaşılan depoyu engelliyor, ek görünür uyarı
+ve `554` ile kalıyor). K-382 `veri_kökü` takip önerisinin ikinci gerçek
+tüketicisi. Freeze sınıfı `dogfood-change`; yeni kalıp, tür ya da grammar
+kuralı yok.
+
+Karar (RFC-0045 kabul, ADR-170): `proje.dil` `veri_kökü "AD" olsun` kökün
+mutlak yolunu taşıyan ortam değişkeni / systemd credential adını bildirir;
+program `veri:` önekiyle adlandırır; okuma `veri-okuma`, yazma
+`veri-yazma` ister (P023 tutarlılık). Kök ve ara klasörler `openat(O_NOFOLLOW)`
+yürüyüşü, ata değişmezi (yaprağın üst klasörü dışındaki klasörler başkasınca
+yazılamaz), yaprak bağ olamaz, okuma `O_NOFOLLOW|O_NONBLOCK` tanıtıcıdan tek
+hard-link, Linux `protected_hardlinks` zorunlu. Uygulamada spec/08 iç
+okumalarının yaprak bağını izlediği ve eş yazarın çift değiştirmeyle kök dışı
+içeriği kopyalatabildiği bulundu; kilit dosyası ve iç okumalar `O_NOFOLLOW`
+oldu. Tek dosya/`--güvenli` kipi `veri:` reddeder; `dil dene` metin anahtarı.
+GB-168.
+
+Kanıt: `compiler/tests/veri_koku_testi.rs` (11 vaka; iki proje aynı kökü
+paylaşır, salt okur web eki bayt-kesin sunar, bağ/hard-link 404, yazma
+yetkisiz, eksik/güvensiz kök, kaçış, ata klasörü, tek dosya, bildirimsiz
+proje, P023, işlem ailesi, `dene`), `compiler/src/guvenlik/veri_koku/testler.rs`
+(9 vaka; okuyucu ve yazar yarışı, deterministik çift değiştirme); dogfood
+`urun-h-paylasilan-depo-alici`, `urun-h-paylasilan-depo-web`; K-167
+`veri-koku-v1`, `veri-yolu-oneki-v1`, `yetkinlik-veri-okuma`,
+`yetkinlik-veri-yazma`, P023.
+
+Açık: (1) veri kökünde dizin listeleme; (2) görsel küçültme; (3) bağlantı
+blok dosyası ve `.zee/yuklemeler`in doğrudan veri kökünde açılması;
+(4) Windows; (5) tanıtıcı tabanlı spec/08 ile ata değişmezinin gevşetilmesi;
+(6) macOS'ta yazar iç okuması için hard-link kalan riski.
+
 ## K-395 — Çözerek yazma/ekleme hedef tavanı 32 MiB (ADR-167 eki)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F039
@@ -3180,8 +3338,10 @@ Kanıt: `main.rs::proje_dosya_yolu_kok_ve_yokluk_iletisi`, regression
 reddedilir, dosya `kaynak/` altına yazılır), spec/07 K-382 bölümü, spec/23 ve
 spec/26 ifade düzeltmesi, hata kataloğu C013.
 
-Açık — takip önerisi (`dogfood-change`, ayrı iş; core freeze altında yeni
-yüzey): `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
+Takip önerisi **K-394 ile kapandı** (RFC-0045, ADR-170): ikinci tüketici
+ZM-F038 geldi; tasarım proje köküne göreli klasör yerine mutlak, işletimce
+verilen ve projeler arası paylaşılabilir köke dönüştü. Aşağıdaki ilk taslak
+tarihseldir: `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
 sözleşme: değer proje köküne göre göreli, `..`/mutlak/sürücü öneki yasak
 (P003/P004 sınıfı), proje kökü içinde var olan klasör; verilirse göreli dosya
 IO kökü ve `.zee/yuklemeler` bu klasöre geçer, verilmezse bugünkü giriş
@@ -4130,3 +4290,35 @@ görünmeyebiliyordu. Okuyucu artık geçici hata alınca klasörün
 `…kilitsiz_takili_ya_da_kendi_kilidinde_pencere_sinirli_hata_verir`,
 regression `degistirme-penceresi-izsiz-okuma`
 (`native-dosya-okuma-izsiz-penceresi`, Windows), Windows yük A/B döngüsü.
+
+## K-393 — C024 heap zarfı düşen değerin payını iade eder (ADR-171)
+
+**Durum: KAPALI.** Kaynak: bağımsız Rust/Go karşılaştırması v2 (B4) ve
+ZM-F035/RFC-0043 seçenek (b). Freeze sınıfı `correctness`
+(semantic-bugfix). spec/24 zarfı "iade edilmeyen tahsis zarfı" olarak
+TANIMLIYOR, sayaç yalnız düşüyordu; canlı RSS ~15 MB iken kümülatif tahsis
+"~67 MB" C024 veriyordu.
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| 700 öğelik listeyi işleme 5.000 kez vermek | C024 | `700` |
+| 1.000 öğelik kabarcık sıralama (1.000 tur) | C024 | çalışır |
+| ~1 MiB listeyle 200 çağrı / 200 üzerine yazma / 200 kapsam | C024 | çalışır |
+| 1 KiB metni sözlük/yapı alanına 100.000 kez yazmak, ekle+sil | C024 | çalışır |
+| canlı biriktirme (~1 MiB × 200) | C024 | C024 |
+| iade yollarıyla karışık canlı biriktirme, dönen değer birikimi | C024 | C024 |
+| web rotası 64 MiB aşımı | 503 | 503 |
+
+Düzeltme: üzerine yazma, kapsam sonu, işlem çerçevesi, gezme kopyası, görev
+ortamı klonları, koleksiyon öğesi değişimi ve `sil` düşen değerin ölçüsünü
+iade eder. Güvenlik değişmezi ölçü ≤ tüketim: `ekle`/yeni sözlük anahtarı ve
+`x x ile y olsun` gerçek kapasite artışını tüketir, gezme geri yazımı ve iç
+adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-170).
+
+Kanıt: `kaynak_sinirlari_testi::atilan_degerin_zarf_payi_iade_edilir`,
+`iade_canli_birikimi_zarftan_kacirmaz`; `baglanti_butce_yenileme_testi`
+canlı birikimle yeniden yazıldı; regression `runtime/heap-zarfi-cerceve-iadesi`,
+`runtime/heap-zarfi-uzerine-yazma-iadesi`; spec/24, ADR-171, ADR-033/165
+ekleri, soak 1800 sn.
+
+Açık: birimler arası yaşayan değer yeni zarfa yeniden sayılmaz (K-381).

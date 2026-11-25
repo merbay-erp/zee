@@ -1,0 +1,13 @@
+# ZM-F041 hermetik yeniden üretim (gerçek sunucu/alan adı yok; 192.0.2.0/24 belgeleme bloğu).
+# Proje: yetkinlikler "ağ-dinleyici"; ağ_hedefleri "192.0.2.25:25". Dış teslim hizmeti MX'e bağlanıp
+# EHLO/STARTTLS yapmalı; bugün (zee 39858ef) `bağlanmayı dene` kalıbı yok → S004/S015 (cümle tanınmadı).
+# Beklenen (K-397): bağlantı Sonuç'u, ardından mevcut satır okuma/yazma, istemci TLS'i ve sonucun
+# doğrulandı / sürüm / sertifika ve SPKI SHA-256 alanları (DANE TLSA ve MTA-STS kararı motorda).
+baglanti "192.0.2.25:25" adresine bağlanmayı dene olsun
+baglanti başarılıysa
+    karsilama bağlantıdan satır okumayı dene olsun
+    bağlantıya "EHLO mx.ornek.test" satırını yaz
+    tls bağlantıda TLS istemcisi başlatmayı dene "mx.ornek.test" ile olsun
+    tls başarılıysa
+        bilgi tlsin değeri olsun
+        bilginin "spki_sha256" değeri yaz

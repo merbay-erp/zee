@@ -91,7 +91,10 @@ içerik yok. "25 MB / tek bağlantıda üç ileti" ölçümü 16 MiB hedef tavan
 ve K-388 ile birlikte açık kalır. K-395 (ZM-F039) hedef tavanını 32 MiB'a
 çıkardı: ürün 25 MB iletideki ~18 MB eki satıra hizalı pencerelerle dil
 değişikliği olmadan çözüyor. Dosyadan dosyaya çözme ve bayt arama önerisi
-bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). Ölçüt 4 (NIST vektörleri, dosya/metin
+bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). K-401 (ZM-F044)
+dosya özeti ve dosya yanıtı tavanlarını da 32 MiB'a hizaladı ve eylem
+dışındaki taşımanın içeriği 16 MiB sınırıyla okuması hatasını düzeltti
+(ADR-167 eki). Ölçüt 4 (NIST vektörleri, dosya/metin
 özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı açık.
 
 ## Motivasyon
@@ -237,6 +240,11 @@ kanıtı ister; (c) MIME yapısını host intrinsic'ine taşıyıp Zee'nin daha 
 metin görmesi — RFC-0039 MIME alt RFC'si, tek başına yetmez. Öneri (a);
 spec/24 normatif değişikliği olduğu için ayrı correctness K-işi (merkezde
 ZM-F035) ve aynı committe spec/24 + K-173 soak koşusu.
+
+**K-393 sonucu (24 Kasım 2026):** seçenek (b) de ayrı correctness işi olarak
+uygulandı (ADR-171, GB-170): birim içinde düşen değerin payı zarfa iade
+edilir, iade tüketimdeki ölçüyü aşamaz. Canlı gövdeyi tek birimde Zee metni
+olarak tutmak 64 MiB'ı aşarsa yine C024'tür; aralıklı okuma ihtiyacı sürer.
 
 **K-388 sonucu (24 Kasım 2026):** kaynak incelemesi "bağlantı görevi tek
 bütçe taşır" ifadesini düzeltti: K-381'den beri **başarılı** satır/blok
