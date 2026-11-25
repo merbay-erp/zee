@@ -91,6 +91,13 @@ pub const OKUMA_KAPALI: &str =
     "önceki blok yarıda kaldığı için okuma yönü kapandı; bağlantıyı kapat";
 /// Bildirilen literal/aktarım `bağlantı_blok_sınırı`nı aşıyor (bayt tüketilmez).
 pub const BLOK_SINIRI_ASILDI: &str = "blok bağlantı_blok_sınırını aşıyor; hiçbir bayt okunmadı";
+/// K-396: satırlı base64 aktarımının kaynak dosya tavanı (bayt). K-395'in
+/// 32 MiB çözerek yazma hedef tavanıyla hizalıdır; `bağlantı_blok_sınırı`
+/// daha büyük olsa da kaynak bunu aşamaz (kodlanmış çıktı ≈ 1,37 kat).
+pub const BASE64_KAYNAK_TAVANI: u64 = 32 * 1024 * 1024;
+/// Kaynak dosya [`BASE64_KAYNAK_TAVANI`]'nı aşıyor (bayt yazılmaz).
+pub const BASE64_KAYNAK_TAVANI_ASILDI: &str =
+    "kaynak dosya 32 MiB base64 aktarım tavanını aşıyor; hiçbir bayt yazılmadı";
 /// Bellekteki bayt okuması satır sınırını aşıyor (bayt tüketilmez).
 pub const BAYT_OKUMA_SINIRI: &str =
     "bellekteki bayt okuması bağlantı_satır_sınırını aşamaz; büyük literal'i dosyaya al";

@@ -26,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 49);
+    assert_eq!(kimlikler.len(), 51);
     for kimlik in [
         intrinsic::BAGLANTI_SATIR_OKU,
         intrinsic::BAGLANTI_SATIR_YAZ,
@@ -38,6 +38,8 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         intrinsic::BAGLANTI_DOSYA_AKTAR,
         intrinsic::BAGLANTI_SATIR_OKU_SURELI,
         intrinsic::BAGLANTI_TLS_ISTEMCI,
+        intrinsic::BAGLANTI_BASE64_AKTAR,
+        intrinsic::BAGLANTI_BASE64_ARALIK_AKTAR,
     ] {
         let kayit = intrinsic::tanim(kimlik).expect("K-381 bağlantı kaydı");
         assert_eq!(kayit.yetkinlik, Yetkinlik::AgDinleyici);

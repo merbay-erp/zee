@@ -185,7 +185,9 @@ TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
 ve IMAP literal'i belleğe alınmadan `0600` geçici dosyaya akar (yalnız
 birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
 yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
-süreli okuma vardır. K-388 ile bağlantı görevinin çalışma bütçesi her
+süreli okuma vardır. A2d (K-396, ADR-172) ile dosya RFC 2045 base64
+satırları olarak (T = e + 2·⌈e/76⌉) ve kodlanmış çıktı aralığıyla belleğe
+alınmadan bağlantıya akar (IMAP `BODY[n]`, `BODY[n]<o.n>`; kaynak en çok 32 MiB). K-388 ile bağlantı görevinin çalışma bütçesi her
 protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
 dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
 zarfı aynen geçerlidir. K-393 (ADR-171) ile zarf düşen değerin payını iade

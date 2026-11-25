@@ -64,7 +64,7 @@ pub(super) fn degerlendir_async<'a>(
                         let metin = metne_sinirli(metin, satir)?;
                         super::baglanti::satir_yaz(io, metin, satir).await
                     }
-                    k if super::baglanti::a2c_mi(k) => {
+                    a2c if super::baglanti::a2c_mi(a2c) => {
                         super::baglanti::a2c_yurut(kimlik, &degerler, io, satir).await
                     }
                     WEB_OTURUMLARINI_LISTELE | WEB_OTURUMUNU_IPTAL_ET => {

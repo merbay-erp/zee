@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 148] = [
+const KALIP_KELIMELERI: [&str; 150] = [
     "yaz",
     "olsun",
     "ise",
@@ -172,6 +172,8 @@ const KALIP_KELIMELERI: [&str; 148] = [
     "bayt",
     "parçasını",
     "aktarmayı",
+    "satırlarıyla",
+    "satırlarının",
     "öğesi",
     "öğesini",
     "bağlanmayı",
@@ -187,7 +189,7 @@ const KALIP_KELIMELERI: [&str; 148] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 83] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 84] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -257,6 +259,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 83] = [
     ("bloğunu", "SMTP DATA gövdesini (nokta doldurma çözülür, yalnız birebir CRLF.CRLF biter) belleğe almadan `0600` geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); çıplak CR/LF `satır_sonu`, sınır `boyut_aşımı` (blok sonlandırıcıya kadar tüketilir, dosya silinir).\n\n`ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun`"),
     ("baytı", "IMAP literal'inin tam n baytını geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); n `bağlantı_blok_sınırı`nı aşarsa hiç bayt okunmadan `boyut_aşımı`.\n\n`ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun`"),
     ("parçasını", "O anki bağlantıya satır sonu EKLEMEDEN yazar (ör. IMAP `+ `); CR/LF/NUL reddedilir, satır sonunu yalnız `satırını yaz` üretir. Cümle biçiminde hata görevi bitirir, `… yazmayı dene` Sonuç verir.\n\n`bağlantıya \"+ \" parçasını yaz`"),
+    ("satırlarıyla", "Dosyayı RFC 2045 base64 satırları olarak (76 karakter + CRLF, son satır dahil) belleğe almadan bağlantıya akıtır → TamSayı Sonucu (yazılan bayt = e + 2·⌈e/76⌉, e = 4·⌈b/3⌉); `dosya-okuma`/`veri-okuma` ister. Aralıklı biçim `satırlarının K baytından N baytını` kodlanmış çıktıda konumlanır (IMAP `BODY[n]<K.N>`).\n\n`n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`"),
     ("aktarmayı", "Dosyayı belleğe almadan bağlantıya akıtır → TamSayı Sonucu (kuyruğa alınan bayt); `dosya-okuma` da ister, `bağlantı_blok_sınırı`nı aşan dosya `boyut_aşımı`.\n\n`sonuç bağlantıya yol dosyasını aktarmayı dene olsun`"),
     ("öğesi", "Listede 1 tabanlı sıra ile öğenin kopyası (RFC-0029); sıra tek ad ya da TamSayı sabitidir, aralık dışı C031. Olmayabilecek öğe için `… öğesini almayı dene` → Sonuç (`SIRA_DISI`).\n\n`harf harflerin sıra. öğesi olsun`"),
     ("bağlanmayı", "Giden TCP: `ağ` + proje.dil `ağ_hedefleri` içindeki `tcp://<konak>:<kapı>` ya da `tcp://*:25` (yalnız public IP) hedefine bağlanır → Sözlük Sonucu (`uzak_adres`, `uzak_kapı`, `yerel_kapı`); ad bir kez çözülür, bağlantı denetlenen IP'ye açılır. Başarıda görevin bağlantısı olur ve satır/parça/blok kalıpları onun üzerinde çalışır. Ret `tür`: hedef_yasak, çözülemedi, bağlanamadı, zaman_aşımı, zaten_bağlı, sınır, geçersiz.\n\n`sonuç \"mx1.alici.ornek:25\" adresine bağlanmayı dene olsun`"),

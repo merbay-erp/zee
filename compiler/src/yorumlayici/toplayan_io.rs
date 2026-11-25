@@ -789,7 +789,7 @@ impl GirdiCikti for ToplayanIo {
     }
     fn baglanti_islemi(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
         // K-384: hermetik dosyalar bağlantı tarafıyla paylaşılır.
-        if let BaglantiIslemi::DosyaAktar(yol) = islem {
+        if let BaglantiIslemi::DosyaAktar(yol) | BaglantiIslemi::Base64Aktar { yol, .. } = islem {
             if let Some(icerik) = self.dosyalar.get(yol) {
                 self.baglanti
                     .dosyalar

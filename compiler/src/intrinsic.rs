@@ -74,6 +74,23 @@ pub const BAGLANTI_BAYT_OKU: &str = "ag.baglanti_bayt_oku";
 pub const BAGLANTI_PARCA_YAZ: &str = "ag.baglanti_parca_yaz";
 /// K-384: `bağlantıya <yol> dosyasını aktarmayı dene` → TamSayı Sonucu.
 pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
+/// K-396 (RFC-0039 A2d, ZM-F040): `<yol> dosyasını base64 satırlarıyla
+/// bağlantıya aktarmayı dene` — RFC 2045 satırlı base64 akışı → TamSayı Sonucu.
+pub const BAGLANTI_BASE64_AKTAR: &str = "ag.baglanti_base64_aktar";
+/// K-396: `<yol> dosyasının base64 satırlarının <konum> baytından <n> baytını
+/// bağlantıya aktarmayı dene` — kodlanmış çıktı üzerinde aralık (IMAP partial).
+pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar";
+
+/// K-384/K-396: dosyayı bağlantıya akıtan (dolayısıyla dosyayı da okuyan)
+/// intrinsic mi.
+pub fn baglantiya_dosya_aktarir(kimlik: &str) -> bool {
+    [
+        BAGLANTI_DOSYA_AKTAR,
+        BAGLANTI_BASE64_AKTAR,
+        BAGLANTI_BASE64_ARALIK_AKTAR,
+    ]
+    .contains(&kimlik)
+}
 /// K-384 (ZM-F032): `bağlantıdan satır okumayı <n> saniye içinde dene` —
 /// kısa okuma süresi; zaman aşımı oturumu kapatmaz → Metin Sonucu.
 pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
@@ -294,6 +311,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::TamSayiSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Bağlantıya aktarılacak dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_BASE64_AKTAR,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Base64 satırlarıyla aktarılacak dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_BASE64_ARALIK_AKTAR,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN_VE_IKI_SAYI,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Aktarılacak dosya yolu Metin, konum ve bayt sayısı TamSayı olmalı.",
     },
     IntrinsicTanimi {
         kimlik: BAGLANTI_SATIR_OKU_SURELI,

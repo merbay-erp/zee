@@ -1,0 +1,41 @@
+# Ürün H IMAP: veritabanının ürettiği FETCH yanıtı satır satır iletilir. Eki
+# veri kökünde olan parça için SQL işaret satırı bırakır (␞ ASCII dışıdır,
+# yanıtın geri kalanı ASCII): "␞D␞<yol>␞<başlangıç>␞<uzunluk>" dosyanın
+# base64 satırlı çıktısından bu aralığı akıt; "␞Y␞<metin>" metni satır sonu
+# eklemeden yaz. Literal boyu `{T}` SQL'de T = e + 2·⌈e/76⌉, e = 4·⌈b/3⌉ ile
+# hesaplanmıştır (spec/12 §9 A2d); `BODY[n]<o.n>` aralığı kodlanmış çıktı
+# üzerindedir (68 baytlık ek → 96). Değişiklik öncesi: 57 baytlık `base64 okumayı dene` döngüsü
+# (16 MB ekte 29,6 sn ve C024).
+
+işlem yanıt satırını ilet
+    satırı Metin olarak al
+    TamSayı döndürür
+
+    alanlar satırın "␞" ile parçaları olsun
+    adet alanların adedi olsun
+    adet 5 e eşitse
+        yol alanların 3. öğesi olsun
+        baş_metni alanların 4. öğesi olsun
+        uz_metni alanların 5. öğesi olsun
+        baş baş_metninin sayısı olsun
+        uz uz_metninin sayısı olsun
+        akış yol dosyasının base64 satırlarının baş baytından uz baytını bağlantıya aktarmayı dene olsun
+        akış başarılıysa
+            akışın değerini döndür
+        -1 döndür
+    adet 3 e eşitse
+        bağlantıya alanların 3. öğesi parçasını yaz
+        0 döndür
+    bağlantıya satır satırını yaz
+    0 döndür
+
+"imap_v4" dinleyicisinde bağlantı geldiğinde
+    yanıt "* 1 FETCH (UID 7 BODY[2] {96}\n␞D␞veri:ekler/t1-9f2c␞0␞96\n)\nA3 OK FETCH tamam" olsun
+    satırlar yanıtın "\n" ile parçaları olsun
+    tamam doğru olsun
+    her satır için
+        tamam ise
+            yazılan satır için yanıt satırını ilet olsun
+            yazılan 0 dan küçükse
+                tamam yanlış olsun
+    bağlantıyı kapat

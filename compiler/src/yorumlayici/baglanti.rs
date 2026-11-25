@@ -90,6 +90,12 @@ pub enum BaglantiIslemi {
     ParcaYaz(String),
     /// K-384: dosyayı bağlantıya akıtma; yol Zee yoludur, adaptör çözer.
     DosyaAktar(String),
+    /// K-396 (A2d): dosyanın RFC 2045 satırlı base64 akışı; `aralik` kodlanmış
+    /// çıktı üzerinde (konum, adet), yorumlayıcıda negatif olmadığı denetlenir.
+    Base64Aktar {
+        yol: String,
+        aralik: Option<(u64, u64)>,
+    },
     /// K-384: süresi (ms) `bağlantı_boşta_süresi`nden kısa olabilen satır
     /// okuması; zaman aşımı bağlantıyı kapatmaz.
     SatirOkuSureli(i64),
@@ -391,23 +397,25 @@ async fn bayt_yaz(
     })
 }
 
-/// `a2c_yurut`un dağıttığı kimlikler (K-384 A2c ve K-397 giden bağlantı).
+/// `a2c_yurut`un dağıttığı kimlikler (K-384 A2c, K-396 A2d ve K-397 giden bağlantı).
 pub(super) fn a2c_mi(kimlik: &str) -> bool {
     use crate::intrinsic as i;
-    matches!(
-        kimlik,
-        i::BAGLANTI_NOKTA_BLOGU
-            | i::BAGLANTI_BAYT_BLOGU
-            | i::BAGLANTI_BAYT_OKU
-            | i::BAGLANTI_SATIR_OKU_SURELI
-            | i::BAGLANTI_PARCA_YAZ
-            | i::BAGLANTI_DOSYA_AKTAR
-            | i::GIDEN_BAGLAN
-            | i::BAGLANTI_TLS_ISTEMCI
-    )
+    [
+        i::BAGLANTI_NOKTA_BLOGU,
+        i::BAGLANTI_BAYT_BLOGU,
+        i::BAGLANTI_BAYT_OKU,
+        i::BAGLANTI_SATIR_OKU_SURELI,
+        i::BAGLANTI_PARCA_YAZ,
+        i::BAGLANTI_DOSYA_AKTAR,
+        i::BAGLANTI_BASE64_AKTAR,
+        i::BAGLANTI_BASE64_ARALIK_AKTAR,
+        i::GIDEN_BAGLAN,
+        i::BAGLANTI_TLS_ISTEMCI,
+    ]
+    .contains(&kimlik)
 }
 
-/// K-384 (A2c) ve K-397 intrinsic'lerinin dağıtımı (tür denetimi derleme zamanında).
+/// K-384 (A2c), K-396 ve K-397 intrinsic'lerinin dağıtımı (tür denetimi derleme zamanında).
 pub(super) async fn a2c_yurut(
     kimlik: &str,
     degerler: &[Deger],
@@ -435,6 +443,19 @@ pub(super) async fn a2c_yurut(
         // K-397: giden bağlanma ve istemci STARTTLS.
         (i::GIDEN_BAGLAN, [adres]) => giden_baglan(io, metne_sinirli(adres, satir)?, satir).await,
         (i::BAGLANTI_TLS_ISTEMCI, [ad]) => tls_istemci(io, metne_sinirli(ad, satir)?, satir).await,
+        (i::BAGLANTI_BASE64_AKTAR, [yol]) => {
+            let yol = metne_sinirli(yol, satir)?;
+            let islem = BaglantiIslemi::Base64Aktar { yol, aralik: None };
+            bayt_yaz(io, islem, satir).await
+        }
+        (i::BAGLANTI_BASE64_ARALIK_AKTAR, [yol, Deger::TamSayi(konum), Deger::TamSayi(adet)]) => {
+            let (Ok(konum), Ok(adet)) = (u64::try_from(*konum), u64::try_from(*adet)) else {
+                return Ok(gecersiz_sonuc("konum ve bayt sayısı negatif olamaz"));
+            };
+            let yol = metne_sinirli(yol, satir)?;
+            let aralik = Some((konum, adet));
+            bayt_yaz(io, BaglantiIslemi::Base64Aktar { yol, aralik }, satir).await
+        }
         _ => Err(ic_hata(satir)),
     }
 }

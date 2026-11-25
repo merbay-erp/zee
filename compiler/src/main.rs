@@ -4507,7 +4507,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         // K-384: dosyadan aktarımda yol proje dosya sınırıyla çözülür ve
         // `dosya-okuma` yetkinliği ayrıca denetlenir.
         #[cfg(unix)]
-        if let dil::yorumlayici::BaglantiIslemi::DosyaAktar(yol) = islem {
+        if let Some((yol, kodlu)) = dosya_aktarimi(islem) {
             let cozum = self
                 .politika
                 .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))
@@ -4515,7 +4515,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             // K-394: `veri:` yaprağı reaktörde de bağ izlenmeden açılır.
             let veri = dil::yetkinlik::veri_yolu_mu(yol).then_some(yol.as_str());
             return match (cozum, self.ag_baglanti.as_mut()) {
-                (Ok(gercek), Some(reaktor)) => reaktor.dosya_aktar(kimlik, &gercek, veri),
+                (Ok(gercek), Some(reaktor)) => reaktor.dosya_aktar(kimlik, &gercek, veri, kodlu),
                 (Err(neden), _) => dil::yorumlayici::BaglantiSonucu::hata("dosya", neden),
                 (_, None) => {
                     dil::yorumlayici::BaglantiSonucu::hata("kapandı", "bağlantı reaktörü yok")
@@ -5756,6 +5756,21 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
         ExitCode::SUCCESS
     } else {
         ExitCode::FAILURE
+    }
+}
+
+/// K-384/K-396: dosyadan bağlantıya aktarımın Zee yolu ve (base64 ise)
+/// kodlanmış çıktı penceresi; satırlı aralıksız biçim tüm çıktıdır.
+#[cfg(unix)]
+fn dosya_aktarimi(
+    islem: &dil::yorumlayici::BaglantiIslemi,
+) -> Option<(&String, Option<(u64, u64)>)> {
+    match islem {
+        dil::yorumlayici::BaglantiIslemi::DosyaAktar(yol) => Some((yol, None)),
+        dil::yorumlayici::BaglantiIslemi::Base64Aktar { yol, aralik } => {
+            Some((yol, Some(aralik.unwrap_or((0, u64::MAX)))))
+        }
+        _ => None,
     }
 }
 

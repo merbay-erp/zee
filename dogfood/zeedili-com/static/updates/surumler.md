@@ -32,6 +32,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   yoktur; var olan hedefi ezmeme ve proje kökü kuralları aynıdır. Eylem
   içindeki taşıma geri alma için içeriği tuttuğundan 16 MiB sınırı kalır.
 
+### Site
+
+- **zeedili.com 25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-394 projeler arasında paylaşılan veri kökü (`veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045), K-395/K-401 çözerek yazılan ek, dosya özeti ve dosya indirme için 32 MiB sınırı ve K-393 atılan değerlerin C024 bellek zarfına payını iade etmesi haberleri eklendi. Dil davranışı değişmedi.
+
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
