@@ -1,0 +1,11 @@
+# K-394 (RFC-0045): ürün H SMTP alıcısının ek yazan kesiti. Ekler ayrı web
+# projesiyle paylaşılan veri köküne (`veri:`) içerik adresli adla yazılır.
+proje "paylasilan_depo_alici" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-dinleyici", "dosya-okuma", "dosya-yazma", "veri-okuma", "veri-yazma" listesi olsun
+ağ_hedefleri boş liste olsun
+dinleyiciler "smtp_v4 0.0.0.0:25" listesi olsun
+bağlantı_blok_sınırı 26214400 olsun
+veri_kökü "POSTA_DEPO" olsun

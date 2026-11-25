@@ -2929,6 +2929,86 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-401 — Dosya özeti/dosya yanıtı 32 MiB ve izsiz atomik taşıma (ADR-167 eki)
+
+K-395 devamı (aynı kullanıcı kararı, aşağıdaki K-395 kaydı). Çalışma adı K-395b; ilk iki commit mesajı bu adı kullanır.
+
+**Durum:** kapalı (25 Kasım 2026). Kaynak `urun-h` ZeeMail sürtünmesi
+**ZM-F044** (ürün commit'i `eda6b33`): K-395 sonrasında 19 MiB'lık ek
+çözülerek yazılabildi ama taşıma, özet ve dosya yanıtı 16 MiB'ta kaldı.
+Aynı kullanıcı kararının (25 MB iletideki ek uçtan uca) devamı.
+
+Karar (ADR-167 eki): özet ve dosya yanıtı 32 MiB (tam sınır kabul, +1 bayt
+C013; yanıt akışlı, bellek tepesi büyümez). Hata: eylem dışındaki taşıma da
+içeriği 16 MiB veri okuma sınırıyla okuyordu; eylem dışında izsiz taşıma,
+eylem içinde izli yol ve 16 MiB kalır. Yükleme 16 MiB. K-396 aktarım tavanı
+kendi PR'ında. GB-169.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
+`eylem_disi_tasima_buyuk_dosyayi_okumadan_tasir_eylem_ici_sinirli`,
+`dosya_ozeti_tavani_32_mib_tam_sinirda`; `compiler/tests/dosya_yaniti_testi.rs`
+`dosya_yaniti_32_mib_tam_sinirda_akar_bellek_tepesi_buyumez` ve 32 MiB+1 ret;
+regression `buyuk-dosya-izsiz-tasima` (`native-buyuk-dosya-tasima`).
+
+## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma` (RFC-0045, ADR-170)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F038
+(ekleri yazan SMTP/gönderim/IMAP hizmetleri ile sunan web ayrı proje
+kökleri; proje dosya sınırı paylaşılan depoyu engelliyor, ek görünür uyarı
+ve `554` ile kalıyor). K-382 `veri_kökü` takip önerisinin ikinci gerçek
+tüketicisi. Freeze sınıfı `dogfood-change`; yeni kalıp, tür ya da grammar
+kuralı yok.
+
+Karar (RFC-0045 kabul, ADR-170): `proje.dil` `veri_kökü "AD" olsun` kökün
+mutlak yolunu taşıyan ortam değişkeni / systemd credential adını bildirir;
+program `veri:` önekiyle adlandırır; okuma `veri-okuma`, yazma
+`veri-yazma` ister (P023 tutarlılık). Kök ve ara klasörler `openat(O_NOFOLLOW)`
+yürüyüşü, ata değişmezi (yaprağın üst klasörü dışındaki klasörler başkasınca
+yazılamaz), yaprak bağ olamaz, okuma `O_NOFOLLOW|O_NONBLOCK` tanıtıcıdan tek
+hard-link, Linux `protected_hardlinks` zorunlu. Uygulamada spec/08 iç
+okumalarının yaprak bağını izlediği ve eş yazarın çift değiştirmeyle kök dışı
+içeriği kopyalatabildiği bulundu; kilit dosyası ve iç okumalar `O_NOFOLLOW`
+oldu. Tek dosya/`--güvenli` kipi `veri:` reddeder; `dil dene` metin anahtarı.
+GB-168.
+
+Kanıt: `compiler/tests/veri_koku_testi.rs` (11 vaka; iki proje aynı kökü
+paylaşır, salt okur web eki bayt-kesin sunar, bağ/hard-link 404, yazma
+yetkisiz, eksik/güvensiz kök, kaçış, ata klasörü, tek dosya, bildirimsiz
+proje, P023, işlem ailesi, `dene`), `compiler/src/guvenlik/veri_koku/testler.rs`
+(9 vaka; okuyucu ve yazar yarışı, deterministik çift değiştirme); dogfood
+`urun-h-paylasilan-depo-alici`, `urun-h-paylasilan-depo-web`; K-167
+`veri-koku-v1`, `veri-yolu-oneki-v1`, `yetkinlik-veri-okuma`,
+`yetkinlik-veri-yazma`, P023.
+
+Açık: (1) veri kökünde dizin listeleme; (2) görsel küçültme; (3) bağlantı
+blok dosyası ve `.zee/yuklemeler`in doğrudan veri kökünde açılması;
+(4) Windows; (5) tanıtıcı tabanlı spec/08 ile ata değişmezinin gevşetilmesi;
+(6) macOS'ta yazar iç okuması için hard-link kalan riski.
+
+## K-395 — Çözerek yazma/ekleme hedef tavanı 32 MiB (ADR-167 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F039
+(ürün commit'i `8ee2514`): 25 MB'lık iletinin ~18 MB'lık tek base64 eki
+16 MiB hedef tavanına sığmıyordu. Ürün eki kendi `ekdeposu` paketiyle
+(satıra hizalı pencereler) dil değişikliği olmadan çözüyor; Mustafa kararıyla
+(24 Kasım 2026) kapsam yalnız tavana daraltıldı. Önerilen dosyadan dosyaya
+çözme ve bayt arama yüzeyleri açılmadı (RFC-0043 Dilim 2 kalanı, taslak).
+Freeze sınıfı `dogfood-change`; yeni kalıp, tür, tanı ya da fixture satırı yok.
+
+Karar (ADR-167 eki): hedef toplamı 32 MiB; tam sınır kabul, +1 bayt C013 ve
+hedef değişmez. Ekleme var olan hedefi genel 16 MiB okuma sınırı yerine aynı
+tavanla okur (bulunan arıza: yalnız sabit yükseltilseydi 16 MiB üstü hedefe
+ekleme okuma sınırına çarpıyordu). Yükleme, dosya yanıtı, özet 16 MiB. GB-167.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
+`eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda` (tam 32 MiB kabul, +1 bayt
+ret, 16 MiB ötesi ekleme) ve `no_clobber_tavan_yol_gecisi_ve_eylem_reddi_hedefi_bozmaz`
+(32 MiB tavanı); etkilenen ürün kesiti `dogfood/urun-h/ek-cikarma/ana.dil`.
+
+Açık: 16 MiB üstü dosya yanıtı/özet; dosyadan dosyaya akışlı çözme ve bayt
+arama (kullanıcı isterse yerel `yedek/k395-tam-yuzey` dalındaki hazırlıktan);
+C024 kümülatif zarfı (K-393).
+
 ## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256 (ADR-167)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmeleri
@@ -2960,7 +3040,8 @@ onaltılık, kod noktası, base64url) ve üç iç base64 yardımcısının
 birleştirilmesi. (2) 16 MiB'tan büyük ekler (yükleme/özet/dosya yanıtı
 tavanıyla birlikte değişir). (3) İçerik-adresli iz yan dosyasıyla aralıklı
 okumanın replay'i. (4) `kodlama` fuzz hedefi. (5) `message/rfc822` dosya
-yanıtı türü (RFC-0043 "sonraki küçük iş").
+yanıtı türü (RFC-0043 "sonraki küçük iş"; 25 Kasım 2026: ürün kaydı yok,
+yalnız yeni ZM kaydıyla açılır, K-399 taslağı birleştirilmeden bekler).
 
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı (ADR-031 eki)
 
@@ -3127,8 +3208,10 @@ Kanıt: `main.rs::proje_dosya_yolu_kok_ve_yokluk_iletisi`, regression
 reddedilir, dosya `kaynak/` altına yazılır), spec/07 K-382 bölümü, spec/23 ve
 spec/26 ifade düzeltmesi, hata kataloğu C013.
 
-Açık — takip önerisi (`dogfood-change`, ayrı iş; core freeze altında yeni
-yüzey): `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
+Takip önerisi **K-394 ile kapandı** (RFC-0045, ADR-170): ikinci tüketici
+ZM-F038 geldi; tasarım proje köküne göreli klasör yerine mutlak, işletimce
+verilen ve projeler arası paylaşılabilir köke dönüştü. Aşağıdaki ilk taslak
+tarihseldir: `proje.dil` içinde isteğe bağlı `veri_kökü "depo"` alanı. Taslak
 sözleşme: değer proje köküne göre göreli, `..`/mutlak/sürücü öneki yasak
 (P003/P004 sınıfı), proje kökü içinde var olan klasör; verilirse göreli dosya
 IO kökü ve `.zee/yuklemeler` bu klasöre geçer, verilmezse bugünkü giriş

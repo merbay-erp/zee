@@ -560,7 +560,7 @@ edildi; alt RFC açılmadı, karar ADR-163'te. Yanıtlar:
   istek bütçesi multipart yüklemede de değişmez; orantılı okuma bütçesi
   ayrı karar ve K-işi adayıdır (yavaş bağlantıda büyük yükleme 408 alır).
 - **Dosya yanıtı tavanı:** 16 MiB sabit (`yukleme_bayti`); proje bildirimiyle
-  yükseltme açılmadı.
+  yükseltme açılmadı. K-401 (ADR-167 eki) tavanı 32 MiB sabite çıkardı.
 - **`Range`/206:** ilk sürümde yok; `inline`, `ETag` ve koşullu GET de yok.
   Yalnız `attachment` açıldı.
 - **Politikasız rotaya multipart:** multipart yolu rota politikası değil

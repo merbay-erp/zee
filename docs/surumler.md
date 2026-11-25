@@ -5,6 +5,33 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 25 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Değişenler
+
+- **Dosya özeti ve dosya indirme yanıtı artık 32 MiB'a kadar (K-401):**
+  `… dosyasının sha256 özetini almayı dene` ve
+  `… dosyasını … adıyla ek olarak göndermeyi dene` sınırı 16 MiB'tan
+  **32 MiB'a** çıktı; çözerek yazılan ~18 MB'lık bir e-posta eki artık
+  özetlenip web arayüzünden indirilebilir. Sınıra tam ulaşan dosya kabul
+  edilir, bir bayt fazlası C013 verir (indirmede yanıt başlığı yazılmadan).
+  İndirme 16 KiB parçalarla akar, dosya belleğe alınmaz. Dosya yükleme
+  sınırı 16 MiB kalır.
+
+  **Göç:** Gerekmez.
+
+### Düzeltilenler
+
+- **16 MiB'tan büyük dosya taşınabiliyor (K-401):** eylem dışındaki
+  `… dosyasını … yoluna atomik taşımayı dene` dosya içeriğini gereksiz yere
+  belleğe okuyup 16 MiB veri okuma sınırına çarpıyordu; çözülmüş büyük ek
+  yerine taşınamıyordu. Artık eylem dışında içerik okunmaz ve boyut sınırı
+  yoktur; var olan hedefi ezmeme ve proje kökü kuralları aynıdır. Eylem
+  içindeki taşıma geri alma için içeriği tuttuğundan 16 MiB sınırı kalır.
+
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
@@ -92,6 +119,25 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez. Alan yazmayan projede sınırlar aynıdır. Süreç çökmesinden
   kalan geçici yükleme dosyaları artık 15 yerine 30 dakika sonra silinir.
 
+- **Projeler arasında paylaşılan veri kökü (K-394):** aynı uygulamanın ayrı
+  projeleri (ör. e-postayı alan hizmet ile eki sunan web paneli) artık ortak
+  bir veri klasörünü paylaşabilir. `proje.dil` klasörün yolunu değil, yolu
+  taşıyan ortam değişkeninin ya da systemd credential'ın adını bildirir:
+  `veri_kökü "UYGULAMA_DEPO" olsun`. Program o klasördeki dosyaları `veri:`
+  önekiyle adlandırır: `"veri:ekler/k1-1f…" dosyasını okumayı dene`. Okumak
+  için `veri-okuma`, yazmak/taşımak/silmek için ayrıca `veri-yazma`
+  yetkinliği gerekir; yalnız okuyan web paneli böylece yazamaz. Kök mutlak,
+  sembolik bağsız olmalı ve başka kullanıcılarca yazılamamalıdır; paylaşılan
+  yazma yalnız son klasörde (ör. `ekler/`) olabilir, sembolik bağ ve çok
+  hard-link'li dosya izlenmez. Ayrıntı ve yerleşim örneği RFC-0045'tedir.
+  Tutarsız bildirim yeni **P023** tanısıdır. Tek dosya kipinde `veri:` yolu
+  reddedilir.
+
+  **Göç:** Mevcut projeler değişmeden çalışır. `veri:` ile başlayan dosya
+  adları artık ayrılmıştır ve proje klasöründe aranmaz (bilinen kullanım
+  yok). Kalıcı dosya yazımı artık hedef sembolik bağ olduğunda eylem içi
+  taşıma/silmede de C013 verir (önceden bağı izliyordu).
+
 - **Dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve
   metnin SHA-256 özeti (K-389):** büyük bir dosya (ör. bağlantıdan alınmış
   bir e-posta) artık en çok 1 MiB'lık aralıklarla okunabilir:
@@ -107,7 +153,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   (`… adıyla ek olarak göndermeyi dene`) verilebilir. Bozuk kodlama yeni
   **C032** ile döner (`tür`: `alfabe`, `dolgu`, `uzunluk`, `kaçış`,
   `satır_sonu`, `utf8`, `boyut_aşımı`; `konum` hatalı baytı gösterir) ve
-  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir.
+  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir (K-395 ile 32 MiB).
   `özet metnin sha256 özeti olsun` bellekteki metnin özetini dosya
   özetiyle aynı biçimde (64 küçük harf onaltılık) verir. Okuma `dosya-okuma`,
   yazma `dosya-yazma` yetkinliği ister; IO izine içerik değil yalnız uzunluk
@@ -174,8 +220,21 @@ Bu kayıt yeni sürüm etiketi değildir.
 ### Site
 
 - **zeedili.com 24 Kasım haberi:** ana sayfa Gelişmeler'deki "Zee ile web dışı ağ hizmetleri" haberi K-384 ile genişletildi: büyük gövdenin ve IMAP literal'inin dosyaya akıtılması, bayt-kesin okuma, satır sonusuz yazma ve IMAP IDLE için kısa zaman aşımlı okuma. Dil davranışı değişmedi.
+- **zeedili.com 24–25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-390 DNS sorgusu (MX, TXT, TLSA, adres; RFC-0044), K-391 uzun iletiler ve rota bazında gövde sınırı, K-389 dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve metnin SHA-256 özeti (RFC-0043), K-386 listede sıra ile öğe erişimi (RFC-0029), K-387 tek dosya kipinde `--izin ağ` ile açılan dış ağ ve K-380/K-392/K-388 derleyici ve bağlantı bütçesi düzeltmeleri haberleri eklendi. Dil davranışı değişmedi.
 
 ### Değişenler
+
+- **Çözerek eklenen ek dosyası artık 32 MiB'a kadar (K-395):**
+  `… base64|quoted_printable çözerek … dosyasına yazmayı|eklemeyi dene`
+  hedef dosyasının toplam sınırı 16 MiB'tan **32 MiB'a** çıktı; 25 MB'lık bir
+  e-postanın ~18 MB'lık eki artık parça parça eklenerek tek dosyaya
+  çıkarılabilir. Sınıra tam ulaşan ekleme kabul edilir, bir bayt fazlası
+  yine C013 verir ve dosyaya hiçbir şey yazılmaz. 16 MiB'tan büyük bir
+  dosyaya ekleme önceden okuma sınırına çarpıyordu; bu da düzeldi. Dosya
+  yükleme, dosya indirme yanıtı ve dosya özeti sınırları 16 MiB kalır.
+
+  **Göç:** Gerekmez. 16 MiB'ı aşan eki kendisi bölen ya da uyarı veren kod
+  bu sınırı 32 MiB'a çekebilir.
 
 - **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
   biten bir işlem (`işlem yanıtı yaz`) cümle olarak çağrılınca satır

@@ -1790,6 +1790,10 @@ impl KaynakGirdisi {
             .proje
             .as_ref()
             .and_then(|proje| proje.ana_bildirim().dns);
+        io.veri_koku_degiskeni = self
+            .proje
+            .as_ref()
+            .and_then(|proje| proje.ana_bildirim().veri_koku_degiskeni.clone());
         // Bildirim `proje` katmanında P019 ile doğrulandı; burada yalnız savunma.
         if let Some(adlar) = self
             .proje
@@ -2034,6 +2038,9 @@ struct GercekIo {
     ag_baglanti: Option<ag_baglantisi::Reaktor>,
     /// K-378: proje `e_posta_ek_türleri` kümesi; yoksa dört varsayılan.
     eposta_ek_izni: dil::eposta::mime::EkIzni,
+    /// K-394: proje `veri_kökü` ortam/credential adı; `veri:` yolları bu
+    /// kökte çözülür (RFC-0045). Yoksa `veri:` yolu reddedilir.
+    veri_koku_degiskeni: Option<String>,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
     /// K-379: derlenen kaynak birimlerinin dize değişmezlerindeki satır içi
@@ -2195,6 +2202,7 @@ impl GercekIo {
             #[cfg(unix)]
             ag_baglanti: None,
             eposta_ek_izni: Default::default(),
+            veri_koku_degiskeni: None,
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
             dns: None,
@@ -2263,7 +2271,50 @@ impl GercekIo {
         Ok(())
     }
 
+    /// K-394 (RFC-0045): `veri:` yolu bildirilen paylaşılan veri kökünde
+    /// `O_NOFOLLOW` yürüyüşü ve ata değişmeziyle çözülür; proje dosya
+    /// sınırından ve tek dosya kipinin serbest yolundan bağımsızdır.
+    fn veri_yolu(
+        &self,
+        yol: &str,
+        amac: dil::guvenlik::veri_koku::Amac,
+    ) -> Result<Option<std::path::PathBuf>, String> {
+        let Some(bilesenler) = dil::yetkinlik::veri_yolu_bilesenleri(yol) else {
+            return Ok(None);
+        };
+        let bilesenler = bilesenler?;
+        if self.politika.bildirimsiz() {
+            return Err(format!(
+                "\"{yol}\" veri kökü yolu yalnız proje kipinde, proje.dil `veri_kökü` bildirimiyle kullanılabilir"
+            ));
+        }
+        let ad = self.veri_koku_degiskeni.as_deref().ok_or_else(|| {
+            format!("\"{yol}\" veri kökü yolu; proje.dil `veri_kökü` bildirmiyor")
+        })?;
+        let kok = dil::guvenlik::veri_koku::VeriKoku::ortamdan(ad)?;
+        kok.coz(yol, &bilesenler, amac).map(Some)
+    }
+
+    /// K-394: okunacak dosyayı açar. `veri:` yaprağı sembolik bağ izlenmeden,
+    /// normal dosya ve tek hard-link olarak açılır; proje yolu eski davranışta.
+    fn okuma_icin_ac(&self, yol: &str) -> Result<std::fs::File, String> {
+        let gercek = self.dosya_yolu(yol, false)?;
+        if dil::yetkinlik::veri_yolu_mu(yol) {
+            return dil::guvenlik::veri_koku::okuma_icin_ac(&gercek, yol);
+        }
+        std::fs::File::open(&gercek)
+            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))
+    }
+
     fn dosya_yolu(&self, yol: &str, yazma: bool) -> Result<std::path::PathBuf, String> {
+        let amac = if yazma {
+            dil::guvenlik::veri_koku::Amac::Yazma
+        } else {
+            dil::guvenlik::veri_koku::Amac::Okuma
+        };
+        if let Some(gercek) = self.veri_yolu(yol, amac)? {
+            return Ok(gercek);
+        }
         let istenen = std::path::Path::new(yol);
         let aday = if istenen.is_absolute() {
             istenen.to_path_buf()
@@ -4004,6 +4055,14 @@ fn program_argumanlari() -> Vec<String> {
         .collect()
 }
 
+/// K-401: `… dosyasının sha256 özetini almayı dene` akışla okuduğu en çok
+/// bayt; çözerek yazma hedef tavanına hizalı (önce yükleme tavanı 16 MiB idi).
+const DOSYA_OZETI_BAYTI: usize = 32 * 1024 * 1024;
+
+/// K-395: `çözerek … yazmayı|eklemeyi dene` hedef dosyasının toplam tavanı
+/// (K-389'da yükleme tavanıyla eşit 16 MiB idi; ADR-167 eki).
+const COZEREK_YAZMA_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
+
 impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yazdir(&mut self, satir: String) {
         println!("{}", satir);
@@ -4020,13 +4079,19 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
+        if dil::yetkinlik::veri_yolu_mu(yol) {
+            let dosya = self.okuma_icin_ac(yol)?;
+            let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.dosya_okuma_bayti();
+            return dil::guvenlik::veri_koku::metin_oku(dosya, yol, azami)
+                .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata));
+        }
         dil::kaynak_sinirlari::veri_dosyasi_oku(&self.dosya_yolu(yol, false)?)
             .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))
     }
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, true))?;
         if self
             .postgresql_yazma_eylemleri
             .iter()
@@ -4050,7 +4115,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn dosya_atomik_tasi(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(kaynak, true))?;
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(hedef, true))?;
         if self
             .postgresql_yazma_eylemleri
             .iter()
@@ -4063,17 +4130,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if hedef_yolu.exists() {
             return Err(format!("\"{}\" hedef dosyası zaten var", hedef));
         }
+        let tasima_hatasi = |hata: std::io::Error| match hata.kind() {
+            std::io::ErrorKind::NotFound => {
+                format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata)
+            }
+            _ => format!("dosya atomik taşınamadı: {}", hata),
+        };
+        // K-401: eylem dışında geri alma kaydı yoktur; taşıma içeriği okumaz,
+        // 16 MiB veri okuma sınırına bağlı değildir (silmedeki izsiz yolun eşi).
+        if self.eylem_yedekleri.is_empty() {
+            return dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
+                .map(|()| 1)
+                .map_err(tasima_hatasi);
+        }
         // K-347: içerik iki klasör kilidi altında, adlandırmayla aynı
         // pencerede yakalanır; kilit dışı yedek araya giren yazarı görmüyordu.
-        let icerik =
-            dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu).map_err(|hata| {
-                match hata.kind() {
-                    std::io::ErrorKind::NotFound => {
-                        format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata)
-                    }
-                    _ => format!("dosya atomik taşınamadı: {}", hata),
-                }
-            })?;
+        let icerik = dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu)
+            .map_err(tasima_hatasi)?;
         let kaynak_degisimi = dil::kalici_dosya::KilitliDegisim {
             onceki: Some(icerik.clone()),
             sonraki: None,
@@ -4088,7 +4161,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn dosya_sil(&mut self, yol: &str) -> Result<i64, String> {
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, true))?;
         if self
             .postgresql_yazma_eylemleri
             .iter()
@@ -4113,6 +4186,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(i64::from(silindi))
     }
     fn dosyalari_listele(&mut self, dizin: &str) -> Result<Vec<String>, String> {
+        if dil::yetkinlik::veri_yolu_mu(dizin) {
+            // K-394 AÇIK: içerik adresli veri kökü kaydı veritabanında tutar.
+            return Err(format!(
+                "\"{dizin}\" veri kökünde dizin listeleme bu sürümde desteklenmez"
+            ));
+        }
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
         let gercek_dizin = self.dosya_yolu(dizin, false)?;
@@ -4141,15 +4220,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         use std::io::Read;
 
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
-        let gercek_yol = self.dosya_yolu(yol, false)?;
-        let mut dosya = std::fs::File::open(&gercek_yol)
-            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
+        let mut dosya = self.okuma_icin_ac(yol)?;
         let mut ozet = Sha256::new();
         let mut toplam = 0usize;
-        let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .http()
-            .yukleme_bayti();
+        let sinir = DOSYA_OZETI_BAYTI;
         let mut parca = [0u8; 16 * 1024];
         loop {
             let okunan = dosya
@@ -4174,16 +4249,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         use std::io::Read;
 
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
         // Yorumlayıcı aralığı IO'dan önce denetler; adaptör sınırı (K-333,
         // intrinsic::DOSYA_ILK_BAYT_SINIRI) ikinci kez fail-closed tutar.
         let adet = usize::try_from(adet)
             .ok()
             .filter(|adet| (1..=64).contains(adet))
             .ok_or_else(|| "okunacak bayt sayısı 1 ile 64 arasında olmalı".to_string())?;
-        let gercek_yol = self.dosya_yolu(yol, false)?;
-        let dosya = std::fs::File::open(&gercek_yol)
-            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
+        let dosya = self.okuma_icin_ac(yol)?;
         if !dosya
             .metadata()
             .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))?
@@ -4202,7 +4275,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         use std::io::{Read, Seek, SeekFrom};
 
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
         // K-389: yorumlayıcı aralığı IO'dan önce denetler; adaptör ikinci kez
         // fail-closed tutar (1 MiB, ADR-167).
         let konum = u64::try_from(konum).map_err(|_| "konum negatif olamaz".to_string())?;
@@ -4210,11 +4283,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .ok()
             .filter(|adet| (1..=1024 * 1024).contains(adet))
             .ok_or_else(|| "okunacak bayt sayısı 1 ile 1048576 arasında olmalı".to_string())?;
-        let gercek_yol = self.dosya_yolu(yol, false)?;
         let okuma_hatasi =
             |hata: std::io::Error| format!("\"{}\" dosyası okunamadı: {}", yol, hata);
-        let mut dosya = std::fs::File::open(&gercek_yol)
-            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
+        let mut dosya = self.okuma_icin_ac(yol)?;
         let boy = dosya.metadata().map_err(okuma_hatasi)?;
         if !boy.is_file() {
             return Err(format!("\"{}\" normal dosya değil", yol));
@@ -4237,7 +4308,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         use sha2::{Digest, Sha256};
 
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, true))?;
         if self
             .postgresql_yazma_eylemleri
             .iter()
@@ -4255,9 +4326,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
-        let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-            .http()
-            .yukleme_bayti() as u64;
+        // K-395 (ADR-167 eki, GB satırı): hedef toplamı 32 MiB; 25 MB iletinin
+        // tek ~18 MB eki sığar. Çağrı başına çözülen çıktı yine ≤ 1 MiB.
+        let azami = COZEREK_YAZMA_HEDEF_BAYTI;
         let yazim_hatasi = |hata: std::io::Error| match hata.kind() {
             std::io::ErrorKind::AlreadyExists => format!("\"{}\" hedef dosyası zaten var", yol),
             _ => format!("\"{}\" dosyasına yazılamadı: {}", yol, hata),
@@ -4434,10 +4505,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if let dil::yorumlayici::BaglantiIslemi::DosyaAktar(yol) = islem {
             let cozum = self
                 .politika
-                .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)
+                .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))
                 .and_then(|_| self.dosya_yolu(yol, false));
+            // K-394: `veri:` yaprağı reaktörde de bağ izlenmeden açılır.
+            let veri = dil::yetkinlik::veri_yolu_mu(yol).then_some(yol.as_str());
             return match (cozum, self.ag_baglanti.as_mut()) {
-                (Ok(gercek), Some(reaktor)) => reaktor.dosya_aktar(kimlik, &gercek),
+                (Ok(gercek), Some(reaktor)) => reaktor.dosya_aktar(kimlik, &gercek, veri),
                 (Err(neden), _) => dil::yorumlayici::BaglantiSonucu::hata("dosya", neden),
                 (_, None) => {
                     dil::yorumlayici::BaglantiSonucu::hata("kapandı", "bağlantı reaktörü yok")
@@ -4877,7 +4950,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::AgSunucusu)?;
         self.politika
-            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
         if self.web_istek_yedegi.is_none() {
             return Err("dosya yanıtı yalnız web isteği içinde gönderilebilir".into());
         }
@@ -4888,8 +4961,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .ok_or_else(|| format!("\"{tur}\" dosya yanıtı için kayıtlı içerik türü değil"))?;
         let disposition = dil::icerik_turu::ek_disposition(ad).map_err(str::to_string)?;
         let gercek_yol = self.dosya_yolu(yol, false)?;
-        let dosya = dil::eposta::mime::dosyayi_guvenle_ac(&gercek_yol)
-            .map_err(|_| format!("\"{yol}\" normal dosya olarak güvenle açılamadı"))?;
+        let dosya = if dil::yetkinlik::veri_yolu_mu(yol) {
+            dil::guvenlik::veri_koku::okuma_icin_ac(&gercek_yol, yol)?
+        } else {
+            dil::eposta::mime::dosyayi_guvenle_ac(&gercek_yol)
+                .map_err(|_| format!("\"{yol}\" normal dosya olarak güvenle açılamadı"))?
+        };
         let uzunluk = dosya
             .metadata()
             .map_err(|hata| format!("\"{yol}\" dosyası okunamadı: {hata}"))?
@@ -5152,9 +5229,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             let izin = self.eposta_ek_izni.clone();
             let ekler = dil::eposta::mime::ekleri_izinle_oku(secenek.ekler, &izin, &mut |yol| {
                 self.politika
-                    .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
-                let yol = self.dosya_yolu(yol, false)?;
-                dil::eposta::mime::dosyayi_guvenle_ac(&yol)
+                    .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
+                let gercek = self.dosya_yolu(yol, false)?;
+                if dil::yetkinlik::veri_yolu_mu(yol) {
+                    return dil::guvenlik::veri_koku::okuma_icin_ac(&gercek, yol);
+                }
+                dil::eposta::mime::dosyayi_guvenle_ac(&gercek)
             })
             .map_err(|neden| format!("{YEREL_EK_REDDI}{neden}"))?;
             let url = match baglanti {
@@ -5233,6 +5313,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         dil::guvenlik::gizli::coz(&anahtar, sifreli)
     }
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        if dil::yetkinlik::veri_yolu_mu(kaynak) || dil::yetkinlik::veri_yolu_mu(hedef) {
+            // K-394 AÇIK: görsel dönüştürücü yol tabanlıdır; veri kökü dışı.
+            return Err(
+                "görsel küçültme veri kökü (`veri:`) yollarını bu sürümde desteklemez".into(),
+            );
+        }
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
         let kaynak_yolu = self.dosya_yolu(kaynak, false)?;

@@ -127,5 +127,5 @@ sözleşmesi B-026'nın ayrı kapsamıdır.
 
 Form/text HTTP gövdesi 64 KiB kalır. Exact `application/octet-stream` için
 ayrı 16 MiB yükleme zarfı vardır; tahsis bu boyutta yapılmaz, 16 KiB parçalar
-temp dosya ve SHA-256 durumuna akar. Dosya SHA-256 işlemi de 16 MiB'ta
-fail-closed olur. Bu zarf metin heap limitini genişletmez.
+temp dosya ve SHA-256 durumuna akar. Dosya SHA-256 işlemi 32 MiB'ta
+(K-401) fail-closed olur. Bu zarf metin heap limitini genişletmez.

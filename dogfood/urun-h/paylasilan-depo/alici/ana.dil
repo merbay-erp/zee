@@ -1,0 +1,29 @@
+# K-394 (RFC-0045, ZM-F038): ürün H SMTP alıcısının ek depolayan kesiti.
+# DATA bloğu kendi proje kökünde (A2c) alınır; ek parçası base64 çözülerek
+# paylaşılan veri köküne önce `gelen/` altına yazılır, sonra içerik adresli
+# `ekler/<kiracı>-<sha256>` adına no-clobber taşınır. Ayrı web projesi aynı
+# kökü yalnız okur. Değişiklik öncesi `veri_kökü` P001, ayrı projeye giden
+# bağ ise proje dosya sınırı reddiydi (ZM-F038).
+
+işlem eki depola
+    kiraciyi Metin olarak al
+    parcayi Metin olarak al
+    Metin döndürür
+    gecici "veri:gelen/" ile kiraciyi ile ".parca" olsun
+    yazim parcayi base64 çözerek gecici dosyasına yazmayı dene olsun
+    yazim başarılıysa
+        tutamak yazimin değeri olsun
+        ozet tutamağın "sha256" değeri olsun
+        hedef "veri:ekler/" ile kiraciyi ile "-" ile ozet olsun
+        tasima gecici dosyasını hedef yoluna atomik taşımayı dene olsun
+        tasima başarılıysa
+            hedef döndür
+        silme gecici dosyasını silmeyi dene olsun
+        "zaten var: " ile hedef döndür
+    "ek yazılamadı" döndür
+
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    bağlantıya "220 mx.ornek.test ESMTP" satırını yaz
+    yol "k1" ve "TWVyaGFiYQ==" ile eki depola olsun
+    bağlantıya "250 2.0.0 " ile yol satırını yaz
+    bağlantıyı kapat

@@ -26,7 +26,7 @@ gorsel	adapter	-	Gorsel kucultme ve yeniden kodlama image crate (K-210)
 guvenlik	temel	-	Kriptografik ve sabit zamanli ilkeller
 hir	semantik	agac,kimlik,semantic_model,tani	Bagli ve turlenmis ara temsil
 http_istegi	altyapi	-	Byte tabanli HTTP istek framingi
-icerik_turu	altyapi	kaynak_sinirlari	Web dosya yaniti ve SMTP eki ortak kapali icerik turu kaydi ve RFC 6266 ad kodlamasi
+icerik_turu	altyapi	-	Web dosya yaniti ve SMTP eki ortak kapali icerik turu kaydi ve RFC 6266 ad kodlamasi
 intrinsic	altyapi	yetkinlik	Yerlesik islem ve yetkinlik metadata si
 invariant	semantik	agac,faz,hir,tani	AST HIR yapisal dogrulama
 kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri

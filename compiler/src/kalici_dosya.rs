@@ -53,7 +53,7 @@ pub fn atomik_karsilastir_ve_yaz(
     yeni: &[u8],
 ) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
-    let guncel = match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
+    let guncel = match crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(yol) {
         Ok(icerik) => Some(icerik),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
         Err(hata) => return Err(hata),
@@ -117,7 +117,7 @@ fn satir_yaz_kilitli(
 }
 
 fn mevcut_icerik(yol: &Path) -> io::Result<Option<Vec<u8>>> {
-    match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
+    match crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(yol) {
         Ok(icerik) => Ok(Some(icerik)),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => Ok(None),
         Err(hata) => Err(hata),
@@ -133,7 +133,7 @@ pub fn atomik_karsilastir_ve_geri_al(
     onceki: Option<&[u8]>,
 ) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
-    let guncel = match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
+    let guncel = match crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(yol) {
         Ok(icerik) => Some(icerik),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
         Err(hata) => return Err(hata),
@@ -177,12 +177,16 @@ impl DosyaKilidi {
         nokta(Adim::Kilit)?;
         let klasor = ebeveyn(hedef);
         let kilit_yolu = klasor.join(pencere::YAZMA_KILIDI_ADI);
-        let dosya = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(kilit_yolu)?;
+        let mut secenek = OpenOptions::new();
+        secenek.create(true).truncate(false).read(true).write(true);
+        // K-394: paylaşılan klasörde kilit adına konmuş sembolik bağ izlenmez
+        // (kök dışında dosya oluşturtma / açtırma yok).
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            secenek.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+        }
+        let dosya = secenek.open(kilit_yolu)?;
         // Hızlı yol: boş kilit iş parçacığı açmadan alınır.
         if platform::kilitlemeyi_dene(&dosya)? {
             Ok(Self::tutulan(dosya))

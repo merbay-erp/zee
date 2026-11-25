@@ -73,7 +73,7 @@ Açık soruların Dilim 1 kapanışı:
 | # | Karar |
 |---|---|
 | 1 | Dilim 1 kelimeleri yukarıdaki gibi; `quoted-printable` sözcükleyicide tek kelime olamadığından `quoted_printable`. `hâli`/`karşılığı` seçimi Dilim 2'de (açık). |
-| 2 | Aralıklı okuma ve çağrı başına çözülen çıktı 1 MiB (1 048 576) sabit; bellekte özet ayrı tavan almaz, spec/24 metin/heap bütçesine bağlıdır. Hedef dosya toplamı spec/26 16 MiB yükleme/özet tavanı. |
+| 2 | Aralıklı okuma ve çağrı başına çözülen çıktı 1 MiB (1 048 576) sabit; bellekte özet ayrı tavan almaz, spec/24 metin/heap bütçesine bağlıdır. Hedef dosya toplamı spec/26 16 MiB yükleme/özet tavanı; **K-395 (24 Kasım 2026, ZM-F039) ile 32 MiB** (ADR-167 eki). |
 | 3, 4 | Dilim 2 (kod noktası, base64url); açık. |
 | 5 | Dilim 1 yeni doğrudan crate eklemez; tek iç katı çözücü (`compiler/src/kodlama.rs`). Üç eski iç yardımcının birleştirilmesi Dilim 2'ye bırakıldı (açık). |
 | 6 | Yeni C032 (kodlama: `tür` + `konum`); dosya/aralık/yol/no-clobber/tavan/eylem arızaları C013. |
@@ -88,7 +88,13 @@ SHA-256 özgünle eşleşir, ek RFC-0041 dosya yanıtıyla indirilir; 8bit gövd
 metin kipinde `utf8`, base64 kipinde başarı; bozuk QP/base64, 4'e
 bölünmeyen girdi, var olan hedef, tavan üstü ekleme hedefe dokunmaz; izde
 içerik yok. "25 MB / tek bağlantıda üç ileti" ölçümü 16 MiB hedef tavanı
-ve K-388 ile birlikte açık kalır. Ölçüt 4 (NIST vektörleri, dosya/metin
+ve K-388 ile birlikte açık kalır. K-395 (ZM-F039) hedef tavanını 32 MiB'a
+çıkardı: ürün 25 MB iletideki ~18 MB eki satıra hizalı pencerelerle dil
+değişikliği olmadan çözüyor. Dosyadan dosyaya çözme ve bayt arama önerisi
+bu kararla açılmadı (Dilim 2 kalanıyla birlikte taslak). K-401 (ZM-F044)
+dosya özeti ve dosya yanıtı tavanlarını da 32 MiB'a hizaladı ve eylem
+dışındaki taşımanın içeriği 16 MiB sınırıyla okuması hatasını düzeltti
+(ADR-167 eki). Ölçüt 4 (NIST vektörleri, dosya/metin
 özet eşitliği) karşılandı; 1–3, 6–8'in Dilim 2 kısmı açık.
 
 ## Motivasyon
@@ -114,9 +120,12 @@ kaydı) iki maddeyi bu RFC'ye bağlar:
   sınırlarını ayrıştırmak, (2) parçanın base64/QP gövdesini çözüp **bayt
   olarak** ek dosyasına yazmak istiyor. Ürünün bildirdiği etki: SMTP/IMAP
   ile gelen ekler webmail'e çıkarılamıyor, istemciden ekli gönderim `554`
-  ile düşüyor, IMAP `APPEND` 64 KB'ta takılıyor. Ürün ayrıca ham iletinin
-  `.eml` olarak indirilebilmesi için dosya yanıtı tür kaydına
-  `message/rfc822` istiyor (bkz. "RFC-0041 ile ilişki").
+  ile düşüyor, IMAP `APPEND` 64 KB'ta takılıyor. Ham iletiyi `.eml` olarak
+  indirmek için `message/rfc822` dosya yanıtı türü bu taslakta ürün
+  ihtiyacı sanılmıştı; **düzeltme (25 Kasım 2026):** ürün sürtünme
+  kaydında buna ait ZM kimliği yoktur ve `.eml` indirme rotası yazılmamıştır
+  (ZM-F034 satırı bunu içermez). İhtiyaç ürün kaydıyla doğarsa K-399
+  taslağı hazırdır (bkz. "RFC-0041 ile ilişki").
 
 ### Bugünkü durum (bd8d44f üzerinde doğrulandı)
 
@@ -527,8 +536,9 @@ V1 kapı listesine eklenmez; V1 sözü değildir.
 - **`message/rfc822` (sonraki küçük iş, bu RFC'nin dışında):** ham iletiyi
   `.eml` olarak indirmek için RFC-0041 katman A / ADR-163 dosya yanıtı tür
   kaydına `message/rfc822` satırı (yalnız `attachment`, `nosniff`, sandbox
-  CSP; K-385 `application/xml` ekiyle aynı desen). Ayrı K-işi adayı;
-  ürün reproducer'ı ile açılır.
+  CSP; K-385 `application/xml` ekiyle aynı desen). Bugün ürün kaydı yoktur;
+  yalnız yeni ZM kaydı, ürün commit/blob'u ve reproducer ile açılır. K-399
+  taslağı (kayıt satırı, testler, ADR-163 eki) birleştirilmeden bekler.
 
 ## Dört soru süzgeci
 
@@ -649,8 +659,8 @@ engelini (gelen ekler webmail'e çıkmıyor, ekli gönderim `554`, `APPEND`
 **Dilim 2 (ZM-F023).** UTF-8 bayt sayısı, metin ↔ base64/onaltılık, kod
 noktası; saf `Ozellik` dalları, golden, reproducer'lar.
 
-**Sonraki küçük iş (ayrı):** `message/rfc822` dosya yanıtı türü (RFC-0041
-A kaydı).
+**Sonraki küçük iş (ayrı, koşullu):** `message/rfc822` dosya yanıtı türü
+(RFC-0041 A kaydı) — ürün kaydı yok; ihtiyaç doğarsa K-399 taslağı hazır.
 
 Bağımlılığı yoktur; RFC-0044 B2/B3 bunların üstüne kurulur.
 

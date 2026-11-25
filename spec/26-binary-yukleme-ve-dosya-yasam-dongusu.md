@@ -112,7 +112,14 @@ worker'ı düşürmez. Taşıma var olan hedefi ASLA ezmez ve aynı dosya sistem
 içindeki rename görünürlük sınırını kullanır. Silme bulunmayan hedefte başarılı
 `0`, sildiğinde `1` döndürür. Listeleme yalnız dizinin doğrudan normal
 dosyalarını, göreli ve sıralı verir; symlink/dizin döndürmez. Özetleme en çok
-16 MiB'ı akışla okur.
+32 MiB'ı akışla okur (K-401; önce yükleme tavanı 16 MiB idi).
+
+ZORUNLU (K-401): Eylem dışındaki taşıma geri alma kaydı tutmaz ve içeriği
+belleğe OKUMAZ; boyut sınırı yoktur, 16 MiB veri okuma sınırını aşan dosya da
+taşınır. Eylem içindeki taşıma geri alma için içeriği kilit altında okur ve
+16 MiB veri okuma sınırına bağlı kalır; aşan dosya C013 verir, kaynak yerinde
+kalır ve hedef oluşmaz. No-clobber ve proje kökü kuralları iki kipte de
+aynıdır.
 
 K-329 uyarınca kaynak ile hedef ayrı bağlama noktalarındaysa (`rename`
 `EXDEV` verir; ör. systemd `ReadWritePaths=` her yolu ayrı bind mount eder)
@@ -172,8 +179,10 @@ ZORUNLU (K-389): `yazmayı dene` yeni dosya yazar; var olan hedef (dosya,
 dizin ya da sembolik bağ) kilit altında görülürse ezilmeden C013 `hedef
 dosyası zaten var` döner. `eklemeyi dene` spec/08 eklemesiyle aynı kilitli,
 atomik oku-birleştir-değiştir modelidir ve hedef yoksa oluşturur. İkisi de
-hedefin toplam boyutunu bu bölümün 16 MiB yükleme/özet tavanıyla sınırlar;
-aşan çağrı hiçbir bayt yazmaz. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
+hedefin toplam boyutunu 32 MiB (33 554 432 bayt; K-395 öncesi bu bölümün 16
+MiB yükleme/özet tavanı) ile sınırlar; tam sınıra ulaşan çağrı kabul edilir,
+aşan çağrı hiçbir bayt yazmaz. Dosya yanıtı ve dosya özeti tavanları da
+K-401 ile 32 MiB'tır; yükleme tavanı 16 MiB kalır. Başarı `Metin sözlüğü sonucu` `yol`, `sha256`
 (hedefin bütün içeriği) ve `bayt` (toplam) verir — A2c ve web yükleme
 tutamağıyla aynı biçim; `yol` dosya yanıtına ve SMTP ek listesine doğrudan
 verilir. İşlem `dosya-yazma` yetkinliğine bağlıdır. Eylem içinde `yazmayı
