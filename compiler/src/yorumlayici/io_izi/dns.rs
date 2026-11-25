@@ -169,9 +169,7 @@ pub(super) fn sema_ya_da_bilinmeyen(olay: &super::IzOlay) -> Result<(), String> 
         semayi_denetle(&olay.argumanlar, &olay.sonuc)
     } else if olay.islem == KURUMSAL_ALAN {
         super::metin_sonuc_semasi(olay, 1)
-    } else if olay.islem == DOSYA_GOVDE_OZETI {
-        super::metin_sonuc_semasi(olay, 3)
-    } else if olay.islem == DKIM_IMZALA {
+    } else if olay.islem == DOSYA_GOVDE_OZETI || olay.islem == DKIM_IMZALA {
         super::metin_sonuc_semasi(olay, 3)
     } else {
         Err(format!("bilinmeyen işlem: {}", olay.islem))

@@ -235,27 +235,6 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         veri_koku::alani_al(&mut alanlar, &yetkinlik_yazimlari, yetkinlik_satiri)?;
     let kamu_son_ekleri = dns::kamu_son_eklerini_al(&mut alanlar, dns.is_some())?;
     let (dkim_anahtarlari, dkim_satiri) = dkim::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
-    {
-        let mut gizliler: Vec<&str> = http_gizli_degiskenleri.iter().map(String::as_str).collect();
-        gizliler.extend(
-            [
-                &eposta_baglanti_degiskeni,
-                &gizli_anahtar_degiskeni,
-                &veri_koku_degiskeni,
-            ]
-            .into_iter()
-            .flatten()
-            .map(String::as_str),
-        );
-        gizliler.extend(veritabani.iter().map(|v| v.baglanti_degiskeni.as_str()));
-        if let Some(tls) = &baglanti.tls {
-            gizliler.extend([
-                tls.sertifika_degiskeni.as_str(),
-                tls.anahtar_degiskeni.as_str(),
-            ]);
-        }
-        dkim::ad_cakismasini_denetle(&dkim_anahtarlari, &gizliler, dkim_satiri)?;
-    }
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -383,7 +362,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         ));
     }
 
-    Ok(ProjeBildirimi {
+    let bildirim = ProjeBildirimi {
         ad,
         surum,
         morfoloji,
@@ -407,7 +386,9 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         veri_koku_degiskeni,
         kamu_son_ekleri,
         dkim_anahtarlari,
-    })
+    };
+    dkim::ad_cakismasini_denetle(&bildirim, dkim_satiri)?;
+    Ok(bildirim)
 }
 
 impl ProjeBildirimi {

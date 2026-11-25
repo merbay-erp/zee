@@ -123,14 +123,38 @@ pub(super) fn alanlari_al(
 
 /// DKIM credential'ı başka bir gizli değerin adıyla aynı olamaz: imza
 /// kâhini TLS anahtarı ya da veritabanı parolası üzerinde çalışmamalı.
-pub(super) fn ad_cakismasini_denetle(
-    bildirimler: &[DkimAnahtarBildirimi],
-    diger_gizliler: &[&str],
-    satir: usize,
-) -> Result<(), Tani> {
-    match bildirimler
+pub(super) fn ad_cakismasini_denetle(bildirim: &ProjeBildirimi, satir: usize) -> Result<(), Tani> {
+    let mut gizliler: Vec<&str> = bildirim
+        .http_gizli_degiskenleri
         .iter()
-        .find(|b| diger_gizliler.contains(&b.credential.as_str()))
+        .map(String::as_str)
+        .collect();
+    gizliler.extend(
+        [
+            &bildirim.eposta_baglanti_degiskeni,
+            &bildirim.gizli_anahtar_degiskeni,
+            &bildirim.veri_koku_degiskeni,
+        ]
+        .into_iter()
+        .flatten()
+        .map(String::as_str),
+    );
+    gizliler.extend(
+        bildirim
+            .veritabani
+            .iter()
+            .map(|v| v.baglanti_degiskeni.as_str()),
+    );
+    if let Some(tls) = &bildirim.baglanti.tls {
+        gizliler.extend([
+            tls.sertifika_degiskeni.as_str(),
+            tls.anahtar_degiskeni.as_str(),
+        ]);
+    }
+    match bildirim
+        .dkim_anahtarlari
+        .iter()
+        .find(|b| gizliler.contains(&b.credential.as_str()))
     {
         Some(b) => Err(proje_hatasi(
             "P015",

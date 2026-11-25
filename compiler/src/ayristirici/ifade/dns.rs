@@ -4,8 +4,8 @@
 //! harftir; `adres` A ve AAAA'yı birlikte sorar.
 use super::*;
 use crate::intrinsic::{
-    DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT, POSTA_DKIM_DOGRULA, POSTA_DKIM_GOVDE_OZETI,
-    POSTA_DKIM_IMZALA, POSTA_KURUMSAL_ALAN,
+    DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT, POSTA_DKIM_DOGRULA, POSTA_DKIM_DOSYA_GOVDE_OZETI,
+    POSTA_DKIM_GOVDE_OZETI, POSTA_DKIM_IMZALA, POSTA_KURUMSAL_ALAN,
 };
 
 /// `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene`.
@@ -47,7 +47,9 @@ pub(super) fn dns_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
 ///   (`kriptografi`; kanonikleştirme Zee'de);
 /// - `X gövdesinin dkim gövde özeti` (`bh=` biçiminde base64 SHA-256);
 /// - K-397: `VERİ verisi için AD özel anahtarıyla A olarak imzalamayı dene`
-///   (`kriptografi`; anahtar `dkim_anahtarları` bildiriminden).
+///   (`kriptografi`; anahtar `dkim_anahtarları` bildiriminden);
+/// - K-397 (ZM-F046): `YOL dosyasının BAŞ baytından KİP kipinde dkim gövde
+///   özetini almayı dene` (`kriptografi` + dosyayı okuma).
 fn posta_kalibi<'a>(
     tokenlar: &[Token],
     kelime: &impl Fn(usize) -> Option<&'a str>,
@@ -59,6 +61,19 @@ fn posta_kalibi<'a>(
         }
         5 if kalip(&[(1, "gövdesinin"), (2, "dkim"), (3, "gövde"), (4, "özeti")]) => {
             (POSTA_DKIM_GOVDE_OZETI, &[0])
+        }
+        11 if kalip(&[
+            (1, "dosyasının"),
+            (3, "baytından"),
+            (5, "kipinde"),
+            (6, "dkim"),
+            (7, "gövde"),
+            (8, "özetini"),
+            (9, "almayı"),
+            (10, "dene"),
+        ]) =>
+        {
+            (POSTA_DKIM_DOSYA_GOVDE_OZETI, &[0, 2, 4])
         }
         10 if kalip(&[
             (1, "verisi"),
