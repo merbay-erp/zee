@@ -180,7 +180,7 @@ pub const TURLER: &[IcerikTuru] = &[
     },
 ];
 
-/// Web dosya yanıtının bayt tavanı: K-395b ile çözerek yazma hedef tavanına
+/// Web dosya yanıtının bayt tavanı: K-401 ile çözerek yazma hedef tavanına
 /// hizalı 32 MiB (yükleme tavanı 16 MiB kalır). Yanıt 16 KiB parçalarla
 /// akar; tavan bellek tepesini değil yanıt süresini/bant genişliğini sınırlar.
 pub const WEB_DOSYA_YANITI_BAYTI: u64 = 32 * 1024 * 1024;

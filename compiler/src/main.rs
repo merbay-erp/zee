@@ -4004,7 +4004,7 @@ fn program_argumanlari() -> Vec<String> {
         .collect()
 }
 
-/// K-395b: `… dosyasının sha256 özetini almayı dene` akışla okuduğu en çok
+/// K-401: `… dosyasının sha256 özetini almayı dene` akışla okuduğu en çok
 /// bayt; çözerek yazma hedef tavanına hizalı (önce yükleme tavanı 16 MiB idi).
 const DOSYA_OZETI_BAYTI: usize = 32 * 1024 * 1024;
 
@@ -4077,7 +4077,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
             _ => format!("dosya atomik taşınamadı: {}", hata),
         };
-        // K-395b: eylem dışında geri alma kaydı yoktur; taşıma içeriği okumaz,
+        // K-401: eylem dışında geri alma kaydı yoktur; taşıma içeriği okumaz,
         // 16 MiB veri okuma sınırına bağlı değildir (silmedeki izsiz yolun eşi).
         if self.eylem_yedekleri.is_empty() {
             return dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
