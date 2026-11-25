@@ -2804,7 +2804,7 @@ Freeze sınıfı `security` (semantic-change, kanıt ADR-176).
 
 İnceleme: `--deneysel-web` sabit `127.0.0.1`'e bağlanıyordu, adres seçen
 yüzey yoktu; native listener, işçi grubu ve systemd devri yalnız proxy
-kipindeydi. Açık bulgu (GB-174): deneysel kip `Host`'u denetlemiyordu (DNS
+kipindeydi. Açık bulgu (GB-173): deneysel kip `Host`'u denetlemiyordu (DNS
 rebinding, public Host'lu tünel arkasında sessiz yayın) ve systemd soket
 devrini yok sayıyordu. Filo süreç denetimi (salt okuma): üretimdeki hiçbir
 Zee web süreci `--deneysel-web` kullanmıyor; hepsi `--web-proxy` ile.

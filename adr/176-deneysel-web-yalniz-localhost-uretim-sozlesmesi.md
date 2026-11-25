@@ -4,7 +4,7 @@
 - **Tarih:** 25 Kasım 2026
 - **İlgili kayıt:** K-400, spec/12 §5a, ADR-034 (HTTPS reverse-proxy sınırı),
   ADR-059 (core freeze), ADR-066 (güvenlik bulguları), ADR-162 (adlı
-  dinleyici devri), ADR-164 (CSP), ADR-168 (istek boyut sınırları), GB-174
+  dinleyici devri), ADR-164 (CSP), ADR-168 (istek boyut sınırları), GB-173
 
 ## Bağlam
 

@@ -177,4 +177,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-170 | [Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki ve ayrı okuma/yazma yetkinliği](170-paylasilan-veri-koku.md) | **kabul** (K-394/GB-168; RFC-0045) |
 | ADR-171 | [C024 heap zarfı düşen değerin payını iade eder](171-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-170; ADR-033 iade-yok ilkesini değiştirir) |
 | ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d) |
-| ADR-176 | [Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu](176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md) | **kabul** (K-400/GB-174) |
+| ADR-176 | [Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu](176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md) | **kabul** (K-400/GB-173) |
