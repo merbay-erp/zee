@@ -5675,6 +5675,28 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   varsayılan türlere imza denetimi (davranış değişikliği), dilde antivirüs
   kancası. K-378 kapandı.
 
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık; RFC-0039 A2d, ADR-172 (24 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F040 (ürün commit'i `171f6b2`, SQL tarafı `c455cc8`):
+  IMAP `BODY[n]` gövdesi RFC 2045 base64 satırları ister; 57 baytlık okuma
+  döngüsü 16 MB ekte 29,6 sn + C024. Kullanıcı onayı 24 Kasım ~23:15
+  (merkez), aralıklı biçim dahil. Freeze sınıfı `dogfood-change`; K-164
+  sınıfı "yerleşik yüzey eksik".
+- Ev: RFC-0039 A2d (RFC-0043 değil): güvenlik sınırı bağlantı akışı
+  (geri basınç, süre, yarım yazım, C030); RFC-0043 süreç içi `Metin` ve
+  değer zarfını yönetir, A2d o zarfın dışında kalmalı. Ayrı ADR-172: formül
+  ve aralık semantiği ürünün SQL'ine sızan kalıcı sözleşme.
+- Karar: aralık kodlanmış akış (CRLF dahil) üzerinde, RFC 3501/9051
+  kırpması; gerçekleme `⌊K/78⌋·57` ham konuma `seek` eder. Satır uzunluğu
+  parametresi, QP kodlama ve ham aralık reddedildi. `kodlama` CLI'ye
+  `#[doc(hidden)]` iç modül olarak açıldı (katman kenarı `dil_cli → kodlama`).
+- Kaynak dosya tavanı 32 MiB (25 Kasım merkez kararı; K-395 32 MiB yazma
+  tavanıyla hizalı, ZeeMail 25 MB iletide ~18 MB ek): `bağlantı_blok_sınırı`
+  1 GiB olsa da aşılmaz; +1 bayt bayt yazmadan `boyut_aşımı`.
+- Temiz dal: ilk PR'daki K-394 ön commit'leri açık-depo kapısına takıldı;
+  K-394 #109 birleştikten sonra yalnız K-396 değişiklikleri master'a taşındı.
+- Kanıt: 10 yeni test vakası + 2 birim; 16 MiB ek 0,87 sn (debug). GB-171.
+
 ## K-394 — Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045, ADR-170 (24 Kasım 2026)
 
 - Kaynak `urun-h` ZM-F038: ekleri yazan SMTP/gönderim/IMAP hizmetleri ile
@@ -6142,3 +6164,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   oturumunun kendi PR'ında 32 MiB'a hizalanır. GB-169. Dosya yanıtı tavanı
   artık sabit olduğundan `icerik_turu → kaynak_sinirlari` kenarı kalktı
   (katman fixture'ı güncellendi; temel → adaptör yönü değişmedi). K-401 kapandı.
+
+## K-393 — C024 heap zarfı iadesi (24 Kasım 2026)
+
+- Karşılaştırma v2 B4: kabarcık sıralama 1.000 öğe ve 700×5.000 işlem
+  çağrısı ~15 MB RSS'te "~67 MB" C024. Kök neden: zarf yalnız düşüyordu
+  (çerçeve, gezme kopyası, üzerine yazma, kapsam sonu kalıcı tüketim).
+- Seçenekler: (a) yalnız tanı/spec dili — programlar yine iş miktarıyla
+  düşer; (b) düşen değerin iadesi; (c) kopyaları saymamak — üst sınır
+  sözünü bozar. Karar (b), ADR-171.
+- Güvenlik: ölçü ≤ tüketim değişmezi; yerinde büyüme gerçek kapasite
+  artışını tüketir, gezme geri yazımı artık tüketir, iade 64 MiB'a kırpılır.
+  Çerçeve iadesi bütçe farkıyla değil ölçüyle (eşzamanlı görevler ortak
+  bütçe paylaşır). Negatif testler canlı birikimin C024 ile durduğunu sınar.
+- K-388 testleri geçici çöple değil canlı birikimle yenilemeyi sınar.

@@ -146,7 +146,7 @@ GET "/durum" adresine istek geldiğinde
 Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
 localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
 eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
-K-400/ADR-171 bu sınırı üretim sözleşmesine çevirdi: deneysel kip yalnız
+K-400/ADR-176 bu sınırı üretim sözleşmesine çevirdi: deneysel kip yalnız
 loopback Host'una yanıt verir (DNS rebinding'e karşı 421), systemd soket devri
 almaz; internete açık tek yol `--web-proxy` worker/proxy profilidir (spec/12 §5a).
 K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
@@ -188,10 +188,13 @@ TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
 ve IMAP literal'i belleğe alınmadan `0600` geçici dosyaya akar (yalnız
 birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
 yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
-süreli okuma vardır. K-388 ile bağlantı görevinin çalışma bütçesi her
+süreli okuma vardır. A2d (K-396, ADR-172) ile dosya RFC 2045 base64
+satırları olarak (T = e + 2·⌈e/76⌉) ve kodlanmış çıktı aralığıyla belleğe
+alınmadan bağlantıya akar (IMAP `BODY[n]`, `BODY[n]<o.n>`; kaynak en çok 32 MiB). K-388 ile bağlantı görevinin çalışma bütçesi her
 protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
 dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
-zarfı aynen geçerlidir. Bağlantılar arası uyandırma ve diğer katmanlar
+zarfı aynen geçerlidir. K-393 (ADR-171) ile zarf düşen değerin payını iade
+eder; C024 artık iş miktarını değil canlı saklanan değerleri sınırlar. Bağlantılar arası uyandırma ve diğer katmanlar
 açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV

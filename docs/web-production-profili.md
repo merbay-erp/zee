@@ -26,7 +26,7 @@ prototiptir: `127.0.0.1`'e bağlanır, yalnız `localhost`/`*.localhost`/
 HSTS taşımaz, systemd soket devri almaz. İnternete açık hizmet, reverse proxy
 ya da tünel arkası her süreç bu sayfadaki `--web-proxy` profilini kullanır;
 Host'u `127.0.0.1` olarak yeniden yazan bir proxy/tünelle deneysel kipi
-dışarı açmak operatör kuralıyla YASAKTIR (spec/12 §5a, ADR-171). Dağıtım
+dışarı açmak operatör kuralıyla YASAKTIR (spec/12 §5a, ADR-176). Dağıtım
 denetimi: üretim hostunda `ps -eo args | grep "dil çalıştır"` çıktısında
 `--deneysel-web` geçmemelidir.
 

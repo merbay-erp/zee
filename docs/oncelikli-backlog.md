@@ -2796,15 +2796,15 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
-## K-400 — Web üretim sözleşmesi: deneysel web yalnız localhost (ADR-171)
+## K-400 — Web üretim sözleşmesi: deneysel web yalnız localhost (ADR-176)
 
 **Durum: KAPALI.** Kaynak: bağımsız inceleme ve merkez backlog'u ("deneysel
 web yalnız localhost" üretim sözleşmesi olmalı); kullanıcı onayı 25.11.2026.
-Freeze sınıfı `security` (semantic-change, kanıt ADR-171).
+Freeze sınıfı `security` (semantic-change, kanıt ADR-176).
 
 İnceleme: `--deneysel-web` sabit `127.0.0.1`'e bağlanıyordu, adres seçen
 yüzey yoktu; native listener, işçi grubu ve systemd devri yalnız proxy
-kipindeydi. Açık bulgu (GB-170): deneysel kip `Host`'u denetlemiyordu (DNS
+kipindeydi. Açık bulgu (GB-174): deneysel kip `Host`'u denetlemiyordu (DNS
 rebinding, public Host'lu tünel arkasında sessiz yayın) ve systemd soket
 devrini yok sayıyordu. Filo süreç denetimi (salt okuma): üretimdeki hiçbir
 Zee web süreci `--deneysel-web` kullanmıyor; hepsi `--web-proxy` ile.
@@ -2962,6 +2962,39 @@ Açık: (A2c K-384'te kapandı)
 çok işçi grubuna adla aktarım, `dil dene` içinden betiklenmiş bağlantı,
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
+
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040
+(IMAP istemcileri veri kökündeki ekleri `BODY[n]` ile alamıyor; 57 baytlık
+`base64 okumayı dene` döngüsü 16 MB ekte 29,6 sn sürüp C024 ile kesiliyor).
+Freeze sınıfı `dogfood-change`; yeni tür, anahtar kelime, koşul grameri ya da
+tanı kodu yok; iki kalıp kelimesi (`satırlarıyla`, `satırlarının`) ve iki
+intrinsic.
+
+Karar (RFC-0039 A2d, ADR-172): `<yol> dosyasını base64 satırlarıyla
+bağlantıya aktarmayı dene` ve `<yol> dosyasının base64 satırlarının <konum>
+baytından <adet> baytını bağlantıya aktarmayı dene` → `Sonuç<TamSayı>`.
+RFC 2045 satırları (76 + CRLF, son satır dahil); T = e + 2·⌈e/76⌉,
+e = 4·⌈b/3⌉ normatif (spec/12 §9). Aralık kodlanmış akış üzerinde, sonda
+kırpılır, negatif `geçersiz`. Akışlı (Metin yok, zarf yok), A2c geri basınç
+ve süre bütçesi; kaynak yol `dosya-okuma`/`veri-okuma` merkezî denetimi.
+Kaynak dosya tavanı 32 MiB (K-395 yazma tavanıyla hizalı; merkez kararı
+25 Kasım, ZeeMail 25 MB iletide ~18 MB ek): tam 32 MiB geçer, +1 bayt hiç
+bayt yazılmadan `boyut_aşımı`. RFC-0039'a bağlandı (güvenlik sınırı bağlantı akışı), saf kodlayıcı
+RFC-0043 Dilim 1 `kodlama` modülünde. GB-171.
+
+Kanıt: `compiler/tests/ag_blok_testi.rs` (5 yeni vaka: bağımsız başvuru
+kodlayıcıyla 0/1/2/3/57/58/114/1000/70000 bayt ve formül, 12 aralık kenarı,
+negatif/yok/blok sınırı, T034 ve iz replay), `compiler/tests/ag_baglantisi_surec_testi.rs`
+(5 yeni vaka: 32 MiB tavan geçer/+1 bayt reddi, 16 MiB + 5 baytlık ikili ek gerçek TCP'de bayt bayt ve
+0,87 sn, aralık, kaçış ve yokluk, yetkinlik yok T054, `veri:` kökü ve
+`veri:../` reddi, kopan karşı taraf `yazılamadı`), `kodlama::testler`
+(satır kodlayıcı ve pencere her kenarda dilim eşitliği); dogfood
+`urun-h-imap-govde-base64`; K-167 iki kalıp ve iki API satırı.
+
+Açık: ham dosya baytlarının kısmi aktarımı (`BODY[]<o.n>` ham); RFC-0043
+Dilim 2 ile iç base64 yardımcılarının birleşmesi.
 
 ## K-401 — Dosya özeti/dosya yanıtı 32 MiB ve izsiz atomik taşıma (ADR-167 eki)
 
@@ -4194,3 +4227,35 @@ görünmeyebiliyordu. Okuyucu artık geçici hata alınca klasörün
 `…kilitsiz_takili_ya_da_kendi_kilidinde_pencere_sinirli_hata_verir`,
 regression `degistirme-penceresi-izsiz-okuma`
 (`native-dosya-okuma-izsiz-penceresi`, Windows), Windows yük A/B döngüsü.
+
+## K-393 — C024 heap zarfı düşen değerin payını iade eder (ADR-171)
+
+**Durum: KAPALI.** Kaynak: bağımsız Rust/Go karşılaştırması v2 (B4) ve
+ZM-F035/RFC-0043 seçenek (b). Freeze sınıfı `correctness`
+(semantic-bugfix). spec/24 zarfı "iade edilmeyen tahsis zarfı" olarak
+TANIMLIYOR, sayaç yalnız düşüyordu; canlı RSS ~15 MB iken kümülatif tahsis
+"~67 MB" C024 veriyordu.
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| 700 öğelik listeyi işleme 5.000 kez vermek | C024 | `700` |
+| 1.000 öğelik kabarcık sıralama (1.000 tur) | C024 | çalışır |
+| ~1 MiB listeyle 200 çağrı / 200 üzerine yazma / 200 kapsam | C024 | çalışır |
+| 1 KiB metni sözlük/yapı alanına 100.000 kez yazmak, ekle+sil | C024 | çalışır |
+| canlı biriktirme (~1 MiB × 200) | C024 | C024 |
+| iade yollarıyla karışık canlı biriktirme, dönen değer birikimi | C024 | C024 |
+| web rotası 64 MiB aşımı | 503 | 503 |
+
+Düzeltme: üzerine yazma, kapsam sonu, işlem çerçevesi, gezme kopyası, görev
+ortamı klonları, koleksiyon öğesi değişimi ve `sil` düşen değerin ölçüsünü
+iade eder. Güvenlik değişmezi ölçü ≤ tüketim: `ekle`/yeni sözlük anahtarı ve
+`x x ile y olsun` gerçek kapasite artışını tüketir, gezme geri yazımı ve iç
+adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-170).
+
+Kanıt: `kaynak_sinirlari_testi::atilan_degerin_zarf_payi_iade_edilir`,
+`iade_canli_birikimi_zarftan_kacirmaz`; `baglanti_butce_yenileme_testi`
+canlı birikimle yeniden yazıldı; regression `runtime/heap-zarfi-cerceve-iadesi`,
+`runtime/heap-zarfi-uzerine-yazma-iadesi`; spec/24, ADR-171, ADR-033/165
+ekleri, soak 1800 sn.
+
+Açık: birimler arası yaşayan değer yeni zarfa yeniden sayılmaz (K-381).
