@@ -3126,6 +3126,33 @@ fn deneysel_host_reddini_gunlukle() {
     }
 }
 
+/// K-400: loopback dışı eşe verilen 403 iletisi kipe göre seçilir.
+fn loopback_disi_es_mesaji(https: bool) -> &'static str {
+    if https {
+        "güvenilir proxy bağlantısı loopback üzerinden gelmeli"
+    } else {
+        "deneysel web yalnız loopback bağlantısı kabul eder"
+    }
+}
+
+/// K-400: deneysel web isteği Host denetiminden geçmezse ham hata yanıtını
+/// yazar ve `true` döner; çağıran bağlantıyı rotaya ulaştırmadan bırakır.
+fn deneysel_istegi_reddet(
+    akis: &mut impl WebTasima,
+    baslik: &HttpIstekBasligi<'_>,
+    https: bool,
+) -> bool {
+    let Err((durum, mesaj)) = deneysel_istegini_denetle(baslik) else {
+        return false;
+    };
+    if durum == 421 {
+        deneysel_host_reddini_gunlukle();
+    }
+    let head = baslik.yontem().eq_ignore_ascii_case("HEAD");
+    ham_http_hatasi_gonder(akis, durum, mesaj, head, https);
+    true
+}
+
 fn guvenli_proxy_istegini_denetle(
     istek: &HttpIstekBasligi<'_>,
     origin: &AgHedefi,
@@ -4727,11 +4754,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             // K-400: dinleyici yalnız loopback'e bağlıdır; eş denetimi iki kipte
             // de derinlemesine savunmadır (deneysel kipte başlıklar okunmadan).
             if !guvenilir_proxy_esi_mi(es) {
-                let mesaj = if https {
-                    "güvenilir proxy bağlantısı loopback üzerinden gelmeli"
-                } else {
-                    "deneysel web yalnız loopback bağlantısı kabul eder"
-                };
+                let mesaj = loopback_disi_es_mesaji(https);
                 ham_http_hatasi_gonder(&mut akis, 403, mesaj, false, https);
                 continue;
             }
@@ -4766,15 +4789,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     continue;
                 }
             };
-            if self.web_modu == WebModu::Deneysel {
-                if let Err((durum, mesaj)) = deneysel_istegini_denetle(&baslik) {
-                    if durum == 421 {
-                        deneysel_host_reddini_gunlukle();
-                    }
-                    let head = baslik.yontem().eq_ignore_ascii_case("HEAD");
-                    ham_http_hatasi_gonder(&mut akis, durum, mesaj, head, https);
-                    continue;
-                }
+            if self.web_modu == WebModu::Deneysel
+                && deneysel_istegi_reddet(&mut akis, &baslik, https)
+            {
+                continue;
             }
             let Some((ham, yukleme, yorum_siniri)) = self.istek_zarfini_kur(
                 &mut akis,
