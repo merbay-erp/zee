@@ -6193,3 +6193,26 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
+## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a, ADR-173 (24 Kasım 2026)
+
+- Kaynak `urun-h` (ZeeMail) giden teslim hizmeti `zeemail/disteslim`;
+  ürün sürtünmeleri ZM-F041 (giden TCP + STARTTLS, bu dilim) ve ZM-F042
+  (DKIM imzası, Dilim 2), ürün commit'i `850d86b`. Freeze sınıfı
+  `dogfood-change`. İstemci TLS kalıbı ürün reproducer'ının birebir
+  biçimidir: `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile`. Kullanıcı ZeeMail yüzeylerinin sırayla
+  açılmasını onayladı; DNS/DKIM/teslim güvenliği bu sıradadır.
+- RFC-0044 taslağındaki `smtp-teslim` yetkinliği açılmadı: tek outbound
+  politika noktası (`ağ` + `ağ_hedefleri`) korunarak `tcp://` tam hedefi ve
+  yalnız 25 kapısında joker seçildi. MTA-STS indirmesi mevcut HTTP
+  istemcisinden geçer; tek ek dar `https://mta-sts.*` jokeridir.
+- SSRF/yeniden bağlama çekirdek: tek çözümleme, biri bile izinsizse ret
+  (HTTP istemcisiyle aynı fail-closed), IPv4-mapped her profilde ret,
+  soket denetlenen `SocketAddr`'a.
+- PKIX başarısızlığı el sıkışmayı kesmez (DANE-EE, fırsatçı TLS) ama
+  açık alandır; el sıkışma imzası her durumda doğrulanır. Katı kip ayrı
+  kalıp olarak açılmadı (ürün politikası alanı okur).
+- Giden bağlantı durumu thread-local olduğundan her program koşusu kendi
+  kapsamında başlar ve biter (aynı thread'de art arda `dene`/LSP/test
+  koşusu sızıntısı uygulama sırasında yakalandı).
+- B3 (DKIM imzası) ayrı dilim/PR: ADR-174, K-390 B2 doğrulayıcısıyla tek
+  `ring` yüzeyi.

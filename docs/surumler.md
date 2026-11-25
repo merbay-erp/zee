@@ -110,6 +110,28 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Başka sunuculara giden bağlantı ve istemci STARTTLS (K-397):** posta
+  teslim hizmeti gibi programlar artık önceden bilinmeyen bir sunucuya
+  bağlanabilir: `sonuç "mx1.alici.ornek:25" adresine bağlanmayı dene olsun`.
+  Başarılı bağlantı, gelen bağlantılardaki satır okuma/yazma, süreli okuma,
+  parça yazma ve dosya aktarma kalıplarıyla kullanılır.
+  `bağlantıda TLS istemcisi başlatmayı dene "mx1.alici.ornek" ile` STARTTLS
+  yapar ve sertifikanın doğrulanıp doğrulanmadığını (`doğrulandı`,
+  `doğrulama_hatası`), TLS sürümünü ve DANE için sertifika/SPKI SHA-256
+  özetlerini açıkça verir; doğrulama hatası sessizce yutulmaz. Hedefler
+  `proje.dil` `ağ_hedefleri` ile sınırlıdır: tam hedef `tcp://mx.ornek:25`
+  (kapı zorunlu) ya da yalnız 25 kapısında `tcp://*:25` (yalnız public
+  internet adresleri; yerel, özel, CGNAT, link-local, multicast, ayrılmış ve
+  IPv4-mapped adresler reddedilir, ad tek kez çözülür ve bağlantı denetlenen
+  adrese açılır). MTA-STS ilkesi için `https://mta-sts.*` yalnız
+  `/.well-known/mta-sts.txt` yolunu açar. Görev başına bir giden bağlantı,
+  süreç başına 16, bağlanma en çok 30 sn. Yeni tanı kodu yok; retler C030
+  `tür` değerleridir (`hedef_yasak`, `çözülemedi`, `bağlanamadı`,
+  `zaman_aşımı`, `zaten_bağlı`, `sınır`, `geçersiz`).
+
+  **Göç:** Gerekmez; mevcut programlar ve `ağ_hedefleri` değişmeden çalışır.
+  Bağlantı kalıpları artık `ağ-dinleyici` yerine `ağ` ile de derlenir.
+
 - **DNS sorgusu: MX, TXT, TLSA ve adres kayıtları (K-390):** Zee programı
   artık aynı makinedeki doğrulayıcı DNS çözücüsüne (ör. unbound) sorgu
   yapabilir:

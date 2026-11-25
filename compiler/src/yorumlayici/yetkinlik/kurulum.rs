@@ -30,15 +30,24 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
         dosya::yolu_denetle(&self.politika, self.cocuk_modu, yol, yetkinlik)
     }
 
-    /// Bağlantı işlemi `ağ-dinleyici` ister (tanı türü "kapandı"); K-394:
-    /// dosyadan bağlantıya aktarımın yolu (proje dosyası ya da `veri:`) aynı
-    /// merkezî yol/yetkinlik denetiminden geçer (tanı türü "dosya").
+    /// Bağlantı işlemi `ağ-dinleyici` ya da `ağ` ister (tanı türü "kapandı");
+    /// K-397 (ADR-173): giden bağlanma yalnız `ağ` ister (tür "hedef_yasak";
+    /// hedef ve IP politikası host'ta, tek çözümlemeyle). K-394: dosyadan
+    /// bağlantıya aktarımın yolu (proje dosyası ya da `veri:`) aynı merkezî
+    /// yol/yetkinlik denetiminden geçer (tanı türü "dosya").
     pub(super) fn baglanti_islemini_denetle(
         &self,
         islem: &super::super::BaglantiIslemi,
     ) -> Result<(), (&'static str, String)> {
-        self.gerektir(Yetkinlik::AgDinleyici)
-            .map_err(|hata| ("kapandı", hata))?;
+        if matches!(islem, super::super::BaglantiIslemi::GidenBaglan(..)) {
+            return self
+                .gerektir(Yetkinlik::Ag)
+                .map_err(|hata| ("hedef_yasak", hata));
+        }
+        if !self.politika.izin_verir(Yetkinlik::Ag) {
+            self.gerektir(Yetkinlik::AgDinleyici)
+                .map_err(|hata| ("kapandı", hata))?;
+        }
         match islem {
             super::super::BaglantiIslemi::DosyaAktar(yol)
             | super::super::BaglantiIslemi::Base64Aktar { yol, .. } => self

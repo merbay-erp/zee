@@ -11,6 +11,9 @@
 //! normalleştirilmez, bloğun kalanı sonlandırıcıya kadar tüketilip atılır
 //! (smuggling sınıfı). IMAP literal'i tam `n` bayttır.
 
+/// K-397: istemci TLS'inde DANE özeti için SPKI çıkarımı.
+pub mod x509;
+
 /// Bağlantı başına giden tamponun üst sınırı (geri basınç eşiği).
 pub const GIDEN_TAMPON_BAYTI: usize = 64 * 1024;
 /// Tek okuma çağrısının çekebileceği en çok bayt; gelen tampon bu kadar
@@ -305,6 +308,34 @@ pub const TLS_KIMLIGI_YOK: &str =
     "TLS kimliği bildirilmedi (tls_sertifika_değişkeni / tls_anahtar_değişkeni)";
 /// TLS bağlantısında ikinci yükseltme.
 pub const ZATEN_TLS: &str = "bağlantı zaten TLS";
+
+/// K-397 (ADR-173): süreç başına aynı anda açık en çok giden bağlantı.
+pub const AZAMI_GIDEN_BAGLANTI: usize = 16;
+/// K-397: giden bağlanma süresinin üst sınırı (Zee son tarihi daha kısaysa o).
+pub const GIDEN_BAGLANMA_MS: i64 = 30_000;
+/// K-397: istemci TLS'inde kabul edilen en uzun sertifika zinciri.
+pub const AZAMI_TLS_ZINCIRI: usize = 10;
+/// K-397: `220` sonrası ara bellekte düz metin (CVE-2011-1575 sınıfı).
+pub const STARTTLS_YANIT_ENJEKSIYONU: &str =
+    "STARTTLS yanıtından sonra şifresiz veri geldi; yükseltme yapılmadı, bağlantı kapatıldı";
+
+/// K-397: istemci TLS'inin SNI'ı ve PKIX ad denetimi için sunucu adı: ASCII
+/// DNS adı (IP değil, sonda nokta yok, etiket 1–63, toplam ≤ 253).
+pub fn tls_sunucu_adi_gecerli(ad: &str) -> bool {
+    !ad.is_empty()
+        && ad.len() <= 253
+        && ad.parse::<std::net::IpAddr>().is_err()
+        && ad.contains('.')
+        && ad.split('.').all(|etiket| {
+            !etiket.is_empty()
+                && etiket.len() <= 63
+                && !etiket.starts_with('-')
+                && !etiket.ends_with('-')
+                && etiket
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b == b'-')
+        })
+}
 
 /// Okunan satırın sınıflandırılmış reddi; Zee'ye C030 `tür` olarak çıkar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
