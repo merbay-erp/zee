@@ -5,6 +5,34 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 25 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Değişenler
+
+- **Parametre adı sözlük köküne bağlanır (K-398):** `kalıbı al`,
+  `belirteci Metin olarak al`, `eşiği al`, `adedi al`, `içeriği al`,
+  `ucu al`, `metni al` gibi ekli parametreler artık sözlük kökü adıyla
+  bağlanır: gövdede `kalıp`, `belirteç`, `eşik`, `adet`, `içerik`, `uç`,
+  `metin` doğrudan yazılabilir; tanılar ve editör de bu adı gösterir. Önceden
+  ünsüz yumuşaması ve ünlü düşmesi geri çevrilmiyordu (`kalıb`, `metn`) ve
+  sözlük kökü "tanımlı değil" (A001) veriyordu. `zee-tr-1` morfoloji profili
+  ve uyumluluk kaydı değişmedi; yalnız parametre adının hangi adaydan
+  seçildiği değişti. Tek heceli `adı`, `kodu`, `ağı`, `-lı` sıfatları
+  (`gizli`) ve `filmi`, `formu` gibi adlar eskisi gibi bağlanır.
+
+  **Göç:** Gerekmez. Yumuşamış gövdeyi çıplak yazan mevcut kod (`belirtec`,
+  `yoğunluğ`, `kalıb … olsun`) aynı parametreye çözülmeye devam eder; yerel
+  103 proje ve 1 670 dosyada `dil denetle` çıktısı değişmedi. İki yeni tanı
+  durumu yalnız eskiden ayrı bir yerel açan koda dokunur: gövdede sözlük
+  köküne (`başlık … olsun`) farklı türde değer **T002** verir (öneri adın
+  parametre olduğunu söyler); parametre sözlük köküyle yeniden atandıktan
+  sonra eski yazımla (`başlığ`) başvuru **A002** verir. İkisinde de yerel
+  değere başka ad verin. Açık sınır: `kaybı`, `kaydı`, `şekli`, `ismi`,
+  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-175).
+
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

@@ -55,7 +55,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | --- | --- | --- | --- | --- | --- |
 | spec/01-sozcukleme.md | 8 | 0 | 0 | 8 | 100 |
 | spec/02-dizim.md | 7 | 0 | 0 | 7 | 100 |
-| spec/03-adlar-ve-kapsam.md | 6 | 0 | 0 | 6 | 100 |
+| spec/03-adlar-ve-kapsam.md | 11 | 0 | 1 | 12 | 91 |
 | spec/04-turler.md | 15 | 0 | 0 | 15 | 100 |
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
@@ -84,7 +84,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 19 | 0 | 1 | 20 | 95 |
-| **Toplam** | 370 | 5 | 14 | 389 | 95 |
+| **Toplam** | 375 | 5 | 15 | 395 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -104,17 +104,17 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
-| kanit-ozeti | 12 | 10 | 1 | 12 | 11 | 23 |
+| kanit-ozeti | 11 | 11 | 1 | 13 | 10 | 23 |
 | kelime-avi | 2 | 2 | 1 | 3 | 2 | 5 |
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 11 | 4 | 0 | 14 | 1 | 15 |
+| urun-h | 11 | 5 | 0 | 15 | 1 | 16 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 80.
+Toplam korpus vakası: 81.
 
 ## Deprecation kayıtları
 

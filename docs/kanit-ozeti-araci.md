@@ -43,8 +43,10 @@ K-164/F009) ve depo kökündeki kayıt defterlerine ulaşamaz. Ürün politikas�
 
 Ürün yazılırken sabitlenen kurallar (K-164/F006–F008, F013):
 
-- Parametre adı sert ünsüzle bitmesin (`başlığı al` → "başlığ"): `adı al`,
-  `yolu al`, `değerleri al`.
+- ~~Parametre adı sert ünsüzle bitmesin~~ (K-398, ADR-175 ile kapandı:
+  `başlığı al` artık `başlık` adıyla bağlanır). İki adımlı biçimler
+  (`kaydı`, `kaybı`) ve `l`/`m` sonlu ünlü düşmesi (`şekli`) hâlâ eski
+  gövdeye bağlanır.
 - Ünlü düşmesi yapan kök kullanma (`kayıt` → `kaydın` çözülmez): `bilgi`.
 - Tekil ve çoğulu birlikte tanımlama (`satır` + `satırlar` → `satırlara` A002).
 - `-daki` gezme kaynağı iyeliksiz yalın ad olsun (`tablodaki`, `sıradaki`).

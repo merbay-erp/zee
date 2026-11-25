@@ -43,6 +43,11 @@ iyelik + (belirtme | tamlayan | yönelme | ayrılma | bulunma | araç)
    çözümünde aynı ilke T028 sınırında uygulanır. Hiçbir aday öncelik veya
    sözlük puanıyla seçilmez.
 
+Parametre bağlama adı seçimi (spec/03, K-398) bu algoritmanın parçası
+değildir: aday kümesi, sıra ve A001/A002 sınırı aynı kalır; yalnız parametre
+satırında hangi adayın sembol adı olacağı seçilir ve uyumluluk kaydı
+değişmez.
+
 ## Kanonik üretim (TANIMLI)
 
 `ek_uydur` ve `ek_zinciri_uydur` son ünlüye göre ikili/dörtlü uyumu, `y/n/s`

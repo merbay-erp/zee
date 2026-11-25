@@ -8,7 +8,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 |---|---:|---:|---:|---:|
 | `spec/01-sozcukleme.md` | 8 | 8 | 0 | 0 |
 | `spec/02-dizim.md` | 7 | 7 | 0 | 0 |
-| `spec/03-adlar-ve-kapsam.md` | 6 | 6 | 0 | 0 |
+| `spec/03-adlar-ve-kapsam.md` | 12 | 11 | 0 | 1 |
 | `spec/04-turler.md` | 15 | 15 | 0 | 0 |
 | `spec/05-degerlendirme.md` | 9 | 9 | 0 | 0 |
 | `spec/06-hata-modeli.md` | 7 | 7 | 0 | 0 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **389** | **370** | **5** | **14** |
+| **Toplam** | **395** | **375** | **5** | **15** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -49,6 +49,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 ## Açık maddeler
 
+- `spec/03-adlar-ve-kapsam.md#548b78fc716d5ccb` — AÇIK (K-398): iki adımlı geri çevrim (`kaybı → kayıp`, `kaydı → kayıt`),… — K-398: sözlüksüz kural iki adımlı geri çevrimi, l/m sonlu ünlü düşmesini (-lı sıfatlarıyla çakışır) ve iyelik+belirtme çakışmasını ayırt edemez; sözlük ya da zee-tr-2 kararı ister.
 - `spec/07-birimler.md#4133d3a7031d4b3d` — AÇIK: Kökü proje klasörüne taşıyan ya da proje başına ayrı veri kökü aça… — K-382 takip önerisi veri_kökü: ayrı dogfood-change; iki ürün tekrarı ya da ikinci tüketici kanıtı bekler.
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.
 - `spec/12-web-guvenlik-profili.md#5d930da7687a2f1e` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım, ağ dosya sistemi ve çok hostlu birincillik açık (K-340 `zee.ayar` alanını, K-341 tek makinede elle kurulumda tek birincili bu maddeden çıkardı); Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.

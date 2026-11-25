@@ -33,6 +33,14 @@ pub(super) fn blok_denetle(
                     uzunluk,
                 } => {
                     let satir = *satir;
+                    // K-398 eski yazım: `belirtec … olsun`, parametre `belirteç`e
+                    // bağlandıysa yeni ad doğurmaz; K-398 öncesindeki gibi atamadır.
+                    let tam_yazimla_atama = ortam.get(ad.as_str()).is_some();
+                    if !tam_yazimla_atama {
+                        if let Some(kok) = ortam.eski_parametre_yazimi(ad) {
+                            *ad = kok;
+                        }
+                    }
                     if baglam.gezilen_koleksiyonlar.contains(ad) {
                         return Err(gezilen_koleksiyonu_degistirme_tanisi(ad, satir));
                     }
@@ -68,14 +76,29 @@ pub(super) fn blok_denetle(
                                 *sutun,
                                 *uzunluk,
                             )
-                            .onerili(format!(
-                                "Bir değerin türü sonradan değişemez. Farklı türde bir değer \
+                            .onerili(if ortam.parametre_mi(ad) {
+                                format!(
+                                    "\"{}\" bu işlemin parametresidir (K-398: ekli parametre \
+                                 adı sözlük köküne bağlanır, ör. `başlığı al` → `başlık`). \
+                                 Yerel değere başka bir ad ver ya da parametreye yine {} \
+                                 türünde bir değer ver.",
+                                    ad,
+                                    eski.adi()
+                                )
+                            } else {
+                                format!(
+                                    "Bir değerin türü sonradan değişemez. Farklı türde bir değer \
                              gerekiyorsa yeni bir ad kullan; ya da \"{}\" değerine yine {} türünde \
                              bir değer ver.",
-                                ad,
-                                eski.adi()
-                            )));
+                                    ad,
+                                    eski.adi()
+                                )
+                            }));
                         }
+                    }
+                    // Sağ taraf eski değeri okuyabilir; işaret atamadan sonra konur.
+                    if tam_yazimla_atama {
+                        ortam.parametre_kokle_atandi(ad);
                     }
                     let kimlik = ortam.insert(ad.clone(), tur);
                     let kaynak_araligi =

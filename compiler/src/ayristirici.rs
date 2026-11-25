@@ -322,7 +322,7 @@ impl Ayristirici {
                 let ilk = satir_tokenlari.first()?;
                 match kelimeler.as_slice() {
                     [ad, al] if *al == "al" => Some(Parametre {
-                        ad: yalin_ad(ad),
+                        ad: parametre_adi(ad),
                         tur_yazimi: None,
                         satir: ilk.satir,
                     }),
@@ -330,7 +330,7 @@ impl Ayristirici {
                         if !ortalar.is_empty() && *olarak == "olarak" && *al == "al" =>
                     {
                         Some(Parametre {
-                            ad: yalin_ad(ad),
+                            ad: parametre_adi(ad),
                             tur_yazimi: Some(ortalar.join(" ")),
                             satir: ilk.satir,
                         })
@@ -1289,5 +1289,17 @@ impl Ayristirici {
             degilse,
             satir,
         })
+    }
+}
+
+/// Parametre bağlama adı (K-398): `yalin_ad` gövdesi, sözlük kökü
+/// (`kalıbı`→`kalıp`, `metni`→`metin`) morfoloji aday kümesindeyse o köke
+/// bağlanır. Profil çıktısı değişmez; seçim yalnız aday kümesinden yapılır.
+/// Eski yumuşamış yazım (`kalıb`) çözümleyicide aynı sembole çözülür.
+fn parametre_adi(ekli: &str) -> String {
+    let govde = yalin_ad(ekli);
+    match crate::morfoloji::baglama_koku(&govde) {
+        Some(kok) if crate::morfoloji::kok_adaylari(ekli).contains(&kok) => kok,
+        _ => govde,
     }
 }
