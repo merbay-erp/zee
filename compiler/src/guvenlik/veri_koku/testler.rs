@@ -290,3 +290,47 @@ fn veri_koku_cift_degistirme_yarisi_ekleme_ile_sir_kopyalatmaz() {
     );
     assert!(sonuc.is_err(), "bağa dönen yaprak okunmamalı");
 }
+
+#[test]
+fn veri_koku_cozerek_ekleme_boy_denetimi_sonrasi_baga_donen_yapragi_okumaz() {
+    // K-395 çözerek ekleme hedefi `symlink_metadata` ile boylar, sonra okur.
+    // İkisi arasında eş yazar yaprağı kök dışı dosyaya bağa çevirirse okuma
+    // bağı izlememeli; aksi hâlde sır + yeni baytlar hedefe yayımlanırdı.
+    use crate::kalici_dosya::test_kancasi::{kur, temizle, Enjeksiyon};
+    use crate::kalici_dosya::YazimAdimi;
+    let d = Dizin::yeni("cozerek");
+    let koku = d.veri();
+    let yaprak = coz(&koku, "veri:ekler/ek", Amac::Yazma).unwrap();
+    std::fs::write(&yaprak, b"eski").unwrap();
+    let (bag_yaprak, sir) = (yaprak.clone(), d.0.join("dis/sir"));
+    kur(
+        YazimAdimi::MevcutOkuma,
+        Enjeksiyon::Eylem(Box::new(move || {
+            std::fs::remove_file(&bag_yaprak)?;
+            symlink(&sir, &bag_yaprak)
+        })),
+    );
+    // Yayın öncesi metadata yakalanmadan yaprak yeniden normal dosya olur
+    // (çift değiştirme); yalnız okumanın kendisi bağı reddedebilir.
+    let duz_yaprak = yaprak.clone();
+    kur(
+        YazimAdimi::Metadata,
+        Enjeksiyon::Eylem(Box::new(move || {
+            std::fs::remove_file(&duz_yaprak)?;
+            std::fs::write(&duz_yaprak, b"eski")
+        })),
+    );
+    let sonuc = crate::kalici_dosya::sinirli_sona_ekle(&yaprak, b"yeni", 32 << 20);
+    temizle();
+    let yayimlanan = if std::fs::symlink_metadata(&yaprak).is_ok_and(|bilgi| bilgi.is_file()) {
+        std::fs::read(&yaprak).unwrap()
+    } else {
+        Vec::new()
+    };
+    assert!(
+        !yayimlanan.windows(SIR.len()).any(|p| p == SIR),
+        "çözerek ekleme çift değiştirmede sırrı hedefe kopyaladı: {sonuc:?}"
+    );
+    assert!(sonuc.is_err(), "bağa dönen yaprak okunmamalı: {sonuc:?}");
+    assert_eq!(std::fs::read(d.0.join("dis/sir")).unwrap(), SIR);
+}

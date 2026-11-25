@@ -60,7 +60,8 @@ grammar ya da kalıp gerekmiyor.
    SHA-256, ilk bayt, dosya yanıtı, e-posta eki ve bağlantıya aktarımda
    aynıdır.
 7. **Kalıcı yazım katmanı (spec/08).** Kilit dosyası ve kilit altındaki iç
-   okumalar (ekleme, eylem yedeği, taşıma/silme izi, geri alma) unix'te
+   okumalar (ekleme, çözerek ekleme — K-395 32 MiB tavanlı okuma dahil —,
+   eylem yedeği, taşıma/silme izi, geri alma) unix'te
    `O_NOFOLLOW|O_NONBLOCK` ile açılır ve normal dosya ister. Bu, bir eş
    yazarın yaprağı iki kez değiştirerek (bağ → normal dosya) kök dışı
    içeriği paylaşılan hedefe kopyalatmasını kapatır. Yayın zaten

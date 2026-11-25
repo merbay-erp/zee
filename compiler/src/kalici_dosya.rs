@@ -53,7 +53,7 @@ pub fn atomik_karsilastir_ve_yaz(
     yeni: &[u8],
 ) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
-    let guncel = match crate::kaynak_sinirlari::kalici_ic_baytlari_oku(yol) {
+    let guncel = match crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(yol) {
         Ok(icerik) => Some(icerik),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
         Err(hata) => return Err(hata),
@@ -117,7 +117,7 @@ fn satir_yaz_kilitli(
 }
 
 fn mevcut_icerik(yol: &Path) -> io::Result<Option<Vec<u8>>> {
-    match crate::kaynak_sinirlari::kalici_ic_baytlari_oku(yol) {
+    match crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(yol) {
         Ok(icerik) => Ok(Some(icerik)),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => Ok(None),
         Err(hata) => Err(hata),
@@ -133,7 +133,7 @@ pub fn atomik_karsilastir_ve_geri_al(
     onceki: Option<&[u8]>,
 ) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
-    let guncel = match crate::kaynak_sinirlari::kalici_ic_baytlari_oku(yol) {
+    let guncel = match crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(yol) {
         Ok(icerik) => Some(icerik),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
         Err(hata) => return Err(hata),

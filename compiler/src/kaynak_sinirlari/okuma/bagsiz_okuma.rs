@@ -5,7 +5,6 @@
 //! aygıtta bloklanmaz: aynı klasöre yazan başka süreç yaprağı yarışla bağa
 //! çevirip kök dışı içeriği hedefe kopyalatamaz (spec/08 K-394).
 
-#[cfg(unix)]
 use crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
 use std::io;
 #[cfg(unix)]
@@ -39,13 +38,18 @@ fn sinir_hatasi(ad: &str, azami: usize) -> io::Error {
     )
 }
 
-/// Kalıcı dosya katmanının bağ izlemeyen iç okuması.
+/// Kalıcı dosya katmanının bağ izlemeyen iç okuması (genel okuma sınırı).
 pub(crate) fn kalici_ic_baytlari_oku(yol: &Path) -> io::Result<Vec<u8>> {
+    kalici_ic_baytlari_oku_azami(yol, VARSAYILAN_KAYNAK_SINIRLARI.dosya_okuma_bayti())
+}
+
+/// Bağ izlemeyen iç okuma, çağıranın kilit altında denetlediği tavanla
+/// (K-395 çözerek ekleme 32 MiB).
+pub(crate) fn kalici_ic_baytlari_oku_azami(yol: &Path, azami: usize) -> io::Result<Vec<u8>> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
         use std::os::unix::io::AsRawFd;
-        let azami = VARSAYILAN_KAYNAK_SINIRLARI.dosya_okuma_bayti();
         let dosya = std::fs::OpenOptions::new()
             .read(true)
             .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC)
@@ -68,5 +72,5 @@ pub(crate) fn kalici_ic_baytlari_oku(yol: &Path) -> io::Result<Vec<u8>> {
         })
     }
     #[cfg(not(unix))]
-    crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol)
+    super::sinirli_bayt_oku(yol, azami)
 }
