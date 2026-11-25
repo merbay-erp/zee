@@ -253,6 +253,57 @@ eklediği/sildiği ve hâlâ beklenen değeri taşıyan kayıtlar atomik geri al
 başka sürecin ilgisiz değişikliği ezilmez. Yarım HTTP gövdesi bağlantı
 kapanışıyla geçersiz kalır.
 
+## 5a. Geliştirme ve üretim web sözleşmesi (K-400)
+
+Zee'nin iki gerçek TCP web kipi vardır ve aralarındaki sınır makinece
+denetlenir. Geliştirme kipi `dil çalıştır --deneysel-web` (ya da `zee.ayar`
+`web-modu: deneysel`) yalnız aynı makinedeki tarayıcı için prototiptir;
+üretim kipi `--web-proxy` ailesidir ve filonun tek yayın yoludur.
+
+ZORUNLU (K-400): Deneysel kip dinleyiciyi yalnız `127.0.0.1` üzerinde açar;
+bind adresini değiştiren CLI bayrağı, ortam değişkeni ya da proje alanı
+yoktur. Kabul edilen bağlantının eşi loopback değilse başlıklar okunmadan
+403 `deneysel web yalnız loopback bağlantısı kabul eder` döner.
+
+ZORUNLU (K-400): Deneysel kip her istekte tek `Host` başlığı ister; eksik ya
+da yinelenen Host 400'dür. Host otoritesinin adı `localhost`, yalnız ASCII
+harf/rakam/tire etiketli `*.localhost` (RFC 6761), noktalı ondalık
+`127.0.0.0/8` adresi ya da `[::1]` değilse (kapı 1–65535 serbest) istek
+rota, dosya ya da oturum yüzeyine ulaşmadan 421 `Misdirected Request` ile
+reddedilir; sabit gövde üretim bayraklarını önerir. İlk retle süreç başına
+bir kez, Host değerini yazmayan stderr uyarısı verilir. Böylece DNS
+rebinding (saldırgan alanının 127.0.0.1'e çözülmesi) ve public Host'u
+koruyan bir tünel/proxy arkasından yayın deneysel kipe ulaşamaz.
+
+TANIMLI (K-400): Deneysel kipte `Forwarded`, `X-Forwarded-For` ve benzeri
+başlıklar reddedilmez ama hiçbir zaman kimlik sayılmaz: `istemci adresi` ve
+oran kimliği soket IP'sidir. Oturum çerezi `zee-oturum` adıyla Secure'sız
+yazılır, HSTS eklenmez; CSP, `nosniff`, gövde/başlık sınırları ve oran
+pencereleri üretimle aynıdır. Deneysel kip üretim güvenlik sözleşmesi
+değildir ve açılışta bunu stderr'e yazar.
+
+YASAK (K-400): Deneysel kip üretim dinleyici yollarını alamaz. Adlı
+dinleyici bildirimi olmayan projede `LISTEN_FDS` ya da `LISTEN_PID`
+tanımlıysa (systemd soket devri) kaynak yürütülmeden çıkış 2 ile reddedilir
+ve ileti üretim bayraklarını önerir; sessizce 127.0.0.1'e dönülmez.
+`--web-worker-port`, `--web-oran-deposu`, `--web-isci-sayisi`,
+`--web-systemd-soketi` ve `--web-proxy` deneysel kiple birleşmez (çıkış 2).
+
+ZORUNLU (K-400): İnternete açık her Zee web süreci üretim kipindedir:
+`dil çalıştır --web-proxy https://<origin> --web-worker-port <kapı>`, çok
+süreçte `--web-isci-sayisi N` ve kesintisiz yeniden başlatma için
+`--web-systemd-soketi` (§7). Worker yalnız loopback'te düz HTTP dinler, TLS'yi
+aynı makinedeki reverse proxy sonlandırır ve §5'in Host/Forwarded/Origin/eş
+kuralları, `__Host-` Secure çerezi (§4), HSTS, kaynak değişmezli CSP (K-379),
+16 KiB başlık ve 64 KiB varsayılan gövde ile rota bazlı gövde bütçeleri
+(K-391) ve oran pencereleri birlikte geçerlidir.
+
+AÇIK (K-400): Host'u `127.0.0.1` ya da `localhost` olarak yeniden yazan
+yerel bir proxy/tünel deneysel kipi dışarı açabilir; çalışma zamanı bunu
+gerçek yerel ön kapıdan (ör. resmî sitenin yerel önizlemesi) ayırt edemez.
+Bu biçim operatör kuralıyla yasaktır (`docs/web-production-profili.md`);
+filo denetimi üretim süreçlerinde `--deneysel-web` olmadığını doğrular.
+
 ## 6. Platform sınırı
 
 Native CLI CSPRNG, Argon2id ve sınırlı legacy bcrypt doğrulama capability'sini taşır. WASM playground
@@ -272,7 +323,7 @@ sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky sess
 ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
 `docs/web-production-profili.md` içindedir.
 
-Normatif gerekçe: RFC-0017, ADR-034, ADR-036, ADR-037, ADR-076 ve ADR-079. Rota/eylem ayrımı:
+Normatif gerekçe: RFC-0017, ADR-034, ADR-036, ADR-037, ADR-076, ADR-079 ve ADR-170 (K-400). Rota/eylem ayrımı:
 RFC-0015 ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.
 
 ## Legacy bcrypt ve kanonik istemci adresi (K-208/K-209)

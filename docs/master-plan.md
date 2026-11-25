@@ -146,6 +146,9 @@ GET "/durum" adresine istek geldiğinde
 Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
 localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
 eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
+K-400/ADR-170 bu sınırı üretim sözleşmesine çevirdi: deneysel kip yalnız
+loopback Host'una yanıt verir (DNS rebinding'e karşı 421), systemd soket devri
+almaz; internete açık tek yol `--web-proxy` worker/proxy profilidir (spec/12 §5a).
 K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
 kapattı (RFC-0017, spec/12). K-137/ADR-034 kalıcı ortak oturum/rate-limit
 deposunu, güvenilir proxy istemci kimliğini ve tek-worker/N süreç modelini

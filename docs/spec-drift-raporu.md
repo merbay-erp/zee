@@ -17,7 +17,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
 | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 26 | 26 | 0 | 0 |
-| `spec/12-web-guvenlik-profili.md` | 76 | 70 | 0 | 6 |
+| `spec/12-web-guvenlik-profili.md` | 82 | 75 | 0 | 7 |
 | `spec/13-surumlu-morfoloji-profili.md` | 9 | 8 | 0 | 1 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **389** | **370** | **5** | **14** |
+| **Toplam** | **395** | **375** | **5** | **15** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -51,6 +51,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 - `spec/07-birimler.md#4133d3a7031d4b3d` — AÇIK: Kökü proje klasörüne taşıyan ya da proje başına ayrı veri kökü aça… — K-382 takip önerisi veri_kökü: ayrı dogfood-change; iki ürün tekrarı ya da ikinci tüketici kanıtı bekler.
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.
+- `spec/12-web-guvenlik-profili.md#2e5226f743e35a39` — AÇIK (K-400): Host'u `127.0.0.1` ya da `localhost` olarak yeniden yazan … — K-400: Host yeniden yazan yerel proxy/tünel çalışma zamanınca ayırt edilemez; operatör kuralı ve filo süreç denetimi (25.11.2026: hiçbir üretim sürecinde --deneysel-web yok) ile kapsanır.
 - `spec/12-web-guvenlik-profili.md#5d930da7687a2f1e` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım, ağ dosya sistemi ve çok hostlu birincillik açık (K-340 `zee.ayar` alanını, K-341 tek makinede elle kurulumda tek birincili bu maddeden çıkardı); Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.
 - `spec/12-web-guvenlik-profili.md#c0c4aaba019b2440` — AÇIK: Adlı dinleyicilerden bağlantı kabulü yalnız §9'daki bağlantı bloğu… — K-381: çok işçi grubuna adla aktarım ve HTTP dinleyicisinin adlı devirden alınması açık; bloksuz dinleyici K-376 gibi tutulur.
 - `spec/12-web-guvenlik-profili.md#cf762c0c4b3f18b5` — AÇIK: Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları ile b… — Katman C, bağlantılar arası uyandırma, Unix dışı ret, RSS ölçümü ve kısmi literal açık. K-388: birimler arası canlı değer birikimi ve birim içi atılan değer iadesi açık.
