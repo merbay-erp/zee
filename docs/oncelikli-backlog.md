@@ -4100,7 +4100,7 @@ Düzeltme: üzerine yazma, kapsam sonu, işlem çerçevesi, gezme kopyası, gör
 ortamı klonları, koleksiyon öğesi değişimi ve `sil` düşen değerin ölçüsünü
 iade eder. Güvenlik değişmezi ölçü ≤ tüketim: `ekle`/yeni sözlük anahtarı ve
 `x x ile y olsun` gerçek kapasite artışını tüketir, gezme geri yazımı ve iç
-adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-170).
+adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-167).
 
 Kanıt: `kaynak_sinirlari_testi::atilan_degerin_zarf_payi_iade_edilir`,
 `iade_canli_birikimi_zarftan_kacirmaz`; `baglanti_butce_yenileme_testi`

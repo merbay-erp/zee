@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 24 Kasım 2026
-- **İlgili kayıt:** K-393, GB-170, ADR-033 (iade-yok ilkesini değiştirir),
+- **İlgili kayıt:** K-393, GB-167, ADR-033 (iade-yok ilkesini değiştirir),
   ADR-165 (bağlantı birimi bütçesi), ADR-059 (core freeze), RFC-0025,
   RFC-0043 §seçenek (b), spec/24
 

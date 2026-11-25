@@ -233,7 +233,7 @@ spec/24 normatif değişikliği olduğu için ayrı correctness K-işi (merkezde
 ZM-F035) ve aynı committe spec/24 + K-173 soak koşusu.
 
 **K-393 sonucu (24 Kasım 2026):** seçenek (b) de ayrı correctness işi olarak
-uygulandı (ADR-173, GB-170): birim içinde düşen değerin payı zarfa iade
+uygulandı (ADR-173, GB-167): birim içinde düşen değerin payı zarfa iade
 edilir, iade tüketimdeki ölçüyü aşamaz. Canlı gövdeyi tek birimde Zee metni
 olarak tutmak 64 MiB'ı aşarsa yine C024'tür; aralıklı okuma ihtiyacı sürer.
 
