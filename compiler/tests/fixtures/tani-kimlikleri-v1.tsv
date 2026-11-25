@@ -150,6 +150,7 @@ aktif	C030	calisma.ag_baglantisi	Ağ bağlantısı işlemi başarısız ya da ba
 aktif	C031	calisma.sira_disi	Listede o sırada öğe yok (sıra 1 ile adet aralığı dışında)
 aktif	C032	calisma.kodlanmis_icerik	Kodlanmış içerik çözülemedi
 aktif	C033	calisma.dns_sorgusu_gecici	DNS sorgusu geçici olarak başarısız (RFC-0044 B1)
+aktif	C034	calisma.posta_kimlik_ilkeli	Posta kimlik doğrulama ilkeli girdiyi reddetti ya da kamu son ek listesi yok (RFC-0044 B1b/B2b)
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik

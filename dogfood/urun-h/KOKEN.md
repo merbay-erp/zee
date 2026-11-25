@@ -17,6 +17,7 @@ dilimleridir.
 |---|---|---|
 | `korpus/f009-dinleyici-yok.dil` | ürün reproducer'ı (dinleyici) | S036; K-381 sonrası temiz derlenir |
 | `korpus/zm-r006-mx-sorgusu-yok.dil` | ZeeMail korpusu ZM-R006 (ürün commit `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac`, SHA-256 `b645c2230562c1cd37e4eae221b916ad75a69f801946038753036e5a50f97d08`; alan adı anonim) | S015; K-390 (RFC-0044 B1a) sonrası temiz derlenir |
+| `korpus/zm-r007-dkim-dogrulama-yok.dil` | ZeeMail korpusu ZM-R007 (ZM-F024/F025; ürün provenance'ı ZeeMail sürtünme kaydından bekleniyor; alan adı anonim) | S015; K-390 (RFC-0044 B1b/B2b) sonrası temiz derlenir |
 | `korpus/f004-cr-kacisi-yok.dil` | ürün reproducer'ı (çıplak CR) | S040 |
 | `korpus/f001-yerel-ayarli-buyuk-harf.dil` | ürün reproducer'ı (harf katlama) | `MAİL FROM:<A@B.TEST>` |
 | `korpus/f001-ascii-katlama-elle.dil` | ürünün ASCII metin yardımcısı | `MAIL FROM:<A@B.TEST>` |

@@ -10,12 +10,13 @@
 # `veritabanı` taşır); hedef anonim loopback, göçler SQL kesitinin klasörü.
 # K-390: dış teslim ve gelen doğrulama `dns` ister; yalnız loopback
 # doğrulayıcı çözücü, DANE için `zorunlu` kip (zm-r006 artık derlenir).
+# K-390 B2b: gelen DKIM imza doğrulaması `kriptografi` ister (zm-r007).
 
 proje "urun-h" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "korpus/f001-ascii-katlama-elle.dil" olsun
-yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "dosya-yazma", "ağ", "ağ-dinleyici", "veritabanı", "dns" listesi olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "dosya-yazma", "ağ", "ağ-dinleyici", "veritabanı", "dns", "kriptografi" listesi olsun
 ağ_hedefleri "smtps://smtp.ornek.test:465" listesi olsun
 yerel_bağımlılıklar boş liste olsun
 veritabanı_hedefi "postgresql://127.0.0.1:5432/ornek_posta" olsun

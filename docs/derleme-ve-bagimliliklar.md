@@ -29,6 +29,7 @@ değildir. Zee'nin kendi paket bağımlılıkları (`proje.dil`, exact uzak sür
 | Native | `serde`, `serde_json` | Kapalı metadata şemaları ve bakım çıktıları |
 | Native | `unicode-normalization` | NFC normalizasyonu |
 | Native | `ureq` (rustls) | HTTPS outbound/registry taşıması |
+| Native | `ring` (`=0.17.14`) | K-390/ADR-175 DKIM `rsa-sha256`/`ed25519-sha256` doğrulaması; rustls'in kilitli aynı sürümü doğrudan açıldı, ağaca yeni paket girmedi |
 | Native | `postgres`, `postgres-native-tls`, `native-tls` | PostgreSQL ve TLS adaptörü |
 | Native | `r2d2`, `r2d2_postgres` | Sınırlı bağlantı havuzu |
 | Unix | `libc` | İşletim sistemi/metadata adaptörleri |

@@ -16,9 +16,10 @@ bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani kalitesi kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,ag_satiri,agac,artefakt_dogrulama,bicimleyici,cozumleyici,dns_istemcisi,dns_teli,eposta,faz,gorsel,guvenlik,http_istegi,icerik_turu,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,sozcukleyici,surum,tani,test_kapsami,web_cok_parcali,web_guvenligi,web_kapanis,web_listener,web_metrikleri,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,ag_satiri,agac,artefakt_dogrulama,bicimleyici,cozumleyici,dns_istemcisi,dns_teli,eposta,faz,gorsel,guvenlik,http_istegi,icerik_turu,kalici_dosya,kamu_son_ekleri,kaynak_sinirlari,morfoloji,paket,postgresql,proje,sozcukleyici,surum,tani,test_kapsami,web_cok_parcali,web_guvenligi,web_kapanis,web_listener,web_metrikleri,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 dns_istemcisi	altyapi	dns_teli	Loopback DNS stub istemcisi: rastgele kimlik/kapı, eşleşmeyen paket atma, TC→TCP, 5 sn sınır, AD sınaması (K-390)
+dkim_kripto	altyapi	kodlama	DKIM imza doğrulama ilkeli: algoritma adı, SPKI/PKCS#1 ve Ed25519 açık anahtarı, 1024–4096 bit sınırı, ring doğrulaması, LF→CRLF kanonik bayt (K-390 B2b)
 dns_teli	altyapi	-	Sınırlı DNS tel biçimi: sorgu kurma, fail-closed yanıt ayrıştırma, CNAME zinciri ve çözüm (K-390, unsafe yok)
 eposta	altyapi	icerik_turu,kaynak_sinirlari,zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
@@ -30,6 +31,7 @@ icerik_turu	altyapi	kaynak_sinirlari	Web dosya yaniti ve SMTP eki ortak kapali i
 intrinsic	altyapi	yetkinlik	Yerlesik islem ve yetkinlik metadata si
 invariant	semantik	agac,faz,hir,tani	AST HIR yapisal dogrulama
 kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
+kamu_son_ekleri	altyapi	-	Public Suffix List ayrıştırıcısı ve RFC 7489 kurumsal alanı; veri derleyiciye gömülü değil (K-390 B1b)
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
 kodlama	altyapi	-	Kati MIME base64 quoted-printable ve UTF-8 cozumu; konumlu kodlama hatasi (K-389)
@@ -58,5 +60,5 @@ web_metrikleri	adapter	-	K-257 private CLI bounded metadata counters/FIFO; Postg
 web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi
-yorumlayici	runtime	ag_satiri,agac,dns_teli,eposta,faz,guvenlik,hir,icerik_turu,intrinsic,kaynak_sinirlari,kodlama,ondalik,tani,test_kapsami,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
+yorumlayici	runtime	ag_satiri,agac,dkim_kripto,dns_teli,eposta,faz,guvenlik,hir,icerik_turu,intrinsic,kamu_son_ekleri,kaynak_sinirlari,kodlama,ondalik,tani,test_kapsami,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
 zaman	temel	-	Gregoryen takvim donusumleri

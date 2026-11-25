@@ -5351,6 +5351,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         self.rastgele.aralikta(alt, ust)
     }
+    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
+        KAMU_SON_EKLERI
+            .get()
+            .map(|liste| liste.kurumsal_alan(ad))
+            .ok_or_else(|| "proje `kamu_son_ekleri` bildirmiyor".into())
+    }
+
     fn dns_sorgula(
         &mut self,
         ad: &str,
@@ -5468,10 +5475,43 @@ fn dns_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
     let Some(ayar) = girdi.proje.as_ref().and_then(|p| p.ana_bildirim().dns) else {
         return Ok(());
     };
+    kamu_son_eklerini_yukle(girdi)?;
     if ayar.dnssec == dil::dns_teli::DnssecKipi::Zorunlu {
         dil::dns_istemcisi::dnssec_sina(&ayar)
             .map_err(|hata| format!("dns_dnssec zorunlu: {hata}"))?;
     }
+    Ok(())
+}
+
+/// K-390 B1b (ADR-175): süreçte tek proje; liste açılışta bir kez okunur,
+/// exact SHA-256 tutmazsa ya da ayrıştırılamazsa süreç başlamaz (çıkış 2).
+static KAMU_SON_EKLERI: std::sync::OnceLock<dil::kamu_son_ekleri::KamuSonEkleri> =
+    std::sync::OnceLock::new();
+
+fn kamu_son_eklerini_yukle(girdi: &KaynakGirdisi) -> Result<(), String> {
+    let Some(proje) = girdi.proje.as_ref() else {
+        return Ok(());
+    };
+    let Some(bildirim) = proje.ana_bildirim().kamu_son_ekleri.clone() else {
+        return Ok(());
+    };
+    let yol = proje.ana_kok().join(&bildirim.yol);
+    let hata = |neden: String| format!("kamu_son_ekleri \"{}\": {neden}", bildirim.yol);
+    let icerik = std::fs::read(&yol).map_err(|e| hata(format!("okunamadı ({})", e.kind())))?;
+    let ozet: String = {
+        use sha2::{Digest, Sha256};
+        Sha256::digest(&icerik)
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect()
+    };
+    if ozet != bildirim.ozet {
+        return Err(hata(format!(
+            "SHA-256 bildirilen özetle uyuşmuyor (dosyanın özeti {ozet})"
+        )));
+    }
+    let liste = dil::kamu_son_ekleri::KamuSonEkleri::ayristir(&icerik).map_err(hata)?;
+    let _ = KAMU_SON_EKLERI.set(liste);
     Ok(())
 }
 

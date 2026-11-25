@@ -23,6 +23,7 @@ mod kimlik_iletisim;
 mod kodlanmis_dosya;
 mod metin;
 mod paylasilan_io;
+mod posta;
 mod siralama;
 mod toplayan_baglanti;
 mod toplayan_io;
@@ -602,6 +603,10 @@ pub trait GirdiCikti {
     /// K-390: loopback çözücüye tek DNS sorgusu (spec/31 §1; süre izde yok).
     fn dns_sorgula(&mut self, _ad: &str, _tur: KayitTuru, _ms: i64) -> DnsSonucu {
         crate::dns_teli::desteklenmeyen()
+    }
+    /// K-390 B1b: proje `kamu_son_ekleri` listesine göre RFC 7489 kurumsal alanı.
+    fn kurumsal_alan(&mut self, _ad: &str) -> Result<String, String> {
+        Err("proje `kamu_son_ekleri` bildirmiyor".into())
     }
 }
 

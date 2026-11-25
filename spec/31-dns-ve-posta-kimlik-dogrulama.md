@@ -1,9 +1,11 @@
 # 31 — DNS sorgusu ve posta kimlik doğrulama
 
 Normatif kaynak: [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
-Aşama B1 (B1a), [ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md).
-Durum: §1 **TANIMLI** (K-390). Gelen posta doğrulaması (B2) ayrı bölüm
-olarak eklenir; giden DKIM imzası (B3) ve teslim güvenliği (B4) taslaktır.
+Aşama B1 (B1a, B1b) ve B2b, [ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
+[ADR-175](../adr/175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
+Durum: §1–§3 **TANIMLI** (K-390). Başlık ayrıştırıcısı, SPF, DMARC politikası,
+ARC ve `Authentication-Results` (B2a/B2c/B2d/B2e) ayrı bölüm olarak eklenir;
+giden DKIM imzası (B3) ve teslim güvenliği (B4) taslaktır.
 
 ## 1. DNS sorgusu (B1)
 
@@ -52,3 +54,27 @@ TANIMLI: Çalışma zamanı DNS önbelleği tutmaz; önbellek ve zehirleme diren
 TANIMLI: DNS sorgusu IO izine `dns_sorgula` olayı olarak argüman `[ad, tür]` ve yapılandırılmış sonuçla girer; replay ağa gitmez, argümanı farklı sorgu izle eşleşmez. Hermetik adaptörün sahte çözücüsünde kayıtlı olmayan ad "alan yok"tur.
 
 AÇIK: Zee yüzeyinde NXDOMAIN/NODATA ayrımı, olumsuz yanıtın doğrulanmışlığı ve CNAME kanonik adının ayrı alanı (RFC-0044 B4); `dil dene` için statik bölge dosyası; PTR, SRV ve SVCB türleri; U-label alanlar; süreç ve oturum başına DNS bütçesi (B2).
+
+## 2. Kurumsal alan (B1b)
+
+ZORUNLU: `kamu_son_ekleri` (proje köküne göreli dosya yolu) ve `kamu_son_ekleri_özeti` (64 küçük harf onaltılık SHA-256) yalnız `dns` bildirimiyle ve birlikte geçerlidir; biri ötekisiz, `dns`siz kullanım, mutlak yol, `..` ya da ters bölü içeren yol ve biçimsiz özet P015'tir.
+
+ZORUNLU: Çalışma zamanı kaynak yürütülmeden dosyayı bir kez okur; okunamayan, SHA-256'sı bildirilen özetle tutmayan ya da ayrıştırılamayan liste (kural yok, bozuk ASCII kural, 4 MiB ya da 100 000 kural üstü) süreci `kamu_son_ekleri "…":` iletisiyle çıkış 2 ile durdurur.
+
+TANIMLI: `AD alanının kurumsal alanı` Metin verir: publicsuffix.org "en uzun eşleşen kural" algoritmasıyla (istisna `!` kazanır, joker `*.` bir etiket tüketir, eşleşme yoksa varsayılan `*`) bulunan kamu son eki artı bir etiket, küçük harfli ve sonda noktasız. ICANN ve PRIVATE bölümlerinin ikisi de kullanılır.
+
+TANIMLI: Ad geçersizse (boş etiket, baştaki nokta, 63 oktet üstü etiket, 253 oktet üstü ad, ASCII LDH/alt çizgi dışı karakter, U-label) ya da kamu son ekinin kendisiyse sonuç boş Metindir; ASCII dışı kural satırları yok sayılır.
+
+TANIMLI: İfade `dns` yetkinliği ister; proje `kamu_son_ekleri` bildirmemişse yürütme C034 ile durur. Sonuç IO izine `kurumsal_alan` olayı (`[ad]` → metin) olarak girer; replay listeyi gerektirmez.
+
+## 3. DKIM imza doğrulama ilkeli (B2b)
+
+TANIMLI: `B dkim imzasını VERİ verisi için P anahtarıyla A olarak doğrulamayı dene` (`kriptografi`) `Sonuç<Metin sözlük>` verir; başarı `doğrulandı` (`"doğru"`/`"yanlış"`), `algoritma` ve `anahtar_biti` alanlarını taşır. İmzanın tutmaması başarılı Sonuç'tur (`doğrulandı` `"yanlış"`).
+
+ZORUNLU: Algoritma yalnız `rsa-sha256` (RSASSA-PKCS1-v1_5, `p=` SPKI ya da PKCS#1, 1024–4096 bit) ve `ed25519-sha256` (RFC 8463: imza VERİ'nin SHA-256 özeti üzerinde, `p=` ham 32 bayt) olabilir; `rsa-sha1` (`algoritma_reddedildi`), bilinmeyen algoritma, boş `p=` (`anahtar_iptal`), çözülemeyen anahtar, 1024 bitten kısa ve 4096 bitten uzun RSA anahtarı ve base64 olmayan ya da boyu anahtara uymayan imza C034 `tür` verili rettir ve kriptografik işlemden önce elenir.
+
+TANIMLI: VERİ'deki her LF imza girdisinde CRLF olur; VERİ CR içerirse C034 `veri_bozuk` rettir. Zee metninde CR yazılamaz ve SMTP alıcısı çıplak CR/LF'yi reddeder (spec/12 §9), bu yüzden dönüşüm kayıpsızdır. Kanonikleştirme (başlık seçimi, relaxed/simple kuralları, `b=` boşaltma) Zee kodudur. `B` ve `P` içindeki boşluk ve satır sonları atlanır.
+
+TANIMLI: `X gövdesinin dkim gövde özeti` (`kriptografi`) Zee'nin kanonikleştirdiği gövdenin aynı LF→CRLF kuralıyla elde edilen baytlarının SHA-256'sını base64 Metin olarak verir (`bh=` biçimi; boş simple gövde `"\n"`, boş relaxed gövde `""`). Gövde CR içerirse yürütme C034 ile durur. İmza tarafı aynı özeti ve aynı imza girdisi kuralını kullanır.
+
+AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; `psl` ve DKIM anahtarı fuzz hedefleri; IDN kuralları ve DMARCbis ağaç yürüyüşü.

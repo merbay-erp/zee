@@ -6024,6 +6024,28 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - spec/04'e TANIMLI madde: çağrısız çıkarımlı gövde denetlenmez, hatası ilk
   çağrıyla raporlanır; çağrısız denetim için açık imza.
 
+## K-390 — RFC-0044 B1b + B2b: kamu son ek listesi ve DKIM doğrulama ilkeli (25 Kasım 2026)
+
+- Merkez kararı (b) dogfood-minimal: PSL veri dosyası + `kurumsal alanı`;
+  DKIM doğrulama ilkeli rsa-sha256/ed25519-sha256 ring ile; rsa-sha1 ve
+  1024 altı / 4096 üstü anahtar reddi; kanonikleştirme Zee'de; SHA-256 için
+  K-389 yüzeyi; A-R host'ta yok. ADR-175, GB-167, C034.
+- Uygulama günü sürtünmesi: Zee metin sabitinde `\r` yok, bağlantı satır
+  okuyucuları CRLF'yi atar; DKIM ise CRLF ister. Karar: veri LF'si imza
+  girdisinde CRLF (TANIMLI; SMTP çıplak LF reddine bağlı), veride CR ret.
+  Kanonik gövde özeti (`bh=`) K-389 `metnin sha256 özeti` ile CRLF'li
+  hesaplanamıyor. Merkez kararı: DKIM'e özgü `X gövdesinin dkim gövde özeti`
+  (aynı LF→CRLF + SHA-256 + base64); ara önerilen `base64 metninin
+  onaltılık karşılığı` minimalite gereği çıkarıldı. K-397 imzası aynı
+  özeti ve aynı imza girdisi kuralını kullanır.
+- `p=` çıplak PKCS#1 `RSAPublicKey` de kabul edildi: yayıncıların bir kısmı
+  SPKI yerine onu yayımlıyor; bit sınırı aynı.
+- Kurumsal alan saldırganın denetlediği adla yürütmeyi durdurmamalı:
+  geçersiz ad boş Metin; yalnız liste bildirilmemişse (yapılandırma hatası)
+  C034 ile durur.
+- K-397 (B3 imza) ile tek kripto yüzeyi `dkim_kripto`; koordinasyon iletisi
+  gönderildi.
+
 ## K-390 — RFC-0044 B1a: DNS stub çözücü, loopback AD biti, kendi tel biçimi (24 Kasım 2026)
 
 - Etkin dogfood ürünü `urun-h` (ZeeMail) internete açık posta sunucusu için

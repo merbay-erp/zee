@@ -1,8 +1,9 @@
 # RFC-0044 — DNS, posta kimlik doğrulama ve teslim güvenliği
 
 - **Durum:** taslak — 24 Kasım 2026. Aşama **B1a kabul edildi ve
-  uygulandı** (K-390, ADR-169, spec/31 §1); B1b (PSL) ve B2 K-390'ın ikinci
-  diliminde; B3, B4 taslak. Core freeze (K-160A/ADR-059) altında her aşama
+  uygulandı** (K-390, ADR-169, spec/31 §1); **B1b (PSL) ve B2b (DKIM
+  doğrulama ilkeli) kabul edildi ve uygulandı** (K-390 ikinci dilimi,
+  ADR-175, spec/31 §2–§3); B2a/B2c/B2d/B2e, B3, B4 taslak. Core freeze (K-160A/ADR-059) altında her aşama
   ayrı `dogfood-change` K-işi, ADR'si ve depo içi reproducer'ıyla açılır.
 - **Tarih:** 24 Kasım 2026
 - **İş:** K-383 (taslak), K-390 (B1a uygulandı)
@@ -168,6 +169,25 @@ Bunlar olmadan:
 > NXDOMAIN/NODATA boş liste, ayrımları host iç API'sinde); (3) hata kodu
 > C033, `tür` listesine `bozuk_yanıt` eklendi. B1b (PSL, `kurumsal alanı`)
 > B2 DMARC ile birlikte gelir.
+
+> **B1b + B2b kabul (K-390, 25 Kasım 2026, [ADR-175](../adr/175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md),
+> [spec/31 §2–§3](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Merkez kararı
+> (b) dogfood-minimal; taslaktan farklar:
+> (1) PSL bildirimi tek sözlük değil iki proje alanıdır
+> (`kamu_son_ekleri`, `kamu_son_ekleri_özeti`; yalnız `dns` ile, P015), sürüm
+> alanı yok — kimlik exact SHA-256'dır; ifade `alanın kurumsal alanını almayı
+> dene` Sonuç'u yerine `<ad> alanının kurumsal alanı` Metin'idir (geçersiz ad
+> boş Metin; saldırgan From'u yürütmeyi durduramaz).
+> (2) B2b tam DKIM değerlendiricisi değil **doğrulama ilkelidir**:
+> kanonikleştirme, `h=` seçimi, `bh=` karşılaştırması, `x=` ve politika
+> Zee'dedir; host yalnız `p=` ayrıştırma, bit sınırı ve imza doğrulamasıdır
+> (`<b> dkim imzasını <veri> verisi için <p> anahtarıyla <a> olarak doğrulamayı
+> dene`, C034). B2a'dan (başlık ayrıştırıcısı) önce alındı; "Ayrıştırıcı
+> tutarlılığı" riski B2a gelene dek Zee kodundadır (GB-167).
+> (3) Zee'de `\r` olmadığından veri LF'si imza girdisinde CRLF'dir; aynı
+> kuralla `<x> gövdesinin dkim gövde özeti` `bh=` biçiminde gövde özetini
+> verir (DKIM'e özgü, genel özet API'si değil).
+> (4) Kriptografi rustls'in kilitli `ring`'idir, yeni crate yok.
 
 ### Çözücü modeli — karar
 
@@ -816,9 +836,9 @@ ADR'nin eki) ve ayrı PR'dır.
 |---|---|---|---|---|
 | 0 | — | RFC-0043 bayt/kodlama/özet | — | En küçük, önce |
 | 1 | B1a | `dns` yetkinliği, stub çözücü, MX/A/AAAA/TXT, hata sınıfları, sahte çözücü | — | Tek yeni crate burada (ADR-038) |
-| 2 | B1b | PSL veri dosyası + `kurumsal alanı` | B1a | ZM-F025 |
+| 2 | B1b | PSL veri dosyası + `kurumsal alanı` | B1a | ZM-F025; **uygulandı** (K-390, ADR-175) |
 | 3 | B2a | Paylaşılan başlık ayrıştırıcı + `Authentication-Results` temizliği/yazımı | RFC-0043 | **Güvenlik önceliği**; DNS'siz bile değerli (sahte A-R silme) |
-| 4 | B2b | DKIM doğrulama (`rsa-sha256`, `ed25519-sha256`) | B1a, B2a | — |
+| 4 | B2b | DKIM doğrulama (`rsa-sha256`, `ed25519-sha256`) | B1a, B2a | İlkel olarak B2a'dan önce **uygulandı** (K-390, ADR-175); kanonikleştirme Zee'de |
 | 5 | B2c | SPF `check_host` | B1a | — |
 | 6 | B2d | DMARC kaydı + hizalama yardımcıları; politika Zee'de | B1b, B2b, B2c | ZeeMail reject/quarantine |
 | 7 | B3 | DKIM imzası + çoklu seçici + açılış denetimi | B2b (doğrulayıcıyla test) | Giden kabul |

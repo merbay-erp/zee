@@ -216,7 +216,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_tamamla()
     }
-
     fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_geri_al()
     }
@@ -228,23 +227,24 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.politika.izin_verir(Yetkinlik::Donanim) && self.ic.sensor_acik_mi(ad)
     }
-
     fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
         if self.politika.izin_verir(Yetkinlik::Donanim) {
             self.ic.isik_ayarla(ad, yansin);
         }
     }
-
     fn bekle_ms(&mut self, milisaniye: i64) {
         self.ic.bekle_ms(milisaniye);
     }
-
     fn an_ms(&mut self) -> i64 {
         self.ic.an_ms()
     }
     fn dns_sorgula(&mut self, ad: &str, tur: KayitTuru, ms: i64) -> DnsSonucu {
-        let hata = |mesaj| DnsHatasi::yeni(DnsHataTuru::Ag, mesaj);
-        self.gerektir(Yetkinlik::Dns).map_err(hata)?;
+        self.gerektir(Yetkinlik::Dns)
+            .map_err(|m| DnsHatasi::yeni(DnsHataTuru::Ag, m))?;
         self.ic.dns_sorgula(ad, tur, ms)
+    }
+    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
+        self.gerektir(Yetkinlik::Dns)?;
+        self.ic.kurumsal_alan(ad)
     }
 }

@@ -96,6 +96,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn dns_sorgula(&mut self, ad: &str, tur: KayitTuru, ms: i64) -> DnsSonucu {
         self.ic.borrow_mut().dns_sorgula(ad, tur, ms)
     }
+    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
+        self.ic.borrow_mut().kurumsal_alan(ad)
+    }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.ic.borrow_mut().sunucu_kur(kapi)
     }

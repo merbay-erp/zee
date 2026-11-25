@@ -86,6 +86,15 @@ pub const DNS_TXT: &str = "dns.txt_sorgula";
 pub const DNS_ADRES: &str = "dns.adres_sorgula";
 /// K-390: `<ad> için TLSA kayıtlarını sorgulamayı dene`.
 pub const DNS_TLSA: &str = "dns.tlsa_sorgula";
+/// K-390 (RFC-0044 B1b): `<ad> alanının kurumsal alanı` → Metin; proje
+/// `kamu_son_ekleri` dosyasıyla RFC 7489 §3.2 (yoksa ya da ad kamu son ekiyse "").
+pub const POSTA_KURUMSAL_ALAN: &str = "posta.kurumsal_alan";
+/// K-390 (RFC-0044 B2b): `<b> dkim imzasını <veri> verisi için <p>
+/// anahtarıyla <a> olarak doğrulamayı dene` → Metin sözlük Sonucu (C034).
+pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
+/// K-390: `<x> gövdesinin dkim gövde özeti` — Zee'nin kanonikleştirdiği
+/// gövdenin LF→CRLF baytlarının SHA-256'sı, base64 (`bh=` biçimi); CR → C034.
+pub const POSTA_DKIM_GOVDE_OZETI: &str = "posta.dkim_govde_ozeti";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -172,6 +181,30 @@ const IKI_METIN_BIR_SAYI: &[IntrinsicTuru] = &[
 ];
 
 pub const TANIMLAR: &[IntrinsicTanimi] = &[
+    IntrinsicTanimi {
+        kimlik: POSTA_KURUMSAL_ALAN,
+        yetkinlik: Yetkinlik::Dns,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::Metin,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Kurumsal alanı bulunacak alan adı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: POSTA_DKIM_DOGRULA,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: DORT_METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::Saf,
+        tur_hatasi: "DKIM imzası, veri, açık anahtar ve algoritma Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: POSTA_DKIM_GOVDE_OZETI,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::Metin,
+        etki: IntrinsicEtkisi::Saf,
+        tur_hatasi: "DKIM gövde özeti alınacak gövde Metin olmalı.",
+    },
     IntrinsicTanimi {
         kimlik: DNS_MX,
         yetkinlik: Yetkinlik::Dns,

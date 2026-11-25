@@ -176,6 +176,11 @@ impl GirdiCikti for IzYenidenOynatici {
         }
     }
 
+    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
+        let sonuc = self.siradaki(dns::KURUMSAL_ALAN, vec![ad.into()]);
+        self.metin_sonuc(dns::KURUMSAL_ALAN, sonuc)
+    }
+
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         let sonuc = self.siradaki("sunucu_kur", vec![kapi.to_string()]);
         self.birim_sonuc("sunucu_kur", sonuc)
