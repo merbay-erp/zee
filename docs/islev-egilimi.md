@@ -30,8 +30,8 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/cli/ayar.rs::cozumle#1` | 94→96 (+2/+10) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cli/web_test_kit.rs::calistir#1` | 97→97 (+0/+10) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici.rs::denetle_coklu_hatali_tanimlarla#1` | 54→54 (+0/+8) | 15→15 (+0/+3) | SABİT |
-| `compiler/src/cozumleyici/cagri.rs::cagri_denetle#1` | 301→304 (+3/+24) | 7→7 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/cozumleyici/cumle.rs::blok_denetle#1` | 1121→1126 (+5/+24) | 3→3 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/cagri.rs::cagri_denetle#1` | 301→305 (+4/+24) | 7→7 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/cumle.rs::blok_denetle#1` | 1121→1134 (+13/+24) | 3→3 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/donus.rs::donusleri_birlestir#1` | 87→87 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/etki.rs::cumle_bilgisi#1` | 178→187 (+9/+18) | 12→13 (+1/+3) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/etki.rs::denetle#1` | 133→135 (+2/+14) | 5→5 (+0/+2) | PAY İÇİNDE |

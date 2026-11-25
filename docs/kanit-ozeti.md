@@ -8,7 +8,7 @@ Kaynak: `regression/v2.tsv`
 
 | Faz | Vaka |
 | --- | --- |
-| checker | 6 |
+| checker | 8 |
 | cli | 9 |
 | concurrency | 2 |
 | hir | 5 |
@@ -21,7 +21,7 @@ Kaynak: `regression/v2.tsv`
 | Tanı | Vaka |
 | --- | --- |
 | A001 | 2 |
-| A002 | 1 |
+| A002 | 2 |
 | C003 | 1 |
 | S004 | 2 |
 | S007 | 1 |
@@ -29,9 +29,9 @@ Kaynak: `regression/v2.tsv`
 | T017 | 1 |
 | T036 | 1 |
 | T054 | 2 |
-| - | 69 |
+| - | 70 |
 
-Toplam 81 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 81/81.
+Toplam 83 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 83/83.
 
 ## Güvenlik bulguları
 
@@ -55,7 +55,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | --- | --- | --- | --- | --- | --- |
 | spec/01-sozcukleme.md | 8 | 0 | 0 | 8 | 100 |
 | spec/02-dizim.md | 7 | 0 | 0 | 7 | 100 |
-| spec/03-adlar-ve-kapsam.md | 6 | 0 | 0 | 6 | 100 |
+| spec/03-adlar-ve-kapsam.md | 11 | 0 | 1 | 12 | 91 |
 | spec/04-turler.md | 15 | 0 | 0 | 15 | 100 |
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
@@ -84,7 +84,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 19 | 0 | 1 | 20 | 95 |
-| **Toplam** | 385 | 5 | 15 | 405 | 95 |
+| **Toplam** | 390 | 5 | 16 | 411 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -104,17 +104,17 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
-| kanit-ozeti | 12 | 10 | 1 | 12 | 11 | 23 |
+| kanit-ozeti | 11 | 11 | 1 | 13 | 10 | 23 |
 | kelime-avi | 2 | 2 | 1 | 3 | 2 | 5 |
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 14 | 4 | 0 | 17 | 1 | 18 |
+| urun-h | 14 | 5 | 0 | 18 | 1 | 19 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 83.
+Toplam korpus vakası: 84.
 
 ## Deprecation kayıtları
 
@@ -147,16 +147,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 120 |
+| maintenance | 123 |
 | semantic-bugfix | 44 |
-| semantic-change | 72 |
+| semantic-change | 73 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
 | correctness | 43 |
-| dogfood-change | 49 |
-| maintenance | 117 |
+| dogfood-change | 50 |
+| maintenance | 120 |
 | security | 20 |
 
-Toplam: 236 compiler değişiklik beyanı, 232 core freeze beyanı.
+Toplam: 240 compiler değişiklik beyanı, 236 core freeze beyanı.
