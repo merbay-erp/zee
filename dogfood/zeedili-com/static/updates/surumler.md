@@ -10,6 +10,51 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Güvenlik
+
+- **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
+  (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
+  dinliyordu, ama gelen isteğin `Host` başlığına bakmıyordu. Bu yüzden
+  ziyaret edilen kötü niyetli bir site kendi alan adını 127.0.0.1'e çözdürüp
+  (DNS rebinding) yerel prototipinizin sayfalarını okuyabiliyor, public adı
+  koruyan bir tünel/proxy de deneysel sunucuyu sessizce internete
+  açabiliyordu. Artık deneysel kip yalnız `localhost`, `*.localhost`,
+  `127.x.x.x` ve `[::1]` Host'larını kabul eder; başka Host **421** alır ve
+  yanıt üretim bayraklarını önerir. systemd soket devriyle başlatılan
+  deneysel süreç çıkış 2 ile durur. Spec/12 §5a geliştirme ile üretim
+  kipinin ne garanti ettiğini ve neyin hiçbir zaman izinli olmadığını
+  normatif olarak yazar.
+
+  **Göç:** Tarayıcıda `http://localhost:<kapı>` ya da
+  `http://127.0.0.1:<kapı>` kullanan yerel akış ve Host'u `127.0.0.1:<kapı>`
+  yapan yerel ön kapılar (resmî sitenin `yerel-baslat.sh` önizlemesi dahil)
+  değişmeden çalışır. Deneysel sunucuyu başka bir adla ya da tünelle
+  açıyorsanız üretim yoluna geçin: `dil çalıştır --web-proxy https://<alan>
+  --web-worker-port <kapı>` (çok süreç için `--web-isci-sayisi N
+  --web-systemd-soketi`). Filo denetimi: üretimdeki hiçbir Zee web süreci
+  `--deneysel-web` kullanmıyor.
+
+### Eklenenler
+
+- **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
+  bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
+  satırları olarak (76 karakter + satır sonu) belleğe alınmadan
+  gönderilebilir:
+  `n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`.
+  Kodlanmış çıktının bir parçası da gönderilebilir (IMAP kısmi getirme):
+  `n yol dosyasının base64 satırlarının 0 baytından 1024 baytını bağlantıya aktarmayı dene olsun`.
+  Sonuç yazılan bayt sayısıdır; tam çıktının boyu `b` baytlık dosya için
+  e = 4·⌈b/3⌉ olmak üzere e + 2·⌈e/76⌉'dır, böylece boyu dosyayı açmadan
+  önceden hesaplayabilirsiniz. Yol için `dosya-okuma` (ya da `veri:` yolu
+  için `veri-okuma`) yetkinliği gerekir. Kaynak dosya en çok 32 MiB
+  olabilir (çözerek yazma tavanıyla aynı); daha büyük dosya hiç bayt
+  gönderilmeden `boyut_aşımı` ile döner. 16 MB'lık ek artık bir saniyenin
+  altında gider; önceki 57 baytlık okuma döngüsü yavaştı ve bellek
+  sınırına takılıyordu.
+
+  **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
+  kalıpla değiştirebilirsiniz.
+
 ### Değişenler
 
 - **Dosya özeti ve dosya indirme yanıtı artık 32 MiB'a kadar (K-401):**
@@ -22,6 +67,27 @@ Bu kayıt yeni sürüm etiketi değildir.
   sınırı 16 MiB kalır.
 
   **Göç:** Gerekmez.
+
+- **Parametre adı sözlük köküne bağlanır (K-398):** `kalıbı al`,
+  `belirteci Metin olarak al`, `eşiği al`, `adedi al`, `içeriği al`,
+  `ucu al`, `metni al` gibi ekli parametreler artık sözlük kökü adıyla
+  bağlanır: gövdede `kalıp`, `belirteç`, `eşik`, `adet`, `içerik`, `uç`,
+  `metin` doğrudan yazılabilir; tanılar ve editör de bu adı gösterir. Önceden
+  ünsüz yumuşaması ve ünlü düşmesi geri çevrilmiyordu (`kalıb`, `metn`) ve
+  sözlük kökü "tanımlı değil" (A001) veriyordu. `zee-tr-1` morfoloji profili
+  ve uyumluluk kaydı değişmedi; yalnız parametre adının hangi adaydan
+  seçildiği değişti. Tek heceli `adı`, `kodu`, `ağı`, `-lı` sıfatları
+  (`gizli`) ve `filmi`, `formu` gibi adlar eskisi gibi bağlanır.
+
+  **Göç:** Gerekmez. Yumuşamış gövdeyi çıplak yazan mevcut kod (`belirtec`,
+  `yoğunluğ`, `kalıb … olsun`) aynı parametreye çözülmeye devam eder; yerel
+  103 proje ve 1 670 dosyada `dil denetle` çıktısı değişmedi. İki yeni tanı
+  durumu yalnız eskiden ayrı bir yerel açan koda dokunur: gövdede sözlük
+  köküne (`başlık … olsun`) farklı türde değer **T002** verir (öneri adın
+  parametre olduğunu söyler); parametre sözlük köküyle yeniden atandıktan
+  sonra eski yazımla (`başlığ`) başvuru **A002** verir. İkisinde de yerel
+  değere başka ad verin. Açık sınır: `kaybı`, `kaydı`, `şekli`, `ismi`,
+  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-175).
 
 ### Düzeltilenler
 

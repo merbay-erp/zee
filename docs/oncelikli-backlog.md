@@ -2866,6 +2866,40 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-400 — Web üretim sözleşmesi: deneysel web yalnız localhost (ADR-176)
+
+**Durum: KAPALI.** Kaynak: bağımsız inceleme ve merkez backlog'u ("deneysel
+web yalnız localhost" üretim sözleşmesi olmalı); kullanıcı onayı 25.11.2026.
+Freeze sınıfı `security` (semantic-change, kanıt ADR-176).
+
+İnceleme: `--deneysel-web` sabit `127.0.0.1`'e bağlanıyordu, adres seçen
+yüzey yoktu; native listener, işçi grubu ve systemd devri yalnız proxy
+kipindeydi. Açık bulgu (GB-173): deneysel kip `Host`'u denetlemiyordu (DNS
+rebinding, public Host'lu tünel arkasında sessiz yayın) ve systemd soket
+devrini yok sayıyordu. Filo süreç denetimi (salt okuma): üretimdeki hiçbir
+Zee web süreci `--deneysel-web` kullanmıyor; hepsi `--web-proxy` ile.
+
+Düzeltme: deneysel kipte tek Host ve loopback adı (localhost, *.localhost,
+127.0.0.0/8, [::1]; kapı serbest), aksi 421 + üretim bayrağı önerisi ve tek
+seferlik Host'suz operatör uyarısı; loopback dışı eş iki kipte 403;
+bildirimsiz projede `LISTEN_FDS`/`LISTEN_PID` ile deneysel kip çıkış 2.
+`X-Forwarded-*` reddedilmez (resmî sitenin yerel ön kapısı gönderir), kimlik
+de sayılmaz. spec/12 §5a altı normatif madde (biri AÇIK: Host'u loopback
+yazan yerel proxy ayırt edilemez). Yeni CLI bayrağı, tanı kodu, grammar ya da
+API yok.
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| Host `localhost:<kapı>`, `127.0.0.1`, `x.localhost`, `[::1]` | 200 | 200 |
+| Host `rebind.example` (DNS rebinding) / tünelin public adı | 200, rota çalışır | 421, rota çalışmaz |
+| Host yok ya da iki Host | 200 | 400 |
+| `LISTEN_FDS`/`LISTEN_PID` + `--deneysel-web` | devir yok sayılır | çıkış 2, üretim önerisi |
+| `X-Forwarded-For` + Host `127.0.0.1` | 200, kimlik soket IP | aynı |
+
+Kanıt: `compiler/src/main.rs` (Host ayrıştırma olumlu/olumsuz, istek düzeyi
+400/421, bayrak birleşimleri), `compiler/tests/web_cok_surec_testi.rs`
+(gerçek soket 421 gövdesi/başlıkları, tek uyarı, systemd devri çıkış 2).
+
 ## K-392 — Çağrılmayan çıkarımlı işlem gövdesi C000 iç hatası vermez
 
 **Durum: KAPALI.** Kaynak: K-380 incelemesinde bulunan açık hata. Freeze

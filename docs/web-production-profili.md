@@ -18,6 +18,18 @@ geçersiz kılınır; rota ve uygulama kaynağı iki süreçte aynıdır. Proxy 
 loopback dışına açılmaz; listener `127.0.0.1`e bind eder ve kabul edilen socket
 peer'inin loopback olduğunu ayrıca doğrular.
 
+## Deneysel web üretim değildir (K-400)
+
+`dil çalıştır --deneysel-web` yalnız aynı makinedeki tarayıcı için
+prototiptir: `127.0.0.1`'e bağlanır, yalnız `localhost`/`*.localhost`/
+`127.0.0.0/8`/`[::1]` Host'una yanıt verir (başkasına 421), Secure çerez ve
+HSTS taşımaz, systemd soket devri almaz. İnternete açık hizmet, reverse proxy
+ya da tünel arkası her süreç bu sayfadaki `--web-proxy` profilini kullanır;
+Host'u `127.0.0.1` olarak yeniden yazan bir proxy/tünelle deneysel kipi
+dışarı açmak operatör kuralıyla YASAKTIR (spec/12 §5a, ADR-176). Dağıtım
+denetimi: üretim hostunda `ps -eo args | grep "dil çalıştır"` çıktısında
+`--deneysel-web` geçmemelidir.
+
 ## Tek komutla çok işçi (K-336/K-337, Unix)
 
 ```sh
