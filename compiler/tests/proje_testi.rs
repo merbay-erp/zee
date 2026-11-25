@@ -231,6 +231,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             govde_siniri: Default::default(),
             dns: None,
             veri_koku_degiskeni: None,
+            kamu_son_ekleri: None,
         }
     );
 }

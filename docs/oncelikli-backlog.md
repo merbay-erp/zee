@@ -2628,7 +2628,8 @@ kapısına alınması; gerçek internette DANE/MTA-STS teslim kanıtı (insan ad
 
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
 
-**Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2 sürüyor.** Kaynak:
+**Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2b KAPALI (25 Kasım
+2026); B2a/B2c/B2d/B2e açık.** Kaynak:
 etkin dogfood ürünü `urun-h` (ZeeMail) güvenlik kapsamı (oltalama/BEC/MITM)
 ve korpus ZM-R006/ZM-R007 (ürün commit `7f7b1fe`). Merkez kararı 23 Kasım
 2026 "Sırayla aç". Freeze sınıfı `dogfood-change`; iki PR: B1 (DNS) ve B2
@@ -2657,9 +2658,35 @@ kayıt, zaman aşımı, `zorunlu` açılış sınaması), dogfood
 Açık (B1): Zee yüzeyinde NXDOMAIN/NODATA ayrımı ve CNAME kanonik adı (B4);
 `dil dene` statik bölge dosyası; gerçek unbound entegrasyon koşusu; PTR;
 U-label; `dns_yaniti` 30–60 dk RC kampanyası sonraki RC adayında.
-Sıradaki: B1b PSL veri dosyası (ZM-F025) + B2a A-R temizliği + B2b DKIM +
-B2c SPF + B2d DMARC (ZM-R007).
+**B1b + B2b kararı ([ADR-177](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md),
+[spec/31 §2–§3](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Merkez kararı
+(b) dogfood-minimal. PSL derleyiciye gömülü değil: `kamu_son_ekleri` +
+`kamu_son_ekleri_özeti` (yalnız `dns` ile, P015), açılışta exact SHA-256,
+aksi çıkış 2. `<ad> alanının kurumsal alanı` → Metin (geçersiz ad / kamu
+son eki → ""), IO izi `kurumsal_alan`. DKIM doğrulama ilkeli
+`<b> dkim imzasını <veri> verisi için <p> anahtarıyla <a> olarak doğrulamayı
+dene` → `doğrulandı`/`algoritma`/`anahtar_biti`; rsa-sha256 (1024–4096,
+SPKI/PKCS#1) ve ed25519-sha256 ring ile (rustls'in kilitli aynı sürümü, yeni
+crate yok); rsa-sha1, kısa/uzun/iptal/bozuk anahtar, bozuk imza ve veride CR
+yeni C034 `tür`. Kanonikleştirme Zee'de; Zee'de `\r` olmadığından veri LF'si
+imza girdisinde CRLF; `<x> gövdesinin dkim gövde özeti` aynı kuralla CRLF'li
+kanonik gövdenin SHA-256'sını `bh=` biçiminde (base64) verir (merkez kararı). Tek kripto yüzeyi `dkim_kripto` (K-397
+imza tarafı aynı modüle). GB-174.
 
+Kanıt: `kamu_son_ekleri.rs` (publicsuffix.org vektörleri, geçersiz ad, bozuk
+kural, 20 000 rastgele ad), `dkim_kripto.rs` (algoritma, DER, LF→CRLF,
+ed25519-dalek diferansiyel, 20 000 bozulmuş SPKI), `posta_kimligi_testi.rs`
+(openssl 4.1 RSA 1024/2048/4096 SPKI+PKCS#1 ve Ed25519 vektörleri, 1023/4104
+bit, rsa-sha1, C034 türleri, RFC 6376 gövde özeti vektörleri, kurumsal alan, yetkinlik, IO izi replay,
+P015, gerçek süreçte özet uyuşmazlığı çıkış 2), dogfood
+`zm-f043-dkim-dogrulama-yok` (K-390 B2b öncesi S015). Ürün kanıtı: ZeeMail
+`uctan-uca-dkim.sh` 11/11 (dil dalı `df41636`; RSA-2048/1024 ve Ed25519
+imzası Gelen'e; bozuk bh=/b=, iptal p=, olmayan seçici, rsa-sha1, imzasız
+taklit 550 5.7.1; DMARC p=reject).
+
+Açık (bu PR'da kapanmıyor, K-390 sonrası): `dil dene` PSL
+yüklemesi, `psl`/DKIM anahtarı fuzz hedefleri, IDN kuralları, DMARCbis.
+Sıradaki: B2a başlık ayrıştırıcısı + A-R temizliği, B2c SPF, B2d DMARC.
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)
 
 **Durum: KAPALI.** Kaynak: K-180 dört ürün kanıtı (kanıt özeti K-164/F010,
