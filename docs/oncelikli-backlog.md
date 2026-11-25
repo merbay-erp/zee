@@ -2630,7 +2630,7 @@ boş `b=`'li DKIM-Signature, `v=1`, `bh=`, `h=from`, `l=` yok, tek From ve
 `d=` hizası, `i=`, `d=`/`s=`/`a=` bildirimle birebir) yorumlayıcıda ve
 adaptörde. Tek kripto yüzeyi `ring` (`dkim_kripto` + `dkim_imza`); IO izi
 `dkim_imzala` (ad, algoritma, girdi SHA-256'sı). ZM-F042 (ZeeMail 850d86b),
-GB-176.
+GB-177.
 ZM-F046 (merkez kararı B): `YOL dosyasının BAŞ baytından KİP kipinde dkim
 gövde özetini almayı dene` (akışlı simple/relaxed gövde kanonikleştirmesi
 host'ta, LF/CRLF, 32 MiB, `veri:`/dosya yol kuralları; ZeeMail d6705f1,

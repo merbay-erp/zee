@@ -5,7 +5,7 @@
 - **İlgili kayıt:** K-397, `urun-h` (ZeeMail `zeemail/disteslim`), ZM-F042,
   RFC-0044 ("Uygulama kararı — K-397", B3), ZM-F046, ADR-177 (DKIM
   doğrulama ilkeli, ortak `dkim_kripto`; gövde kanonikleştirme istisnası §8), ADR-173 (Dilim 1), ADR-105 eki / K-339 (credential
-  sözleşmesi), ADR-059 (core freeze), ADR-064 (dil yüzeyi), spec/31, GB-176
+  sözleşmesi), ADR-059 (core freeze), ADR-064 (dil yüzeyi), spec/31, GB-177
 
 ## Bağlam
 
@@ -177,7 +177,7 @@ olursa sızar.
 - K-167 yüzeyi büyür: yeni bir contextual Sonuç kalıbı ve
   `dkim_anahtarları` proje alanı eklenir. Yeni yetkinlik, tür ve tanı kodu
   yoktur.
-- Güvenlik sınırı GB-176 ile izlenir. Kalan riskler:
+- Güvenlik sınırı GB-177 ile izlenir. Kalan riskler:
   - Ürün kendi alanı adına yanlış içeriği imzalayabilir. Gönderim
     yetkilendirmesi ürünündür.
   - Süreç belleği ve çekirdek dökümü risk taşır. ZeeOS birimine

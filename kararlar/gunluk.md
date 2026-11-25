@@ -6219,7 +6219,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 
 - Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden
   ileti imzasız çıkıyordu. K-390 B2 birleştikten sonra merkez "Dilim 2'ye
-  başla" dedi (master 9481db7); numaralar ADR-174 ve GB-176.
+  başla" dedi (master 9481db7); numaralar ADR-174 ve GB-177.
 - Kalıp K-390 ile anlaşılan son biçimdir ve doğrulama kalıbının aynasıdır:
   `VERİ verisi için AD özel anahtarıyla A olarak imzalamayı dene`. Ürün
   reproducer'ındaki ilk taslak biçim (`… için "<ad>" anahtarıyla rsa-sha256
@@ -6231,7 +6231,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `anahtar_bilinmiyor`, başka bir gizli değerle aynı ad P015 olur: imza
   kâhini TLS anahtarı üzerinde çalışmamalı.
 - `zeroize` crate'i eklenmedi (tedarik yüzeyi). Tamponlar `fill(0)` ve
-  `black_box` ile en iyi çabayla sıfırlanır; GB-176'te açık risk olarak
+  `black_box` ile en iyi çabayla sıfırlanır; GB-177'te açık risk olarak
   kayıtlı.
 - Merkez eki (aynı gün, ZM-F046): K-390 B2 ürün sonucunda 256 KiB üstü
   gövdenin `bh=`'si Metin ilkesiyle hesaplanamadı. İlk tarif "kanonik LF
