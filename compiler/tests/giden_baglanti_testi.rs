@@ -342,6 +342,18 @@ fn baglanti_kaliplari_ag_ile_derlenir_dinleyicisiz_ve_agsiz_t054() {
         .expect_err("ağsız ve dinleyicisiz");
     assert!(hata.mesaj.contains("ağ-dinleyici"), "{}", hata.mesaj);
     dil::cozumleyici::yetkinlikleri_denetle(&okuma, &dinleyicili).expect("dinleyici yeter");
+    // K-396 satırlı base64 aktarımı da bağlantı işlemidir: giden bağlantıda
+    // `ağ` (+ dosya okuma) yeter, `ağ-dinleyici` istenmez.
+    let base64 = dil::kaynagi_derle(
+        "x \"ek.bin\" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun\n\
+         y \"ek.bin\" dosyasının base64 satırlarının 0 baytından 76 baytını bağlantıya aktarmayı dene olsun\n",
+    )
+    .unwrap();
+    let ag_ve_dosya = YetkinlikPolitikasi::proje(
+        BTreeSet::from([Yetkinlik::Ag, Yetkinlik::DosyaOkuma]),
+        BTreeSet::from([AgHedefi::bildirimden("tcp://*:25").unwrap()]),
+    );
+    dil::cozumleyici::yetkinlikleri_denetle(&base64, &ag_ve_dosya).expect("ağ + dosya okuma yeter");
 }
 
 #[test]

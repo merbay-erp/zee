@@ -142,6 +142,8 @@ pub fn baglanti_islemi_mi(kimlik: &str) -> bool {
             | BAGLANTI_BAYT_OKU
             | BAGLANTI_PARCA_YAZ
             | BAGLANTI_DOSYA_AKTAR
+            | BAGLANTI_BASE64_AKTAR
+            | BAGLANTI_BASE64_ARALIK_AKTAR
             | BAGLANTI_SATIR_OKU_SURELI
     )
 }
