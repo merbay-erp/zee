@@ -99,6 +99,17 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
         self.ic.borrow_mut().kurumsal_alan(ad)
     }
+    fn dosya_dkim_govde_ozeti(&mut self, yol: &str, bas: i64, kip: &str) -> Result<String, String> {
+        self.ic.borrow_mut().dosya_dkim_govde_ozeti(yol, bas, kip)
+    }
+    fn dkim_imzala(
+        &mut self,
+        anahtar: &str,
+        algoritma: &str,
+        veri: &str,
+    ) -> Result<String, String> {
+        self.ic.borrow_mut().dkim_imzala(anahtar, algoritma, veri)
+    }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.ic.borrow_mut().sunucu_kur(kapi)
     }

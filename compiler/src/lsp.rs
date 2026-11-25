@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 158] = [
+const KALIP_KELIMELERI: [&str; 161] = [
     "yaz",
     "olsun",
     "ise",
@@ -191,13 +191,16 @@ const KALIP_KELIMELERI: [&str; 158] = [
     "dkim",
     "imzasını",
     "olarak",
+    "özel",
+    "imzalamayı",
+    "kipinde",
     "doğrulamayı",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 87] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 89] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -262,6 +265,8 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 87] = [
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
     ("sorgulamayı", "Bildirilmiş loopback çözücüye DNS sorgusu (`dns` yetkinliği, `dns_çözücü`, `dns_dnssec`): MX, TXT, TLSA ya da adres (A + AAAA) → kayıt başına satırlı Metin sözlük listesi Sonucu (`ad`, `ttl`, `doğrulanmış` + türe özgü alanlar). Kayıt/alan yoksa boş liste; geçici hata C033 `tür` verisiyle.\n\n`kayıtlar \"ornek.test\" için MX kayıtlarını sorgulamayı dene olsun`"),
     ("kurumsal", "Alan adının RFC 7489 kurumsal alanı (DMARC hizalaması): proje `kamu_son_ekleri` listesi + bir etiket, küçük harfli; ad geçersizse ya da kamu son ekinin kendisiyse boş Metin. `dns` yetkinliği; liste exact SHA-256 ile açılışta yüklenir.\n\n`kök gönderen_alanı alanının kurumsal alanı olsun`"),
+    ("kipinde", "Dosyadan akışlı DKIM gövde özeti (`bh=`, `kriptografi` + dosya/veri okuma): dosyanın verilen baytından başlayan gövdesi `simple` ya da `relaxed` kipinde kanonikleştirilir; satır sonu LF ya da CRLF, en çok 32 MiB, Metin oluşmaz. LF'siz CR, kip/baş hatası ve sınır C034.\n\n`bh blok dosyasının gövde_başı baytından \"relaxed\" kipinde dkim gövde özetini almayı dene olsun`"),
+    ("imzalamayı", "Giden DKIM imzası (`kriptografi`): Zee'nin kanonikleştirdiği imza girdisini (`b=` boş, son alan DKIM-Signature) proje `dkim_anahtarları` bildirimindeki credential adlı özel anahtarla imzalar → `b=` Metin Sonucu. `d=`/`s=`/`a=` bildirime, From adresi `d=` alanına uymalı; aksi C034 (`geçersiz`, `anahtar_uyuşmuyor`, `anahtar_bilinmiyor`).\n\n`b veri verisi için \"zeemail_dkim_anahtari\" özel anahtarıyla \"ed25519-sha256\" olarak imzalamayı dene olsun`"),
     ("imzasını", "DKIM imzasını (`b=`) Zee'nin kanonikleştirdiği veri ve `p=` açık anahtarıyla doğrular (`kriptografi`): `rsa-sha256` (1024–4096 bit) ya da `ed25519-sha256`; veride satır sonu `\\n` yazılır, imza girdisinde CRLF olur. Başarı `doğrulandı`/`algoritma`/`anahtar_biti` sözlüğü; `rsa-sha1`, kısa/uzun/iptal anahtar ve bozuk imza C034.\n\n`sonuç b dkim imzasını veri verisi için p anahtarıyla a olarak doğrulamayı dene olsun`"),
     ("gövdesinin", "DKIM gövde özeti (`bh=`): Zee'nin kanonikleştirdiği gövdenin SHA-256'sı, base64 (`kriptografi`). Satır sonunu `\\n` yaz; özet CRLF baytları üzerinde alınır, gövdede CR varsa yürütme C034 ile durur. Boş simple gövde `\"\\n\"`, boş relaxed gövde `\"\"`dir.\n\n`bh gövde gövdesinin dkim gövde özeti olsun`"),
     ("dinleyicisinde", "Adlı dinleyiciden (proje.dil `dinleyiciler`, systemd soket devri) kabul edilen her bağlantı için bloğu taze ortamda koşar; blok `bağlantı` Sözlüğünü (dinleyici, uzak_adres, uzak_kapı, yerel_kapı) görür. `ağ-dinleyici` yetkinliği ister.\n\n`\"smtp_v4\" dinleyicisinde bağlantı geldiğinde`"),

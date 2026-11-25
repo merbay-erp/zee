@@ -36,6 +36,44 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Giden posta için DKIM imzası (K-397):** posta sunucusu yazan bir Zee
+  programı artık gönderdiği iletiyi kendi alanı adına DKIM ile
+  imzalayabiliyor. Alıcı sunucu DMARC denetiminde iletinin gerçekten sizin
+  alanınızdan geldiğini görür; böylece iletiler istenmeyene düşmez ve alan
+  `p=reject` politikasına geçebilir. Özel anahtar kaynak kodda ya da
+  `proje.dil`'de durmaz; `proje.dil` yalnız anahtarın credential adını yazar:
+  `dkim_anahtarları "ornek.test z2026a ed25519-sha256 zeemail_dkim_anahtari"
+  listesi olsun` (`kriptografi` yetkinliği). Program başlarken anahtarı
+  systemd credential dizininden (yoksa ortamdan) bir kez okur. RSA 2048–4096
+  bit ya da Ed25519 PKCS#8 PEM olmayan anahtarla süreç hiç başlamaz.
+  Kanonikleştirdiğiniz başlık bloğunu `veri verisi için
+  "zeemail_dkim_anahtari" özel anahtarıyla "ed25519-sha256" olarak
+  imzalamayı dene` ile imzalarsınız; sonuç `b=` değeridir.
+
+  Anahtarın başkası adına imza atmasını önlemek için dil, imzalanacak bloğu
+  önce denetler:
+  - Son alan boş `b=` ile biten DKIM-Signature olmalı.
+  - Bu alandaki `d=`, `s=` ve `a=` değerleri bildirilen anahtarla aynı
+    olmalı.
+  - `h=` `from` içermeli.
+  - From adresi `d=` alanında ya da alt alanında olmalı.
+
+  Uymayan blok imzalanmaz, C034 `geçersiz` döner.
+
+  Büyük iletiler için yeni bir kalıp da geldi:
+  `blok dosyasının gövde_başı baytından "relaxed" kipinde dkim gövde
+  özetini almayı dene`. Gövde özetini (`bh=`) doğrudan dosyadan, akışla,
+  32 MiB'a kadar hesaplar. Başlıklarıyla birlikte saklanan ham iletide
+  gövdenin başladığı baytı verirsiniz; `simple` ve `relaxed` gövde
+  kanonikleştirmesi dilin içinde yapılır, satır sonu LF ya da CRLF
+  olabilir. Önceki `gövdesinin dkim gövde özeti` Metin ilkesi 256 KiB üstü
+  gövdede çalışmıyordu. Bu yüzden ekli iletiler imzalanamıyor, 400 KB'lık
+  meşru imzalı gelen ileti de doğrulanamayıp İstenmeyen'e düşüyordu.
+
+  **Göç:** Yok; yeni yüzey. `dil dene` anahtar yüklemez, imza C034
+  `anahtar_bilinmiyor` döner. Büyük gövdede Metin ilkesi yerine dosya
+  ilkesini kullanın.
+
 - **Kurumsal alan ve DKIM imza doğrulaması (K-390):** posta sunucusu yazan
   Zee programı artık gelen iletinin DMARC hizalaması için gönderen alanın
   kurumsal alanını hesaplayabilir ve DKIM imzasını doğrulayabilir.

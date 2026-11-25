@@ -236,9 +236,11 @@ bağlantı kalıpları bu bağlantıda çalışır. `bağlantıda TLS istemcisi
 başlatmayı dene "<ad>" ile` rustls istemci STARTTLS'idir; PKIX sonucu açık
 alan, SPKI/sertifika özetleri DANE için. MTA-STS ilkesi `https://mta-sts.*`
 ile mevcut HTTP istemcisinden. MX → IP yolu K-390 B1a çözücüsüdür; IP
-değişmeziyle bağlanma ikinci ad çözümü yapmaz. **Açık:** B3 DKIM imza ilkeli (ADR-174,
-K-397 Dilim 2); gerçek
-internette DANE/MTA-STS teslim kanıtı. V1 sözü değildir.
+değişmeziyle bağlanma ikinci ad çözümü yapmaz. Giden DKIM imzası da
+**gerçekleşti** (K-397 Dilim 2, [ADR-174](../adr/174-dkim-imza-ilkeli.md)):
+`dkim_anahtarları` credential anahtarı ve imza kâhini önlemiyle
+`imzalamayı dene`. **Açık:** gerçek internette DANE/MTA-STS teslim ve
+`dkim=pass` kanıtı; açılışta DNS `p=` eşleme denetimi. V1 sözü değildir.
 
 Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 ([ADR-170](../adr/170-paylasilan-veri-koku.md),

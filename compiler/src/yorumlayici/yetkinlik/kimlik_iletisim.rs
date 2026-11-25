@@ -1,4 +1,5 @@
-//! K-210 kimlik/iletişim/görsel ve K-378 dosya yanıtı (ek indirme) kapıları;
+//! K-210 kimlik/iletişim/görsel, K-378 dosya yanıtı (ek indirme) ve K-397
+//! DKIM imzası kapıları;
 //! trait yöntemlerini aynı politika ile açar.
 macro_rules! yontemler {
     () => {
@@ -26,6 +27,29 @@ macro_rules! yontemler {
         fn totp_anahtari_uret(&mut self) -> Result<String, String> {
             self.politika.gerektir(Yetkinlik::Kriptografi)?;
             self.ic.totp_anahtari_uret()
+        }
+
+        /// K-397 B3: dosya gövde özeti `kriptografi` + dosyayı okuma ister.
+        fn dosya_dkim_govde_ozeti(
+            &mut self,
+            yol: &str,
+            bas: i64,
+            kip: &str,
+        ) -> Result<String, String> {
+            self.politika.gerektir(Yetkinlik::Kriptografi)?;
+            self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+            self.ic.dosya_dkim_govde_ozeti(yol, bas, kip)
+        }
+
+        /// K-397 B3: DKIM imzası `kriptografi` ister (anahtar bildirimi adaptörde).
+        fn dkim_imzala(
+            &mut self,
+            anahtar: &str,
+            algoritma: &str,
+            veri: &str,
+        ) -> Result<String, String> {
+            self.politika.gerektir(Yetkinlik::Kriptografi)?;
+            self.ic.dkim_imzala(anahtar, algoritma, veri)
         }
 
         fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {

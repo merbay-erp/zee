@@ -106,6 +106,8 @@ fn gecerli_islem(islem: &str) -> bool {
             | "an_ms"
             | "dns_sorgula"
             | "kurumsal_alan"
+            | "dkim_imzala"
+            | "dosya_dkim_govde_ozeti"
     )
 }
 
@@ -882,6 +884,28 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
         let sonuc = self.ic.kurumsal_alan(ad);
         self.kaydet(dns::KURUMSAL_ALAN, vec![ad.into()], metin_sonuc_yaz(&sonuc));
+        sonuc
+    }
+
+    fn dosya_dkim_govde_ozeti(&mut self, yol: &str, bas: i64, kip: &str) -> Result<String, String> {
+        let sonuc = self.ic.dosya_dkim_govde_ozeti(yol, bas, kip);
+        self.kaydet(
+            dns::DOSYA_GOVDE_OZETI,
+            vec![yol.into(), bas.to_string(), kip.into()],
+            metin_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn dkim_imzala(
+        &mut self,
+        anahtar: &str,
+        algoritma: &str,
+        veri: &str,
+    ) -> Result<String, String> {
+        let sonuc = self.ic.dkim_imzala(anahtar, algoritma, veri);
+        let argumanlar = dns::dkim_argumanlari(anahtar, algoritma, veri);
+        self.kaydet(dns::DKIM_IMZALA, argumanlar, metin_sonuc_yaz(&sonuc));
         sonuc
     }
 }

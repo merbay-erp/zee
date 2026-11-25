@@ -5,7 +5,7 @@
 use super::*;
 use crate::intrinsic::{
     DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT, POSTA_DKIM_DOGRULA, POSTA_DKIM_GOVDE_OZETI,
-    POSTA_KURUMSAL_ALAN,
+    POSTA_DKIM_IMZALA, POSTA_KURUMSAL_ALAN,
 };
 
 /// `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene`.
@@ -45,7 +45,9 @@ pub(super) fn dns_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
 /// - `AD alanının kurumsal alanı` (PSL, `dns`);
 /// - `B dkim imzasını VERİ verisi için P anahtarıyla A olarak doğrulamayı dene`
 ///   (`kriptografi`; kanonikleştirme Zee'de);
-/// - `X gövdesinin dkim gövde özeti` (`bh=` biçiminde base64 SHA-256).
+/// - `X gövdesinin dkim gövde özeti` (`bh=` biçiminde base64 SHA-256);
+/// - K-397: `VERİ verisi için AD özel anahtarıyla A olarak imzalamayı dene`
+///   (`kriptografi`; anahtar `dkim_anahtarları` bildiriminden).
 fn posta_kalibi<'a>(
     tokenlar: &[Token],
     kelime: &impl Fn(usize) -> Option<&'a str>,
@@ -57,6 +59,18 @@ fn posta_kalibi<'a>(
         }
         5 if kalip(&[(1, "gövdesinin"), (2, "dkim"), (3, "gövde"), (4, "özeti")]) => {
             (POSTA_DKIM_GOVDE_OZETI, &[0])
+        }
+        10 if kalip(&[
+            (1, "verisi"),
+            (2, "için"),
+            (4, "özel"),
+            (5, "anahtarıyla"),
+            (7, "olarak"),
+            (8, "imzalamayı"),
+            (9, "dene"),
+        ]) =>
+        {
+            (POSTA_DKIM_IMZALA, &[0, 3, 6])
         }
         12 if kalip(&[
             (1, "dkim"),

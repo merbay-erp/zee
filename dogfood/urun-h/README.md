@@ -21,6 +21,8 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Türkçe-yoğun uzun ileti urlencoded formda 64 KiB'ı aşıp rota çalışmadan 413 alıyor (ZM-F037; K-391, çözüldü: ADR-168 Dilim 1); rota bazında 256 KiB form (ADR-168 Dilim 2) | `ileti-boyutu/` | RFC-0041 B (multipart metin alanı) |
 | İleti gövdesi tek SQL parametresinin 64 KiB sınırı yüzünden 20 000 harflik parçalara bölünüyor (ZM-F036; K-391, çözüldü: ADR-168 Dilim 2) | `ileti-govdesi-sql/` | spec/25 kaynak sınırı |
 | DNS sorgusu (MX/TXT/TLSA) yok; dış teslim, SPF/DKIM/DMARC ve DANE yanıtları dışarıdan verilen boş sözlükten geliyor (ZM-R006, S015; K-390, çözüldü: RFC-0044 B1a) | `korpus/zm-r006-mx-sorgusu-yok.dil` | RFC-0044 B1a (uygulandı) |
+| Giden ileti DKIM imzasız çıkıyor; imza ilkeli yok (ZM-F042, S015; K-397 Dilim 2, çözüldü: RFC-0044 B3, anahtar `dkim_anahtarları` + credential) | `korpus/zm-f042-dkim-imza-yok.dil` | RFC-0044 B3 (uygulandı, ADR-174) |
+| 256 KiB üstü gövdenin DKIM `bh=`'si hesaplanamıyor; 400 KB ekli imzalı ileti İstenmeyen'e düşüyor, ekli giden ileti imzalanamıyor (ZM-F046, S015; K-397 Dilim 2, çözüldü: dosyadan akışlı simple/relaxed gövde özeti) | `korpus/zm-f046-dkim-govde-dosyadan.dil` | RFC-0044 B3 (uygulandı, ADR-174 §8) |
 | Kurumsal alan (PSL) ve DKIM imza doğrulaması yok; DMARC hizalaması ve gelen imza denetimi yapılamıyor (ZM-F043, ZM-F024/F025, S015; K-390, çözüldü: RFC-0044 B1b/B2b; CRLF'li gövde özeti açık) | `korpus/zm-f043-dkim-dogrulama-yok.dil` | RFC-0044 B1b/B2b (uygulandı) |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355

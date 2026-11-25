@@ -67,6 +67,27 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
         }));
     }
 
+    // K-397 B3 (ZM-F046): YOL dosyasının BAŞ baytından KİP kipinde dkim
+    // gövde özetini almayı dene.
+    if n == 11
+        && kelime(1) == Some("dosyasının")
+        && kelime(3) == Some("baytından")
+        && kelime(5) == Some("kipinde")
+        && kelime(6) == Some("dkim")
+        && kelime(7) == Some("gövde")
+        && kelime(8) == Some("özetini")
+        && kelime(9) == Some("almayı")
+        && kelime(10) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: crate::intrinsic::POSTA_DKIM_DOSYA_GOVDE_OZETI.into(),
+            argumanlar: [0, 2, 4]
+                .iter()
+                .map(|i| tekil_ifade(tokenlar[*i].clone()))
+                .collect::<Result<_, _>>()?,
+        }));
+    }
+
     // YOL dosyasının ilk N baytını onaltılık okumayı dene. (K-331)
     if n == 8
         && kelime(1) == Some("dosyasının")
