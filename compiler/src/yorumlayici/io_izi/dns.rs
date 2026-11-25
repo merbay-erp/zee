@@ -11,6 +11,9 @@ use crate::dns_teli::{
 };
 
 pub(super) const ISLEM: &str = "dns_sorgula";
+/// K-390 B1b: `[ad]` → metin sonucu (kamu son ek listesi izde yok; aynı
+/// kurumsal alan replay'de izden gelir).
+pub(super) const KURUMSAL_ALAN: &str = "kurumsal_alan";
 
 pub(super) fn argumanlar(ad: &str, tur: KayitTuru) -> Vec<String> {
     vec![ad.into(), tur.yazimi().into()]
@@ -149,6 +152,8 @@ pub(super) fn sonuc_coz(alanlar: &[String]) -> Result<Result<Cozum, DnsHatasi>, 
 pub(super) fn sema_ya_da_bilinmeyen(olay: &super::IzOlay) -> Result<(), String> {
     if olay.islem == ISLEM {
         semayi_denetle(&olay.argumanlar, &olay.sonuc)
+    } else if olay.islem == KURUMSAL_ALAN {
+        super::metin_sonuc_semasi(olay, 1)
     } else {
         Err(format!("bilinmeyen işlem: {}", olay.islem))
     }

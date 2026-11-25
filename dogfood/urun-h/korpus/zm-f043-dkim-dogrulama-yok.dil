@@ -1,0 +1,25 @@
+# ZM-F043 — RFC-0044 B1b/B2b reproducer'ının anonim aynası (ürün H ZeeMail
+# commit 1fe6a52, zm-f043-yeniden-uretim.dil SHA-256 169b9baf…; ZM-F024,
+# ZM-F025'e bağlı; alan adı anonimleştirildi). Gelen iletide DMARC hizalaması için From
+# alanının kurumsal alanı ve TXT'den alınan DKIM anahtarıyla imza doğrulaması
+# gerekir; kanonikleştirme ürünün Zee kodudur. K-390 B2b öncesi S015 (kalıp
+# yok); ADR-177 ile ilkel imza tutmazsa `doğrulandı=yanlış`, politika dışı
+# girdide C034 `tür` döner.
+
+test "DKIM imzası ve kurumsal alan"
+    gonderen "posta.ornek.test" olsun
+    kurum gonderen alanının kurumsal alanı olsun
+    anahtar "MCowBQYDK2VwAyEA" olsun
+    imza "b3pldA==" olsun
+    veri "from:Gonderen <a@posta.ornek.test>\ndkim-signature:v=1; a=ed25519-sha256; d=ornek.test; b=" olsun
+    algoritma "ed25519-sha256" olsun
+    sonuç imza dkim imzasını veri verisi için anahtar anahtarıyla algoritma olarak doğrulamayı dene olsun
+    sonuç başarılıysa
+        s sonucun değeri olsun
+        ad s "algoritma" değeri olsun
+        ad "ed25519-sha256" e eşit olmalı
+    değilse
+        hata sonucun hatası olsun
+        kod hatanın kodu olsun
+        kod "C034" e eşit olmalı
+    kurum "ornek.test" e eşit olmalı

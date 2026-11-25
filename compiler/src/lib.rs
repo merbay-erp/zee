@@ -35,6 +35,9 @@ pub mod bicimleyici;
 pub mod cozumleyici;
 #[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
+pub mod dkim_kripto;
+#[doc(hidden)]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod dns_istemcisi;
 #[doc(hidden)]
 pub mod dns_teli;
@@ -59,6 +62,8 @@ pub mod intrinsic;
 pub mod invariant;
 #[doc(hidden)]
 pub mod kalici_dosya;
+#[doc(hidden)]
+pub mod kamu_son_ekleri;
 #[doc(hidden)]
 pub mod kaynak_sinirlari;
 #[doc(hidden)]

@@ -105,6 +105,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "bekle_ms"
             | "an_ms"
             | "dns_sorgula"
+            | "kurumsal_alan"
     )
 }
 
@@ -875,6 +876,12 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     ) -> Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi> {
         let sonuc = self.ic.dns_sorgula(ad, tur, zaman_asimi_ms);
         self.kaydet(dns::ISLEM, dns::argumanlar(ad, tur), dns::sonuc_yaz(&sonuc));
+        sonuc
+    }
+
+    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
+        let sonuc = self.ic.kurumsal_alan(ad);
+        self.kaydet(dns::KURUMSAL_ALAN, vec![ad.into()], metin_sonuc_yaz(&sonuc));
         sonuc
     }
 }
