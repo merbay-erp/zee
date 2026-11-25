@@ -807,6 +807,10 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
         eprintln!(
             "UYARI: IO izi program girdisi, dosya/ağ içeriği ve belirteç taşıyabilir; özel artefakt olarak sakla."
         );
+        if let Err(hata) = dns_hazirla(&girdi) {
+            eprintln!("{hata}");
+            return ExitCode::from(2);
+        }
         let program_argumanlari = argumanlar[4..].to_vec();
         let politika = girdi.politikasi();
         let taban = girdi.gercek_io(WebModu::Kapali, program_argumanlari, politika.clone());
@@ -1782,6 +1786,10 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().govde_siniri.clone())
             .unwrap_or_default();
+        io.dns = self
+            .proje
+            .as_ref()
+            .and_then(|proje| proje.ana_bildirim().dns);
         // Bildirim `proje` katmanında P019 ile doğrulandı; burada yalnız savunma.
         if let Some(adlar) = self
             .proje
@@ -2031,6 +2039,8 @@ struct GercekIo {
     /// K-379: derlenen kaynak birimlerinin dize değişmezlerindeki satır içi
     /// betiklerin CSP özetleri; program derlendikten sonra bir kez dolar.
     guvenilir_betikler: GuvenilirBetikler,
+    /// K-390: `dns` yetkinliğinin bildirilmiş loopback çözücüsü.
+    dns: Option<dil::dns_teli::DnsAyari>,
 }
 
 /// K-379: CSP `script-src` yalnız bu kümedeki `sha256-` özetlerine izin
@@ -2187,6 +2197,7 @@ impl GercekIo {
             eposta_ek_izni: Default::default(),
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
+            dns: None,
         }
     }
 
@@ -5340,6 +5351,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         self.rastgele.aralikta(alt, ust)
     }
+    fn dns_sorgula(
+        &mut self,
+        ad: &str,
+        tur: dil::dns_teli::KayitTuru,
+        zaman_asimi_ms: i64,
+    ) -> Result<dil::dns_teli::Cozum, dil::dns_teli::DnsHatasi> {
+        // K-390: politika katmanı `dns` yetkinliğini denetledi; çözücü yalnız
+        // proje bildiriminden gelir (bildirimsiz akışta kapalı).
+        let Some(ayar) = self.dns.as_ref() else {
+            return Err(dil::dns_teli::DnsHatasi::yeni(
+                dil::dns_teli::DnsHataTuru::Ag,
+                "dns_çözücü bildirilmedi",
+            ));
+        };
+        let azami = std::time::Duration::from_millis(zaman_asimi_ms.max(0) as u64);
+        dil::dns_istemcisi::sorgula(ayar, ad, tur, azami)
+    }
 }
 
 fn calistir_komutu(girdi: &KaynakGirdisi) -> ExitCode {
@@ -5423,11 +5451,28 @@ fn calistir_gercek_io_ile(
             return ExitCode::from(2);
         }
     }
+    if let Err(hata) = dns_hazirla(girdi) {
+        eprintln!("{hata}");
+        return ExitCode::from(2);
+    }
     let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
     taban.metrik = metrik;
     let guvenilir_betikler = taban.guvenilir_betikler.clone();
     let mut io = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());
     calistir_io_ile(girdi, &politika, &mut io, Some(&guvenilir_betikler))
+}
+
+/// K-390 (RFC-0044 B1): `dns_dnssec: "zorunlu"` bildiriminde çözücünün
+/// doğruladığı kaynak yürütülmeden sınanır; sınanamazsa süreç başlamaz.
+fn dns_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
+    let Some(ayar) = girdi.proje.as_ref().and_then(|p| p.ana_bildirim().dns) else {
+        return Ok(());
+    };
+    if ayar.dnssec == dil::dns_teli::DnssecKipi::Zorunlu {
+        dil::dns_istemcisi::dnssec_sina(&ayar)
+            .map_err(|hata| format!("dns_dnssec zorunlu: {hata}"))?;
+    }
+    Ok(())
 }
 
 /// `guvenilir_betikler` verilirse (gerçek web adaptörü) program derlendikten

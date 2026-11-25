@@ -3,6 +3,7 @@
 
 mod baglanti;
 mod codec;
+mod dns;
 mod eylem;
 mod http;
 mod istemci;
@@ -103,6 +104,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "isik_ayarla"
             | "bekle_ms"
             | "an_ms"
+            | "dns_sorgula"
     )
 }
 
@@ -323,7 +325,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
                 Err("an ölçümü kanonik i64 olmalı".into())
             }
         }
-        _ => Err(format!("bilinmeyen işlem: {}", olay.islem)),
+        _ => dns::sema_ya_da_bilinmeyen(olay),
     }
 }
 
@@ -862,6 +864,17 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     fn an_ms(&mut self) -> i64 {
         let sonuc = self.ic.an_ms();
         self.kaydet("an_ms", Vec::new(), vec![sonuc.to_string()]);
+        sonuc
+    }
+
+    fn dns_sorgula(
+        &mut self,
+        ad: &str,
+        tur: crate::dns_teli::KayitTuru,
+        zaman_asimi_ms: i64,
+    ) -> Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi> {
+        let sonuc = self.ic.dns_sorgula(ad, tur, zaman_asimi_ms);
+        self.kaydet(dns::ISLEM, dns::argumanlar(ad, tur), dns::sonuc_yaz(&sonuc));
         sonuc
     }
 }

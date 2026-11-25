@@ -12,6 +12,8 @@ cargo-fuzz = true
 libfuzzer-sys = "=0.4.13"
 # K-362: http_istegi hedefinin bağımsız kâhini; ureq-proto ile aynı kilitli sürüm.
 httparse = "=1.10.1"
+# K-390: dns_yaniti hedefinin bağımsız kâhini; derleyicinin dev-dependency sürümü.
+hickory-proto = { version = "=0.26.3", default-features = false, features = ["std"] }
 
 [dependencies.dil]
 path = ".."
@@ -34,6 +36,13 @@ bench = false
 [[bin]]
 name = "http_istegi"
 path = "fuzz_targets/http_istegi.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "dns_yaniti"
+path = "fuzz_targets/dns_yaniti.rs"
 test = false
 doc = false
 bench = false

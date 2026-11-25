@@ -83,7 +83,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 351 | 5 | 13 | 369 | 95 |
+| spec/31-dns-ve-posta-kimlik-dogrulama.md | 19 | 0 | 1 | 20 | 95 |
+| **Toplam** | 370 | 5 | 14 | 389 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -108,12 +109,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 10 | 4 | 0 | 13 | 1 | 14 |
+| urun-h | 11 | 4 | 0 | 14 | 1 | 15 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 79.
+Toplam korpus vakası: 80.
 
 ## Deprecation kayıtları
 
@@ -146,16 +147,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 110 |
-| semantic-bugfix | 43 |
-| semantic-change | 66 |
+| maintenance | 107 |
+| semantic-bugfix | 42 |
+| semantic-change | 67 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
-| correctness | 43 |
-| dogfood-change | 44 |
-| maintenance | 107 |
+| correctness | 42 |
+| dogfood-change | 45 |
+| maintenance | 104 |
 | security | 19 |
 
-Toplam: 219 compiler değişiklik beyanı, 215 core freeze beyanı.
+Toplam: 216 compiler değişiklik beyanı, 212 core freeze beyanı.

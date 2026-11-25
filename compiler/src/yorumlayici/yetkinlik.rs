@@ -7,6 +7,7 @@ mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
+use crate::dns_teli::{DnsHataTuru, DnsHatasi, DnsSonucu, KayitTuru};
 use crate::tani::Tani;
 use crate::web_guvenligi::WebReddi;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
@@ -240,5 +241,10 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
 
     fn an_ms(&mut self) -> i64 {
         self.ic.an_ms()
+    }
+    fn dns_sorgula(&mut self, ad: &str, tur: KayitTuru, ms: i64) -> DnsSonucu {
+        let hata = |mesaj| DnsHatasi::yeni(DnsHataTuru::Ag, mesaj);
+        self.gerektir(Yetkinlik::Dns).map_err(hata)?;
+        self.ic.dns_sorgula(ad, tur, ms)
     }
 }
