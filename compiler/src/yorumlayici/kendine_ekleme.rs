@@ -50,7 +50,9 @@ pub(super) async fn kendine_metin_ekle(
 
 /// Zarftan yalnız yeni kapasite düşülür: eski tampon yeniden tahsiste
 /// bırakıldığından toplam sayım canlı metnin kapasitesine eşittir ve döngü
-/// birikimi O(n) kalır. Bütçe tükenirse hedef değişmeden C024 döner.
+/// birikimi O(n) kalır. K-393: düşülen, ayırıcının verdiği gerçek kapasite
+/// artışıdır; böylece değer düşünce iade edilen ölçü tüketimi aşamaz. Bütçe
+/// tükenirse kapasite geri bırakılır, hedef değişmeden C024 döner.
 fn metni_yerinde_buyut(hedef: &mut String, ek: &str, satir: usize) -> Result<(), Tani> {
     let gereken = boyut_topla(hedef.len(), ek.len(), satir)?;
     metin_sinirini_denetle(gereken, satir)?;
@@ -58,8 +60,11 @@ fn metni_yerinde_buyut(hedef: &mut String, ek: &str, satir: usize) -> Result<(),
     if gereken > eski {
         let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.metin_bayti();
         let yeni = eski.saturating_mul(2).min(azami).max(gereken);
-        heap_butcesini_tuket(yeni - eski, satir)?;
         hedef.reserve_exact(yeni - hedef.len());
+        if let Err(tani) = heap_butcesini_tuket(hedef.capacity() - eski, satir) {
+            hedef.shrink_to(eski);
+            return Err(tani);
+        }
     }
     hedef.push_str(ek);
     Ok(())

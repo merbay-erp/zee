@@ -1,0 +1,18 @@
+# K-393: üzerine yazılan değişkenin ve sözlük öğesinin C024 zarf payı iade
+# edilir. Eskiden her yeniden bağlama ~1 MiB'lık listeyi, her sözlük yazımı
+# 1 KiB'lık metni iade edilmeyen zarftan tüketiyordu; döngü C024 ile duruyordu.
+parça "0123456789abcdef" olsun
+6 kez tekrarla
+    parça parça ile parça olsun
+dizi boş liste olsun
+1000 kez tekrarla
+    diziye parçayı ekle
+kopya boş liste olsun
+200 kez tekrarla
+    kopya dizi olsun
+önbellek boş sözlük olsun
+100000 kez tekrarla
+    önbelleğin "son" değeri parça olsun
+kopyanın adedi yaz
+son önbelleğin "son" değeri olsun
+sonun uzunluğu yaz

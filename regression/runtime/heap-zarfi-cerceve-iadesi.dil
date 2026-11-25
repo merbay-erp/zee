@@ -1,0 +1,18 @@
+# K-393: işlem çerçevesi düşünce parametre ve yerel adların C024 zarf payı
+# iade edilir. Eskiden her çağrı listenin kopyasını iade edilmeyen zarftan
+# tüketiyordu; ~1 MiB canlı listeyle 200 çağrı 64 MiB'ı aşıp C024 veriyordu.
+işlem say
+    öğeleri Metin listesi olarak al
+    TamSayı döndürür
+    öğelerin adedi döndür
+
+parça "0123456789abcdef" olsun
+6 kez tekrarla
+    parça parça ile parça olsun
+dizi boş liste olsun
+1000 kez tekrarla
+    diziye parçayı ekle
+k 0 olsun
+200 kez tekrarla
+    k dizi için say olsun
+k yaz

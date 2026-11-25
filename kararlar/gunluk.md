@@ -6142,3 +6142,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   oturumunun kendi PR'ında 32 MiB'a hizalanır. GB-169. Dosya yanıtı tavanı
   artık sabit olduğundan `icerik_turu → kaynak_sinirlari` kenarı kalktı
   (katman fixture'ı güncellendi; temel → adaptör yönü değişmedi). K-401 kapandı.
+
+## K-393 — C024 heap zarfı iadesi (24 Kasım 2026)
+
+- Karşılaştırma v2 B4: kabarcık sıralama 1.000 öğe ve 700×5.000 işlem
+  çağrısı ~15 MB RSS'te "~67 MB" C024. Kök neden: zarf yalnız düşüyordu
+  (çerçeve, gezme kopyası, üzerine yazma, kapsam sonu kalıcı tüketim).
+- Seçenekler: (a) yalnız tanı/spec dili — programlar yine iş miktarıyla
+  düşer; (b) düşen değerin iadesi; (c) kopyaları saymamak — üst sınır
+  sözünü bozar. Karar (b), ADR-171.
+- Güvenlik: ölçü ≤ tüketim değişmezi; yerinde büyüme gerçek kapasite
+  artışını tüketir, gezme geri yazımı artık tüketir, iade 64 MiB'a kırpılır.
+  Çerçeve iadesi bütçe farkıyla değil ölçüyle (eşzamanlı görevler ortak
+  bütçe paylaşır). Negatif testler canlı birikimin C024 ile durduğunu sınar.
+- K-388 testleri geçici çöple değil canlı birikimle yenilemeyi sınar.
