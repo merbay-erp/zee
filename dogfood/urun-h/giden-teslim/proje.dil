@@ -1,0 +1,14 @@
+# K-397 (RFC-0044 B4a): ürün H giden teslim hizmetinin (disteslim) anonim
+# kesiti. ZeeOS'ta 25 kapısına çıkış yalnız bu hizmete açıktır; hedef MX
+# IP'leri önceden bilinmediği için yalnız 25 kapısında public IP jokeri.
+# MTA-STS ilkesi (RFC 8461) mevcut HTTP istemcisiyle `mta-sts.` jokerinden.
+# MX ve adres kayıtları K-390 loopback doğrulayıcı çözücüsünden (DANE için
+# `zorunlu`).
+proje "giden-teslim" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ", "dosya-okuma", "dns" listesi olsun
+ağ_hedefleri "tcp://*:25", "https://mta-sts.*" listesi olsun
+dns_çözücü "127.0.0.1:53" olsun
+dns_dnssec "zorunlu" olsun

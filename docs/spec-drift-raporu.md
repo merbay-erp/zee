@@ -28,7 +28,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/20-ifade-grameri.md` | 9 | 9 | 0 | 0 |
 | `spec/21-deterministik-io-izi.md` | 6 | 6 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
-| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 43 | 42 | 0 | 1 |
+| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 53 | 50 | 1 | 2 |
 | `spec/24-kaynak-guvenlik-profili.md` | 10 | 10 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 12 | 11 | 0 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 20 | 19 | 0 | 1 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **417** | **395** | **5** | **17** |
+| **Toplam** | **427** | **403** | **6** | **18** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -45,6 +45,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/08-kalici-dosya.md#532a9e61aa1fe70f` — - Dayanıklılık/kilit primitive'leri bulunmayan platform işlemi reddetmek… — Primitive'siz platform reddi yalnız desteklenen üç platformda derlenen koda bağlı; böyle bir platform CI matrisinde yok.
 - `spec/18-paket-yayini.md#2af407978947e1d4` — Üretici dört dosyayı yazmadan önce bütün kümeyi tüketici doğrulayıcıyla … — Yazmadan önce tam doğrulama ve yarım küme reddi kanıtlı; süreç çökmesi ortasında yarım küme senaryosu enjekte edilmiyor (söz de verilmiyor).
 - `spec/22-deterministik-io-profili.md#d68db0760744fd45` — Profilin bu gözlemlerinden birini kıran değişiklik yeni profil kimliği, … — Snapshot gözlem değişikliğini yakalar; yeni profil kimliği/RFC zorunluluğu süreç kuralıdır, makinece yalnız snapshot farkıyla görünür.
+- `spec/23-yetkinlik-ve-outbound-guvenligi.md#591e270023c9b87c` — ZORUNLU: Bağlanma `min(Zee son tarihi, 30 sn)` ile sınırlıdır. Görev baş… — K-397: görev başına tek bağlantı, dinleyicide ret, eşzamanlı görev kapatma kanıtlı; 30 sn bağlanma tavanı ve 16 bağlantı sınırı kod sabitidir (ag_satiri), ayrı zaman/sınır testi yok.
 - `spec/27-uyumluluk-ve-surumleme.md#15d606bdb76e4dc1` — - Kaldırılan biçim sessizce kabul edilmez: derleyici tanı üretir ve öner… — Henüz kaldırılmış bir kullanıcı yüzeyi yok; tanı+öneri kanıtı ilk DEP kaldırmasında regresyon korpusuna eklenecek.
 
 ## Açık maddeler
@@ -61,6 +62,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/12-web-guvenlik-profili.md#a969792eb3d50575` — AÇIK: Kaynak değişmezindeki bir betiği gövdeye yansıtan istemci o betiği… — K-379 kapsamı dışı: özet CSP'nin genel sınırı (yalnız geliştirici betikleri); öznitelikli script özetlenmez; durum yanıtı satır içi betik izni taşımaz.
 - `spec/13-surumlu-morfoloji-profili.md#8a414db8b5ca5b82` — AÇIK: `zee-tr-1` `â`, `î`, `û` harflerini ünlü saymaz. Bu harfleri taşıy… — K-367: düzeltme uyumluluk kaydını değiştirir (53.248 üretimin 10.306'sı, 2.865 çözüm kümesi); zee-tr-1 içinde yapılamaz, zee-tr-2 adayı (RFC + yeni kayıt + kilit geçişi + edition). Çözücü doğru yazımı kabul eder.
 - `spec/23-yetkinlik-ve-outbound-guvenligi.md#15b3c0c87713d1ae` — AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte ro… — K-339 kapsamı dışı; canlı systemd servis kabulü ve rotasyon ürün/işletim tarafında.
+- `spec/23-yetkinlik-ve-outbound-guvenligi.md#6d2ba776755d2562` — AÇIK: Host adı verilirse çözümleme işletim sisteminin engelleyen çözücüs… — K-397: MX → IP yolu ürün kodunda B1a çözücüsüyle (dogfood urun-h/giden-teslim); OS çözücü yolu, TLSA eşlemesi, eşleme türü 0/2 ve gerçek internet teslim kanıtı bu bölümün sözü değil
 - `spec/25-postgresql-veri-erisimi.md#f94f82cb0245cf0a` — Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe … — K-169/K-173 release tatbikatı ve çok-worker toplam bütçe provası bekliyor; async driver, PostgreSQL dışı DB ve ORM vaat edilmiyor.
 - `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md#bfe5b0f763cf9612` — AÇIK (K-389): UTF-8 bayt sayısı, metin↔base64/onaltılık, kod noktası ve … — RFC-0043 Dilim 2 (ZM-F023): bayt sayısı, metin↔base64/onaltılık, kod noktası, base64url; çağrılar arası yarım dörtlü durumu bilinçli olarak tutulmaz (K-173 uzun ömürlü durum yok).
 - `spec/27-uyumluluk-ve-surumleme.md#285d87941dc0c3ba` — 1.0 sonrasında dondurulmuş yüzeylerde kırıcı değişiklik yalnız yeni ana … — Edition alanının `proje.dil` sözdizimi ayrı RFC ister; 1.0 öncesi bağlayıcı yalnız RFC-0028 çerçevesidir.

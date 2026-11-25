@@ -32,7 +32,8 @@ mod yetkinlik;
 mod yetkinlik_hatasi;
 
 pub use self::baglanti::{
-    BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti, BOSALTMA_SURESI_MS,
+    BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, TlsIstemciKaydi, YeniBaglanti,
+    BOSALTMA_SURESI_MS,
 };
 use self::cumle::blok_calistir_async;
 use self::eylem_hatasi::tani as transaction_hatasi;
@@ -742,7 +743,21 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
     calistir_program_kodla(CalistirmaProgrami::Ham(program), io)
 }
 
+/// K-397: her program koşusu kendi giden bağlantı kapsamında başlar ve
+/// biterken o koşuda açılıp kapatılmamış giden bağlantıları kapatır (aynı
+/// thread'de art arda koşan `dene`/LSP/test programları birbirinin
+/// bağlantısını görmez).
 fn calistir_program_kodla(
+    program: CalistirmaProgrami<'_>,
+    io: &mut dyn GirdiCikti,
+) -> Result<i64, Tani> {
+    let onceki = baglanti::giden_kapsamini_ac();
+    let sonuc = calistir_program_kodla_ic(program, io);
+    baglanti::giden_kapsamini_kapat(io, onceki);
+    sonuc
+}
+
+fn calistir_program_kodla_ic(
     program: CalistirmaProgrami<'_>,
     io: &mut dyn GirdiCikti,
 ) -> Result<i64, Tani> {
@@ -1151,6 +1166,24 @@ struct GorevCalismasi<'a> {
     uyanma_ani: Option<i64>,
     son_tarihler: Vec<SonTarih>,
     sonuc: Option<Deger>,
+    /// K-397: görevin bağlantı yuvası (başta üst görevinki); görev kendi
+    /// açtığı giden bağlantıyı bitişte kapatır.
+    baglanti: Option<u64>,
+}
+
+/// K-397: görevin kendi açtığı (üstten gelmeyen) giden bağlantıyı kapatır.
+fn gidenleri_kapat(
+    gorevler: &mut [GorevCalismasi<'_>],
+    ust_baglanti: Option<u64>,
+    io: &RefCell<&mut dyn GirdiCikti>,
+) {
+    for gorev in gorevler {
+        if let Some(kimlik) = gorev.baglanti.take() {
+            if Some(kimlik) != ust_baglanti {
+                baglanti::gideni_kapat(&mut **io.borrow_mut(), kimlik);
+            }
+        }
+    }
 }
 
 /// Kaynak sırasını bağlayıcı zamanlama sırası yapar. Her turda hazır görevler
@@ -1165,6 +1198,7 @@ async fn gorevleri_calistir<'a>(
     let ortak = Rc::new(RefCell::new(io));
     let ana_son_tarihler = SON_TARIHLER.with(|yuva| std::mem::take(&mut *yuva.borrow_mut()));
     let ana_sinyal = GOREV_BEKLEME_SINYALI.with(|yuva| yuva.borrow_mut().take());
+    let ust_baglanti = baglanti::gorevin_baglantisi();
 
     let mut calismalar = gorevler
         .into_iter()
@@ -1186,6 +1220,7 @@ async fn gorevleri_calistir<'a>(
                 uyanma_ani: None,
                 son_tarihler: ana_son_tarihler.clone(),
                 sonuc: None,
+                baglanti: ust_baglanti,
             }
         })
         .collect::<Vec<_>>();
@@ -1214,10 +1249,12 @@ async fn gorevleri_calistir<'a>(
                 });
                 // K-381: iç görevler bağlantı scheduler noktası değildir.
                 let baglanti_io = baglanti::io_sinyalini_al();
+                baglanti::gecerli_baglantiyi_degistir(calismalar[sira].baglanti);
                 let poll = match calismalar[sira].gelecek.as_mut() {
                     Some(gelecek) => gelecek.as_mut().poll(&mut poll_baglami),
                     None => return Err(ic_hata(calismalar[sira].satir)),
                 };
+                calismalar[sira].baglanti = baglanti::gecerli_baglantiyi_degistir(ust_baglanti);
                 baglanti::io_sinyalini_geri_koy(baglanti_io);
                 GOREV_BEKLEME_SINYALI.with(|yuva| {
                     *yuva.borrow_mut() = ana_sinyal.clone();
@@ -1233,8 +1270,10 @@ async fn gorevleri_calistir<'a>(
                     Poll::Ready(Ok(deger)) => {
                         calismalar[sira].gelecek = None;
                         calismalar[sira].sonuc = Some(deger);
+                        gidenleri_kapat(&mut calismalar[sira..=sira], ust_baglanti, &ortak);
                     }
                     Poll::Ready(Err(mut tani)) => {
+                        gidenleri_kapat(&mut calismalar, ust_baglanti, &ortak);
                         let iptal_edilenler = calismalar
                             .iter()
                             .enumerate()

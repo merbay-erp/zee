@@ -1806,9 +1806,14 @@ impl KaynakGirdisi {
             io.web_guvenligi.oturum_ayarini_belirle(ayar);
         }
         // K-381: adlı dinleyici bildirimi olan projede bağlantı reaktörü.
+        // K-397: `ağ_hedefleri` içinde tcp:// hedefi olan projede de (giden).
         #[cfg(unix)]
         if let Some(proje) = self.proje.as_ref() {
-            if !proje.ana_bildirim().dinleyiciler.is_empty() {
+            let giden = io
+                .politika
+                .ag_hedefleri()
+                .any(|hedef| hedef.semasi() == dil::yetkinlik::AgSemasi::Tcp);
+            if giden || !proje.ana_bildirim().dinleyiciler.is_empty() {
                 io.ag_baglanti = Some(ag_baglantisi::Reaktor::yeni(
                     proje.ana_bildirim().baglanti.clone(),
                     io.baslangic,
@@ -4603,6 +4608,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 (_, None) => {
                     dil::yorumlayici::BaglantiSonucu::hata("kapandı", "bağlantı reaktörü yok")
                 }
+            };
+        }
+        #[cfg(unix)]
+        if let dil::yorumlayici::BaglantiIslemi::GidenBaglan(adres, son) = islem {
+            return match self.ag_baglanti.as_mut() {
+                Some(reaktor) => reaktor.giden_baglan(&self.politika, adres, *son),
+                None => dil::yorumlayici::BaglantiSonucu::hata(
+                    "hedef_yasak",
+                    "giden TCP yalnız proje.dil `ağ_hedefleri` içindeki tcp:// hedefiyle açılır",
+                ),
             };
         }
         #[cfg(unix)]

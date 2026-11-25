@@ -2589,6 +2589,43 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173)
+
+**Durum: Dilim 1 KAPALI (B4a); Dilim 2 (B3 DKIM imza ilkeli, ADR-174) AÇIK.**
+Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) `zeemail/disteslim` hizmeti;
+ZeeOS'ta 25 kapısına çıkış yalnız bu hizmete açıktır, teslim motoru (SMTP
+istemci durum makinesi, MX sırası, yeniden deneme, MTA-STS/DANE/TLS-RPT
+kararı, DSN) Zee'dedir. Freeze sınıfı `dogfood-change`; gramer değişmedi,
+iki contextual Sonuç kalıbı eklendi.
+
+Dilim 1: `ağ_hedefleri` `tcp://<konak>:<kapı>` tam hedefi ve yalnız 25
+kapısında `tcp://*:25` jokeri (yalnız public IP), `https://mta-sts.*` (443,
+sabit `/.well-known/mta-sts.txt`, public IP). `"<ana>:<kapı>" adresine
+bağlanmayı dene` tek çözümleme + fail-closed IP denetimi + denetlenen adrese
+sabitleme; başarılı bağlantı görevin bağlantısıdır ve A2/A2c kalıpları onun
+üzerinde çalışır (artık `ağ` ile de derlenir). Görev başına tek giden
+bağlantı, süreçte 16, bağlanma ≤ 30 sn. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemcisi; PKIX sonucu `doğrulandı` /
+`doğrulama_hatası` ile açık, SPKI/sertifika/zincir SHA-256'ları DANE için.
+GB-172.
+
+Kanıt: `yetkinlik/giden.rs` (7 birim: joker biçimi, SSRF aralıkları
+`yerel-ağ` açıkken, kapı, tek çözümleme, karışık yanıt, mta-sts jokeri),
+`ag_satiri/x509.rs` (3 birim: SPKI, bozuk/kesik/kanonik olmayan DER,
+5000 rastgele çevirme), `giden_baglanti_testi.rs` (11 hermetik: SMTP
+oturumu, açık doğrulama hatası ve yanlış SNI, SSRF, yeniden bağlama,
+görev/dinleyici kuralı, yanıt enjeksiyonu, geçersiz SNI, T054, politika
+sarmalayıcısı, IO izi replay'i, eşzamanlı görevler),
+`giden_baglanti_surec_testi.rs` (5 gerçek süreç: rustls sunucusuna geçerli
+zincir + SPKI openssl eşliği, yanlış SNI/kendinden imzalı/süresi dolmuş,
+kök yokken bilinmeyen yayıncı, joker yerel adrese soket açmaz, düz bağlantıda
+parça/aktarım/süreli okuma).
+
+Açık: Dilim 2 (DKIM imza ilkeli, `kriptografi`, credential anahtar,
+K-390 B2 doğrulayıcısıyla tek kripto yüzeyi); `x509_spki` fuzz hedefinin RC
+kapısına alınması; gerçek internette DANE/MTA-STS teslim kanıtı (insan adımı);
+ürün reproducer'ı ve provenance (ZeeMail'den bekleniyor).
+
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
 
 **Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2 sürüyor.** Kaynak:
@@ -2622,6 +2659,7 @@ Açık (B1): Zee yüzeyinde NXDOMAIN/NODATA ayrımı ve CNAME kanonik adı (B4);
 U-label; `dns_yaniti` 30–60 dk RC kampanyası sonraki RC adayında.
 Sıradaki: B1b PSL veri dosyası (ZM-F025) + B2a A-R temizliği + B2b DKIM +
 B2c SPF + B2d DMARC (ZM-R007).
+
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)
 
 **Durum: KAPALI.** Kaynak: K-180 dört ürün kanıtı (kanıt özeti K-164/F010,

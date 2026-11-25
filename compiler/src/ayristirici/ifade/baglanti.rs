@@ -6,7 +6,8 @@ use super::*;
 use crate::intrinsic::{
     BAGLANTI_BASE64_AKTAR, BAGLANTI_BASE64_ARALIK_AKTAR, BAGLANTI_BAYT_BLOGU, BAGLANTI_BAYT_OKU,
     BAGLANTI_DOSYA_AKTAR, BAGLANTI_NOKTA_BLOGU, BAGLANTI_PARCA_YAZ, BAGLANTI_SATIR_OKU,
-    BAGLANTI_SATIR_OKU_SURELI, BAGLANTI_SATIR_YAZ, BAGLANTI_TLS_BASLAT,
+    BAGLANTI_SATIR_OKU_SURELI, BAGLANTI_SATIR_YAZ, BAGLANTI_TLS_BASLAT, BAGLANTI_TLS_ISTEMCI,
+    GIDEN_BAGLAN,
 };
 
 /// Kalıp: (önek, sonek, intrinsic, aradaki ifade). Sıra önemlidir: süreli
@@ -81,6 +82,14 @@ const KALIPLAR: &[Kalip] = &[
         &["bağlantıya"],
         &["satırını", "yazmayı", "dene"],
         BAGLANTI_SATIR_YAZ,
+        true,
+    ),
+    // K-397 (RFC-0044 B4a): giden TCP ve istemci STARTTLS.
+    (&[], &["adresine", "bağlanmayı", "dene"], GIDEN_BAGLAN, true),
+    (
+        &["bağlantıda", "TLS", "istemcisi", "başlatmayı", "dene"],
+        &["ile"],
+        BAGLANTI_TLS_ISTEMCI,
         true,
     ),
     // K-396: `YOL dosyasını base64 satırlarıyla bağlantıya aktarmayı dene`.

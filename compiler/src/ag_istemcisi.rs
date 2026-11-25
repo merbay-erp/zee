@@ -23,6 +23,9 @@ pub const AZAMI_BASLIK_BAYTI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK
 struct PolitikaliCozucu {
     ic: DefaultResolver,
     politika: YetkinlikPolitikasi,
+    /// K-397: istek yalnız `https://mta-sts.*` jokeriyle izinli; `yerel-ağ`
+    /// açık olsa bile çözülen adres public olmalı.
+    yalniz_public: bool,
 }
 
 impl Resolver for PolitikaliCozucu {
@@ -35,7 +38,7 @@ impl Resolver for PolitikaliCozucu {
         let adresler = self.ic.resolve(uri, config, timeout)?;
         for adres in adresler.iter() {
             self.politika
-                .cozulmus_ipyi_denetle(adres.ip())
+                .cozulmus_ipyi_kipli_denetle(adres.ip(), self.yalniz_public)
                 .map_err(|neden| {
                     ureq::Error::Io(std::io::Error::new(
                         std::io::ErrorKind::PermissionDenied,
@@ -69,7 +72,7 @@ pub fn getir_bayt(
     politika: &YetkinlikPolitikasi,
     azami_govde_bayti: usize,
 ) -> Result<(i64, Vec<u8>), String> {
-    politika.ag_istegini_denetle(url)?;
+    let (_, yalniz_public) = politika.ag_istegini_ayrintili_denetle(url)?;
     if azami_govde_bayti == 0 {
         return Err("HTTP yanıt gövdesi sınırı sıfır olamaz".into());
     }
@@ -93,6 +96,7 @@ pub fn getir_bayt(
         PolitikaliCozucu {
             ic: DefaultResolver::default(),
             politika: politika.clone(),
+            yalniz_public,
         },
     );
     let mut yanit = agent

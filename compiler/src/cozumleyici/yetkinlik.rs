@@ -15,6 +15,7 @@ pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Resu
     for test in &program.testler {
         blok_bilgisi(&test.govde, &mut bilgi);
     }
+    bilgi.baglanti_gereksinimini_coz(politika);
     let reddedilen = bilgi
         .yetkinlikler
         .iter()
@@ -255,9 +256,7 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
     match ifade.turu() {
         Ifade::IslemCagrisi { argumanlar, .. } | Ifade::Intrinsic { argumanlar, .. } => {
             if let Ifade::Intrinsic { kimlik, .. } = ifade.turu() {
-                if let Some(tanim) = intrinsic::tanim(kimlik) {
-                    bilgi.ekle(tanim.yetkinlik, ifade_konumu(ifade));
-                }
+                bilgi.intrinsic_ekle(kimlik, ifade_konumu(ifade));
                 // K-384/K-396: dosyadan bağlantıya aktarım dosyayı da okur.
                 if intrinsic::baglantiya_dosya_aktarir(kimlik) {
                     bilgi.ekle(Yetkinlik::DosyaOkuma, ifade_konumu(ifade));
