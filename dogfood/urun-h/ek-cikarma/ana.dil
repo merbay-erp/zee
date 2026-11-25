@@ -57,6 +57,27 @@ işlem eki akıt
             devam yanlış olsun
     sonuc döndür
 
+işlem eki bitir
+    parcayi Metin olarak al
+    hedefi Metin olarak al
+    Metin döndürür
+    # K-401 (ZM-F044): ürünün ekdeposu `eki bitir` adımı. Çözülen parça
+    # yerine no-clobber taşınır ve varlık özeti alınır. 16 MiB üstü ekte
+    # taşıma içeriği okuyup, özet de tavanı yüzünden 16 MiB'ta kalıyordu.
+    sonuc "" olsun
+    tasima parcayi dosyasını hedefi yoluna atomik taşımayı dene olsun
+    tasima başarılıysa
+        ozet hedefi dosyasının sha256 özetini almayı dene olsun
+        ozet başarılıysa
+            sonuc ozetin değeri olsun
+        değilse
+            hata ozetin hatası olsun
+            sonuc "554 5.6.0 ek özetlenemedi: " ile hatanın kodu olsun
+    değilse
+        sorun tasimanın hatası olsun
+        sonuc "554 5.6.0 ek taşınamadı: " ile sorunun kodu olsun
+    sonuc döndür
+
 işlem metin gövdesini çöz
     govdesi Metin olarak al
     hedefi Metin olarak al
@@ -99,5 +120,6 @@ işlem dkim gövde özeti
         boy boy_metninin sayısı olsun
         kalan boy ile govde_basinin farkı olsun
         sonuc blok ve govde_basi ve kalan ve "ekler/gelen.parca" ile eki akıt olsun
-        bağlantıya "250 2.0.0 " ile sonuc satırını yaz
+        bitis "ekler/gelen.parca" ve "ekler/ek.bin" ile eki bitir olsun
+        bağlantıya "250 2.0.0 " ile sonuc ile " " ile bitis satırını yaz
     bağlantıyı kapat

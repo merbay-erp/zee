@@ -1,0 +1,7 @@
+# K-401 (ZM-F044): eylem dışında 16 MiB'tan büyük (19 MiB) dosya atomik taşınır; taşıma içeriği belleğe okumaz.
+
+sonuç "gelen/ek.bin" dosyasını "ekler/ek.bin" yoluna atomik taşımayı dene olsun
+sonuç başarılıysa
+    "taşındı" yaz
+sonuç başarısızsa
+    "taşıma reddedildi" yaz

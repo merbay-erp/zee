@@ -36,6 +36,14 @@ için de geçerlidir.
 Var olan hedef normal dosya olmak ZORUNDADIR. Sembolik bağ veya başka dosya
 türü `InvalidInput` ile, eski nesne değiştirilmeden reddedilir.
 
+ZORUNLU (K-394): Unix'te klasör yazma kilidi dosyası ve kilit altındaki iç
+okumalar (ekleme ve çözerek eklemede mevcut içerik, eylem savepoint yedeği,
+taşıma/silme izi, iyimser geri alma) yaprak sembolik bağını izlemeden ve
+bloklamadan (`O_NOFOLLOW|O_NONBLOCK`) açılır; açılan nesne normal dosya
+değilse işlem hedefe dokunmadan C013 ile başarısız olur. Böylece aynı
+klasöre yazan başka bir süreç yaprağı bağa çevirip geri alarak kök dışı
+içeriği hedefe kopyalatamaz (RFC-0045 §Tehdit T5).
+
 - Linux/macOS mode, uid ve gid'yi korumak ZORUNDADIR.
 - ZORUNLU (K-376): Geçici dosyanın uid/gid'i eski hedefinkiyle zaten aynıysa
   sahiplik değiştirme çağrısı (`fchown`) yapılmaz; farklıysa eski sahiplik

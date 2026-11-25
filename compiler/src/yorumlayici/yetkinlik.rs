@@ -1,5 +1,4 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
-mod baglanti;
 mod dosya;
 mod http;
 mod kimlik_iletisim;
@@ -140,8 +139,10 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         kimlik: u64,
         islem: &super::BaglantiIslemi,
     ) -> super::BaglantiSonucu {
-        baglanti::baglanti_reddi(self, islem)
-            .unwrap_or_else(|| self.ic.baglanti_islemi(kimlik, islem))
+        if let Err((tur, hata)) = self.baglanti_islemini_denetle(islem) {
+            return super::BaglantiSonucu::hata(tur, hata);
+        }
+        self.ic.baglanti_islemi(kimlik, islem)
     }
     fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
         self.ic.baglanti_tanisini_gunlukle(kimlik, neden)

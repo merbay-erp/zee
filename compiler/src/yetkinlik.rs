@@ -5,9 +5,11 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 mod giden;
 mod origin;
+mod veri_yolu;
 pub use giden::{GidenHedefHatasi, MTA_STS_YOLU};
 use giden::{MTA_STS_JOKERI, TCP_JOKERI};
 use origin::ayristir;
+pub use veri_yolu::{veri_yolu_bilesenleri, veri_yolu_mu, VERI_ONEKI};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Yetkinlik {
@@ -24,10 +26,13 @@ pub enum Yetkinlik {
     Veritabani,
     /// K-390: bildirilmiş loopback doğrulayıcı çözücüye DNS sorgusu (RFC-0044 B1).
     Dns,
+    /// K-394 (RFC-0045): paylaşılan veri kökünden (`veri:`) okuma / yazma.
+    VeriOkuma,
+    VeriYazma,
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 11] = [
+    pub const TUMU: [Self; 13] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
@@ -39,6 +44,8 @@ impl Yetkinlik {
         Self::Kriptografi,
         Self::Veritabani,
         Self::Dns,
+        Self::VeriOkuma,
+        Self::VeriYazma,
     ];
 
     pub const fn yazimi(self) -> &'static str {
@@ -54,6 +61,8 @@ impl Yetkinlik {
             Self::Kriptografi => "kriptografi",
             Self::Veritabani => "veritabanı",
             Self::Dns => "dns",
+            Self::VeriOkuma => "veri-okuma",
+            Self::VeriYazma => "veri-yazma",
         }
     }
 
@@ -93,14 +102,13 @@ impl AgSemasi {
         }
     }
 
-    /// `tcp://` için 0: kapı her zaman açıkça yazılır ve yazımda görünür.
     const fn varsayilan_kapi(self) -> u16 {
         match self {
             Self::Http => 80,
             Self::Https => 443,
             Self::Smtp => 587,
             Self::Smtps => 465,
-            Self::Tcp => 0,
+            Self::Tcp => 0, // kapı zorunlu, yazımda hep görünür
         }
     }
 
@@ -225,12 +233,7 @@ impl YetkinlikPolitikasi {
     pub fn gelistirici_agli() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
-            .filter(|yetkinlik| {
-                !matches!(
-                    yetkinlik,
-                    Yetkinlik::YerelAg | Yetkinlik::Veritabani | Yetkinlik::Dns
-                )
-            })
+            .filter(|yetkinlik| !veri_yolu::BILDIRIMSIZ_KAPALI.contains(yetkinlik))
             .collect();
         Self {
             izinler,

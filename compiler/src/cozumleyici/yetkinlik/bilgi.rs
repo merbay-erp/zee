@@ -69,3 +69,16 @@ impl Bilgi {
         }
     }
 }
+
+/// K-394 (RFC-0045): yol sınıfı (`veri:` ya da proje dosyası) çoğu zaman
+/// çalışma anında belli olur; statik dosya gereksinimi aynı yönlü `veri-*`
+/// yetkinliğiyle de karşılanır. Yolun kesin sınıfını ve yetkinliğini
+/// çalışma zamanındaki merkezî politika her çağrıda ayrıca denetler.
+pub(super) fn statik_izin(politika: &YetkinlikPolitikasi, yetkinlik: Yetkinlik) -> bool {
+    politika.izin_verir(yetkinlik)
+        || match yetkinlik {
+            Yetkinlik::DosyaOkuma => politika.izin_verir(Yetkinlik::VeriOkuma),
+            Yetkinlik::DosyaYazma => politika.izin_verir(Yetkinlik::VeriYazma),
+            _ => false,
+        }
+}
