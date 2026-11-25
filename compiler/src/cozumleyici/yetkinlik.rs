@@ -5,7 +5,7 @@ use crate::tani::Tani;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
 type Konum = (usize, usize, usize);
 mod bilgi;
-use bilgi::Bilgi;
+use bilgi::{statik_izin, Bilgi};
 pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Result<(), Tani> {
     let mut bilgi = Bilgi::default();
     blok_bilgisi(&program.cumleler, &mut bilgi);
@@ -18,7 +18,7 @@ pub(super) fn denetle(program: &Program, politika: &YetkinlikPolitikasi) -> Resu
     let reddedilen = bilgi
         .yetkinlikler
         .iter()
-        .filter(|(yetkinlik, _)| !politika.izin_verir(**yetkinlik))
+        .filter(|(yetkinlik, _)| !statik_izin(politika, **yetkinlik))
         .min_by_key(|(_, konum)| **konum);
     if let Some((yetkinlik, (satir, sutun, uzunluk))) = reddedilen {
         return Err(Tani::yeni(

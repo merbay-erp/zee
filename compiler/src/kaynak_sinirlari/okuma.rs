@@ -1,5 +1,6 @@
 //! Kaynak ve çalışma veri dosyaları için ortak bounded reader.
 
+pub(crate) mod bagsiz_okuma;
 use super::VARSAYILAN_KAYNAK_SINIRLARI;
 use crate::tani::Tani;
 use std::io::{self, Read};

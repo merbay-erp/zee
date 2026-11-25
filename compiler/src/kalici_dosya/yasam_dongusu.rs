@@ -72,7 +72,7 @@ fn atomik_tasi_ile(
     }
     let icerik = if izli {
         let icerik = nokta(Adim::MevcutOkuma)
-            .and_then(|()| crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(kaynak))
+            .and_then(|()| crate::kaynak_sinirlari::bagsiz_okuma::kalici_ic_baytlari_oku(kaynak))
             .map_err(sar(Adim::MevcutOkuma))?;
         Some(icerik)
     } else {
