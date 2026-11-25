@@ -55,6 +55,8 @@ pub struct ToplayanIo {
     pub dns_bolgesi: HashMap<(String, crate::dns_teli::KayitTuru), DnsSahteYaniti>,
     /// K-390: gerçekten yapılan sahte DNS sorguları ve verilen süre (ms).
     pub dns_sorgulari: Vec<(String, crate::dns_teli::KayitTuru, i64)>,
+    /// K-390 B1b: `kurumsal alanı` için kamu son ek listesi (yoksa hata).
+    pub kamu_son_ekleri: Option<std::sync::Arc<crate::kamu_son_ekleri::KamuSonEkleri>>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     /// Eylem başı dosya tabloları (K-389: ikili tablo da geri alınır).
@@ -134,6 +136,7 @@ impl ToplayanIo {
             eposta_kutusu: Vec::new(),
             dns_bolgesi: HashMap::new(),
             dns_sorgulari: Vec::new(),
+            kamu_son_ekleri: None,
             baglanti: Default::default(),
             an_son_degeri: 0,
             cikti: Vec::new(),
@@ -837,5 +840,12 @@ impl GirdiCikti for ToplayanIo {
                     kanonik_ad: ad,
                 })
             })
+    }
+
+    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
+        self.kamu_son_ekleri
+            .as_ref()
+            .map(|liste| liste.kurumsal_alan(ad))
+            .ok_or_else(|| "proje `kamu_son_ekleri` bildirmiyor".into())
     }
 }

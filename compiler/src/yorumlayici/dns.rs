@@ -1,6 +1,7 @@
 //! K-390 (RFC-0044 B1, ADR-169): DNS sorgu intrinsic'lerinin yorumlayıcı
 //! sınırı. Başarı kayıt başına bir Metin sözlüğüdür (boş liste = kayıt yok
 //! ya da alan yok); başarısız Sonuç yalnız geçici hatadır (C033, `tür`).
+//! `posta.` önekli ilkeller (B1b/B2b) yorumlayici/posta.rs'e dağıtılır.
 use super::*;
 use crate::dns_teli::{Cozum, DnsHatasi, KayitTuru, KayitVerisi};
 use crate::intrinsic::{DNS_ADRES, DNS_MX, DNS_TLSA, DNS_TXT};
@@ -18,6 +19,8 @@ pub(super) async fn ya_da_kodlanmis_dosya(
 ) -> Result<Deger, Tani> {
     if kimlik.starts_with("dns.") {
         intrinsic_degerlendir(kimlik, degerler, io, satir).await
+    } else if kimlik.starts_with("posta.") {
+        super::posta::degerlendir(kimlik, degerler, io, satir)
     } else {
         super::kodlanmis_dosya::degerlendir(kimlik, degerler, io, satir)
     }

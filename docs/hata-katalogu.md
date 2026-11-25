@@ -189,6 +189,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C031 | Listede o sırada öğe yok (sıra 1 ile adet aralığı dışında) | Sırayı `listenin adedi` ile sınırla ya da olmayabilecek öğe için `listenin sıra. öğesini almayı dene` kullan; ret Sonuç'unda Hata kodu `SIRA_DISI` (K-386) |
 | C032 | Kodlanmış içerik çözülemedi | `Hata` verisinin `tür` değerine bak (K-389, RFC-0043 Dilim 1): `alfabe` (base64 alfabesi dışında ya da QP'de yazdırılabilir ASCII dışı karakter), `dolgu` (ortada/fazla dolgu, kanonik olmayan dolgu bitleri), `uzunluk` (4'e bölünmeyen base64 — dolgu zorunlu), `kaçış` (QP `=` ardından iki onaltılık hane yok), `satır_sonu` (QP'de çıplak CR/LF), `utf8` (aralıklı metin okumada geçersiz UTF-8 ya da bölünen çok baytlı dizi; ikili içerik için `base64 okumayı dene`), `boyut_aşımı` (çağrı başına çözülen çıktı 1 MiB'ı aşıyor; parçalara bölüp `eklemeyi dene` kullan). `konum` ilk hatalı baytın girdi (utf8'de dosya) içi konumudur; mesaj girdiyi taşımaz. Hedef dosyaya dokunulmamıştır |
 | C033 | DNS sorgusu geçici olarak başarısız (RFC-0044 B1) | Hata verisinin `tür` değerine bak: `zaman_aşımı` (5 sn ya da son tarihin kalanı), `sunucu_hatası` (SERVFAIL — DNSSEC doğrulaması başarısız yanıt dahil —, FORMERR, NOTIMP), `ret` (REFUSED), `ağ` (yerel çözücüye ulaşılamadı ya da `dns_çözücü` bildirilmedi), `boyut_aşımı` (64 kayıt, 4 KiB TXT/TLSA, 8 CNAME), `bütçe`, `geçersiz_ad` (ASCII harf/rakam/`-`/`_`, etiket 1–63, ≤ 253 oktet; paket gönderilmez), `bozuk_yanıt`. Geçici hata "kayıt yok" değildir: posta akışında `451 4.4.3` gibi yeniden dene yanıtı ver. Kayıt yok/alan yok başarılı boş listedir (K-390) |
+| C034 | Posta kimlik doğrulama ilkeli girdiyi reddetti ya da kamu son ek listesi yok (RFC-0044 B1b/B2b) | DKIM doğrulama ret `Sonuç`unda Hata verisinin `tür` değerine bak: `algoritma_reddedildi` (`rsa-sha1`, RFC 8301), `algoritma_bilinmiyor` (yalnız `rsa-sha256`, `ed25519-sha256`), `anahtar_iptal` (boş `p=`), `anahtar_bozuk` (SPKI/PKCS#1 DER ya da 32 baytlık Ed25519 değil), `anahtar_kısa` (< 1024 bit), `anahtar_uzun` (> 4096 bit), `imza_bozuk` (`b=` base64 değil ya da boyu anahtara uymuyor), `veri_bozuk` (veride CR: satır sonunu `\n` yaz, imza girdisinde CRLF olur). Bunlar DKIM `permerror`dır; imzanın tutmaması ret değil, başarı sözlüğünde `doğrulandı=yanlış` (DKIM `fail`) olarak döner. `kurumsal alanı` proje `kamu_son_ekleri` bildirmeden kullanılırsa yürütme C034 ile durur: listeyi `dns` bildirimiyle birlikte ekle. `dkim gövde özeti` CR içeren gövdede yürütmeyi C034 ile durdurur: kanonik gövdede satır sonunu `\n` yaz (K-390) |
 
 ## D — Doğrulama
 
@@ -286,6 +287,14 @@ yayın için `dil çalıştır --web-proxy https://<alan> --web-worker-port <kap
 [--web-isci-sayisi N --web-systemd-soketi]`; yerelde tarayıcıyı
 `http://localhost:<kapı>` ya da `http://127.0.0.1:<kapı>` ile açın.
 [Karar](../adr/176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md).
+
+K-390 B1b: `kamu_son_ekleri` ve `kamu_son_ekleri_özeti` yalnız `dns`
+bildirimiyle ve birlikte geçerlidir; göreli olmayan ya da `..` içeren yol ve 64
+küçük harf onaltılık olmayan özet P015'tir (yeni proje tanı kodu yok). Dosya
+okunamaz, SHA-256'sı bildirilen özetle tutmaz ya da ayrıştırılamazsa süreç
+kaynak yürütülmeden `kamu_son_ekleri "…":` iletisiyle çıkış 2 verir. DKIM
+doğrulama ve kurumsal alan hataları C034'tür.
+[Karar](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

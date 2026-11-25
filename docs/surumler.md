@@ -48,6 +48,35 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Kurumsal alan ve DKIM imza doğrulaması (K-390):** posta sunucusu yazan
+  Zee programı artık gelen iletinin DMARC hizalaması için gönderen alanın
+  kurumsal alanını hesaplayabilir ve DKIM imzasını doğrulayabilir.
+  - Kamu son ek listesi (Public Suffix List) derleyiciye gömülü değildir;
+    projeye dosya olarak konur ve tam özetiyle bildirilir:
+    `kamu_son_ekleri "veri/public_suffix_list.dat" olsun` ve
+    `kamu_son_ekleri_özeti "<sha256>" olsun`. Bu iki alan yalnız `dns`
+    bildirimiyle birlikte geçerlidir. Dosyanın özeti tutmazsa süreç hiç
+    başlamaz.
+  - `kök "posta.ornek.co.uk" alanının kurumsal alanı olsun` →
+    `ornek.co.uk`. Geçersiz bir ad ya da kamu son ekinin kendisi boş Metin
+    verir.
+  - `sonuç b dkim imzasını veri verisi için p anahtarıyla a olarak
+    doğrulamayı dene olsun` (`kriptografi` yetkinliği): `rsa-sha256`
+    (1024–4096 bit) ve `ed25519-sha256` desteklenir. Başarıda `doğrulandı`,
+    `algoritma` ve `anahtar_biti` döner; imza tutmazsa `doğrulandı`
+    `yanlış` olur.
+  - `rsa-sha1`, kısa ya da uzun anahtar, boş (iptal edilmiş) anahtar ve
+    bozuk imza yeni **C034** hatasıyla (`tür`) reddedilir.
+  - Kanonikleştirme Zee kodunda yapılır; veride satır sonunu `\n` ile
+    yazın, imza girdisinde CRLF olur.
+  - `bh gövde gövdesinin dkim gövde özeti olsun`: kanonik gövdenin
+    `bh=` biçimindeki özeti (base64 SHA-256). Satır sonu yine `\n` ile
+    yazılır, özet CRLF üzerinde alınır.
+  - Derleyici yeni bir dış kitaplık almadı; doğrulama zaten kullanılan TLS
+    kitaplığının kriptografisiyle yapılır.
+
+  **Göç:** Gerekmez; bu alanları ve kalıpları kullanmayan projeler
+  değişmez.
 - **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
   bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
   satırları olarak (76 karakter + satır sonu) belleğe alınmadan
