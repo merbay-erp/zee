@@ -4067,17 +4067,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if hedef_yolu.exists() {
             return Err(format!("\"{}\" hedef dosyası zaten var", hedef));
         }
+        let tasima_hatasi = |hata: std::io::Error| match hata.kind() {
+            std::io::ErrorKind::NotFound => {
+                format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata)
+            }
+            _ => format!("dosya atomik taşınamadı: {}", hata),
+        };
+        // K-395b: eylem dışında geri alma kaydı yoktur; taşıma içeriği okumaz,
+        // 16 MiB veri okuma sınırına bağlı değildir (silmedeki izsiz yolun eşi).
+        if self.eylem_yedekleri.is_empty() {
+            return dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
+                .map(|()| 1)
+                .map_err(tasima_hatasi);
+        }
         // K-347: içerik iki klasör kilidi altında, adlandırmayla aynı
         // pencerede yakalanır; kilit dışı yedek araya giren yazarı görmüyordu.
-        let icerik =
-            dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu).map_err(|hata| {
-                match hata.kind() {
-                    std::io::ErrorKind::NotFound => {
-                        format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata)
-                    }
-                    _ => format!("dosya atomik taşınamadı: {}", hata),
-                }
-            })?;
+        let icerik = dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu)
+            .map_err(tasima_hatasi)?;
         let kaynak_degisimi = dil::kalici_dosya::KilitliDegisim {
             onceki: Some(icerik.clone()),
             sonraki: None,

@@ -114,6 +114,13 @@ içindeki rename görünürlük sınırını kullanır. Silme bulunmayan hedefte
 dosyalarını, göreli ve sıralı verir; symlink/dizin döndürmez. Özetleme en çok
 16 MiB'ı akışla okur.
 
+ZORUNLU (K-395b): Eylem dışındaki taşıma geri alma kaydı tutmaz ve içeriği
+belleğe OKUMAZ; boyut sınırı yoktur, 16 MiB veri okuma sınırını aşan dosya da
+taşınır. Eylem içindeki taşıma geri alma için içeriği kilit altında okur ve
+16 MiB veri okuma sınırına bağlı kalır; aşan dosya C013 verir, kaynak yerinde
+kalır ve hedef oluşmaz. No-clobber ve proje kökü kuralları iki kipte de
+aynıdır.
+
 K-329 uyarınca kaynak ile hedef ayrı bağlama noktalarındaysa (`rename`
 `EXDEV` verir; ör. systemd `ReadWritePaths=` her yolu ayrı bind mount eder)
 runtime taşımayı hedef klasöründeki geçici dosyaya akışlı kopya, kaynağın

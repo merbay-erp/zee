@@ -729,3 +729,62 @@ fn eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda() {
         "bir bayt fazlası hedefe hiç yazmaz"
     );
 }
+
+/// K-395b (ZM-F044): eylem dışındaki `atomik taşımayı dene` içeriği belleğe
+/// okumaz; 16 MiB veri okuma sınırını aşan 19 MiB'lık dosya taşınır. No-clobber
+/// ve proje kökü kuralları aynen geçerlidir. Eylem içinde geri alma kaydı
+/// içeriği tuttuğu için taşıma 16 MiB veri okuma sınırına bağlı kalır ve
+/// aşan dosyada kaynak yerinde kalır.
+#[test]
+fn eylem_disi_tasima_buyuk_dosyayi_okumadan_tasir_eylem_ici_sinirli() {
+    let buyuk: usize = 19 * 1024 * 1024;
+    let ana = r#"işlem taşı
+    kaynağı Metin olarak al
+    hedefi Metin olarak al
+    değer döndürmez
+    sonuç kaynağı dosyasını hedefi yoluna atomik taşımayı dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu yaz
+
+eylem eylemdeTaşı
+    TamSayı sonucu döndürür
+    "gelen/c.bin" dosyasını "ekler/c.bin" yoluna atomik taşımayı dene döndür
+
+"gelen/a.bin" ve "ekler/a.bin" ile taşı
+"gelen/b.bin" ve "ekler/a.bin" ile taşı
+"gelen/b.bin" ve "../dis.bin" ile taşı
+eylemde eylemdeTaşı olsun
+eylemde başarılıysa
+    eylemdenin değeri yaz
+değilse
+    hata eylemdenin hatası olsun
+    hatanın kodu yaz
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    std::fs::create_dir_all(proje.0.join("gelen")).unwrap();
+    std::fs::create_dir_all(proje.0.join("ekler")).unwrap();
+    let icerik = ikili(buyuk);
+    std::fs::write(proje.0.join("gelen/a.bin"), &icerik).unwrap();
+    std::fs::write(proje.0.join("gelen/b.bin"), b"b").unwrap();
+    std::fs::write(proje.0.join("gelen/c.bin"), vec![3u8; 17 * 1024 * 1024]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    assert_eq!(satirlar, ["1", "C013", "C013", "C013"], "{stderr}");
+    assert!(!proje.0.join("gelen/a.bin").exists());
+    assert!(
+        std::fs::read(proje.0.join("ekler/a.bin")).unwrap() == icerik,
+        "19 MiB bayt bayt taşındı"
+    );
+    assert_eq!(std::fs::read(proje.0.join("gelen/b.bin")).unwrap(), b"b");
+    assert!(!proje.0.parent().unwrap().join("dis.bin").exists());
+    assert_eq!(
+        std::fs::metadata(proje.0.join("gelen/c.bin")).unwrap().len(),
+        17 * 1024 * 1024,
+        "eylem içi sınır aşımında kaynak yerinde kalır"
+    );
+    assert!(!proje.0.join("ekler/c.bin").exists());
+}
