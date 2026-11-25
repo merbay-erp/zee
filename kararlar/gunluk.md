@@ -6178,6 +6178,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   Çerçeve iadesi bütçe farkıyla değil ölçüyle (eşzamanlı görevler ortak
   bütçe paylaşır). Negatif testler canlı birikimin C024 ile durduğunu sınar.
 - K-388 testleri geçici çöple değil canlı birikimle yenilemeyi sınar.
+## K-398 — Parametre bağlama adı sözlük köküne; ZM-F030, ADR-175 (25 Kasım 2026)
+
+- `urun-h` ZM-F030 iki kez geldi (`kalıbı`→`kalıb`, `metni`→`metn`); kullanıcı
+  önerilen yolu onayladı: `zee-tr-1` çıktısı değil, bağlama adı seçimi.
+- Önce ölçüm (K-367 yöntemi): aday kümeleri sözlük kökünü içeriyor; seçim
+  aday kümesinden yapılabildiği için profil değişikliği gerekmedi.
+- Kural ilk biçimiyle `-lı` sıfatlarını (`izinli`→`izinil`), geçmiş zaman
+  bayraklarını (`bildirildi`→`bildirilt`) ve `kayb`→`kayp` gibi iki adımlı
+  biçimleri bozuyordu; korpus ölçümüyle `l`/`m` sonlu kümeler, ünsüz sonrası
+  `d` ve sonorant olmayan küme sonrası `b`/`c` dışarıda bırakıldı.
+- Yüzlerce mevcut başvuru yumuşamış gövdeyi çıplak yazıyor (`belirtec`,
+  `yoğunluğ`); uyumluluk yolu yalnız parametreye ve yalnız önceden A001 olan
+  yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
+  yeniden atanmış parametreye eski yazım) A002 yapıldı.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a, ADR-173 (24 Kasım 2026)
 
 - Kaynak `urun-h` (ZeeMail) giden teslim hizmeti `zeemail/disteslim`;

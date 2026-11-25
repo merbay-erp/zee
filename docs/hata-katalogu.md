@@ -70,7 +70,7 @@ kalır (ADR-025).
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
 | A001 | Ad bu kapsamda tanımlı değil | Önce `<ad> <değer> olsun`; tanı tanımlı adları listeler. K-384: işlemde örtük `bağlantı` Sözlüğü görünmez (alanı parametre olarak geçir); adı yerleşik `yaz` ile biten işlemi cümle olarak çağırınca tanı çakışan işlemi anar — işleme başka ad ver |
-| A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır |
+| A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır. K-398: parametre gövdede sözlük köküyle (`başlık … olsun`) yeniden atandıktan sonra K-398 öncesi yumuşamış yazımla (`başlığ`) başvurmak da A002'dir; parametre için sözlük kökünü yaz, ayrı yerele başka ad ver |
 | A003 | `her X için` gezilecek listeyi bulamadı | Kapsamda `Xlar`/`Xler` adlı liste olmalı (örtük çoğul, K-013) |
 | A004 | **ayrılmış** — eski ad çözümleme yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | A005 | Aynı adla ikinci işlem tanımı | İşlem adları benzersizdir |
@@ -87,7 +87,7 @@ kalır (ADR-025).
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
 | T001 | Karşılaştırma tür uyuşmazlığı | Büyüklük sayılar arasında; eşitlik aynı türler arasında |
-| T002 | Değerin türü değiştirilmeye çalışıldı | Tür sonradan değişmez; yeni ad kullan |
+| T002 | Değerin türü değiştirilmeye çalışıldı | Tür sonradan değişmez; yeni ad kullan. K-398: `başlığı al` parametresi `başlık` adıyla bağlanır; gövdedeki `başlık … olsun` artık parametreye atamadır, öneri bunu söyler — yerel değere başka ad ver |
 | T003 | Tekrar adedi TamSayı değil | `10 kez tekrarla` |
 | T004 | Aralık uçları TamSayı değil | `1 den 100 e kadar` |
 | T005 | ise/döngü/olmalı koşul istiyor | Koşul kalıbı kullan (K-010) |

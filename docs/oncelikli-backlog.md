@@ -2557,6 +2557,38 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-398 — Parametre bağlama adı sözlük köküne bağlanır (ZM-F030, ADR-175)
+
+**Durum: KAPALI (25 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-h`
+(ZeeMail) sürtünmesi ZM-F030, iki kez bildirildi (23 ve 24 Kasım; ürün commit
+`a180e0c`, `imap/kaynak/ana.dil` `kalıbı` yerine `deseni`); aynı sınıf
+`kanit-ozeti` K-164/F006 olarak korpustaydı. Kullanıcı onayı 25 Kasım 07:55,
+önerilen düşük riskli yol: profil çıktısı değil bağlama adı seçimi değişir.
+Freeze sınıfı `dogfood-change`.
+
+**Karar ([ADR-175](../adr/175-parametre-baglama-adi-sozluk-koku.md),
+[spec/03](../spec/03-adlar-ve-kapsam.md)).** `kalıbı al` → `kalıp`,
+`belirteci` → `belirteç`, `eşiği` → `eşik`, `adedi` → `adet`, `içeriği` →
+`içerik`, `ucu` → `uç`, `metni` → `metin`: `morfoloji::baglama_koku`
+sözlüksüz kurallarla kökü türetir, ayrıştırıcı onu yalnız yazımın `zee-tr-1`
+aday kümesindeyse seçer. Profil, aday kümesi ve uyumluluk kaydı değişmez.
+Eski yumuşamış yazım (`kalıb`, `kalıb … olsun`) yalnız parametre için aynı
+sembole çözülür; sözlük köküne farklı türde atama önerili T002, kökle yeniden
+atanmış parametreye eski yazımla başvuru A002.
+
+Ölçüm: ZM-F030'un yedi adı ve 50 benzer adın aday kümesi; 1 773 dosyalık
+korpusun (depo + 21 yerel proje + ZeeMail) 19 450 parametre satırının 752'si
+(53 ad) yeni köke bağlanır; eski/yeni `dil denetle` farkı yalnız F006 (A001 → başarı).
+
+Kanıt: `parametre_baglama_adi_testi.rs` (yedi olumlu/olumsuz vaka, profil
+parmak izi), regression `checker/parametre-sozluk-koku` ve
+`checker/parametre-eski-yazim-belirsiz`, dogfood `zm-f030-yumusak-parametre`
+(urun-h) ve F006 beklentisi (kanit-ozeti).
+
+Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü düşmesi
+(`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
+(`ip_adresini`); sözlük ya da `zee-tr-2` ister.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173)
 
 **Durum: Dilim 1 KAPALI (B4a); Dilim 2 (B3 DKIM imza ilkeli, ADR-174) AÇIK.**
