@@ -170,6 +170,10 @@ pub(super) fn gecerli_baglantiyi_degistir(yeni: Option<u64>) -> Option<u64> {
     GECERLI_BAGLANTI.with(|yuva| yuva.replace(yeni))
 }
 
+pub(super) fn gorevin_baglantisi() -> Option<u64> {
+    GECERLI_BAGLANTI.with(|yuva| yuva.get())
+}
+
 pub(super) fn giden_mi(kimlik: u64) -> bool {
     GIDEN_BAGLANTILAR.with(|liste| liste.borrow().contains(&kimlik))
 }

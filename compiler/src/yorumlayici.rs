@@ -1171,6 +1171,21 @@ struct GorevCalismasi<'a> {
     baglanti: Option<u64>,
 }
 
+/// K-397: görevin kendi açtığı (üstten gelmeyen) giden bağlantıyı kapatır.
+fn gidenleri_kapat(
+    gorevler: &mut [GorevCalismasi<'_>],
+    ust_baglanti: Option<u64>,
+    io: &RefCell<&mut dyn GirdiCikti>,
+) {
+    for gorev in gorevler {
+        if let Some(kimlik) = gorev.baglanti.take() {
+            if Some(kimlik) != ust_baglanti {
+                baglanti::gideni_kapat(&mut **io.borrow_mut(), kimlik);
+            }
+        }
+    }
+}
+
 /// Kaynak sırasını bağlayıcı zamanlama sırası yapar. Her turda hazır görevler
 /// birer kez poll edilir; hiçbiri hazır değilse saat en yakın beklemeye kadar
 /// tek adımda ilerler. Aynı anda yalnız bir görev çalıştığı için data race yoktur.
@@ -1183,16 +1198,7 @@ async fn gorevleri_calistir<'a>(
     let ortak = Rc::new(RefCell::new(io));
     let ana_son_tarihler = SON_TARIHLER.with(|yuva| std::mem::take(&mut *yuva.borrow_mut()));
     let ana_sinyal = GOREV_BEKLEME_SINYALI.with(|yuva| yuva.borrow_mut().take());
-    let ust_baglanti = baglanti::gecerli_baglantiyi_degistir(None);
-    baglanti::gecerli_baglantiyi_degistir(ust_baglanti);
-    // Görevin kendi açtığı (üstten gelmeyen) giden bağlantıyı kapatır.
-    let gorev_baglantisini_kapat = |gorev: &mut GorevCalismasi<'_>, io: &mut dyn GirdiCikti| {
-        if let Some(kimlik) = gorev.baglanti.take() {
-            if Some(kimlik) != ust_baglanti {
-                baglanti::gideni_kapat(io, kimlik);
-            }
-        }
-    };
+    let ust_baglanti = baglanti::gorevin_baglantisi();
 
     let mut calismalar = gorevler
         .into_iter()
@@ -1264,12 +1270,10 @@ async fn gorevleri_calistir<'a>(
                     Poll::Ready(Ok(deger)) => {
                         calismalar[sira].gelecek = None;
                         calismalar[sira].sonuc = Some(deger);
-                        gorev_baglantisini_kapat(&mut calismalar[sira], &mut **ortak.borrow_mut());
+                        gidenleri_kapat(&mut calismalar[sira..=sira], ust_baglanti, &ortak);
                     }
                     Poll::Ready(Err(mut tani)) => {
-                        for gorev in &mut calismalar {
-                            gorev_baglantisini_kapat(gorev, &mut **ortak.borrow_mut());
-                        }
+                        gidenleri_kapat(&mut calismalar, ust_baglanti, &ortak);
                         let iptal_edilenler = calismalar
                             .iter()
                             .enumerate()

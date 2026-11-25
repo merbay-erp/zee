@@ -703,32 +703,8 @@ impl Reaktor {
             return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
         };
         if !b.yukseltiliyor {
-            if b.kanal.tls_mi() {
-                return BaglantiSonucu::hata("tls", dil::ag_satiri::ZATEN_TLS);
-            }
-            match istemci {
-                Some(_) if !b.giden_mi => {
-                    return BaglantiSonucu::hata(
-                        "geçersiz",
-                        "TLS istemcisi yalnız giden bağlantıda başlatılır",
-                    )
-                }
-                Some(ad) if !dil::ag_satiri::tls_sunucu_adi_gecerli(ad) => {
-                    return BaglantiSonucu::hata(
-                        "geçersiz",
-                        "TLS sunucu adı ASCII DNS adı olmalı",
-                    )
-                }
-                None if b.giden_mi => {
-                    return BaglantiSonucu::hata(
-                        "geçersiz",
-                        "giden bağlantıda `bağlantıda TLS istemcisi başlatmayı dene \"<ad>\" ile` kullan",
-                    )
-                }
-                None if super::ag_tls::yapilandirma().is_none() => {
-                    return BaglantiSonucu::hata("tls", dil::ag_satiri::TLS_KIMLIGI_YOK);
-                }
-                _ => {}
+            if let Some(ret) = tls_on_kosulu(b, istemci) {
+                return ret;
             }
             if b.okuyucu.tamponlu_bayt() > 0 {
                 // CVE-2011-0411 (sunucu) / CVE-2011-1575 (istemci) sınıfı:
@@ -1274,4 +1250,29 @@ impl Reaktor {
             .unwrap_or(("?", "?".into()));
         eprintln!("Zee bağlantı #{kimlik} ({dinleyici}, {uzak}) kapandı: {neden}");
     }
+}
+
+/// K-397: STARTTLS'in yön (sunucu/istemci) ve kimlik ön koşulları.
+fn tls_on_kosulu(b: &Baglanti, istemci: Option<&str>) -> Option<BaglantiSonucu> {
+    if b.kanal.tls_mi() {
+        return Some(BaglantiSonucu::hata("tls", dil::ag_satiri::ZATEN_TLS));
+    }
+    let ret = match istemci {
+        Some(_) if !b.giden_mi => BaglantiSonucu::hata(
+            "geçersiz",
+            "TLS istemcisi yalnız giden bağlantıda başlatılır",
+        ),
+        Some(ad) if !dil::ag_satiri::tls_sunucu_adi_gecerli(ad) => {
+            BaglantiSonucu::hata("geçersiz", "TLS sunucu adı ASCII DNS adı olmalı")
+        }
+        None if b.giden_mi => BaglantiSonucu::hata(
+            "geçersiz",
+            "giden bağlantıda `bağlantıda TLS istemcisi başlatmayı dene \"<ad>\" ile` kullan",
+        ),
+        None if super::ag_tls::yapilandirma().is_none() => {
+            BaglantiSonucu::hata("tls", dil::ag_satiri::TLS_KIMLIGI_YOK)
+        }
+        _ => return None,
+    };
+    Some(ret)
 }
