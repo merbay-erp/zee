@@ -11,6 +11,7 @@ pub(super) fn mesaj(hata: String, cocuk_modu: bool, yetkinlik: Yetkinlik) -> Str
         Yetkinlik::Ag => "güvenli modda ağ erişimi kapalı".into(),
         Yetkinlik::AgSunucusu => "güvenli modda sunucu açılamaz".into(),
         Yetkinlik::AgDinleyici => "güvenli modda bağlantı dinlenemez".into(),
+        Yetkinlik::Dns => "güvenli modda DNS sorgusu kapalı".into(),
         _ => format!("güvenli modda {}", hata),
     }
 }

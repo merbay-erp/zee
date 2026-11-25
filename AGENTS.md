@@ -103,7 +103,7 @@ replay/regresyon kanıtı ve insan review'u olmadan `compiler/fuzz/corpus/`
 altına alınmaz.
 
 Release-candidate fuzz kapısı aynı kaynak commit'inde `lexer_parser`,
-`morfoloji`, `http_istegi` ve `wasm_abi` hedeflerini 30–60 dakika explicit
+`morfoloji`, `http_istegi`, `dns_yaniti` (K-390) ve `wasm_abi` hedeflerini 30–60 dakika explicit
 AddressSanitizer ile çalıştırır; crash, timeout veya sanitizer bulgusu kapıyı
 kırar. Seçili saf çekirdek Miri testleri de geçmeli ve exact çevre/sonuç
 `docs/fuzz-rc-gecmisi-v1.tsv` dosyasına aynı toplu committe eklenmelidir.

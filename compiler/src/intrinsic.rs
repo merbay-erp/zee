@@ -84,6 +84,15 @@ pub const GIDEN_BAGLAN: &str = "ag.giden_baglan";
 /// K-397: `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile` — giden
 /// bağlantıda istemci STARTTLS → Metin sözlüğü Sonucu (`doğrulandı`, …).
 pub const BAGLANTI_TLS_ISTEMCI: &str = "ag.baglanti_tls_istemci";
+/// K-390 (RFC-0044 B1): `<ad> için MX kayıtlarını sorgulamayı dene` →
+/// kayıt başına satırlı Metin sözlük listesi Sonucu (C033 `tür` verili ret).
+pub const DNS_MX: &str = "dns.mx_sorgula";
+/// K-390: `<ad> için TXT kayıtlarını sorgulamayı dene`.
+pub const DNS_TXT: &str = "dns.txt_sorgula";
+/// K-390: `<ad> için adres kayıtlarını sorgulamayı dene` (A, sonra AAAA).
+pub const DNS_ADRES: &str = "dns.adres_sorgula";
+/// K-390: `<ad> için TLSA kayıtlarını sorgulamayı dene`.
+pub const DNS_TLSA: &str = "dns.tlsa_sorgula";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -190,6 +199,38 @@ const IKI_METIN_BIR_SAYI: &[IntrinsicTuru] = &[
 ];
 
 pub const TANIMLAR: &[IntrinsicTanimi] = &[
+    IntrinsicTanimi {
+        kimlik: DNS_MX,
+        yetkinlik: Yetkinlik::Dns,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukListesiSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "MX sorgusunun alan adı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DNS_TXT,
+        yetkinlik: Yetkinlik::Dns,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukListesiSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "TXT sorgusunun alan adı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DNS_ADRES,
+        yetkinlik: Yetkinlik::Dns,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukListesiSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Adres sorgusunun alan adı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DNS_TLSA,
+        yetkinlik: Yetkinlik::Dns,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukListesiSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "TLSA sorgusunun alan adı Metin olmalı.",
+    },
     IntrinsicTanimi {
         kimlik: BAGLANTI_SATIR_OKU,
         yetkinlik: Yetkinlik::AgDinleyici,

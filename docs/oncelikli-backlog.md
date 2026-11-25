@@ -2572,10 +2572,10 @@ sabit `/.well-known/mta-sts.txt`, public IP). `"<ana>:<kapı>" adresine
 bağlanmayı dene` tek çözümleme + fail-closed IP denetimi + denetlenen adrese
 sabitleme; başarılı bağlantı görevin bağlantısıdır ve A2/A2c kalıpları onun
 üzerinde çalışır (artık `ağ` ile de derlenir). Görev başına tek giden
-bağlantı, süreçte 16, bağlanma ≤ 30 sn. `bağlantıda "<ad>" için TLS
-istemcisi başlatmayı dene` rustls istemcisi; PKIX sonucu `doğrulandı` /
+bağlantı, süreçte 16, bağlanma ≤ 30 sn. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemcisi; PKIX sonucu `doğrulandı` /
 `doğrulama_hatası` ile açık, SPKI/sertifika/zincir SHA-256'ları DANE için.
-GB-166.
+GB-167.
 
 Kanıt: `yetkinlik/giden.rs` (7 birim: joker biçimi, SSRF aralıkları
 `yerel-ağ` açıkken, kapı, tek çözümleme, karışık yanıt, mta-sts jokeri),
@@ -2590,10 +2590,43 @@ kök yokken bilinmeyen yayıncı, joker yerel adrese soket açmaz, düz bağlant
 parça/aktarım/süreli okuma).
 
 Açık: Dilim 2 (DKIM imza ilkeli, `kriptografi`, credential anahtar,
-K-390 B2 doğrulayıcısıyla tek kripto yüzeyi); bağlantı yolunun B1a DNS
-çözücüsüne bağlanması (#98 birleşince); `x509_spki` fuzz hedefinin RC
+K-390 B2 doğrulayıcısıyla tek kripto yüzeyi); `x509_spki` fuzz hedefinin RC
 kapısına alınması; gerçek internette DANE/MTA-STS teslim kanıtı (insan adımı);
 ürün reproducer'ı ve provenance (ZeeMail'den bekleniyor).
+
+## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
+
+**Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2 sürüyor.** Kaynak:
+etkin dogfood ürünü `urun-h` (ZeeMail) güvenlik kapsamı (oltalama/BEC/MITM)
+ve korpus ZM-R006/ZM-R007 (ürün commit `7f7b1fe`). Merkez kararı 23 Kasım
+2026 "Sırayla aç". Freeze sınıfı `dogfood-change`; iki PR: B1 (DNS) ve B2
+(A-R temizliği, SPF, DKIM doğrulama, DMARC, PSL).
+
+**B1a kararı ([ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
+[spec/31 §1](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Yeni `dns`
+yetkinliği + `dns_çözücü` (yalnız loopback) + `dns_dnssec "zorunlu"|"bilgi"`
+(P015; `zorunlu` açılışta kök SOA AD=1 sınar, aksi çıkış 2). Yüzey ürün
+reproducer'ının biçimi: `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı
+dene` → kayıt başına satırlı `Sonuç<Metin sözlük listesi>`; NXDOMAIN/NODATA
+boş liste, geçici hata C033 (`tür`). Üretimde yeni crate yok: kendi sınırlı
+`dns_teli` ayrıştırıcımız (unsafe yok, 64/128 kayıt, işaretçi yalnız geriye
+≤ 16, TXT/TLSA ≤ 4 KiB, CNAME ≤ 8); `hickory-proto` yalnız dev/fuzz kâhini
+(Zee ⊆ hickory, 40.000 bozulmuş paket); yeni `dns_yaniti` fuzz hedefi RC
+kapısında. Stub: getrandom kimlik + rastgele kapı, eşleşmeyen paket atılır,
+TC→TCP, 5 sn / son tarih kalanı, önbellek yok. IO izi `dns_sorgula`. GB-166.
+
+Kanıt: `dns_teli.rs` birim testleri (sınırlar, SERVFAIL hiçbir yolda boş
+değil, CNAME döngüsü), `dns_kahin_testi.rs`, `dns_testi.rs` (hermetik
+çözücü, yetkinlik, P015, IO izi replay), `dns_surec_testi.rs` (gerçek `dil`
+süreci + sahte UDP/TCP çözücü: eşleşmeyen paket, TC→TCP, SERVFAIL/bozuk/65
+kayıt, zaman aşımı, `zorunlu` açılış sınaması), dogfood
+`zm-r006-mx-sorgusu-yok` (K-390 öncesi S015).
+
+Açık (B1): Zee yüzeyinde NXDOMAIN/NODATA ayrımı ve CNAME kanonik adı (B4);
+`dil dene` statik bölge dosyası; gerçek unbound entegrasyon koşusu; PTR;
+U-label; `dns_yaniti` 30–60 dk RC kampanyası sonraki RC adayında.
+Sıradaki: B1b PSL veri dosyası (ZM-F025) + B2a A-R temizliği + B2b DKIM +
+B2c SPF + B2d DMARC (ZM-R007).
 
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)
 

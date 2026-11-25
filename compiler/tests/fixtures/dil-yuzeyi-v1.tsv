@@ -135,10 +135,14 @@ kalip	GET	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	HEAD	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	HTTP	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	JSON	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	MX	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	PATCH	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	POST	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	PUT	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	TLS	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	TLSA	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	TXT	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	adres	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	adresi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	adresine	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	adıyla	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -207,6 +211,7 @@ kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	işlem	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kadar	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kalanı	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	kayıtlarını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kez	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kodlu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kodu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -240,6 +245,7 @@ kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	satırını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	sorgulamayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sözlüğünü	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	sürece	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	süreç	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -345,6 +351,7 @@ profil	derleyici-yerel-launcher	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'laun
 profil	dinleyiciler-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dinleyiciler"
 profil	dispatcher-service-calendar	aktif	0.8.0-dev	scripts/dispatcher-service.py	--calendar
 profil	dispatcher-service-run	aktif	0.8.0-dev	scripts/dispatcher-service.py	--run
+profil	dns-bildirimi-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dns_çözücü"
 profil	e-posta-ek-turleri-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "e_posta_ek_türleri"
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
 profil	genis-govde-rotalari-v1	aktif	1.0.0-dev	compiler/src/proje/govde_siniri.rs	"geniş_gövde_rotaları"
@@ -382,6 +389,7 @@ profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapa
 profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
 profil	yetkinlik-ag-dinleyici	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::AgDinleyici => "ağ-dinleyici",
+profil	yetkinlik-dns	aktif	1.0.0-dev	compiler/src/yetkinlik.rs	Self::Dns => "dns",
 profil	zee-ayar.isci-sayisi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"isci-sayisi"
 profil	zee-ayar.saglik-port	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"saglik-port"
 profil	zee-ayar.systemd-soketi	aktif	1.0.0-dev	compiler/src/cli/ayar.rs	"systemd-soketi"

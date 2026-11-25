@@ -18,6 +18,7 @@ Kararlı proje yazımları şunlardır:
 | `web-oturumu` | Oturum, rol, çerez ve CSRF adaptörü |
 | `kriptografi` | Parola/kriptografi adaptörü; K-210 eki 3 ile gizli değer şifreleme (`gizli_anahtar_değişkeni` ortam değişkeni, `zee1:` XChaCha20-Poly1305) |
 | `veritabanı` | Bildirilmiş exact loopback PostgreSQL adaptörü |
+| `dns` | Bildirilmiş loopback doğrulayıcı çözücüye MX/TXT/TLSA/A/AAAA sorgusu (K-390, spec/31 §1) |
 
 `proje.dil` içindeki `yetkinlikler` ve `ağ_hedefleri` yoksa boş listedir.
 Değerler tekil olmak ZORUNDADIR. `yerel-ağ` → `ağ`, `web-oturumu` →
@@ -27,6 +28,11 @@ tersi birlikte bulunabilir. İhlal P015'tir.
 `veritabanı`, bildirimsiz tek dosya geliştirici profilinde örtük açılmaz.
 Proje hedefi, bağlantı sırrı ve migration kökü spec/25'teki üçlü bildirime
 bağlıdır; outbound `ağ` allowlist'i yerine geçmez.
+
+`dns` de bildirimsiz profilde örtük açılmaz; `dns_çözücü` (yalnız loopback)
+ve `dns_dnssec` bildirimiyle birlikte gelir (spec/31 §1.1). Çözücüye giden
+53 kapısı trafiği `ağ_hedefleri` origin'i değildir ve `ağ` yetkinliği
+istemez; `ağ` da DNS sorgu yüzeyini açmaz.
 
 ## Origin ve IP kuralları (TANIMLI)
 

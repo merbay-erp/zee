@@ -59,6 +59,30 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez; mevcut programlar ve `ağ_hedefleri` değişmeden çalışır.
   Bağlantı kalıpları artık `ağ-dinleyici` yerine `ağ` ile de derlenir.
 
+- **DNS sorgusu: MX, TXT, TLSA ve adres kayıtları (K-390):** Zee programı
+  artık aynı makinedeki doğrulayıcı DNS çözücüsüne (ör. unbound) sorgu
+  yapabilir:
+  `kayıtlar "ornek.test" için MX kayıtlarını sorgulamayı dene olsun`.
+  `TXT`, `TLSA` ve `adres` (önce A, sonra AAAA) aynı kalıpla sorulur.
+  Başarıda kayıt başına bir satır gelir: her satırda `ad`, `ttl`,
+  `doğrulanmış`; MX'te `öncelik` ve `hedef` (önceliğe göre sıralı), TXT'de
+  `metin`, adreste `aile` ve `adres`, TLSA'da `kullanım`, `seçici`, `eşleme`,
+  `veri`. Alan ya da kayıt yoksa liste boştur. Başarısızlık yalnız geçici
+  hatadır (yeni C033, `tür`: `zaman_aşımı`, `sunucu_hatası`, `ret`, `ağ`,
+  `boyut_aşımı`, `bütçe`, `geçersiz_ad`, `bozuk_yanıt`) — "kayıt yok"
+  sayılmaz; posta akışında yeniden dene yanıtı verin. `proje.dil`'de üç
+  satır birlikte gerekir: `yetkinlikler` içinde `"dns"`,
+  `dns_çözücü "127.0.0.1:53" olsun` (yalnız aynı makine) ve
+  `dns_dnssec "zorunlu" olsun` ya da `"bilgi"`. `zorunlu` kipte süreç
+  açılışta çözücünün DNSSEC doğruladığını sınar, doğrulamıyorsa başlamaz;
+  `doğrulanmış` yalnız bu kipte `doğru` olabilir. Sorgu en çok 5 saniye
+  (ya da `içinde` bloğunun kalanı) sürer; sonuçlar önbelleğe alınmaz.
+  Derleyici yeni bir dış kitaplık almadı; DNS yanıtları kendi sınırlı
+  ayrıştırıcısıyla okunur ve bağımsız bir uygulamayla karşılaştırılarak
+  sınanır.
+
+  **Göç:** Gerekmez; `dns` bildirmeyen projeler değişmez. Bildirimsiz tek
+  dosya çalıştırmada ve `--güvenli` kipte DNS sorgusu kapalıdır.
 - **Uzun Türkçe iletiler ve “gövde çok büyük” sayfası (K-391):**
   `çok_parçalı_yükleme doğru olsun` yazan projede `enctype="multipart/form-data"`
   formu artık dosya parçası olmadan da gönderilebilir; metin alanları sıradan

@@ -33,6 +33,7 @@ değildir. Zee'nin kendi paket bağımlılıkları (`proje.dil`, exact uzak sür
 | Native | `r2d2`, `r2d2_postgres` | Sınırlı bağlantı havuzu |
 | Unix | `libc` | İşletim sistemi/metadata adaptörleri |
 | Yalnız test/fuzz | `httparse` (`=1.10.1`) | K-362 bağımsız HTTP istek kâhini; `ureq-proto` ile aynı kilitli sürüm, ikiliye girmez |
+| Yalnız test/fuzz | `hickory-proto` (`=0.26.3`, `default-features = false`, `std`) | K-390/ADR-169 bağımsız DNS tel biçimi kâhini (Zee ⊆ hickory); dev/fuzz kilidine +46 paket (icu4x/idna/url/tracing zinciri) ekler, derleyici ikilisine ve üretim ağacına girmez. DNS'in üretim ayrıştırıcısı kendi `dns_teli` modülüdür; cargo-deny bans/lisans/kaynak/RustSec 24 Kasım 2026'da temiz |
 
 Exact geçişli sürümler ve checksum'lar Cargo.lock'tan alınır; manifestteki
 SemVer aralığı `--locked` çalışmada bağımlılık yükseltmez. Kriptografi, TLS

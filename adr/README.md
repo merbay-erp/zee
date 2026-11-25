@@ -173,4 +173,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-166 | [Liste sıra erişimi: dar sıra eki tokeni ve ödünç alan O(1) okuma](166-liste-sira-erisimi.md) | **kabul** (K-386, RFC-0029) |
 | ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1) |
 | ADR-168 | [İstek boyut sınırları: multipart metin alanı, gövde aşımı rotası, rota bazlı gövde ve SQL parametre tavanı](168-istek-boyut-sinirlari-ve-govde-asimi.md) | **kabul** (K-391/GB-164, GB-165; Dilim 1 ve 2 uygulandı) |
+| ADR-169 | [DNS stub çözücü, loopback AD biti ve kendi tel biçimi sınırı](169-dns-stub-cozucu-ve-tel-bicimi-siniri.md) | **kabul** (K-390/GB-166) |
 | ADR-173 | [Giden TCP, `ağ_hedefleri` `tcp://` politikası ve istemci STARTTLS](173-giden-tcp-ve-istemci-starttls.md) | **kabul** (K-397 Dilim 1, RFC-0044 B4a) |
