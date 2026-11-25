@@ -3071,6 +3071,93 @@ fn guvenilir_proxy_esi_mi(es: std::net::SocketAddr) -> bool {
     es.ip().is_loopback()
 }
 
+/// K-400: deneysel web'in reddettiği Host'a ve operatöre verilen öneri.
+const DENEYSEL_HOST_RET: &str = "deneysel web yalnız localhost Host'una yanıt verir (localhost, *.localhost, 127.0.0.0/8, [::1]); yayın için `--web-proxy https://<alan> --web-worker-port <kapı>` kullanın";
+const DENEYSEL_URETIM_ONERISI: &str = "üretim için `dil çalıştır --web-proxy https://<alan> --web-worker-port <kapı> [--web-isci-sayisi N --web-systemd-soketi]` kullanın";
+
+/// K-400: Host otoritesi (isteğe bağlı kapıyla) loopback adı mı? `localhost`,
+/// `*.localhost` (RFC 6761), noktalı ondalık 127.0.0.0/8 ve `[::1]` kabul;
+/// başka her ad (DNS rebinding'de saldırganın alanı, tünelin public adı) ret.
+fn deneysel_host_yerel_mi(host: &str) -> bool {
+    fn kapi_gecerli(kapi: &str) -> bool {
+        !kapi.is_empty()
+            && kapi.len() <= 5
+            && kapi.bytes().all(|b| b.is_ascii_digit())
+            && kapi.parse::<u32>().is_ok_and(|k| (1..=65535).contains(&k))
+    }
+    if let Some(kalan) = host.strip_prefix('[') {
+        let Some((ip, son)) = kalan.split_once(']') else {
+            return false;
+        };
+        let kapi_uygun = son.is_empty() || son.strip_prefix(':').is_some_and(kapi_gecerli);
+        return kapi_uygun
+            && ip
+                .parse::<std::net::Ipv6Addr>()
+                .is_ok_and(|ip| ip.is_loopback());
+    }
+    let ad = match host.split_once(':') {
+        Some((ad, kapi)) if kapi_gecerli(kapi) => ad,
+        Some(_) => return false,
+        None => host,
+    };
+    if let Ok(ip) = ad.parse::<std::net::Ipv4Addr>() {
+        return ip.is_loopback();
+    }
+    let ad = ad.to_ascii_lowercase();
+    let etiketler_gecerli = ad
+        .split('.')
+        .all(|e| !e.is_empty() && e.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-'));
+    etiketler_gecerli && (ad == "localhost" || ad.ends_with(".localhost"))
+}
+
+/// K-400: deneysel web isteği yalnız tek ve loopback Host'la kabul edilir.
+fn deneysel_istegini_denetle(istek: &HttpIstekBasligi<'_>) -> Result<(), (u16, &'static str)> {
+    let host = tek_http_basligi(istek, "Host").ok_or((400, "tek bir Host başlığı gerekli"))?;
+    if deneysel_host_yerel_mi(host) {
+        Ok(())
+    } else {
+        Err((421, DENEYSEL_HOST_RET))
+    }
+}
+
+/// K-400: ilk Host reddinde süreç başına bir kez operatör uyarısı (Host
+/// değeri saldırgan girdisidir, yazılmaz).
+fn deneysel_host_reddini_gunlukle() {
+    static UYARILDI: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    if !UYARILDI.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "UYARI: deneysel web localhost dışı Host taşıyan isteği 421 ile reddetti (DNS rebinding ya da proxy/tünel arkasında yayın denemesi); {DENEYSEL_URETIM_ONERISI}."
+        );
+    }
+}
+
+/// K-400: loopback dışı eşe verilen 403 iletisi kipe göre seçilir.
+fn loopback_disi_es_mesaji(https: bool) -> &'static str {
+    if https {
+        "güvenilir proxy bağlantısı loopback üzerinden gelmeli"
+    } else {
+        "deneysel web yalnız loopback bağlantısı kabul eder"
+    }
+}
+
+/// K-400: deneysel web isteği Host denetiminden geçmezse ham hata yanıtını
+/// yazar ve `true` döner; çağıran bağlantıyı rotaya ulaştırmadan bırakır.
+fn deneysel_istegi_reddet(
+    akis: &mut impl WebTasima,
+    baslik: &HttpIstekBasligi<'_>,
+    https: bool,
+) -> bool {
+    let Err((durum, mesaj)) = deneysel_istegini_denetle(baslik) else {
+        return false;
+    };
+    if durum == 421 {
+        deneysel_host_reddini_gunlukle();
+    }
+    let head = baslik.yontem().eq_ignore_ascii_case("HEAD");
+    ham_http_hatasi_gonder(akis, durum, mesaj, head, https);
+    true
+}
+
 fn guvenli_proxy_istegini_denetle(
     istek: &HttpIstekBasligi<'_>,
     origin: &AgHedefi,
@@ -3368,6 +3455,7 @@ fn http_durum_aciklamasi(durum: u16) -> &'static str {
         401 => "Unauthorized",
         403 => "Forbidden",
         404 => "Not Found",
+        421 => "Misdirected Request",
         405 => "Method Not Allowed",
         413 => "Payload Too Large",
         426 => "Upgrade Required",
@@ -4678,14 +4766,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
             let mut akis = web_metrikleri::Akis::new(akis, self.metrik.clone());
             let https = self.guvenli_proxy_origin().is_some();
-            if https && !guvenilir_proxy_esi_mi(es) {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    403,
-                    "güvenilir proxy bağlantısı loopback üzerinden gelmeli",
-                    false,
-                    true,
-                );
+            // K-400: dinleyici yalnız loopback'e bağlıdır; eş denetimi iki kipte
+            // de derinlemesine savunmadır (deneysel kipte başlıklar okunmadan).
+            if !guvenilir_proxy_esi_mi(es) {
+                let mesaj = loopback_disi_es_mesaji(https);
+                ham_http_hatasi_gonder(&mut akis, 403, mesaj, false, https);
                 continue;
             }
             let baglanti_izni = match dil::kaynak_sinirlari::baglanti_izni_al() {
@@ -4719,6 +4804,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     continue;
                 }
             };
+            if self.web_modu == WebModu::Deneysel
+                && deneysel_istegi_reddet(&mut akis, &baslik, https)
+            {
+                continue;
+            }
             let Some((ham, yukleme, yorum_siniri)) = self.istek_zarfini_kur(
                 &mut akis,
                 &baslik,
@@ -5484,6 +5574,17 @@ fn calistir_komutu(girdi: &KaynakGirdisi) -> ExitCode {
 
 /// K-082: localhost web prototipi üretim korkuluğunu yalnız açık opt-in'le geçer.
 fn calistir_deneysel_web_komutu(girdi: &KaynakGirdisi) -> ExitCode {
+    // K-400: systemd soket devri üretim yoludur; deneysel kip onu almaz ve
+    // sessizce 127.0.0.1'e geri dönmek yerine açıkça reddeder. Adlı dinleyici
+    // bildirimli projede devir K-376 doğrulamasına aittir.
+    if girdi.dinleyiciler().is_empty()
+        && (std::env::var_os("LISTEN_FDS").is_some() || std::env::var_os("LISTEN_PID").is_some())
+    {
+        eprintln!(
+            "--deneysel-web systemd soket devri almaz; dinleyici yalnız 127.0.0.1'e bağlanır. {DENEYSEL_URETIM_ONERISI}"
+        );
+        return ExitCode::from(2);
+    }
     eprintln!(
         "UYARI: deneysel web yüzeyi yalnız localhost eğitim/prototipi içindir; üretim güvenlik sözleşmesi değildir."
     );
@@ -6114,6 +6215,99 @@ mod web_profili_testleri {
             varsayilan,
             "yalnız Cache-Control değişir; nosniff/CSP/HSTS korunur"
         );
+    }
+
+    /// K-400 (spec/12 §5a): deneysel web Host'u yalnız loopback adıdır.
+    #[test]
+    fn deneysel_web_yalniz_loopback_host_adini_kabul_eder() {
+        for host in [
+            "localhost",
+            "LocalHost:8126",
+            "app.localhost",
+            "a-b.c.localhost:3000",
+            "127.0.0.1",
+            "127.0.0.1:8126",
+            "127.9.8.7:80",
+            "[::1]",
+            "[::1]:8126",
+            "localhost:65535",
+        ] {
+            assert!(deneysel_host_yerel_mi(host), "{host}");
+        }
+        for host in [
+            "",
+            "panel.example",
+            "localhost.example",
+            "xlocalhost",
+            ".localhost",
+            "a..localhost",
+            "localhost.",
+            "127.0.0.1.nip.io",
+            "evil.example:8126",
+            "localhost:0",
+            "localhost:65536",
+            "localhost:",
+            "localhost:80:80",
+            "localhost:+80",
+            "0.0.0.0",
+            "10.0.0.1",
+            "192.168.1.10:8126",
+            "127.1",
+            "2130706433",
+            "[::]",
+            "[::ffff:127.0.0.1]",
+            "[2001:db8::1]:80",
+            "[::1",
+            "[::1]x",
+            "local host",
+        ] {
+            assert!(!deneysel_host_yerel_mi(host), "{host}");
+        }
+    }
+
+    /// K-400: istek düzeyinde tek Host şartı, yabancı Host 421 + üretim önerisi.
+    #[test]
+    fn deneysel_istek_denetimi_host_eksikse_400_yabanci_hostta_421_doner() {
+        let denetle = |ham: &str| {
+            let baslik = HttpIstekBasligi::ayristir(ham.as_bytes()).unwrap();
+            deneysel_istegini_denetle(&baslik)
+        };
+        assert!(denetle(
+            "GET / HTTP/1.1\r\nHost: 127.0.0.1:8126\r\nX-Forwarded-For: 192.0.2.9\r\n\r\n"
+        )
+        .is_ok());
+        assert!(denetle("GET / HTTP/1.1\r\nHost: localhost:3000\r\n\r\n").is_ok());
+        assert_eq!(denetle("GET / HTTP/1.1\r\n\r\n").unwrap_err().0, 400);
+        assert_eq!(
+            denetle("GET / HTTP/1.1\r\nHost: localhost\r\nHost: localhost\r\n\r\n")
+                .unwrap_err()
+                .0,
+            400
+        );
+        let (durum, mesaj) =
+            denetle("GET / HTTP/1.1\r\nHost: rebind.example:8126\r\n\r\n").unwrap_err();
+        assert_eq!(durum, 421);
+        assert!(mesaj.contains("--web-proxy https://"), "{mesaj}");
+        assert!(mesaj.contains("--web-worker-port"), "{mesaj}");
+        assert_eq!(http_durum_aciklamasi(421), "Misdirected Request");
+    }
+
+    /// K-400: deneysel kip üretim dinleyici bayraklarıyla birleşmez.
+    #[test]
+    fn deneysel_web_uretim_dinleyici_bayraklariyla_birlesmez() {
+        for ek in [
+            &["--web-worker-port", "18091"][..],
+            &["--web-oran-deposu", "bellek"][..],
+            &["--web-proxy", "https://panel.example"][..],
+        ] {
+            let mut a: Vec<String> = ["çalıştır", "--deneysel-web"]
+                .into_iter()
+                .chain(ek.iter().copied())
+                .chain(["uygulama.dil"])
+                .map(String::from)
+                .collect();
+            assert!(web_modunu_ayikla(&mut a).is_err(), "{ek:?}");
+        }
     }
 
     #[test]

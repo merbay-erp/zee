@@ -276,6 +276,18 @@ tek başına bildirimi, loopback dışı/adlı/0 kapılı çözücü ve bilinmey
 yürütülmeden `dns_dnssec zorunlu:` iletisiyle çıkış 2 verir. DNS sorgu
 hataları C033 kodlu `Sonuç`tur. [Karar](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md).
 
+K-400: deneysel web (`--deneysel-web`) yeni tanı kodu üretmez. Loopback
+dışı Host taşıyan istek ham 421 `Misdirected Request` yanıtıdır (gövde üretim
+bayraklarını önerir, rota çalışmaz), eksik/yinelenen Host 400, loopback dışı
+eş 403'tür; ilk Host reddinde süreç başına bir kez, Host değerini yazmayan
+`UYARI: deneysel web localhost dışı Host…` operatör satırı düşer. systemd soket
+devri (`LISTEN_FDS`/`LISTEN_PID`) ile açılan deneysel süreç kaynak yürütülmeden
+`--deneysel-web systemd soket devri almaz` iletisiyle çıkış 2 verir. Çözüm:
+yayın için `dil çalıştır --web-proxy https://<alan> --web-worker-port <kapı>
+[--web-isci-sayisi N --web-systemd-soketi]`; yerelde tarayıcıyı
+`http://localhost:<kapı>` ya da `http://127.0.0.1:<kapı>` ile açın.
+[Karar](../adr/176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md).
+
 K-390 B1b: `kamu_son_ekleri` ve `kamu_son_ekleri_özeti` yalnız `dns`
 bildirimiyle ve birlikte geçerlidir; göreli olmayan ya da `..` içeren yol ve 64
 küçük harf onaltılık olmayan özet P015'tir (yeni proje tanı kodu yok). Dosya

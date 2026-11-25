@@ -10,6 +10,30 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Güvenlik
+
+- **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
+  (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
+  dinliyordu, ama gelen isteğin `Host` başlığına bakmıyordu. Bu yüzden
+  ziyaret edilen kötü niyetli bir site kendi alan adını 127.0.0.1'e çözdürüp
+  (DNS rebinding) yerel prototipinizin sayfalarını okuyabiliyor, public adı
+  koruyan bir tünel/proxy de deneysel sunucuyu sessizce internete
+  açabiliyordu. Artık deneysel kip yalnız `localhost`, `*.localhost`,
+  `127.x.x.x` ve `[::1]` Host'larını kabul eder; başka Host **421** alır ve
+  yanıt üretim bayraklarını önerir. systemd soket devriyle başlatılan
+  deneysel süreç çıkış 2 ile durur. Spec/12 §5a geliştirme ile üretim
+  kipinin ne garanti ettiğini ve neyin hiçbir zaman izinli olmadığını
+  normatif olarak yazar.
+
+  **Göç:** Tarayıcıda `http://localhost:<kapı>` ya da
+  `http://127.0.0.1:<kapı>` kullanan yerel akış ve Host'u `127.0.0.1:<kapı>`
+  yapan yerel ön kapılar (resmî sitenin `yerel-baslat.sh` önizlemesi dahil)
+  değişmeden çalışır. Deneysel sunucuyu başka bir adla ya da tünelle
+  açıyorsanız üretim yoluna geçin: `dil çalıştır --web-proxy https://<alan>
+  --web-worker-port <kapı>` (çok süreç için `--web-isci-sayisi N
+  --web-systemd-soketi`). Filo denetimi: üretimdeki hiçbir Zee web süreci
+  `--deneysel-web` kullanmıyor.
+
 ### Eklenenler
 
 - **Kurumsal alan ve DKIM imza doğrulaması (K-390):** posta sunucusu yazan
@@ -92,7 +116,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   parametre olduğunu söyler); parametre sözlük köküyle yeniden atandıktan
   sonra eski yazımla (`başlığ`) başvuru **A002** verir. İkisinde de yerel
   değere başka ad verin. Açık sınır: `kaybı`, `kaydı`, `şekli`, `ismi`,
-  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-177).
+  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-175).
 
 ### Düzeltilenler
 
