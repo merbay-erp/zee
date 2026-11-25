@@ -3,6 +3,30 @@
 # kuralıyla bağlanır, bağlantıyı denetlenen IP'ye sabitler. Teslim
 # politikası (MTA-STS enforce, DANE, fırsatçı TLS) Zee'dedir: doğrulanmamış
 # TLS enforce kipinde teslim edilmez; düz metne düşme yalnız ilke yokken.
+# MX → IP yolu K-390 B1a çözücüsündendir (ADR-169): IP değişmeziyle bağlanma
+# ikinci bir ad çözümü yapmaz, aynı public IP denetiminden geçer (ADR-173).
+
+işlem ilk mx adresini bul
+    alanı al
+    yanıt alan için MX kayıtlarını sorgulamayı dene olsun
+    bulunan "" olsun
+    yanıt başarılıysa
+        mxler yanıtın değeri olsun
+        mxlerdeki her mx için
+            bulunan "" e eşitse
+                hedef mxin "hedef" değeri olsun
+                cevap hedef için adres kayıtlarını sorgulamayı dene olsun
+                cevap başarılıysa
+                    adresler cevabın değeri olsun
+                    adreslerdeki her satır için
+                        bulunan "" e eşitse
+                            ip satırın "adres" değeri olsun
+                            aile satırın "aile" değeri olsun
+                            aile "ipv6" ya eşitse
+                                bulunan "[" ile ip ile "]:25" olsun
+                            değilse
+                                bulunan ip ile ":25" olsun
+    bulunan döndür
 
 işlem teslim et
     adresi al
@@ -59,5 +83,7 @@ işlem teslim et
     bağlantıyı kapat
     "2.0.0 teslim edildi" döndür
 
+mx_adresi "alici.ornek.test" için ilk mx adresini bul olsun
+mx_adresi yaz
 ilke "https://mta-sts.alici.ornek.test/.well-known/mta-sts.txt" adresinden gelen yanıt olsun
 ilke yaz

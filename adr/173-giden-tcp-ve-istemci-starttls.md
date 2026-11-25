@@ -133,10 +133,12 @@ giden TCP yüksek riskli bir yüzeydir: SSRF ve DNS yeniden bağlama bu kararın
 - Güvenlik sınırı GB kaydıyla izlenir. Kalan riskler: public internette
   keyfî bir 25 kapısına bağlanma (hizmetin işi; oran ürün kuyruğunda) ve
   ürünün `doğrulandı` alanını okumaması (ürün testleri).
-- Ad çözümlemesi işletim sisteminin engelleyen çözücüsüyle yapılır; süresi
-  OS'a bağlıdır. ZeeMail MX'i B1a çözücüsüyle IP'ye çözüp IP verir.
-  Bağlantı yolunun B1a çözücüsüne bağlanması #98 birleşince ele alınır
-  (açık).
+- Ürün yolu MX → IP → bağlanmadır: MX ve adres kayıtları K-390 B1a
+  loopback doğrulayıcı çözücüsünden (ADR-169) gelir, ürün `"<ip>:25"` ya da
+  `"[<ipv6>]:25"` verir. IP değişmezi ikinci bir ad çözümü yapmaz ve aynı
+  public IP denetiminden geçer (`urun-h/giden-teslim` kesiti). Host adı
+  verilirse çözüm işletim sisteminin engelleyen çözücüsüyle yapılır; süresi
+  OS'a bağlıdır, yine bağlanma bütçesiyle sınırlıdır.
 - Fuzz: `x509_spki` hedefi adaydır. Yürüyücü saldırgan baytını yalnız
   rustls/webpki kabul ettikten sonra görür; birim testleri kesik, bozuk,
   kanonik olmayan ve rastgele çevrilmiş DER'i kapsar. RC kapısına alınması

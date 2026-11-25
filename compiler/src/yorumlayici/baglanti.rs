@@ -17,8 +17,8 @@
 //! bağlanmayı dene` host'ta `ağ_hedefleri` ve IP politikasından geçer; başarıda
 //! bağlantı o görevin bağlantısı olur ve yukarıdaki bütün kalıplar onun
 //! üzerinde çalışır. Görev başına aynı anda bir giden bağlantı vardır;
-//! dinleyici görevi giden bağlantı açamaz. `bağlantıda "<ad>" için TLS
-//! istemcisi başlatmayı dene` istemci STARTTLS'idir ve PKIX sonucunu açık
+//! dinleyici görevi giden bağlantı açamaz. `bağlantıda TLS istemcisi
+//! başlatmayı dene "<ad>" ile` istemci STARTTLS'idir ve PKIX sonucunu açık
 //! alanla bildirir.
 
 use super::*;

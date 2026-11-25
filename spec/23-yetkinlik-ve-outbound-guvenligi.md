@@ -269,4 +269,4 @@ YASAK: STARTTLS yanıtından sonra ara bellekte şifresiz veri varsa yükseltme 
 
 ZORUNLU: `https://mta-sts.*` jokeri yalnız 443 kapısında, `mta-sts.` önekli DNS adında, birebir `/.well-known/mta-sts.txt` yolunda ve sorgusuz istekte eşleşir; çözülen IP `yerel-ağ` açık olsa bile public olmalıdır. Yönlendirme izlenmez (mevcut HTTP istemcisi kuralı).
 
-AÇIK: Ad çözümlemesi işletim sisteminin engelleyen çözücüsüyledir; giden yolun RFC-0044 B1a DNS çözücüsüne bağlanması, TLSA eşlemesi (ürün kodu), eşleme türü 0/2 özetleri ve gerçek internette teslim kanıtı bu bölümün sözü değildir.
+AÇIK: Host adı verilirse çözümleme işletim sisteminin engelleyen çözücüsüyledir (MX → IP yolu spec/31 §1 çözücüsüyle ürün kodundadır; IP değişmezi ikinci ad çözümü yapmaz); TLSA eşlemesi (ürün kodu), eşleme türü 0/2 özetleri ve gerçek internette teslim kanıtı bu bölümün sözü değildir.

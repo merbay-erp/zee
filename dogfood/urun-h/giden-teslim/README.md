@@ -35,13 +35,15 @@ yazılamıyordu. K-164 kataloğunda "işletim yüzeyi eksik" sınıfıdır
 
 ## Minimal değişiklik
 
-- [proje.dil](proje.dil) `ağ` yetkinliğini ve iki dar jokeri bildirir:
+- [proje.dil](proje.dil) `ağ` ve `dns` yetkinliklerini ve iki dar jokeri bildirir:
   `tcp://*:25` (yalnız 25, yalnız public IP) ve `https://mta-sts.*`
   (443, sabit yol).
 - [ana.dil](ana.dil) ürün teslim motorunun ağ tarafının küçültülmüş
   hâlidir: bağlanma, karşılama, EHLO, STARTTLS ilanı, istemci TLS ve enforce
   kipinde `doğrulandı` denetimi, zarf, dosyadan gövde aktarımı, QUIT. Sabit
-  MTA-STS URL'si derlemede joker kuralıyla denetlenir.
+  MTA-STS URL'si derlemede joker kuralıyla denetlenir. `ilk mx adresini
+  bul` ürünün MX → IP yoludur: MX ve adres kayıtları K-390 B1a loopback
+  doğrulayıcı çözücüsünden gelir, IPv6 `[...]:25` biçiminde verilir.
 - Bağlanma ve TLS kalıpları bu değişiklikten önce S015 verirdi; bağlantı
   kalıpları ise `ağ-dinleyici` isterdi.
 - Politika (hangi MX, enforce mi fırsatçı mı, DANE eşlemesi) ürünün Zee

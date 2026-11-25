@@ -226,11 +226,12 @@ Giden teslimin ağ tarafı **gerçekleşti**: K-397
 B4a) ile `"<ana>:<kapı>" adresine bağlanmayı dene` `ağ_hedefleri`
 `tcp://` tam hedefine ya da yalnız 25 kapısında `tcp://*:25` jokerine (yalnız
 public IP, tek çözümleme, denetlenen IP'ye sabitleme) giden TCP açar; A2/A2c
-bağlantı kalıpları bu bağlantıda çalışır. `bağlantıda "<ad>" için TLS
-istemcisi başlatmayı dene` rustls istemci STARTTLS'idir; PKIX sonucu açık
+bağlantı kalıpları bu bağlantıda çalışır. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemci STARTTLS'idir; PKIX sonucu açık
 alan, SPKI/sertifika özetleri DANE için. MTA-STS ilkesi `https://mta-sts.*`
-ile mevcut HTTP istemcisinden. **Açık:** B3 DKIM imza ilkeli (ADR-174,
-K-397 Dilim 2); bağlantı yolunun B1a DNS çözücüsüne bağlanması; gerçek
+ile mevcut HTTP istemcisinden. MX → IP yolu K-390 B1a çözücüsüdür; IP
+değişmeziyle bağlanma ikinci ad çözümü yapmaz. **Açık:** B3 DKIM imza ilkeli (ADR-174,
+K-397 Dilim 2); gerçek
 internette DANE/MTA-STS teslim kanıtı. V1 sözü değildir.
 
 Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
