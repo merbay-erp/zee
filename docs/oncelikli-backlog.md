@@ -2610,9 +2610,12 @@ ed25519-dalek diferansiyel, 20 000 bozulmuş SPKI), `posta_kimligi_testi.rs`
 (openssl 4.1 RSA 1024/2048/4096 SPKI+PKCS#1 ve Ed25519 vektörleri, 1023/4104
 bit, rsa-sha1, C034 türleri, RFC 6376 gövde özeti vektörleri, kurumsal alan, yetkinlik, IO izi replay,
 P015, gerçek süreçte özet uyuşmazlığı çıkış 2), dogfood
-`zm-r007-dkim-dogrulama-yok` (K-390 B2b öncesi S015).
+`zm-f043-dkim-dogrulama-yok` (K-390 B2b öncesi S015). Ürün kanıtı: ZeeMail
+`uctan-uca-dkim.sh` 11/11 (dil dalı `df41636`; RSA-2048/1024 ve Ed25519
+imzası Gelen'e; bozuk bh=/b=, iptal p=, olmayan seçici, rsa-sha1, imzasız
+taklit 550 5.7.1; DMARC p=reject).
 
-Açık: `dil dene` PSL
+Açık (bu PR'da kapanmıyor, K-390 sonrası): `dil dene` PSL
 yüklemesi, `psl`/DKIM anahtarı fuzz hedefleri, IDN kuralları, DMARCbis.
 Sıradaki: B2a başlık ayrıştırıcısı + A-R temizliği, B2c SPF, B2d DMARC.
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)

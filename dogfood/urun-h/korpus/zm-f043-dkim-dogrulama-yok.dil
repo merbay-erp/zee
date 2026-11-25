@@ -1,5 +1,6 @@
-# ZM-R007 — RFC-0044 B1b/B2b reproducer (ürün H ZeeMail; ZM-F024, ZM-F025;
-# alan adı anonimleştirildi). Gelen iletide DMARC hizalaması için From
+# ZM-F043 — RFC-0044 B1b/B2b reproducer'ının anonim aynası (ürün H ZeeMail
+# commit 1fe6a52, zm-f043-yeniden-uretim.dil SHA-256 169b9baf…; ZM-F024,
+# ZM-F025'e bağlı; alan adı anonimleştirildi). Gelen iletide DMARC hizalaması için From
 # alanının kurumsal alanı ve TXT'den alınan DKIM anahtarıyla imza doğrulaması
 # gerekir; kanonikleştirme ürünün Zee kodudur. K-390 B2b öncesi S015 (kalıp
 # yok); ADR-175 ile ilkel imza tutmazsa `doğrulandı=yanlış`, politika dışı
