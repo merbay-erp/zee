@@ -5,7 +5,7 @@
 - **İlgili kayıt:** K-396, ZM-F040, [RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md)
   Aşama A2d, ADR-165 (bağlantı yüzeyi, A2c eki), ADR-167 (RFC-0043 Dilim 1
   `kodlama`), ADR-170 (paylaşılan veri kökü), ADR-059 (core freeze),
-  ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), spec/12 §9, GB-170
+  ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), spec/12 §9, GB-171
 
 ## Bağlam
 
