@@ -3,7 +3,10 @@
 use std::collections::BTreeSet;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
+mod giden;
 mod origin;
+pub use giden::{GidenHedefHatasi, MTA_STS_YOLU};
+use giden::{MTA_STS_JOKERI, TCP_JOKERI};
 use origin::ayristir;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -71,6 +74,8 @@ pub enum AgSemasi {
     Smtp,
     /// K-210: implicit TLS SMTP (465).
     Smtps,
+    /// K-397 (ADR-173): ham giden TCP; kapı zorunlu, varsayılan yok.
+    Tcp,
 }
 
 impl AgSemasi {
@@ -80,15 +85,18 @@ impl AgSemasi {
             Self::Https => "https",
             Self::Smtp => "smtp",
             Self::Smtps => "smtps",
+            Self::Tcp => "tcp",
         }
     }
 
+    /// `tcp://` için 0: kapı her zaman açıkça yazılır ve yazımda görünür.
     const fn varsayilan_kapi(self) -> u16 {
         match self {
             Self::Http => 80,
             Self::Https => 443,
             Self::Smtp => 587,
             Self::Smtps => 465,
+            Self::Tcp => 0,
         }
     }
 
@@ -109,7 +117,7 @@ pub struct AgHedefi {
 
 impl AgHedefi {
     pub fn bildirimden(yazim: &str) -> Result<Self, String> {
-        let (hedef, kuyruk) = ayristir(yazim)?;
+        let (hedef, kuyruk) = ayristir(yazim, true)?;
         if !kuyruk.is_empty() && kuyruk != "/" {
             return Err("ağ hedefi yol, sorgu veya parça taşıyamaz; yalnız origin yaz".into());
         }
@@ -117,7 +125,7 @@ impl AgHedefi {
     }
 
     pub fn istekten(yazim: &str) -> Result<Self, String> {
-        let (hedef, _) = ayristir(yazim)?;
+        let (hedef, _) = ayristir(yazim, false)?;
         Ok(hedef)
     }
 
@@ -144,6 +152,11 @@ impl AgHedefi {
 
     pub fn konagi(&self) -> &str {
         &self.konak
+    }
+
+    /// K-397: `tcp://*:25` ya da `https://mta-sts.*` bildirimi.
+    pub fn joker_mu(&self) -> bool {
+        self.konak == TCP_JOKERI || self.konak == MTA_STS_JOKERI
     }
 
     pub const fn kapisi(&self) -> u16 {
@@ -278,20 +291,8 @@ impl YetkinlikPolitikasi {
     }
 
     pub fn ag_istegini_denetle(&self, url: &str) -> Result<AgHedefi, String> {
-        self.gerektir(Yetkinlik::Ag)?;
-        let hedef = AgHedefi::istekten(url)?;
-        match &self.ag_hedefleri {
-            AgHedefKapsami::Kapali => Err("outbound ağ hedefleri kapalı".into()),
-            AgHedefKapsami::Yalniz(hedefler) if hedefler.contains(&hedef) => Ok(hedef),
-            AgHedefKapsami::Yalniz(_) => Err(format!(
-                "{} proje bildirimindeki `ağ_hedefleri` listesinde yok",
-                hedef.yazimi()
-            )),
-            AgHedefKapsami::GenelInternet if hedef.semasi().sifreli() => Ok(hedef),
-            AgHedefKapsami::GenelInternet => Err(
-                "bildirimsiz geliştirici ağında yalnız https:// ve smtps:// kullanılabilir".into(),
-            ),
-        }
+        self.ag_istegini_ayrintili_denetle(url)
+            .map(|(hedef, _)| hedef)
     }
 
     pub fn alt_politikayi_denetle(&self, alt: &Self) -> Result<(), String> {
@@ -352,7 +353,7 @@ fn yerel_ip_mi(ip: IpAddr) -> bool {
     }
 }
 
-fn public_ip_mi(ip: IpAddr) -> bool {
+pub(super) fn public_ip_mi(ip: IpAddr) -> bool {
     match ip {
         IpAddr::V4(ip) => public_ipv4_mi(ip),
         IpAddr::V6(ip) => public_ipv6_mi(ip),

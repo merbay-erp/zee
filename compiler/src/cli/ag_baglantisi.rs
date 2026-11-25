@@ -15,6 +15,13 @@
 //! taşımadıysa). Dosyadan bağlantıya aktarım giden tamponu geri basınçla
 //! doldurur. İkisinin de süresi çağrının başından mutlak
 //! `boşta + bayt / AKIS_ASGARI_HIZI` bütçesidir.
+//!
+//! K-397 (RFC-0044 B4a, ADR-173): giden bağlantılar aynı tabloya girer.
+//! Hedef ve IP politikası `YetkinlikPolitikasi::giden_tcp_hedefini_coz` ile
+//! tek çözümlemede denetlenir, soket yalnız dönen adrese açılır (yeniden
+//! bağlama yok). Bağlanma `min(Zee son tarihi, 30 sn)`; süreç başına en çok
+//! `AZAMI_GIDEN_BAGLANTI` açık giden bağlantı. İstemci STARTTLS'i sunucu
+//! yükseltmesiyle aynı tampon kuralını izler.
 
 use super::ag_tls::Kanal;
 use super::web_yukleme::{
@@ -97,6 +104,8 @@ struct Baglanti {
     el_sikisma: Option<(Instant, u16, u16)>,
     /// STARTTLS el sıkışması sürüyor.
     yukseltiliyor: bool,
+    /// K-397: giden bağlantı (dinleyiciden kabul edilmedi).
+    giden_mi: bool,
     /// K-384: sürmekte olan blok; düşünce yarım dosya silinir.
     blok: Option<AcikBlok>,
     /// K-384: son tamamlanan blok dosyası; sonraki blokta ya da bağlantı
@@ -287,7 +296,8 @@ impl Reaktor {
                 continue;
             }
             let uzak = es.ip();
-            let acik = self.baglantilar.len() + self.kapananlar.len();
+            let acik =
+                self.baglantilar.values().filter(|b| !b.giden_mi).count() + self.kapananlar.len();
             let ayni_uzak = self.baglantilar.values().filter(|b| b.uzak == uzak).count();
             if acik >= self.ayar.sinir || ayni_uzak >= self.ayar.uzak_adres_siniri {
                 self.reddet(akis);
@@ -323,6 +333,7 @@ impl Reaktor {
                     uzak,
                     okuyucu: SatirOkuyucu::yeni(self.ayar.satir_siniri),
                     giden: Vec::new(),
+                    giden_mi: false,
                     eof: false,
                     kirik: false,
                     bekleme: None,
@@ -685,7 +696,8 @@ impl Reaktor {
 
     /// STARTTLS: ara bellek boş olmalı (aksi hâlde bağlantı kapanır), düz
     /// giden tampon önce boşaltılır, sonra el sıkışma süresi içinde biter.
-    fn tls_baslat(&mut self, kimlik: u64) -> BaglantiSonucu {
+    /// K-397: `istemci` doluysa giden bağlantıda istemci oturumu (SNI).
+    fn tls_baslat(&mut self, kimlik: u64, istemci: Option<&str>) -> BaglantiSonucu {
         let bosta = self.ayar.bosta_suresi_ms;
         let Some(b) = self.baglantilar.get_mut(&kimlik) else {
             return BaglantiSonucu::hata("kapandı", "bağlantı kapatıldı");
@@ -694,16 +706,43 @@ impl Reaktor {
             if b.kanal.tls_mi() {
                 return BaglantiSonucu::hata("tls", dil::ag_satiri::ZATEN_TLS);
             }
-            if super::ag_tls::yapilandirma().is_none() {
-                return BaglantiSonucu::hata("tls", dil::ag_satiri::TLS_KIMLIGI_YOK);
+            match istemci {
+                Some(_) if !b.giden_mi => {
+                    return BaglantiSonucu::hata(
+                        "geçersiz",
+                        "TLS istemcisi yalnız giden bağlantıda başlatılır",
+                    )
+                }
+                Some(ad) if !dil::ag_satiri::tls_sunucu_adi_gecerli(ad) => {
+                    return BaglantiSonucu::hata(
+                        "geçersiz",
+                        "TLS sunucu adı ASCII DNS adı olmalı",
+                    )
+                }
+                None if b.giden_mi => {
+                    return BaglantiSonucu::hata(
+                        "geçersiz",
+                        "giden bağlantıda `bağlantıda TLS istemcisi başlatmayı dene \"<ad>\" ile` kullan",
+                    )
+                }
+                None if super::ag_tls::yapilandirma().is_none() => {
+                    return BaglantiSonucu::hata("tls", dil::ag_satiri::TLS_KIMLIGI_YOK);
+                }
+                _ => {}
             }
             if b.okuyucu.tamponlu_bayt() > 0 {
-                // CVE-2011-0411 sınıfı: STARTTLS ile aynı pakette gelen komut
-                // TLS sonrasına taşınamaz; tampon atılır, bağlantı kapanır.
+                // CVE-2011-0411 (sunucu) / CVE-2011-1575 (istemci) sınıfı:
+                // STARTTLS ile aynı pakette gelen düz metin TLS sonrasına
+                // taşınamaz; tampon atılır, bağlantı kapanır.
                 b.okuyucu.sifirla();
                 b.kirik = true;
                 self.kapat(kimlik);
-                return BaglantiSonucu::hata("tls", dil::ag_satiri::STARTTLS_ENJEKSIYONU);
+                let neden = if istemci.is_some() {
+                    dil::ag_satiri::STARTTLS_YANIT_ENJEKSIYONU
+                } else {
+                    dil::ag_satiri::STARTTLS_ENJEKSIYONU
+                };
+                return BaglantiSonucu::hata("tls", neden);
             }
             if !bosalt(&mut b.kanal, &mut b.giden) {
                 b.kirik = true;
@@ -721,7 +760,11 @@ impl Reaktor {
                 }
                 return BaglantiSonucu::Bekle;
             }
-            if let Err(neden) = b.kanal.tls_ac() {
+            let acildi = match istemci {
+                Some(ad) => b.kanal.tls_istemci_ac(ad),
+                None => b.kanal.tls_ac(),
+            };
+            if let Err(neden) = acildi {
                 return BaglantiSonucu::hata("tls", neden);
             }
             b.okuyucu.sifirla();
@@ -733,7 +776,11 @@ impl Reaktor {
             Ok(true) => {
                 b.yukseltiliyor = false;
                 b.bekleme = None;
-                BaglantiSonucu::Satir(b.kanal.tls_bilgisi())
+                if b.giden_mi {
+                    BaglantiSonucu::TlsIstemci(Box::new(b.kanal.istemci_kaydi()))
+                } else {
+                    BaglantiSonucu::Satir(b.kanal.tls_bilgisi())
+                }
             }
             Ok(false) if !b.zaman_asti => {
                 b.bekleme.get_or_insert(Bekleme {
@@ -1117,9 +1164,106 @@ impl Reaktor {
                 BaglantiSonucu::hata("dosya", "dosya yolu adaptörde çözülmedi")
             }
             BaglantiIslemi::Kapat => self.kapat(kimlik),
-            BaglantiIslemi::TlsBaslat => self.tls_baslat(kimlik),
+            BaglantiIslemi::TlsBaslat => self.tls_baslat(kimlik, None),
+            BaglantiIslemi::TlsIstemci(ad) => self.tls_baslat(kimlik, Some(ad)),
             BaglantiIslemi::Engelle(son) => self.engelle(kimlik, *son),
+            // Politika gerektirir; main.rs `giden_baglan` ile yönlendirir.
+            BaglantiIslemi::GidenBaglan(..) => {
+                BaglantiSonucu::hata("hedef_yasak", "giden bağlantı politikasız açılamaz")
+            }
         }
+    }
+
+    /// K-397: kapatılan giden bağlantıların tamponlarını ilerletir (giden
+    /// yalnız programda dinleyici beklemesi hiç koşmaz).
+    fn kapananlari_ilerlet(&mut self) {
+        let simdi = Instant::now();
+        self.kapananlar.retain_mut(|k| {
+            bosalt(&mut k.kanal, &mut k.giden)
+                && bekleyen_cikti(&k.kanal, &k.giden)
+                && simdi < k.son
+        });
+    }
+
+    /// K-397: `"<ana>:<kapı>"` giden hedefine bağlanır. Politika ve IP
+    /// denetimi tek çözümlemede; soket yalnız denetlenen adrese açılır.
+    pub(crate) fn giden_baglan(
+        &mut self,
+        politika: &dil::yetkinlik::YetkinlikPolitikasi,
+        adres: &str,
+        son_ms: Option<i64>,
+    ) -> BaglantiSonucu {
+        self.kapananlari_ilerlet();
+        let acik = self.baglantilar.values().filter(|b| b.giden_mi).count();
+        if acik >= dil::ag_satiri::AZAMI_GIDEN_BAGLANTI {
+            return BaglantiSonucu::hata("sınır", "süreç başına giden bağlantı sınırı dolu");
+        }
+        let hedef = match politika.giden_tcp_hedefini_coz(adres, |ad, kapi| {
+            use std::net::ToSocketAddrs;
+            (ad, kapi).to_socket_addrs().map(Iterator::collect)
+        }) {
+            Ok(hedef) => hedef,
+            Err(hata) => return BaglantiSonucu::hata(hata.tur, hata.mesaj),
+        };
+        let mut sure = Duration::from_millis(dil::ag_satiri::GIDEN_BAGLANMA_MS as u64);
+        if let Some(son) = son_ms {
+            let kalan = self.an(son).saturating_duration_since(Instant::now());
+            if kalan.is_zero() {
+                return BaglantiSonucu::hata("zaman_aşımı", "son tarih bağlanmadan doldu");
+            }
+            sure = sure.min(kalan);
+        }
+        let akis = match TcpStream::connect_timeout(&hedef, sure) {
+            Ok(akis) => akis,
+            Err(e) if e.kind() == ErrorKind::TimedOut => {
+                return BaglantiSonucu::hata(
+                    "zaman_aşımı",
+                    format!("{hedef} bağlanma süresi doldu"),
+                )
+            }
+            Err(_) => {
+                return BaglantiSonucu::hata(
+                    "bağlanamadı",
+                    format!("{hedef} bağlantıyı kabul etmedi"),
+                )
+            }
+        };
+        if akis.set_nonblocking(true).is_err() {
+            return BaglantiSonucu::hata("bağlanamadı", "soket engellemeyen kipe alınamadı");
+        }
+        let _ = akis.set_nodelay(true);
+        let yerel_kapi = akis.local_addr().map(|a| a.port()).unwrap_or(0);
+        let kimlik = self.sonraki;
+        self.sonraki += 1;
+        self.baglantilar.insert(
+            kimlik,
+            Baglanti {
+                kanal: Kanal::duz(akis),
+                dinleyici: "giden".into(),
+                uzak: hedef.ip(),
+                okuyucu: SatirOkuyucu::yeni(self.ayar.satir_siniri),
+                giden: Vec::new(),
+                giden_mi: true,
+                eof: false,
+                kirik: false,
+                bekleme: None,
+                zaman_asti: false,
+                el_sikisma: None,
+                yukseltiliyor: false,
+                blok: None,
+                blok_dosyasi: None,
+                okuma_kapali: false,
+                aktarim: None,
+            },
+        );
+        BaglantiSonucu::Giden(YeniBaglanti {
+            kimlik,
+            dinleyici: String::new(),
+            uzak_adres: uzak_yazimi(hedef.ip()),
+            uzak_kapi: hedef.port(),
+            yerel_kapi,
+            tls: false,
+        })
     }
 
     pub(crate) fn gunlukle(&self, kimlik: u64, neden: &str) {

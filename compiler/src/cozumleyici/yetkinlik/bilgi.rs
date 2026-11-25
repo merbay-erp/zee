@@ -1,15 +1,41 @@
 //! Yetkinlik gereksinimi biriktiricisi.
 use super::{blok_bilgisi, ifade_bilgisi, Konum};
 use crate::agac::Cumle;
-use crate::yetkinlik::Yetkinlik;
+use crate::intrinsic;
+use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
 use std::collections::BTreeMap;
 
 #[derive(Default)]
 pub(super) struct Bilgi {
     pub(super) yetkinlikler: BTreeMap<Yetkinlik, Konum>,
     pub(super) ag_istekleri: Vec<(String, Konum)>,
+    /// K-397: bağlantı kalıbının ilk konumu (`ağ-dinleyici` ya da `ağ` yeter).
+    pub(super) baglanti_islemi: Option<Konum>,
 }
 impl Bilgi {
+    pub(super) fn baglanti_islemi_ekle(&mut self, konum: Konum) {
+        self.baglanti_islemi = Some(self.baglanti_islemi.map_or(konum, |k| k.min(konum)));
+    }
+
+    /// Intrinsic'in tablo yetkinliği; K-397 bağlantı işlemleri ayrı biriktirilir.
+    pub(super) fn intrinsic_ekle(&mut self, kimlik: &str, konum: Konum) {
+        if intrinsic::baglanti_islemi_mi(kimlik) {
+            self.baglanti_islemi_ekle(konum);
+        } else if let Some(tanim) = intrinsic::tanim(kimlik) {
+            self.ekle(tanim.yetkinlik, konum);
+        }
+    }
+
+    /// K-397: bağlantı kalıbı `ağ-dinleyici` ya da `ağ` ile karşılanır;
+    /// ikisi de yoksa `ağ-dinleyici` gereksinimi olarak raporlanır.
+    pub(super) fn baglanti_gereksinimini_coz(&mut self, politika: &YetkinlikPolitikasi) {
+        if let Some(konum) = self.baglanti_islemi {
+            if !politika.izin_verir(Yetkinlik::AgDinleyici) && !politika.izin_verir(Yetkinlik::Ag) {
+                self.ekle(Yetkinlik::AgDinleyici, konum);
+            }
+        }
+    }
+
     pub(super) fn ekle(&mut self, yetkinlik: Yetkinlik, konum: Konum) {
         if yetkinlik == Yetkinlik::WebOturumu {
             self.ekle(Yetkinlik::AgSunucusu, konum);
@@ -35,10 +61,10 @@ impl Bilgi {
                 blok_bilgisi(govde, self);
             }
             Cumle::BaglantiyaYaz { deger, satir, .. } => {
-                self.ekle(Yetkinlik::AgDinleyici, (*satir, 1, 1));
+                self.baglanti_islemi_ekle((*satir, 1, 1));
                 ifade_bilgisi(deger, self);
             }
-            Cumle::BaglantiyiKapat { satir } => self.ekle(Yetkinlik::AgDinleyici, (*satir, 1, 1)),
+            Cumle::BaglantiyiKapat { satir } => self.baglanti_islemi_ekle((*satir, 1, 1)),
             _ => {}
         }
     }

@@ -77,6 +77,13 @@ pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
 /// K-384 (ZM-F032): `bağlantıdan satır okumayı <n> saniye içinde dene` —
 /// kısa okuma süresi; zaman aşımı oturumu kapatmaz → Metin Sonucu.
 pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
+/// K-397 (RFC-0044 B4a): `"<ana>:<kapı>" adresine bağlanmayı dene` —
+/// `ağ_hedefleri` `tcp://` hedefine giden TCP; başarıda görevin bağlantısı
+/// olur → Metin sözlüğü Sonucu (`uzak_adres`, `uzak_kapı`, `yerel_kapı`).
+pub const GIDEN_BAGLAN: &str = "ag.giden_baglan";
+/// K-397: `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile` — giden
+/// bağlantıda istemci STARTTLS → Metin sözlüğü Sonucu (`doğrulandı`, …).
+pub const BAGLANTI_TLS_ISTEMCI: &str = "ag.baglanti_tls_istemci";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -92,6 +99,26 @@ pub const GIZLI_SIFRELE: &str = "guvenlik.gizli_sifrele";
 pub const GIZLI_COZ: &str = "guvenlik.gizli_coz";
 
 pub use crate::yetkinlik::Yetkinlik;
+
+/// K-397: o anki bağlantı üzerinde çalışan kalıplar. Tabloda `ağ-dinleyici`
+/// görünürler ama derleme denetimi `ağ-dinleyici` **ya da** `ağ` ile
+/// karşılanır: bağlantı ya dinleyiciden kabul edilir ya da `ağ` +
+/// `ağ_hedefleri` ile açılır; gerçek kapı bağlantıyı açan adımdır.
+pub fn baglanti_islemi_mi(kimlik: &str) -> bool {
+    matches!(
+        kimlik,
+        BAGLANTI_SATIR_OKU
+            | BAGLANTI_SATIR_YAZ
+            | BAGLANTI_TLS_BASLAT
+            | BAGLANTI_TLS_ISTEMCI
+            | BAGLANTI_NOKTA_BLOGU
+            | BAGLANTI_BAYT_BLOGU
+            | BAGLANTI_BAYT_OKU
+            | BAGLANTI_PARCA_YAZ
+            | BAGLANTI_DOSYA_AKTAR
+            | BAGLANTI_SATIR_OKU_SURELI
+    )
+}
 
 /// Intrinsic imzalarında kullanılabilen çekirdek türlerin kapalı kümesi.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -234,6 +261,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::MetinSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Okuma süresi saniye cinsinden TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: GIDEN_BAGLAN,
+        yetkinlik: Yetkinlik::Ag,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Bağlanılacak adres `\"<ana>:<kapı>\"` biçiminde Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: BAGLANTI_TLS_ISTEMCI,
+        yetkinlik: Yetkinlik::AgDinleyici,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "TLS istemcisinin sunucu adı Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_MIME_GONDER,

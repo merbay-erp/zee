@@ -1,0 +1,63 @@
+# K-397 (RFC-0044 B4a): ürün H teslim motorunun ağ tarafı. Ürün MX'i
+# çözüp IP verir; çalışma zamanı yalnız `ağ_hedefleri` jokeri ve public IP
+# kuralıyla bağlanır, bağlantıyı denetlenen IP'ye sabitler. Teslim
+# politikası (MTA-STS enforce, DANE, fırsatçı TLS) Zee'dedir: doğrulanmamış
+# TLS enforce kipinde teslim edilmez; düz metne düşme yalnız ilke yokken.
+
+işlem teslim et
+    adresi al
+    mxi al
+    iletiyi al
+    zorunluyu al
+    sonuç adres adresine bağlanmayı dene olsun
+    sonuç başarısızsa
+        hata sonucun hatası olsun
+        veri hatanın verisi olsun
+        "4.4.1 bağlanılamadı " ile verinin "tür" değeri döndür
+    selam bağlantıdan satır okumayı 300 saniye içinde dene olsun
+    selam başarısızsa
+        bağlantıyı kapat
+        "4.4.2 karşılama yok" döndür
+    bağlantıya "EHLO gonderen.ornek.test" satırını yaz
+    starttls yanlış olsun
+    devam doğru olsun
+    devam olduğu sürece
+        satır bağlantıdan satır okumayı 300 saniye içinde dene olsun
+        satır başarılıysa
+            metin satırın değeri olsun
+            metin "STARTTLS" içeriyorsa
+                starttls doğru olsun
+            metin "250 " ile başlıyorsa
+                devam yanlış olsun
+            değilse metin "250-" ile başlıyorsa
+                devam doğru olsun
+            değilse
+                devam yanlış olsun
+        değilse
+            devam yanlış olsun
+    starttls doğru ise
+        bağlantıya "STARTTLS" satırını yaz
+        hazır bağlantıdan satır okumayı 300 saniye içinde dene olsun
+        tls bağlantıda TLS istemcisi başlatmayı dene mx ile olsun
+        tls başarısızsa
+            "4.7.5 TLS kurulamadı" döndür
+        rapor tlsin değeri olsun
+        doğrulandı raporun "doğrulandı" değeri olsun
+        zorunlu doğru ise
+            doğrulandı "evet" e eşit değilse
+                bağlantıyı kapat
+                "4.7.5 MTA-STS enforce: " ile raporun "doğrulama_hatası" değeri döndür
+    değilse zorunlu doğru ise
+        bağlantıyı kapat
+        "4.7.4 STARTTLS sunulmadı" döndür
+    bağlantıya "MAIL FROM:<gonderen@ornek.test>" satırını yaz
+    bağlantıya "RCPT TO:<alici@alici.ornek.test>" satırını yaz
+    bağlantıya "DATA" satırını yaz
+    aktarım bağlantıya ileti dosyasını aktarmayı dene olsun
+    bağlantıya "." satırını yaz
+    bağlantıya "QUIT" satırını yaz
+    bağlantıyı kapat
+    "2.0.0 teslim edildi" döndür
+
+ilke "https://mta-sts.alici.ornek.test/.well-known/mta-sts.txt" adresinden gelen yanıt olsun
+ilke yaz

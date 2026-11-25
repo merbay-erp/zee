@@ -242,3 +242,25 @@ ZORUNLU: Ret iletisi yalnız değişken adı ve sabit neden taşır; değer, dos
 TANIMLI: Unix dışı platformda `CREDENTIALS_DIRECTORY` ayarlıysa gizli değer okuması "bu platformda desteklenmez" ile reddedilir; ayarlı değilse ortam davranışı sürer.
 
 AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte rotasyon, ACL incelemesi, aynı UID/root saldırganına karşı yalıtım ve okunan değerin süreç belleğinden garantili silinmesi bu kaynağın sözü değildir.
+
+## Giden TCP ve istemci STARTTLS — K-397 (RFC-0044 B4a, ADR-173)
+
+TANIMLI: `ağ_hedefleri` iki ek biçim taşır. `tcp://<konak>:<kapı>` tam giden TCP hedefidir; kapı yazılmak ZORUNDADIR, varsayılan kapı yoktur. `tcp://*:25` yalnız 25 kapısında yazılabilen jokerdir ve her public IP'nin 25 kapısını açar. `https://mta-sts.*` RFC 8461 ilke sunucusu jokeridir. Joker başka kapıda, başka şemada ya da başka konak kalıbıyla yazılırsa bildirim reddedilir; istek adresinde `*` YASAKTIR.
+
+ZORUNLU: `"<ana>:<kapı>" adresine bağlanmayı dene` `ağ` yetkinliği ister ve hedefi tam `tcp://` hedefiyle ya da 25 kapısındaki jokerle eşleştirir. Ad bir kez çözülür, en çok 16 adres değerlendirilir; adreslerden biri bile izinsizse hedef `hedef_yasak` ile reddedilir. Soket yalnız denetlenen adrese açılır; ad ikinci kez çözülmez.
+
+YASAK: Joker eşleşmesinde public olmayan IP (loopback, RFC1918, CGNAT, link-local, multicast, ayrılmış, dokümantasyon, 6to4, Teredo, NAT64, ULA) `yerel-ağ` açık olsa bile kabul edilmez. IPv4-mapped IPv6 (`::ffff:0:0/96`) giden TCP hedefi olarak her profilde YASAKTIR. Tam hedefte spec/23 IP kuralı geçerlidir.
+
+TANIMLI: Başarılı bağlanma `Sonuç<Sözlük>{uzak_adres, uzak_kapı, yerel_kapı}` verir ve bağlantı o görevin bağlantısı olur; spec/12 §9 bağlantı kalıpları onun üzerinde çalışır ve derlemede `ağ-dinleyici` ya da `ağ` ile karşılanır. Ret C030 Sonuç'udur; `tür` ∈ `geçersiz`, `hedef_yasak`, `çözülemedi`, `bağlanamadı`, `zaman_aşımı`, `zaten_bağlı`, `sınır`.
+
+ZORUNLU: Bağlanma `min(Zee son tarihi, 30 sn)` ile sınırlıdır. Görev başına aynı anda bir giden bağlantı olur, ikincisi `zaten_bağlı` verir; dinleyici görevinde giden bağlantı açmak `geçersiz`dir. Süreç başına en çok 16 açık giden bağlantı olur (`sınır`). Eşzamanlı görev ve program koşusu biterken kendi açtığı giden bağlantıyı kapatır.
+
+TANIMLI: `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile` yalnız giden bağlantıda istemci STARTTLS başlatır ve `Sonuç<Sözlük>{doğrulandı, doğrulama_hatası, sürüm, takım, sunucu_adı, sertifika_sha256, spki_sha256, zincir_sha256, zincir_spki_sha256}` verir. Sunucu adı ASCII DNS adıdır; IP, sonda nokta ya da tek etiket `geçersiz`dir.
+
+ZORUNLU: PKIX doğrulamasının sonucu `doğrulandı` (`evet`/`hayır`) ve `doğrulama_hatası` (`ad_uyuşmuyor`, `süresi_dolmuş`, `henüz_geçerli_değil`, `bilinmeyen_yayıncı`, `iptal`, `geçersiz_sertifika`) alanlarında açıkça raporlanır; PKIX hatası el sıkışmayı durdurmaz ama el sıkışma imzası her durumda raporlanan SPKI'nin anahtarıyla doğrulanır. Kökler `webpki-roots`'tur; zincir en çok 10 sertifikadır.
+
+YASAK: STARTTLS yanıtından sonra ara bellekte şifresiz veri varsa yükseltme yapılmaz; bağlantı kapanır ve `tür=tls` döner (CVE-2011-1575 sınıfı).
+
+ZORUNLU: `https://mta-sts.*` jokeri yalnız 443 kapısında, `mta-sts.` önekli DNS adında, birebir `/.well-known/mta-sts.txt` yolunda ve sorgusuz istekte eşleşir; çözülen IP `yerel-ağ` açık olsa bile public olmalıdır. Yönlendirme izlenmez (mevcut HTTP istemcisi kuralı).
+
+AÇIK: Ad çözümlemesi işletim sisteminin engelleyen çözücüsüyledir; giden yolun RFC-0044 B1a DNS çözücüsüne bağlanması, TLSA eşlemesi (ürün kodu), eşleme türü 0/2 özetleri ve gerçek internette teslim kanıtı bu bölümün sözü değildir.

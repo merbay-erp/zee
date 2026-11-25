@@ -220,6 +220,19 @@ sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
 hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
 
+Giden teslimin ağ tarafı **gerçekleşti**: K-397
+([ADR-173](../adr/173-giden-tcp-ve-istemci-starttls.md),
+[RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
+B4a) ile `"<ana>:<kapı>" adresine bağlanmayı dene` `ağ_hedefleri`
+`tcp://` tam hedefine ya da yalnız 25 kapısında `tcp://*:25` jokerine (yalnız
+public IP, tek çözümleme, denetlenen IP'ye sabitleme) giden TCP açar; A2/A2c
+bağlantı kalıpları bu bağlantıda çalışır. `bağlantıda "<ad>" için TLS
+istemcisi başlatmayı dene` rustls istemci STARTTLS'idir; PKIX sonucu açık
+alan, SPKI/sertifika özetleri DANE için. MTA-STS ilkesi `https://mta-sts.*`
+ile mevcut HTTP istemcisinden. **Açık:** B3 DKIM imza ilkeli (ADR-174,
+K-397 Dilim 2); bağlantı yolunun B1a DNS çözücüsüne bağlanması; gerçek
+internette DANE/MTA-STS teslim kanıtı. V1 sözü değildir.
+
 Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 ([ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),
 [RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md) Dilim 1) ile dosya

@@ -10,6 +10,8 @@ api	ag.baglanti_satir_oku	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BA
 api	ag.baglanti_satir_oku_sureli	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
 api	ag.baglanti_satir_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
 api	ag.baglanti_tls_baslat	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_TLS_BASLAT: &str = "ag.baglanti_tls_baslat";
+api	ag.baglanti_tls_istemci	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_TLS_ISTEMCI: &str = "ag.baglanti_tls_istemci";
+api	ag.giden_baglan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const GIDEN_BAGLAN: &str = "ag.giden_baglan";
 api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
 api	dosya.aralik_base64	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_BASE64: &str = "dosya.aralik_base64";
 api	dosya.aralik_metin	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_METIN: &str = "dosya.aralik_metin";
@@ -155,6 +157,7 @@ kalip	base64	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bayt	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	baytı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	baytından	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	bağlanmayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıda	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıdan	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıya	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -197,6 +200,7 @@ kalip	ileti	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	iptal	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	istemci	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	istemcisi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	isteğini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	içermeli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -310,6 +314,8 @@ kosul	tekse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
+profil	ag-hedefi-joker-v1	aktif	1.0.0-dev	compiler/src/yetkinlik/giden.rs	(AgSemasi::Tcp, "*:25") => Ok(Some(AgHedefi {
+profil	ag-hedefi-tcp-v1	aktif	1.0.0-dev	compiler/src/yetkinlik/origin.rs	"tcp" => AgSemasi::Tcp,
 profil	baglanti-ayarlari-v1	aktif	1.0.0-dev	compiler/src/proje/baglanti.rs	"bağlantı_sınırı",
 profil	cli-ag-izni	aktif	1.0.0-dev	compiler/src/cli/ag_izni.rs	pub(crate) const IZIN_BAYRAGI: &str = "--izin";
 profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"

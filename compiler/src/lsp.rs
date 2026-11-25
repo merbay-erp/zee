@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 140] = [
+const KALIP_KELIMELERI: [&str; 142] = [
     "yaz",
     "olsun",
     "ise",
@@ -174,12 +174,14 @@ const KALIP_KELIMELERI: [&str; 140] = [
     "aktarmayı",
     "öğesi",
     "öğesini",
+    "bağlanmayı",
+    "istemcisi",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 80] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 82] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -250,6 +252,8 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 80] = [
     ("parçasını", "O anki bağlantıya satır sonu EKLEMEDEN yazar (ör. IMAP `+ `); CR/LF/NUL reddedilir, satır sonunu yalnız `satırını yaz` üretir. Cümle biçiminde hata görevi bitirir, `… yazmayı dene` Sonuç verir.\n\n`bağlantıya \"+ \" parçasını yaz`"),
     ("aktarmayı", "Dosyayı belleğe almadan bağlantıya akıtır → TamSayı Sonucu (kuyruğa alınan bayt); `dosya-okuma` da ister, `bağlantı_blok_sınırı`nı aşan dosya `boyut_aşımı`.\n\n`sonuç bağlantıya yol dosyasını aktarmayı dene olsun`"),
     ("öğesi", "Listede 1 tabanlı sıra ile öğenin kopyası (RFC-0029); sıra tek ad ya da TamSayı sabitidir, aralık dışı C031. Olmayabilecek öğe için `… öğesini almayı dene` → Sonuç (`SIRA_DISI`).\n\n`harf harflerin sıra. öğesi olsun`"),
+    ("bağlanmayı", "Giden TCP: `ağ` + proje.dil `ağ_hedefleri` içindeki `tcp://<konak>:<kapı>` ya da `tcp://*:25` (yalnız public IP) hedefine bağlanır → Sözlük Sonucu (`uzak_adres`, `uzak_kapı`, `yerel_kapı`); ad bir kez çözülür, bağlantı denetlenen IP'ye açılır. Başarıda görevin bağlantısı olur ve satır/parça/blok kalıpları onun üzerinde çalışır. Ret `tür`: hedef_yasak, çözülemedi, bağlanamadı, zaman_aşımı, zaten_bağlı, sınır, geçersiz.\n\n`sonuç \"mx1.alici.ornek:25\" adresine bağlanmayı dene olsun`"),
+    ("istemcisi", "Giden bağlantıda istemci STARTTLS → Sözlük Sonucu (`doğrulandı` evet/hayır, `doğrulama_hatası`, `sürüm`, `takım`, `sunucu_adı`, `sertifika_sha256`, `spki_sha256`, `zincir_sha256`, `zincir_spki_sha256`). PKIX hatası el sıkışmayı durdurmaz ama açıkça raporlanır (DANE/fırsatçı TLS); MTA-STS `enforce` için `doğrulandı` denetlenmeli.\n\n`tls bağlantıda TLS istemcisi başlatmayı dene \"mx1.alici.ornek\" ile olsun`"),
     ("bağlantıya", "O anki bağlantıya bir satır yazar; CRLF'yi çalışma zamanı ekler, CR/LF/NUL içeren metin reddedilir. Cümle biçiminde hata bağlantı görevini C030 ile bitirir, `... yazmayı dene` Sonuç verir.\n\n`bağlantıya \"220 hazır\" satırını yaz`"),
     ("türünde", "Dosya yanıtının kayıtlı içerik türü (application/pdf, image/png, text/csv, application/zip, OOXML, application/xml, application/x-apple-aspen-config, application/octet-stream …); kayıtta olmayan tür C013 Sonucu.\n\n`sonuç yol dosyasını \"application/pdf\" türünde \"fatura.pdf\" adıyla ek olarak göndermeyi dene olsun`"),
     ("adıyla", "Dosya yanıtında tarayıcıya önerilen ad; çalışma zamanı `Content-Disposition: attachment` + RFC 6266 `filename*` kurar, CR/LF, tırnak, yol ve yön karakterli ad C013.\n\n`sonuç yol dosyasını \"text/csv\" türünde \"kişiler.csv\" adıyla ek olarak göndermeyi dene olsun`"),
