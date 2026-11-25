@@ -1,4 +1,4 @@
-# ADR-175 — Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli
+# ADR-177 — Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli
 
 - **Durum:** kabul
 - **Tarih:** 25 Kasım 2026
@@ -6,7 +6,7 @@
   (`urun-h`), ZM-F024, ZM-F025, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-011 (intrinsic sınırı), ADR-038 (tedarik zinciri), ADR-167 (K-389
   SHA-256 yüzeyi), ADR-169 (B1a DNS), K-397/B3 (DKIM imza tarafı), spec/31,
-  spec/21, spec/23, GB-168
+  spec/21, spec/23, GB-174
 
 ## Bağlam
 
@@ -151,5 +151,5 @@ Uygulama günü iki sürtünme ortaya çıktı:
   - DMARCbis ağaç yürüyüşü.
   - PSL güncellik uyarısı (CLI/lint).
 - Risk: ayrıştırıcı tutarlılığı Zee kodunun sorumluluğundadır. Host tek
-  başlık ayrıştırıcısını B2a'da verecektir; GB-168 bu riskin açık
+  başlık ayrıştırıcısını B2a'da verecektir; GB-174 bu riskin açık
   kaydıdır.

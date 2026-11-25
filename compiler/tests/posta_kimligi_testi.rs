@@ -1,4 +1,4 @@
-//! K-390 (RFC-0044 B1b/B2b, ADR-175): kurumsal alan (PSL) ve DKIM imza
+//! K-390 (RFC-0044 B1b/B2b, ADR-177): kurumsal alan (PSL) ve DKIM imza
 //! doğrulama ilkelinin Zee yüzeyi. RSA ve Ed25519 vektörleri bağımsız
 //! uygulamayla (openssl 4.1) üretildi: `fixtures/dkim/dkim-vektorleri.tsv`.
 

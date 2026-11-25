@@ -3,7 +3,7 @@
 # ZM-F025'e bağlı; alan adı anonimleştirildi). Gelen iletide DMARC hizalaması için From
 # alanının kurumsal alanı ve TXT'den alınan DKIM anahtarıyla imza doğrulaması
 # gerekir; kanonikleştirme ürünün Zee kodudur. K-390 B2b öncesi S015 (kalıp
-# yok); ADR-175 ile ilkel imza tutmazsa `doğrulandı=yanlış`, politika dışı
+# yok); ADR-177 ile ilkel imza tutmazsa `doğrulandı=yanlış`, politika dışı
 # girdide C034 `tür` döner.
 
 test "DKIM imzası ve kurumsal alan"

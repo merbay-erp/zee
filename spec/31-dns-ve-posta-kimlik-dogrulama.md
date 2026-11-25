@@ -2,7 +2,7 @@
 
 Normatif kaynak: [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
 Aşama B1 (B1a, B1b) ve B2b, [ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
-[ADR-175](../adr/175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
+[ADR-177](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
 Durum: §1–§3 **TANIMLI** (K-390). Başlık ayrıştırıcısı, SPF, DMARC politikası,
 ARC ve `Authentication-Results` (B2a/B2c/B2d/B2e) ayrı bölüm olarak eklenir;
 giden DKIM imzası (B3) ve teslim güvenliği (B4) taslaktır.

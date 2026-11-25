@@ -1,4 +1,4 @@
-//! K-390 (RFC-0044 B1b/B2b, ADR-175): posta kimlik doğrulama ilkellerinin
+//! K-390 (RFC-0044 B1b/B2b, ADR-177): posta kimlik doğrulama ilkellerinin
 //! yorumlayıcı sınırı. Kurumsal alan host'un açılışta yüklediği kamu son ek
 //! listesinden (IO izinde `kurumsal_alan`), DKIM doğrulaması saf kriptografidir
 //! ve gövde özeti saf kriptografidir (iz olayı yok: aynı girdi aynı

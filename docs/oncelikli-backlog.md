@@ -2658,7 +2658,7 @@ kayıt, zaman aşımı, `zorunlu` açılış sınaması), dogfood
 Açık (B1): Zee yüzeyinde NXDOMAIN/NODATA ayrımı ve CNAME kanonik adı (B4);
 `dil dene` statik bölge dosyası; gerçek unbound entegrasyon koşusu; PTR;
 U-label; `dns_yaniti` 30–60 dk RC kampanyası sonraki RC adayında.
-**B1b + B2b kararı ([ADR-175](../adr/175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md),
+**B1b + B2b kararı ([ADR-177](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md),
 [spec/31 §2–§3](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Merkez kararı
 (b) dogfood-minimal. PSL derleyiciye gömülü değil: `kamu_son_ekleri` +
 `kamu_son_ekleri_özeti` (yalnız `dns` ile, P015), açılışta exact SHA-256,
@@ -2671,7 +2671,7 @@ crate yok); rsa-sha1, kısa/uzun/iptal/bozuk anahtar, bozuk imza ve veride CR
 yeni C034 `tür`. Kanonikleştirme Zee'de; Zee'de `\r` olmadığından veri LF'si
 imza girdisinde CRLF; `<x> gövdesinin dkim gövde özeti` aynı kuralla CRLF'li
 kanonik gövdenin SHA-256'sını `bh=` biçiminde (base64) verir (merkez kararı). Tek kripto yüzeyi `dkim_kripto` (K-397
-imza tarafı aynı modüle). GB-168.
+imza tarafı aynı modüle). GB-174.
 
 Kanıt: `kamu_son_ekleri.rs` (publicsuffix.org vektörleri, geçersiz ad, bozuk
 kural, 20 000 rastgele ad), `dkim_kripto.rs` (algoritma, DER, LF→CRLF,

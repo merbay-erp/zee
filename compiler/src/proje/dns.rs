@@ -58,7 +58,7 @@ pub(super) fn alanlari_al(
         })
 }
 
-/// Proje köküne göreli PSL dosyası; host açılışta özeti doğrular (ADR-175).
+/// Proje köküne göreli PSL dosyası; host açılışta özeti doğrular (ADR-177).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct KamuSonEkiBildirimi {
     pub yol: String,

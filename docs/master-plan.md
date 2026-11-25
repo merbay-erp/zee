@@ -271,7 +271,7 @@ core freeze altında ayrı `dogfood-change` ile açılır, V1 sözü değildir.
 satırlı Sonuç, geçici hata C033; üretimde yeni crate olmadan kendi sınırlı
 tel biçimi ayrıştırıcısı (hickory-proto yalnız kâhin, `dns_yaniti` fuzz
 hedefi RC kapısında), önbelleksiz stub, IO izi. **Gerçekleşen: B1b + B2b
-(K-390 ikinci dilimi, ADR-175)** — exact SHA-256'lı `kamu_son_ekleri` dosyası
+(K-390 ikinci dilimi, ADR-177)** — exact SHA-256'lı `kamu_son_ekleri` dosyası
 ve `<ad> alanının kurumsal alanı`; DKIM doğrulama ilkeli (rsa-sha256 1024–4096,
 ed25519-sha256; rsa-sha1 reddi; C034) rustls'in kilitli `ring`'iyle,
 kanonikleştirme Zee'de (veri LF'si imza girdisinde CRLF; `dkim gövde özeti`

@@ -6080,7 +6080,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Merkez kararı (b) dogfood-minimal: PSL veri dosyası + `kurumsal alanı`;
   DKIM doğrulama ilkeli rsa-sha256/ed25519-sha256 ring ile; rsa-sha1 ve
   1024 altı / 4096 üstü anahtar reddi; kanonikleştirme Zee'de; SHA-256 için
-  K-389 yüzeyi; A-R host'ta yok. ADR-175, GB-168, C034.
+  K-389 yüzeyi; A-R host'ta yok. ADR-177, GB-174, C034.
 - Uygulama günü sürtünmesi: Zee metin sabitinde `\r` yok, bağlantı satır
   okuyucuları CRLF'yi atar; DKIM ise CRLF ister. Karar: veri LF'si imza
   girdisinde CRLF (TANIMLI; SMTP çıplak LF reddine bağlı), veride CR ret.

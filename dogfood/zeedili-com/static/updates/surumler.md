@@ -92,7 +92,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   parametre olduğunu söyler); parametre sözlük köküyle yeniden atandıktan
   sonra eski yazımla (`başlığ`) başvuru **A002** verir. İkisinde de yerel
   değere başka ad verin. Açık sınır: `kaybı`, `kaydı`, `şekli`, `ismi`,
-  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-175).
+  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-177).
 
 ### Düzeltilenler
 

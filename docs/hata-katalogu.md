@@ -282,7 +282,7 @@ küçük harf onaltılık olmayan özet P015'tir (yeni proje tanı kodu yok). Do
 okunamaz, SHA-256'sı bildirilen özetle tutmaz ya da ayrıştırılamazsa süreç
 kaynak yürütülmeden `kamu_son_ekleri "…":` iletisiyle çıkış 2 verir. DKIM
 doğrulama ve kurumsal alan hataları C034'tür.
-[Karar](../adr/175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
+[Karar](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

@@ -5584,7 +5584,7 @@ fn dns_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
     Ok(())
 }
 
-/// K-390 B1b (ADR-175): süreçte tek proje; liste açılışta bir kez okunur,
+/// K-390 B1b (ADR-177): süreçte tek proje; liste açılışta bir kez okunur,
 /// exact SHA-256 tutmazsa ya da ayrıştırılamazsa süreç başlamaz (çıkış 2).
 static KAMU_SON_EKLERI: std::sync::OnceLock<dil::kamu_son_ekleri::KamuSonEkleri> =
     std::sync::OnceLock::new();

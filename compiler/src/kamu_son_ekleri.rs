@@ -1,4 +1,4 @@
-//! K-390 (RFC-0044 B1b, ADR-175): Public Suffix List ayrıştırıcısı ve
+//! K-390 (RFC-0044 B1b, ADR-177): Public Suffix List ayrıştırıcısı ve
 //! kurumsal alan (RFC 7489 §3.2) hesabı. Veri derleyiciye gömülü değildir;
 //! proje dosyayı exact SHA-256 ile bildirir, host açılışta bir kez ayrıştırır.
 //!

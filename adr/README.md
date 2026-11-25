@@ -179,4 +179,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d) |
 | ADR-173 | [Giden TCP, `ağ_hedefleri` `tcp://` politikası ve istemci STARTTLS](173-giden-tcp-ve-istemci-starttls.md) | **kabul** (K-397 Dilim 1, RFC-0044 B4a) |
 | ADR-175 | [Parametre bağlama adı sözlük köküne bağlanır (profil değişmeden)](175-parametre-baglama-adi-sozluk-koku.md) | **kabul** (K-398; ZM-F030, K-164/F006) |
-| ADR-175 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](175-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-168; RFC-0044 B1b, B2b) |
+| ADR-177 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-174; RFC-0044 B1b, B2b) |

@@ -1,4 +1,4 @@
-//! K-390 (RFC-0044 B2b, ADR-175): DKIM imza doğrulama ilkeli. Yalnız
+//! K-390 (RFC-0044 B2b, ADR-177): DKIM imza doğrulama ilkeli. Yalnız
 //! kriptografik çekirdek host'tadır: açık anahtar (`p=`) ayrıştırma, bit
 //! sınırı ve imza doğrulama. Kanonikleştirme, `h=` seçimi, `bh=` karşılaştırma,
 //! `x=`/`t=` ve DMARC politikası Zee kodudur (merkez kararı (b), dogfood-minimal).
