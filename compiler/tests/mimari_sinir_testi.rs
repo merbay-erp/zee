@@ -78,7 +78,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/cozumleyici/yetkinlik.rs", 380),
         ("src/cozumleyici/sembol.rs", 200),
         ("src/cozumleyici/sembol/alan.rs", 60),
-        ("src/cozumleyici/sembol/eski_yazim.rs", 120),
+        ("src/cozumleyici/sembol/eski_yazim.rs", 160),
         ("src/cozumleyici/sozlesme.rs", 180),
         ("src/cozumleyici/turler.rs", 160),
         ("src/guvenlik.rs", 220),

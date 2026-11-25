@@ -168,17 +168,24 @@ pub fn baglama_koku(govde: &str) -> Option<String> {
         .rposition(|&k| k == '_')
         .map_or(0, |konum| konum + 1);
     let parca = &harfler[parca_basi..];
+    if parca.len() < 2 || !parca.iter().any(|&k| unludur(k)) {
+        return None;
+    }
+    let mut yeni = harfler.clone();
+    if let Some(sert) = sertlesen_son(parca) {
+        *yeni.last_mut()? = sert;
+    } else {
+        yeni.insert(harfler.len() - 1, dusen_dar_unlu(parca)?);
+    }
+    Some(yeni.into_iter().collect())
+}
+
+/// `baglama_koku` ünsüz yumuşaması geri çevrimi: son harfin sert eşi.
+fn sertlesen_son(parca: &[char]) -> Option<char> {
     let n = parca.len();
-    if n < 2 {
-        return None;
-    }
     let hece = parca.iter().filter(|&&k| unludur(k)).count();
-    if hece == 0 {
-        return None;
-    }
-    let son = parca[n - 1];
-    let onceki = parca[n - 2];
-    let sertlesmis = match son {
+    let (son, onceki) = (parca[n - 1], parca[n - 2]);
+    match son {
         // Ünsüz sonrası yalnız sonorant küme sertleşir (`kalb`→`kalp`,
         // `borc`→`borç`); `kayb` gibi iki adımlı geri çevrim (`kayıp`) yapılmaz.
         'b' | 'c' if unludur(onceki) || matches!(onceki, 'l' | 'm' | 'n' | 'r') => {
@@ -190,30 +197,24 @@ pub fn baglama_koku(govde: &str) -> Option<String> {
         'ğ' if hece >= 2 => Some('k'),
         'g' if onceki == 'n' => Some('k'),
         _ => None,
-    };
-    if let Some(sert) = sertlesmis {
-        let mut yeni = harfler.clone();
-        if let Some(son) = yeni.last_mut() {
-            *son = sert;
-        }
-        return Some(yeni.into_iter().collect());
     }
+}
+
+/// `baglama_koku` ünlü düşmesi geri çevrimi: son iki ünsüz arasına girecek
+/// dar ünlü.
+fn dusen_dar_unlu(parca: &[char]) -> Option<char> {
+    let n = parca.len();
+    let (son, onceki) = (parca[n - 1], parca[n - 2]);
     let unsuz = |k: char| k.is_alphabetic() && !unludur(k);
     // `-lı` sıfatları (`izinli`, `gizli`) ve `resmi`/`kısmi` yüzünden `l`/`m`
     // sonlu kümeler kapsam dışıdır (`şekl`, `ism` olduğu gibi kalır).
     let yukselen = matches!(son, 'n' | 'r') && !matches!(onceki, 'l' | 'r');
-    if n >= 3
-        && unsuz(son)
-        && unsuz(onceki)
-        && onceki != son
-        && (yukselen || (onceki == 'ğ' && son == 'z'))
-    {
-        let son_unlu = parca[..n - 2].iter().rev().find(|&&k| unludur(k))?;
-        let mut yeni = harfler.clone();
-        yeni.insert(harfler.len() - 1, dar_unlu(*son_unlu));
-        return Some(yeni.into_iter().collect());
+    let kume = unsuz(son) && unsuz(onceki) && onceki != son;
+    if n < 3 || !kume || !(yukselen || (onceki == 'ğ' && son == 'z')) {
+        return None;
     }
-    None
+    let son_unlu = parca[..n - 2].iter().rev().find(|&&k| unludur(k))?;
+    Some(dar_unlu(*son_unlu))
 }
 
 /// Belirli bir köke uyan bütün ek zincirlerini döndürür.

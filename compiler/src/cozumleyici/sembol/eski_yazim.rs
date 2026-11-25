@@ -37,6 +37,35 @@ impl SembolTablosu {
         }
     }
 
+    /// `ad … olsun` hedefi: tam yazım tanımlı değilse ve eski parametre
+    /// yazımıysa (`belirtec`) hedef parametreye (`belirteç`) çevrilir; atama
+    /// yeni ad doğurmaz. Hedef tam yazımıyla tanımlıysa `true` döner.
+    pub(in crate::cozumleyici) fn eski_yazimi_hedefe_cevir(&self, ad: &mut String) -> bool {
+        if self.kimlik(ad).is_some() {
+            return true;
+        }
+        if let Some(kok) = self.eski_parametre_yazimi(ad) {
+            *ad = kok;
+        }
+        false
+    }
+
+    /// Parametreye farklı türde atama T002 önerisi (K-398 öncesi ayrı yereldi).
+    pub(in crate::cozumleyici) fn parametre_tur_onerisi(
+        &self,
+        ad: &str,
+        tur: &str,
+    ) -> Option<String> {
+        self.parametre_mi(ad).then(|| {
+            format!(
+                "\"{}\" bu işlemin parametresidir (K-398: ekli parametre adı sözlük köküne \
+                 bağlanır, ör. `başlığı al` → `başlık`). Yerel değere başka bir ad ver ya da \
+                 parametreye yine {} türünde bir değer ver.",
+                ad, tur
+            )
+        })
+    }
+
     /// Parametre sözlük köküne bağlandıysa, K-398 öncesi bağlanan yumuşamış
     /// gövde (`kalıb`, `metn`) o parametreyi verir.
     pub(in crate::cozumleyici) fn eski_parametre_yazimi(&self, govde: &str) -> Option<String> {
