@@ -4161,7 +4161,7 @@ görünmeyebiliyordu. Okuyucu artık geçici hata alınca klasörün
 regression `degistirme-penceresi-izsiz-okuma`
 (`native-dosya-okuma-izsiz-penceresi`, Windows), Windows yük A/B döngüsü.
 
-## K-393 — C024 heap zarfı düşen değerin payını iade eder (ADR-173)
+## K-393 — C024 heap zarfı düşen değerin payını iade eder (ADR-171)
 
 **Durum: KAPALI.** Kaynak: bağımsız Rust/Go karşılaştırması v2 (B4) ve
 ZM-F035/RFC-0043 seçenek (b). Freeze sınıfı `correctness`
@@ -4183,12 +4183,12 @@ Düzeltme: üzerine yazma, kapsam sonu, işlem çerçevesi, gezme kopyası, gör
 ortamı klonları, koleksiyon öğesi değişimi ve `sil` düşen değerin ölçüsünü
 iade eder. Güvenlik değişmezi ölçü ≤ tüketim: `ekle`/yeni sözlük anahtarı ve
 `x x ile y olsun` gerçek kapasite artışını tüketir, gezme geri yazımı ve iç
-adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-167).
+adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-170).
 
 Kanıt: `kaynak_sinirlari_testi::atilan_degerin_zarf_payi_iade_edilir`,
 `iade_canli_birikimi_zarftan_kacirmaz`; `baglanti_butce_yenileme_testi`
 canlı birikimle yeniden yazıldı; regression `runtime/heap-zarfi-cerceve-iadesi`,
-`runtime/heap-zarfi-uzerine-yazma-iadesi`; spec/24, ADR-173, ADR-033/165
+`runtime/heap-zarfi-uzerine-yazma-iadesi`; spec/24, ADR-171, ADR-033/165
 ekleri, soak 1800 sn.
 
 Açık: birimler arası yaşayan değer yeni zarfa yeniden sayılmaz (K-381).

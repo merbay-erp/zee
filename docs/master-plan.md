@@ -188,7 +188,7 @@ yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
 süreli okuma vardır. K-388 ile bağlantı görevinin çalışma bütçesi her
 protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
 dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
-zarfı aynen geçerlidir. K-393 (ADR-173) ile zarf düşen değerin payını iade
+zarfı aynen geçerlidir. K-393 (ADR-171) ile zarf düşen değerin payını iade
 eder; C024 artık iş miktarını değil canlı saklanan değerleri sınırlar. Bağlantılar arası uyandırma ve diğer katmanlar
 açıktır.
 

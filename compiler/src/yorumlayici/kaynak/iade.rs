@@ -1,4 +1,4 @@
-//! K-393 (ADR-173): C024 zarfına düşen değerin payını iade eden yollar.
+//! K-393 (ADR-171): C024 zarfına düşen değerin payını iade eden yollar.
 //! Güvenlik değişmezi: saklanan her değerde ölçü ≤ tüketim; iade ölçü kadar
 //! yapılır ve kalan zarf başlangıç zarfını aşamaz.
 
