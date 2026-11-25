@@ -140,10 +140,8 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         kimlik: u64,
         islem: &super::BaglantiIslemi,
     ) -> super::BaglantiSonucu {
-        match baglanti::baglanti_reddi(self, islem) {
-            Some(ret) => ret,
-            None => self.ic.baglanti_islemi(kimlik, islem),
-        }
+        baglanti::baglanti_reddi(self, islem)
+            .unwrap_or_else(|| self.ic.baglanti_islemi(kimlik, islem))
     }
     fn baglanti_tanisini_gunlukle(&mut self, kimlik: u64, neden: &str) {
         self.ic.baglanti_tanisini_gunlukle(kimlik, neden)
