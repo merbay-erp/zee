@@ -121,7 +121,7 @@ pub(super) fn degerlendir_async<'a>(
                         };
                         Ok(Deger::Mantiksal(io.sensor_acik_mi(ad)))
                     }
-                    k => super::kodlanmis_dosya::degerlendir(k, &degerler, io, satir),
+                    k => dns::ya_da_kodlanmis_dosya(k, &degerler, io, satir).await,
                 }
             }
             Ifade::BosListe => Ok(Deger::Liste(Vec::new())),

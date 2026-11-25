@@ -2557,6 +2557,39 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
+
+**Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2 sürüyor.** Kaynak:
+etkin dogfood ürünü `urun-h` (ZeeMail) güvenlik kapsamı (oltalama/BEC/MITM)
+ve korpus ZM-R006/ZM-R007 (ürün commit `7f7b1fe`). Merkez kararı 23 Kasım
+2026 "Sırayla aç". Freeze sınıfı `dogfood-change`; iki PR: B1 (DNS) ve B2
+(A-R temizliği, SPF, DKIM doğrulama, DMARC, PSL).
+
+**B1a kararı ([ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
+[spec/31 §1](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Yeni `dns`
+yetkinliği + `dns_çözücü` (yalnız loopback) + `dns_dnssec "zorunlu"|"bilgi"`
+(P015; `zorunlu` açılışta kök SOA AD=1 sınar, aksi çıkış 2). Yüzey ürün
+reproducer'ının biçimi: `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı
+dene` → kayıt başına satırlı `Sonuç<Metin sözlük listesi>`; NXDOMAIN/NODATA
+boş liste, geçici hata C033 (`tür`). Üretimde yeni crate yok: kendi sınırlı
+`dns_teli` ayrıştırıcımız (unsafe yok, 64/128 kayıt, işaretçi yalnız geriye
+≤ 16, TXT/TLSA ≤ 4 KiB, CNAME ≤ 8); `hickory-proto` yalnız dev/fuzz kâhini
+(Zee ⊆ hickory, 40.000 bozulmuş paket); yeni `dns_yaniti` fuzz hedefi RC
+kapısında. Stub: getrandom kimlik + rastgele kapı, eşleşmeyen paket atılır,
+TC→TCP, 5 sn / son tarih kalanı, önbellek yok. IO izi `dns_sorgula`. GB-166.
+
+Kanıt: `dns_teli.rs` birim testleri (sınırlar, SERVFAIL hiçbir yolda boş
+değil, CNAME döngüsü), `dns_kahin_testi.rs`, `dns_testi.rs` (hermetik
+çözücü, yetkinlik, P015, IO izi replay), `dns_surec_testi.rs` (gerçek `dil`
+süreci + sahte UDP/TCP çözücü: eşleşmeyen paket, TC→TCP, SERVFAIL/bozuk/65
+kayıt, zaman aşımı, `zorunlu` açılış sınaması), dogfood
+`zm-r006-mx-sorgusu-yok` (K-390 öncesi S015).
+
+Açık (B1): Zee yüzeyinde NXDOMAIN/NODATA ayrımı ve CNAME kanonik adı (B4);
+`dil dene` statik bölge dosyası; gerçek unbound entegrasyon koşusu; PTR;
+U-label; `dns_yaniti` 30–60 dk RC kampanyası sonraki RC adayında.
+Sıradaki: B1b PSL veri dosyası (ZM-F025) + B2a A-R temizliği + B2b DKIM +
+B2c SPF + B2d DMARC (ZM-R007).
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)
 
 **Durum: KAPALI.** Kaynak: K-180 dört ürün kanıtı (kanıt özeti K-164/F010,
@@ -2909,7 +2942,7 @@ Freeze sınıfı `dogfood-change`; yeni kalıp, tür, tanı ya da fixture satır
 Karar (ADR-167 eki): hedef toplamı 32 MiB; tam sınır kabul, +1 bayt C013 ve
 hedef değişmez. Ekleme var olan hedefi genel 16 MiB okuma sınırı yerine aynı
 tavanla okur (bulunan arıza: yalnız sabit yükseltilseydi 16 MiB üstü hedefe
-ekleme okuma sınırına çarpıyordu). Yükleme, dosya yanıtı, özet 16 MiB. GB-166.
+ekleme okuma sınırına çarpıyordu). Yükleme, dosya yanıtı, özet 16 MiB. GB-167.
 
 Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
 `eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda` (tam 32 MiB kabul, +1 bayt

@@ -149,6 +149,33 @@ impl GirdiCikti for IzYenidenOynatici {
         tasima::http_getir_oynat(self, url, zaman_asimi_ms)
     }
 
+    fn dns_sorgula(
+        &mut self,
+        ad: &str,
+        tur: crate::dns_teli::KayitTuru,
+        _zaman_asimi_ms: i64,
+    ) -> Result<crate::dns_teli::Cozum, crate::dns_teli::DnsHatasi> {
+        let alanlar = self.siradaki(dns::ISLEM, dns::argumanlar(ad, tur));
+        let bozuk = |io: &Self| {
+            crate::dns_teli::DnsHatasi::yeni(
+                crate::dns_teli::DnsHataTuru::Ag,
+                io.hata
+                    .clone()
+                    .unwrap_or_else(|| "IO izi uyuşmazlığı".into()),
+            )
+        };
+        let Some(alanlar) = alanlar else {
+            return Err(bozuk(self));
+        };
+        match dns::sonuc_coz(&alanlar) {
+            Ok(sonuc) => sonuc,
+            Err(hata) => {
+                self.bozuk_sonuc(dns::ISLEM, hata);
+                Err(bozuk(self))
+            }
+        }
+    }
+
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         let sonuc = self.siradaki("sunucu_kur", vec![kapi.to_string()]);
         self.birim_sonuc("sunucu_kur", sonuc)

@@ -1,11 +1,11 @@
 # RFC-0044 — DNS, posta kimlik doğrulama ve teslim güvenliği
 
-- **Durum:** taslak — 24 Kasım 2026. Core freeze (K-160A/ADR-059) altında
-  uygulanmaz; her aşama (B1–B4) ayrı `dogfood-change` K-işi, ADR'si ve depo
-  içi reproducer'ıyla açılır. Bu taslak hiçbir dil, CLI, tanı, yetkinlik ya
-  da API yüzeyi açmaz.
+- **Durum:** taslak — 24 Kasım 2026. Aşama **B1a kabul edildi ve
+  uygulandı** (K-390, ADR-169, spec/31 §1); B1b (PSL) ve B2 K-390'ın ikinci
+  diliminde; B3, B4 taslak. Core freeze (K-160A/ADR-059) altında her aşama
+  ayrı `dogfood-change` K-işi, ADR'si ve depo içi reproducer'ıyla açılır.
 - **Tarih:** 24 Kasım 2026
-- **İş:** K-383 (taslak)
+- **İş:** K-383 (taslak), K-390 (B1a uygulandı)
 - **İlgili belgeler:** [spec/08](../spec/08-kalici-dosya.md),
   [spec/09](../spec/09-son-tarih-ve-iptal.md),
   [spec/12](../spec/12-web-guvenlik-profili.md) (§9 ağ dinleyicisi),
@@ -157,7 +157,19 @@ Bunlar olmadan:
 
 ## B1 — DNS çözücü, DNSSEC ve kurumsal alan
 
-### Çözücü modeli — karar (taslak)
+> **B1a kabul (K-390, 24 Kasım 2026, [ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
+> [spec/31 §1](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Uygulamada
+> taslaktan üç fark vardır: (1) **yeni crate yok** — tel biçimi kendi sınırlı
+> `dns_teli` ayrıştırıcımızdır, `hickory-proto` yalnız dev/fuzz kâhinidir
+> (aşağıdaki "Bağımlılık seçimi" satırı bu kararla değişti); (2) Zee yüzeyi
+> ürün reproducer'ının biçimidir: `AD için MX|TXT|TLSA|adres kayıtlarını
+> sorgulamayı dene` → kayıt başına satırlı `Sonuç<Metin sözlük listesi>`
+> (yeni tür yok; `durum`/`ttl`/`ad` sonuç sözlüğü yerine satır alanlarıdır,
+> NXDOMAIN/NODATA boş liste, ayrımları host iç API'sinde); (3) hata kodu
+> C033, `tür` listesine `bozuk_yanıt` eklendi. B1b (PSL, `kurumsal alanı`)
+> B2 DMARC ile birlikte gelir.
+
+### Çözücü modeli — karar
 
 | Seçenek | Artı | Eksi | Karar |
 |---|---|---|---|
@@ -610,7 +622,7 @@ Her ikisi de yayımlıysa DANE uygulanabildiğinde öne alınır (RFC 8461 §2).
 | Ed25519 alternatifi | `ed25519-dalek 3.0.0` | Evet | Tek sağlayıcı ilkesi için `ring` öncelikli; ikisinden biri seçilir (açık soru) |
 | SHA-256 | `sha2` / `ring::digest` | Evet | — |
 | base64 | RFC-0043 kararı (`base64 0.23.1`) | Evet (geçişli) | — |
-| DNS tel biçimi | **Yeni:** `hickory-proto` (`default-features = false`, yalnız tel biçimi) **ya da** `domain` (NLnet Labs) | Hayır | İlke 2; stub istemci ve taşıma bizde. Seçim uygulama günü: bağımlılık ağacı (tokio çekmemeli — tokio ağaçta zaten var ama DNS yolu senkron olmalı), RustSec geçmişi, `cargo-deny` lisans, fuzz geçmişi. ADR-038 kapsamında ADR'ye yazılır |
+| DNS tel biçimi | **Kendi sınırlı ayrıştırıcımız** (`dns_teli`, K-390/ADR-169); `hickory-proto =0.26.3` yalnız dev/fuzz kâhini | — | Taslak `hickory-proto` ya da `domain` öneriyordu; uygulama günü değerlendirmesi: `hickory-proto` +46 paket (icu4x/idna/url/tracing), `domain` +10 paket ama `unsafe` yoğun ve RUSTSEC-2026-0310. Üretim ağacı değişmez; Zee ⊆ hickory diferansiyel testi ve `dns_yaniti` fuzz hedefi (RC kapısında) |
 | DNSSEC doğrulama | **Yok** (yerel çözücü) | — | B1 karar (d) ertelendi |
 | PSL | **Yeni crate yok**; host ayrıştırıcı (biçim basit) + veri dosyası | — | Alternatif `psl`/`publicsuffix` crate'leri listeyi gömer ya da kendi sürüm döngüsünü dayatır; ZM-F025 sürümlü dosya ister |
 | SPF/DKIM/DMARC/ARC değerlendirici | **Kendi host kodu** (`ring` + paylaşılan başlık ayrıştırıcı) | — | Hazır kitaplıklar (ör. Rust posta kimlik doğrulama crate'leri) genelde async çözücü + tokio ve kendi ayrıştırıcısını getirir; ayrıştırıcı tutarlılığı ilkesine aykırı. Yalnız **dev-dependency kâhini** olarak diferansiyel testte değerlendirilir (K-362 emsali); lisans ve ağaç uygulama günü doğrulanır |
@@ -618,8 +630,9 @@ Her ikisi de yayımlıysa DANE uygulanabildiğinde öne alınır (RFC 8461 §2).
 | SMTP istemci TLS'i (DANE) | `rustls 0.23.46` özel doğrulayıcı | Evet | `native-tls` DANE'ye uygun değil |
 | gzip (TLS-RPT) | `flate2 1.1.9` | Evet (png) | Doğrudan bağımlılığa yükseltme; yeni crate yok |
 
-Net yeni crate: **yalnız DNS tel biçimi kitaplığı** (B1). Diğer her şey
-mevcut kilitli ağaçtan doğrudan bağımlılığa yükseltmedir.
+Net yeni üretim crate'i: **yok** (K-390 kararı; taslak yalnız DNS tel biçimi
+kitaplığını öngörüyordu). Diğer her şey mevcut kilitli ağaçtan doğrudan
+bağımlılığa yükseltmedir.
 
 ## Yetkinlik etkisi
 
@@ -766,9 +779,12 @@ aşama ADR'lerinde karar girdisidir, bu taslağı bağlamaz:
   ayrımına katıldı; B2 ADR'sinin önerilen bütçesi budur.
 - Önerilen sıraya katıldı.
 
-1. **Doğrulayıcı çözücü:** ZeeOS hangisini sağlar (unbound mı
-   systemd-resolved `DNSSEC=yes` mi)? ZeeOS ADR-077 ile birlikte karar.
-2. **DNS crate'i:** `hickory-proto` mu `domain` mu (ağaç, RustSec, fuzz)?
+1. ~~**Doğrulayıcı çözücü**~~ — **kapandı (K-390/ADR-169):** dil yalnız
+   loopback çözücüyü ve `zorunlu` kipte açılış AD sınamasını sözleşir;
+   öneri unbound (ürün görüşü: systemd-resolved `allow-downgrade` DANE'ye
+   uygun değil). ZeeOS paketlemesi ZeeOS kararıdır.
+2. ~~**DNS crate'i**~~ — **kapandı (K-390/ADR-169):** ikisi de değil; kendi
+   sınırlı tel biçimi ayrıştırıcımız, `hickory-proto` yalnız kâhin.
 3. **SPF değerlendirmesi** host'ta mı (bu RFC'nin önerisi) Zee'de mi
    (RFC-0039 ilke 1'in lafzı)?
 4. **A-R temizliği:** yalnız kendi authserv-id'mizi taşıyanlar mı, tüm
@@ -787,6 +803,7 @@ aşama ADR'lerinde karar girdisidir, bu taslağı bağlamaz:
     mı, yoksa yalnız `smtp-teslim` mi?
 12. **TLS-RPT JSON'u** host mu Zee mi kurar?
 13. **U-label/IDN** alan adları (SMTPUTF8 ile birlikte) hangi aşamada?
+    (K-390: B1a A-label dışını `geçersiz_ad` ile reddeder; açık.)
 14. **Bozuk MTA-STS önbellek dosyası** davranışı: alan için erteleme mi,
     önbelleği yok sayıp fırsatçı TLS mi (öneri: erteleme + tanı)?
 

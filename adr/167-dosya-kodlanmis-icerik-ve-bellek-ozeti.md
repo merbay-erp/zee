@@ -112,7 +112,7 @@ kapatıldı); RFC-0043 Dilim 2 kalanıyla birlikte taslaktır.
 - Yükleme, dosya yanıtı ve dosya özeti tavanları 16 MiB kalır: 18 MB'lık ek
   dosya yanıtıyla indirilemez ve özetlenemez; ürün tutamağın `sha256`
   alanını kullanır (açık sınır, ayrı karar).
-- DoS gerekçesi GB-166: bellek tepe noktası ekleme başına ~32 MiB (mevcut
+- DoS gerekçesi GB-167: bellek tepe noktası ekleme başına ~32 MiB (mevcut
   içerik + yeni baytlar), disk proje başına iki katı; tavan ürünün 25 MB
   ileti sınırına göre seçildi.
 

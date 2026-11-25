@@ -50,6 +50,9 @@ libc = "=0.2.189"
 # K-362: bağımsız HTTP kâhini yalnız testte; ureq-proto ile aynı kilitli sürüm.
 [dev-dependencies]
 httparse = "=1.10.1"
+# K-390 (ADR-169): bağımsız DNS tel biçimi kâhini yalnız testte; üretim
+# ağacına girmez (kendi sınırlı ayrıştırıcımız `dns_teli`).
+hickory-proto = { version = "=0.26.3", default-features = false, features = ["std"] }
 
 [patch.crates-io]
 postgres-protocol = { path = "third_party/postgres-protocol" }

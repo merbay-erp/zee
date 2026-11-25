@@ -19,7 +19,7 @@ import time
 TOOLCHAIN = 'nightly-2026-08-31'
 FUZZ_VERSION = 'cargo-fuzz 0.13.2'
 TARGETS = [('lexer_parser', 65536), ('morfoloji', 128),
-           ('http_istegi', 81920), ('wasm_abi', 4097)]
+           ('http_istegi', 81920), ('dns_yaniti', 65536), ('wasm_abi', 4097)]
 STOP = threading.Event()
 RUN_DIR = None
 ACTIVE_PROOF = None
@@ -275,7 +275,7 @@ def main():
     proof['source_end'] = source(clone, args.source_sha)
     proof['original_source_end'] = source(repo, args.source_sha)
     proof['source_unchanged'] = proof['source_start'] == proof['source_end'] == proof['original_source_start'] == proof['original_source_end']
-    proof['result'] = ('passed-local-technical-campaign' if all(x['passed'] for x in builds.values()) and len(proof['targets']) == 4
+    proof['result'] = ('passed-local-technical-campaign' if all(x['passed'] for x in builds.values()) and len(proof['targets']) == len(TARGETS)
                        and all(x['stats']['passed'] for x in proof['targets']) and len(proof['miri']) == 2
                        and all(x['passed'] for x in proof['miri']) and proof['source_unchanged'] else 'failed')
     proof['finished_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
