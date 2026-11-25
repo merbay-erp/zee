@@ -39,3 +39,11 @@ Açık: UTF-8 bayt sayısı (`uzunluğu` harf sayar; ZM-R004 bugün `1`),
 metin↔base64 ve kod noktası RFC-0043 Dilim 2'dir. Ürünün ZM-R005 testindeki
 yer tutucu özet gerçek SHA-256 değildir; depo içi aynası gerçek değeri
 bekler.
+
+K-395 (ZM-F039, ürün commit'i `8ee251495170139b1416919e75d76954065a3c4c`;
+sürtünme kaydı blob `37c3374a7f74911218364893aa7d548729481e97`, SHA-256
+`ef907c3a4d01a645189015089bc618c1b363d555c58e5f831ee816484556805b`): 25 MB
+iletideki ~18 MB'lık ek bu kesitteki `eki akıt` döngüsüyle çıkarılır; hedef
+tavanı 16 MiB'tan 32 MiB'a çıktı. Tam sınır ve +1 bayt `kodlanmis_dosya_testi`
+`eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda` ile.
+

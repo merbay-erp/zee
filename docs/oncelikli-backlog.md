@@ -2948,9 +2948,9 @@ hard-link, Linux `protected_hardlinks` zorunlu. Uygulamada spec/08 iç
 okumalarının yaprak bağını izlediği ve eş yazarın çift değiştirmeyle kök dışı
 içeriği kopyalatabildiği bulundu; kilit dosyası ve iç okumalar `O_NOFOLLOW`
 oldu. Tek dosya/`--güvenli` kipi `veri:` reddeder; `dil dene` metin anahtarı.
-GB-167.
+GB-168.
 
-Kanıt: `compiler/tests/veri_koku_testi.rs` (10 vaka; iki proje aynı kökü
+Kanıt: `compiler/tests/veri_koku_testi.rs` (11 vaka; iki proje aynı kökü
 paylaşır, salt okur web eki bayt-kesin sunar, bağ/hard-link 404, yazma
 yetkisiz, eksik/güvensiz kök, kaçış, ata klasörü, tek dosya, bildirimsiz
 proje, P023, işlem ailesi, `dene`), `compiler/src/guvenlik/veri_koku/testler.rs`
@@ -2963,6 +2963,30 @@ Açık: (1) veri kökünde dizin listeleme; (2) görsel küçültme; (3) bağlan
 blok dosyası ve `.zee/yuklemeler`in doğrudan veri kökünde açılması;
 (4) Windows; (5) tanıtıcı tabanlı spec/08 ile ata değişmezinin gevşetilmesi;
 (6) macOS'ta yazar iç okuması için hard-link kalan riski.
+
+## K-395 — Çözerek yazma/ekleme hedef tavanı 32 MiB (ADR-167 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F039
+(ürün commit'i `8ee2514`): 25 MB'lık iletinin ~18 MB'lık tek base64 eki
+16 MiB hedef tavanına sığmıyordu. Ürün eki kendi `ekdeposu` paketiyle
+(satıra hizalı pencereler) dil değişikliği olmadan çözüyor; Mustafa kararıyla
+(24 Kasım 2026) kapsam yalnız tavana daraltıldı. Önerilen dosyadan dosyaya
+çözme ve bayt arama yüzeyleri açılmadı (RFC-0043 Dilim 2 kalanı, taslak).
+Freeze sınıfı `dogfood-change`; yeni kalıp, tür, tanı ya da fixture satırı yok.
+
+Karar (ADR-167 eki): hedef toplamı 32 MiB; tam sınır kabul, +1 bayt C013 ve
+hedef değişmez. Ekleme var olan hedefi genel 16 MiB okuma sınırı yerine aynı
+tavanla okur (bulunan arıza: yalnız sabit yükseltilseydi 16 MiB üstü hedefe
+ekleme okuma sınırına çarpıyordu). Yükleme, dosya yanıtı, özet 16 MiB. GB-167.
+
+Kanıt: `compiler/tests/kodlanmis_dosya_testi.rs`
+`eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda` (tam 32 MiB kabul, +1 bayt
+ret, 16 MiB ötesi ekleme) ve `no_clobber_tavan_yol_gecisi_ve_eylem_reddi_hedefi_bozmaz`
+(32 MiB tavanı); etkilenen ürün kesiti `dogfood/urun-h/ek-cikarma/ana.dil`.
+
+Açık: 16 MiB üstü dosya yanıtı/özet; dosyadan dosyaya akışlı çözme ve bayt
+arama (kullanıcı isterse yerel `yedek/k395-tam-yuzey` dalındaki hazırlıktan);
+C024 kümülatif zarfı (K-393).
 
 ## K-389 — RFC-0043 Dilim 1: dosya ↔ kodlanmış içerik ve bellekte SHA-256 (ADR-167)
 
@@ -2995,7 +3019,8 @@ onaltılık, kod noktası, base64url) ve üç iç base64 yardımcısının
 birleştirilmesi. (2) 16 MiB'tan büyük ekler (yükleme/özet/dosya yanıtı
 tavanıyla birlikte değişir). (3) İçerik-adresli iz yan dosyasıyla aralıklı
 okumanın replay'i. (4) `kodlama` fuzz hedefi. (5) `message/rfc822` dosya
-yanıtı türü (RFC-0043 "sonraki küçük iş").
+yanıtı türü (RFC-0043 "sonraki küçük iş"; 25 Kasım 2026: ürün kaydı yok,
+yalnız yeni ZM kaydıyla açılır, K-399 taslağı birleştirilmeden bekler).
 
 ## K-387 — Tek dosya kipinde dış ağ varsayılan kapalı (ADR-031 eki)
 

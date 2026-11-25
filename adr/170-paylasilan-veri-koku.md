@@ -6,7 +6,7 @@
   K-382 (takip önerisi), ADR-031 (merkezî yetkinlik), ADR-059 (core
   freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), ADR-105
   (credential kaynağı), ADR-163 (dosya yanıtı), ADR-167 (çözerek yazma),
-  spec/07, spec/08, spec/23, GB-167
+  spec/07, spec/08, spec/23, GB-168
 
 ## Bağlam
 
@@ -95,4 +95,4 @@ grammar ya da kalıp gerekmiyor.
 
 `compiler/tests/veri_koku_testi.rs`, `compiler/src/guvenlik/veri_koku/testler.rs`,
 `dogfood/urun-h/paylasilan-depo/`, spec/07 §Paylaşılan veri kökü, spec/08,
-spec/23, hata kataloğu P023, GB-167.
+spec/23, hata kataloğu P023, GB-168.

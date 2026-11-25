@@ -90,7 +90,8 @@ fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
     std::fs::File::open(yol)
 }
 
-fn sinirli_bayt_oku(yol: &Path, azami: usize) -> io::Result<Vec<u8>> {
+/// K-395: çağıranın kendi tavanıyla sınırlı bayt okuma (çözerek ekleme hedefi).
+pub(crate) fn sinirli_bayt_oku(yol: &Path, azami: usize) -> io::Result<Vec<u8>> {
     let dosya = dosyayi_ac(yol)?;
     let bildirilen = dosya.metadata()?.len();
     if bildirilen > azami as u64 {

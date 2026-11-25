@@ -280,7 +280,7 @@ tek dosya; bildirimsiz proje; P023; `dene`), `compiler/src/guvenlik/veri_koku/te
 (sözdizimi, kök kuralları, bağ, yokluk, hard-link, ata değişmezi, okuyucu
 yarışı, yazar yarışı, çift değiştirme), dogfood
 `dogfood/urun-h/paylasilan-depo/`, ADR-170, spec/07 §Paylaşılan veri kökü,
-GB-167.
+GB-168.
 
 ## Açık sorular / sonraki dilimler
 
