@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
-| orta | 54 | 16 | 2 | 72 |
+| orta | 55 | 16 | 2 | 73 |
 | dusuk | 49 | 30 | 1 | 80 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 171.
+Toplam bulgu: 172.
 
 ## Spec maddeleri
 
@@ -64,7 +64,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 26 | 0 | 0 | 26 | 100 |
-| spec/12-web-guvenlik-profili.md | 75 | 0 | 6 | 81 | 92 |
+| spec/12-web-guvenlik-profili.md | 80 | 0 | 7 | 87 | 91 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |
@@ -84,7 +84,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 19 | 0 | 1 | 20 | 95 |
-| **Toplam** | 385 | 5 | 15 | 405 | 95 |
+| **Toplam** | 390 | 5 | 16 | 411 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -147,16 +147,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 120 |
+| maintenance | 124 |
 | semantic-bugfix | 44 |
-| semantic-change | 72 |
+| semantic-change | 73 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
 | correctness | 43 |
 | dogfood-change | 49 |
-| maintenance | 117 |
-| security | 20 |
+| maintenance | 121 |
+| security | 21 |
 
-Toplam: 236 compiler değişiklik beyanı, 232 core freeze beyanı.
+Toplam: 241 compiler değişiklik beyanı, 237 core freeze beyanı.
