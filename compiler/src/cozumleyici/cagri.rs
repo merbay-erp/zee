@@ -265,6 +265,7 @@ pub(super) fn cagri_denetle(
     let mut islem_ortami = SembolTablosu::yeni(baglam.islem_kapsami(islem_kimligi));
     for (param, tur) in islem.parametreler.iter().zip(denetim_turleri.iter()) {
         let kimlik = islem_ortami.insert(param.ad.clone(), *tur);
+        islem_ortami.parametre_isaretle(&param.ad);
         let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(param.satir)
             .ok_or_else(|| hir_kaynak_hatasi(param.satir))?;
         baglam.hir_sembol_adi_ekle(kimlik, param.ad.clone());

@@ -1,0 +1,9 @@
+# K-398: ekli parametre sözlük köküne bağlanır (kalıbı → kalıp, metni → metin).
+işlem eşleşme yap
+    kalıbı Metin olarak al
+    metni Metin olarak al
+    Metin döndürür
+
+    kalıp ile metin döndür
+
+"a" ve "b" için eşleşme yap yaz

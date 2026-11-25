@@ -28,6 +28,50 @@ Kurallar (TANIMLI):
 - Sözlük YOKTUR: çözüm yalnız kapsam adlarına bakar; bir kelimenin
   "Türkçede kelime olması" gerekmez.
 
+## Parametre bağlama adı (TANIMLI — K-398)
+
+`<ad> al` ve `<ad> <Tür> olarak al` satırında parametre, belirtme ekinin
+yapısal olarak atıldığı gövdeye (`sayıyı → sayı`, `üssü → üs`) bağlanır.
+Gövde ünsüz yumuşaması ya da ünlü düşmesiyle kalmış bir biçimse ve sözlük
+kökü o yazımın `zee-tr-1` aday kümesindeyse parametre **sözlük köküne**
+bağlanır (`kalıbı → kalıp`, `belirteci → belirteç`, `eşiği → eşik`,
+`adedi → adet`, `içeriği → içerik`, `ucu → uç`, `metni → metin`,
+`izni → izin`). Seçim profil çıktısını değiştirmez: `zee-tr-1` aday
+kümesi, kanonik üretim ve uyumluluk kaydı aynıdır.
+
+Geri çevrim kuralları (TANIMLI) alt çizgili adın son parçasına bakar ve
+sözlüğe dayanmaz:
+
+- sonu `b`/`c` ünlü ya da `l`/`m`/`n`/`r` sonrasıysa `p`/`ç` olur
+  (`kalıb`, `uc`, `kalb`); `kayb` gibi iki adımlı biçim olduğu gibi kalır;
+- en az iki heceli parçada ünlü sonrası `d` `t`, son `ğ` `k` olur
+  (`aded`, `eşiğ`); `ng` `nk` olur (`reng`); tek heceli `ad`, `kod`, `ağ`,
+  `dağ`, ünsüz sonrası `d` (`bildirild`) ve ünlü sonrası `g` (`katalog`)
+  değişmez;
+- son iki ünsüzün ikincisi `n`/`r` ve ilki `l`/`r` değilse ya da küme `ğz`
+  ise önceki ünlünün dar eşi araya girer (`metn → metin`, `fikr → fikir`,
+  `ağz → ağız`); `l`/`m` sonlu kümeler (`şekl`, `ism`, `film`, `izinl`) ve
+  `modern` değişmez.
+
+Uyumluluk (TANIMLI): K-398 öncesi program parametreyi yumuşamış gövdeyle
+(`kalıb`, `metn`) yazmış olabilir. Doğrudan eşleşme yoksa bu yazım ya da onu
+veren ekli biçim aynı parametreye çözülür; `kalıb … olsun` yeni ad doğurmaz,
+parametreye atamadır. Yalnız işlem parametreleri için geçerlidir; daha önce
+çözülen hiçbir başvurunun anlamı değişmez.
+
+- Gövdede sözlük köküne (`başlık … olsun`) farklı türde değer verilmesi
+  ZORUNLU olarak T002'dir ve öneri adın parametre olduğunu söyler (K-398
+  öncesi bu ayrı bir yereldi).
+- Parametre gövdede sözlük köküyle yeniden atandıktan sonra eski yazımla
+  (`başlığ`) başvurmak ZORUNLU olarak A002'dir: iki K-398 öncesi değerden
+  hangisinin kastedildiği sessizce seçilmez.
+
+AÇIK (K-398): iki adımlı geri çevrim (`kaybı → kayıp`, `kaydı → kayıt`),
+`l`/`m` sonlu ünlü düşmesi (`şekli`, `ismi`, `aklı`), `kt`/`fs`/`hs`
+kümeleri (`vakti`, `nefsi`, `şahsı`) ve iyelik+belirtme çakışması
+(`ip_adresini → ip_adresin`) eski bağlamayı korur; sözlük gerektirir ya da
+`-lı` sıfatlarıyla (`izinli`, `resmi`) ayırt edilemez.
+
 ## İleri morfoloji (TANIMLI — K-072/K-089)
 
 Çözümlemenin simetriği `ek_uydur`/`ek_zinciri_uydur` üreteçleridir; soyut eki

@@ -5,7 +5,7 @@ ag_satiri	altyapi	-	Baglanti satir akisi: CRLF okuyucu, cıplak CR/LF ve uzunluk
 agac	model	kimlik	Kaynak AST veri modeli
 api	adapter	agac,bicimleyici,faz,lib,proje,tani,yorumlayici	Desteklenen surumlu Rust gomme facade'i
 artefakt_dogrulama	proje	guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,zaman	ZEP arsiv imza SBOM ve provenance guven siniri
-ayristirici	sozdizimi	agac,intrinsic,ondalik,sozcukleyici,tani	Token akisini ASTye donusturme
+ayristirici	sozdizimi	agac,intrinsic,morfoloji,ondalik,sozcukleyici,tani	Token akisini ASTye donusturme
 bicimleyici	sozdizimi	sozcukleyici,tani	Kanonik kaynak bicimi
 bin_depo_sayilari	muhendislik	kalici_dosya	Canli depo envanteri
 bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu

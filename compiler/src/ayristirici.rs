@@ -11,9 +11,11 @@ mod ifade;
 mod kaynak;
 mod kimlik_iletisim;
 mod kurtarma;
+mod parametre;
 
 use self::ifade::*;
 use self::kaynak::konumlu_ifade;
+use self::parametre::parametre_adi;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
@@ -322,7 +324,7 @@ impl Ayristirici {
                 let ilk = satir_tokenlari.first()?;
                 match kelimeler.as_slice() {
                     [ad, al] if *al == "al" => Some(Parametre {
-                        ad: yalin_ad(ad),
+                        ad: parametre_adi(ad),
                         tur_yazimi: None,
                         satir: ilk.satir,
                     }),
@@ -330,7 +332,7 @@ impl Ayristirici {
                         if !ortalar.is_empty() && *olarak == "olarak" && *al == "al" =>
                     {
                         Some(Parametre {
-                            ad: yalin_ad(ad),
+                            ad: parametre_adi(ad),
                             tur_yazimi: Some(ortalar.join(" ")),
                             satir: ilk.satir,
                         })

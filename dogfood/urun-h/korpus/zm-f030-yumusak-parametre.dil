@@ -1,0 +1,20 @@
+# ZM-F030 — K-398 reproducer (ürün H ZeeMail korpusu; ürün commit a180e0c,
+# imap/kaynak/ana.dil `klasörleri listele`, LIST kalıp eşlemesi). Ürün doğal
+# adı `kalıbı` yerine `deseni` yazmak zorunda kaldı: parametre yumuşamış
+# gövdeye (`kalıb`) bağlanıyor, gövdedeki `kalıp` A001 veriyordu. K-398 ile
+# parametre sözlük köküne bağlanır; `metni`/`metin` ünlü düşmesi de aynı.
+
+işlem kutu eşleşir mi
+    kalıbı Metin olarak al
+    metni Metin olarak al
+    Mantıksal döndürür
+
+    kalıp "*" e eşitse veya kalıp "%" e eşitse
+        doğru döndür
+    metin kalıba eşitse
+        doğru döndür
+    yanlış döndür
+
+"*" ve "INBOX" için kutu eşleşir mi yaz
+"Taslaklar" ve "INBOX" için kutu eşleşir mi yaz
+"INBOX" ve "INBOX" için kutu eşleşir mi yaz

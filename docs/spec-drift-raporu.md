@@ -8,7 +8,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 |---|---:|---:|---:|---:|
 | `spec/01-sozcukleme.md` | 8 | 8 | 0 | 0 |
 | `spec/02-dizim.md` | 7 | 7 | 0 | 0 |
-| `spec/03-adlar-ve-kapsam.md` | 6 | 6 | 0 | 0 |
+| `spec/03-adlar-ve-kapsam.md` | 12 | 11 | 0 | 1 |
 | `spec/04-turler.md` | 15 | 15 | 0 | 0 |
 | `spec/05-degerlendirme.md` | 9 | 9 | 0 | 0 |
 | `spec/06-hata-modeli.md` | 7 | 7 | 0 | 0 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **411** | **390** | **5** | **16** |
+| **Toplam** | **417** | **395** | **5** | **17** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -49,6 +49,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 ## Açık maddeler
 
+- `spec/03-adlar-ve-kapsam.md#548b78fc716d5ccb` — AÇIK (K-398): iki adımlı geri çevrim (`kaybı → kayıp`, `kaydı → kayıt`),… — K-398: sözlüksüz kural iki adımlı geri çevrimi, l/m sonlu ünlü düşmesini (-lı sıfatlarıyla çakışır) ve iyelik+belirtme çakışmasını ayırt edemez; sözlük ya da zee-tr-2 kararı ister.
 - `spec/07-birimler.md#5a223c7685111c87` — AÇIK: Göreli IO kökünü proje klasörüne taşıyan bir bildirim alanı yoktur… — K-382/K-394: göreli IO kökü taşınmaz; projeler arası paylaşılan veri K-394 veri_kökü (mutlak, işletimce verilen kök) ile açıldı.
 - `spec/07-birimler.md#ea02c119dae2926d` — AÇIK: Veri kökünde dizin listeleme, görsel küçültme, bağlantı blok dosya… — K-394: listeleme ve görsel küçültme açık ret iletisi verir (veri_kokunde_yazma_tasima_silme_ve_okuma_ailesi_calisir listeleme reddini sınar); Windows/wasm yok.
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.

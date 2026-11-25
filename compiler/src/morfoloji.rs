@@ -142,6 +142,81 @@ pub fn kok_adaylari(kelime: &str) -> Vec<String> {
     adaylar
 }
 
+/// Bağlama adı seçimi (K-398): ekli yazılmış bir tanımlayıcıdan yapısal olarak
+/// atılmış gövdenin (`kalıb`, `metn`) sözlük kökünü (`kalıp`, `metin`) verir.
+///
+/// Profil çıktısı değildir: `cozumleri_bul`, `kok_adaylari`, `ek_uydur` ve
+/// uyumluluk kaydı değişmez. Yalnız parametre bağlama adını seçen ayrıştırıcı
+/// ve eski yazımı kabul eden ad çözümleyici kullanır. Kurallar yalnız alt çizgili
+/// adın son parçasına bakar (`posta_kod` tek hecelidir) ve sözlüğe dayanmaz:
+///
+/// - sonu `b`/`c` ünlü ya da `l/m/n/r` sonrasıysa → `p`/`ç` (Türkçede sözcük
+///   sonu `b`/`c` yoktur: `kalıb`, `uc`, `kalb`); `kayb` kalır;
+/// - en az iki heceli parçada ünlü sonrası `d` → `t` (`aded`) ve sonu `ğ` → `k`
+///   (`eşiğ`); `ng` → `nk`; tek heceli `ad`, `kod`, `ağ`, `dağ`, ünsüz sonrası
+///   `d` (`bildirild`) ve ünlü sonrası `g` (`katalog`) kalır;
+/// - ünlü düşmesi: son iki ünsüz yükselen kümeyse (ikincisi `n`/`r`, ilki
+///   `l`/`r` değil; ya da `ğz`) dar ünlü geri girer (`metn`→`metin`,
+///   `izn`→`izin`, `fikr`→`fikir`, `ağz`→`ağız`); `modern` ve `-lı` sıfatları
+///   ile `l`/`m` sonlu kümeler (`şekl`, `ism`, `film`) kalır.
+///
+/// Kural uygulanmazsa `None` döner; çağıran gövdeyi olduğu gibi kullanır.
+pub fn baglama_koku(govde: &str) -> Option<String> {
+    let harfler: Vec<char> = govde.chars().collect();
+    let parca_basi = harfler
+        .iter()
+        .rposition(|&k| k == '_')
+        .map_or(0, |konum| konum + 1);
+    let parca = &harfler[parca_basi..];
+    if parca.len() < 2 || !parca.iter().any(|&k| unludur(k)) {
+        return None;
+    }
+    let mut yeni = harfler.clone();
+    if let Some(sert) = sertlesen_son(parca) {
+        *yeni.last_mut()? = sert;
+    } else {
+        yeni.insert(harfler.len() - 1, dusen_dar_unlu(parca)?);
+    }
+    Some(yeni.into_iter().collect())
+}
+
+/// `baglama_koku` ünsüz yumuşaması geri çevrimi: son harfin sert eşi.
+fn sertlesen_son(parca: &[char]) -> Option<char> {
+    let n = parca.len();
+    let hece = parca.iter().filter(|&&k| unludur(k)).count();
+    let (son, onceki) = (parca[n - 1], parca[n - 2]);
+    match son {
+        // Ünsüz sonrası yalnız sonorant küme sertleşir (`kalb`→`kalp`,
+        // `borc`→`borç`); `kayb` gibi iki adımlı geri çevrim (`kayıp`) yapılmaz.
+        'b' | 'c' if unludur(onceki) || matches!(onceki, 'l' | 'm' | 'n' | 'r') => {
+            Some(if son == 'b' { 'p' } else { 'ç' })
+        }
+        // `aded`→`adet`, `mevcud`→`mevcut`; ünsüz sonrası `d` (`bildirild`,
+        // `cild`) ve tek heceli `ad`/`kod` kalır.
+        'd' if hece >= 2 && unludur(onceki) => Some('t'),
+        'ğ' if hece >= 2 => Some('k'),
+        'g' if onceki == 'n' => Some('k'),
+        _ => None,
+    }
+}
+
+/// `baglama_koku` ünlü düşmesi geri çevrimi: son iki ünsüz arasına girecek
+/// dar ünlü.
+fn dusen_dar_unlu(parca: &[char]) -> Option<char> {
+    let n = parca.len();
+    let (son, onceki) = (parca[n - 1], parca[n - 2]);
+    let unsuz = |k: char| k.is_alphabetic() && !unludur(k);
+    // `-lı` sıfatları (`izinli`, `gizli`) ve `resmi`/`kısmi` yüzünden `l`/`m`
+    // sonlu kümeler kapsam dışıdır (`şekl`, `ism` olduğu gibi kalır).
+    let yukselen = matches!(son, 'n' | 'r') && !matches!(onceki, 'l' | 'r');
+    let kume = unsuz(son) && unsuz(onceki) && onceki != son;
+    if n < 3 || !kume || !(yukselen || (onceki == 'ğ' && son == 'z')) {
+        return None;
+    }
+    let son_unlu = parca[..n - 2].iter().rev().find(|&&k| unludur(k))?;
+    Some(dar_unlu(*son_unlu))
+}
+
 /// Belirli bir köke uyan bütün ek zincirlerini döndürür.
 pub fn ek_zincirleri_coz(kelime: &str, kok: &str) -> Vec<Vec<SoyutEk>> {
     let mut zincirler = Vec::new();
