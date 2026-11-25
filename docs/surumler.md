@@ -34,6 +34,28 @@ Bu kayıt yeni sürüm etiketi değildir.
   --web-systemd-soketi`). Filo denetimi: üretimdeki hiçbir Zee web süreci
   `--deneysel-web` kullanmıyor.
 
+### Değişenler
+
+- **Dosya özeti ve dosya indirme yanıtı artık 32 MiB'a kadar (K-401):**
+  `… dosyasının sha256 özetini almayı dene` ve
+  `… dosyasını … adıyla ek olarak göndermeyi dene` sınırı 16 MiB'tan
+  **32 MiB'a** çıktı; çözerek yazılan ~18 MB'lık bir e-posta eki artık
+  özetlenip web arayüzünden indirilebilir. Sınıra tam ulaşan dosya kabul
+  edilir, bir bayt fazlası C013 verir (indirmede yanıt başlığı yazılmadan).
+  İndirme 16 KiB parçalarla akar, dosya belleğe alınmaz. Dosya yükleme
+  sınırı 16 MiB kalır.
+
+  **Göç:** Gerekmez.
+
+### Düzeltilenler
+
+- **16 MiB'tan büyük dosya taşınabiliyor (K-401):** eylem dışındaki
+  `… dosyasını … yoluna atomik taşımayı dene` dosya içeriğini gereksiz yere
+  belleğe okuyup 16 MiB veri okuma sınırına çarpıyordu; çözülmüş büyük ek
+  yerine taşınamıyordu. Artık eylem dışında içerik okunmaz ve boyut sınırı
+  yoktur; var olan hedefi ezmeme ve proje kökü kuralları aynıdır. Eylem
+  içindeki taşıma geri alma için içeriği tuttuğundan 16 MiB sınırı kalır.
+
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
@@ -120,6 +142,25 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez. Alan yazmayan projede sınırlar aynıdır. Süreç çökmesinden
   kalan geçici yükleme dosyaları artık 15 yerine 30 dakika sonra silinir.
+
+- **Projeler arasında paylaşılan veri kökü (K-394):** aynı uygulamanın ayrı
+  projeleri (ör. e-postayı alan hizmet ile eki sunan web paneli) artık ortak
+  bir veri klasörünü paylaşabilir. `proje.dil` klasörün yolunu değil, yolu
+  taşıyan ortam değişkeninin ya da systemd credential'ın adını bildirir:
+  `veri_kökü "UYGULAMA_DEPO" olsun`. Program o klasördeki dosyaları `veri:`
+  önekiyle adlandırır: `"veri:ekler/k1-1f…" dosyasını okumayı dene`. Okumak
+  için `veri-okuma`, yazmak/taşımak/silmek için ayrıca `veri-yazma`
+  yetkinliği gerekir; yalnız okuyan web paneli böylece yazamaz. Kök mutlak,
+  sembolik bağsız olmalı ve başka kullanıcılarca yazılamamalıdır; paylaşılan
+  yazma yalnız son klasörde (ör. `ekler/`) olabilir, sembolik bağ ve çok
+  hard-link'li dosya izlenmez. Ayrıntı ve yerleşim örneği RFC-0045'tedir.
+  Tutarsız bildirim yeni **P023** tanısıdır. Tek dosya kipinde `veri:` yolu
+  reddedilir.
+
+  **Göç:** Mevcut projeler değişmeden çalışır. `veri:` ile başlayan dosya
+  adları artık ayrılmıştır ve proje klasöründe aranmaz (bilinen kullanım
+  yok). Kalıcı dosya yazımı artık hedef sembolik bağ olduğunda eylem içi
+  taşıma/silmede de C013 verir (önceden bağı izliyordu).
 
 - **Dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve
   metnin SHA-256 özeti (K-389):** büyük bir dosya (ör. bağlantıdan alınmış

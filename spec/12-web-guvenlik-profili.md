@@ -323,7 +323,7 @@ sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky sess
 ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
 `docs/web-production-profili.md` içindedir.
 
-Normatif gerekçe: RFC-0017, ADR-034, ADR-036, ADR-037, ADR-076, ADR-079 ve ADR-170 (K-400). Rota/eylem ayrımı:
+Normatif gerekçe: RFC-0017, ADR-034, ADR-036, ADR-037, ADR-076, ADR-079 ve ADR-171 (K-400). Rota/eylem ayrımı:
 RFC-0015 ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.
 
 ## Legacy bcrypt ve kanonik istemci adresi (K-208/K-209)

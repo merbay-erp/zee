@@ -15,7 +15,7 @@ Kaynak: `regression/v2.tsv`
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 17 |
+| runtime | 18 |
 | security | 30 |
 
 | Tanı | Vaka |
@@ -29,9 +29,9 @@ Kaynak: `regression/v2.tsv`
 | T017 | 1 |
 | T036 | 1 |
 | T054 | 2 |
-| - | 66 |
+| - | 67 |
 
-Toplam 78 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 78/78.
+Toplam 79 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 79/79.
 
 ## Güvenlik bulguları
 
@@ -42,10 +42,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 18 | 0 | 0 | 18 |
 | orta | 53 | 16 | 2 | 71 |
-| dusuk | 47 | 30 | 1 | 78 |
+| dusuk | 48 | 30 | 1 | 79 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 168.
+Toplam bulgu: 169.
 
 ## Spec maddeleri
 
@@ -59,12 +59,12 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/04-turler.md | 15 | 0 | 0 | 15 | 100 |
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
-| spec/07-birimler.md | 13 | 1 | 1 | 15 | 86 |
-| spec/08-kalici-dosya.md | 7 | 1 | 0 | 8 | 87 |
+| spec/07-birimler.md | 20 | 1 | 2 | 23 | 86 |
+| spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
 | spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 26 | 0 | 0 | 26 | 100 |
-| spec/12-web-guvenlik-profili.md | 75 | 0 | 7 | 82 | 91 |
+| spec/12-web-guvenlik-profili.md | 70 | 0 | 6 | 76 | 92 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |
@@ -75,16 +75,16 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/20-ifade-grameri.md | 9 | 0 | 0 | 9 | 100 |
 | spec/21-deterministik-io-izi.md | 6 | 0 | 0 | 6 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
-| spec/23-yetkinlik-ve-outbound-guvenligi.md | 41 | 0 | 1 | 42 | 97 |
+| spec/23-yetkinlik-ve-outbound-guvenligi.md | 42 | 0 | 1 | 43 | 97 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 11 | 0 | 1 | 12 | 91 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 18 | 0 | 1 | 19 | 94 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 19 | 0 | 1 | 20 | 95 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 19 | 0 | 1 | 20 | 95 |
-| **Toplam** | 375 | 5 | 15 | 395 | 94 |
+| **Toplam** | 380 | 5 | 15 | 400 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -109,12 +109,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 11 | 4 | 0 | 14 | 1 | 15 |
+| urun-h | 13 | 4 | 0 | 16 | 1 | 17 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 80.
+Toplam korpus vakası: 82.
 
 ## Deprecation kayıtları
 
@@ -147,16 +147,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 109 |
-| semantic-bugfix | 42 |
-| semantic-change | 69 |
+| maintenance | 111 |
+| semantic-bugfix | 43 |
+| semantic-change | 71 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
-| bugfix | 2 |
+| bugfix | 3 |
 | correctness | 42 |
-| dogfood-change | 46 |
-| maintenance | 106 |
+| dogfood-change | 48 |
+| maintenance | 108 |
 | security | 20 |
 
-Toplam: 220 compiler değişiklik beyanı, 216 core freeze beyanı.
+Toplam: 225 compiler değişiklik beyanı, 221 core freeze beyanı.

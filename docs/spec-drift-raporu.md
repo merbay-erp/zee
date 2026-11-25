@@ -12,8 +12,8 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/04-turler.md` | 15 | 15 | 0 | 0 |
 | `spec/05-degerlendirme.md` | 9 | 9 | 0 | 0 |
 | `spec/06-hata-modeli.md` | 7 | 7 | 0 | 0 |
-| `spec/07-birimler.md` | 15 | 13 | 1 | 1 |
-| `spec/08-kalici-dosya.md` | 8 | 7 | 1 | 0 |
+| `spec/07-birimler.md` | 23 | 20 | 1 | 2 |
+| `spec/08-kalici-dosya.md` | 9 | 8 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
 | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 26 | 26 | 0 | 0 |
@@ -28,16 +28,16 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/20-ifade-grameri.md` | 9 | 9 | 0 | 0 |
 | `spec/21-deterministik-io-izi.md` | 6 | 6 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
-| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 42 | 41 | 0 | 1 |
+| `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 43 | 42 | 0 | 1 |
 | `spec/24-kaynak-guvenlik-profili.md` | 10 | 10 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 12 | 11 | 0 | 1 |
-| `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 19 | 18 | 0 | 1 |
+| `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 20 | 19 | 0 | 1 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 20 | 19 | 0 | 1 |
-| **Toplam** | **395** | **375** | **5** | **15** |
+| **Toplam** | **406** | **385** | **5** | **16** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -49,7 +49,8 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 ## Açık maddeler
 
-- `spec/07-birimler.md#4133d3a7031d4b3d` — AÇIK: Kökü proje klasörüne taşıyan ya da proje başına ayrı veri kökü aça… — K-382 takip önerisi veri_kökü: ayrı dogfood-change; iki ürün tekrarı ya da ikinci tüketici kanıtı bekler.
+- `spec/07-birimler.md#5a223c7685111c87` — AÇIK: Göreli IO kökünü proje klasörüne taşıyan bir bildirim alanı yoktur… — K-382/K-394: göreli IO kökü taşınmaz; projeler arası paylaşılan veri K-394 veri_kökü (mutlak, işletimce verilen kök) ile açıldı.
+- `spec/07-birimler.md#ea02c119dae2926d` — AÇIK: Veri kökünde dizin listeleme, görsel küçültme, bağlantı blok dosya… — K-394: listeleme ve görsel küçültme açık ret iletisi verir (veri_kokunde_yazma_tasima_silme_ve_okuma_ailesi_calisir listeleme reddini sınar); Windows/wasm yok.
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.
 - `spec/12-web-guvenlik-profili.md#2e5226f743e35a39` — AÇIK (K-400): Host'u `127.0.0.1` ya da `localhost` olarak yeniden yazan … — K-400: Host yeniden yazan yerel proxy/tünel çalışma zamanınca ayırt edilemez; operatör kuralı ve filo süreç denetimi (25.11.2026: hiçbir üretim sürecinde --deneysel-web yok) ile kapsanır.
 - `spec/12-web-guvenlik-profili.md#5d930da7687a2f1e` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım, ağ dosya sistemi ve çok hostlu birincillik açık (K-340 `zee.ayar` alanını, K-341 tek makinede elle kurulumda tek birincili bu maddeden çıkardı); Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.

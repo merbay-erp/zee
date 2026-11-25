@@ -146,7 +146,7 @@ GET "/durum" adresine istek geldiğinde
 Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
 localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
 eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
-K-400/ADR-170 bu sınırı üretim sözleşmesine çevirdi: deneysel kip yalnız
+K-400/ADR-171 bu sınırı üretim sözleşmesine çevirdi: deneysel kip yalnız
 loopback Host'una yanıt verir (DNS rebinding'e karşı 421), systemd soket devri
 almaz; internete açık tek yol `--web-proxy` worker/proxy profilidir (spec/12 §5a).
 K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
@@ -206,7 +206,7 @@ Web arayüzünde ek indirme, JS'siz yükleme ve genişletilmiş SMTP ek türleri
 K-378 ile `dogfood-change` olarak açılıyor ([RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
 kabul, ADR-163). **Gerçekleşen:** katman A — rotadan kayıtlı türle
 `attachment` dosya yanıtı (kapalı `icerik_turu` kaydı RFC-0040 katman C ile
-tek model; sandbox CSP, 16 MiB, K-372 bütçesi). Katman B — proje bildirimiyle
+tek model; sandbox CSP, 32 MiB (K-401; önce 16 MiB), K-372 bütçesi). Katman B — proje bildirimiyle
 açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytından
 önce, spec/26 `.parca` modeli). Katman C — proje bildirimli SMTP ek türleri
 (`e_posta_ek_türleri`, makro/yürütülebilir yapısal yasak, imza/UTF-8,
@@ -222,6 +222,17 @@ sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
 (`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
 hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
+
+Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
+([ADR-170](../adr/170-paylasilan-veri-koku.md),
+[RFC-0045](../rfcs/0045-paylasilan-veri-koku.md)) ile `proje.dil`
+`veri_kökü` kökün mutlak yolunu taşıyan ortam/credential adını bildirir,
+program `veri:` önekiyle adlandırır, okuma `veri-okuma` ve yazma
+`veri-yazma` ister (P023). Kök/ara klasörler `O_NOFOLLOW` yürüyüşü ve ata
+değişmeziyle, yaprak bağsız ve tek hard-link'li okunur; spec/08 iç okumaları
+da bağ izlemez (`urun-h` ZM-F038, GB-168). **Açık:** veri kökünde dizin
+listeleme, görsel küçültme, bağlantı blok dosyası, Windows. V1 sözü
+değildir.
 
 Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 ([ADR-167](../adr/167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md),

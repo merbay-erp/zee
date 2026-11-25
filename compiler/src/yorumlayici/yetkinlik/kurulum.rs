@@ -30,6 +30,23 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
         dosya::yolu_denetle(&self.politika, self.cocuk_modu, yol, yetkinlik)
     }
 
+    /// Bağlantı işlemi `ağ-dinleyici` ister (tanı türü "kapandı"); K-394:
+    /// dosyadan bağlantıya aktarımın yolu (proje dosyası ya da `veri:`) aynı
+    /// merkezî yol/yetkinlik denetiminden geçer (tanı türü "dosya").
+    pub(super) fn baglanti_islemini_denetle(
+        &self,
+        islem: &super::super::BaglantiIslemi,
+    ) -> Result<(), (&'static str, String)> {
+        self.gerektir(Yetkinlik::AgDinleyici)
+            .map_err(|hata| ("kapandı", hata))?;
+        match islem {
+            super::super::BaglantiIslemi::DosyaAktar(yol) => self
+                .dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)
+                .map_err(|hata| ("dosya", hata)),
+            _ => Ok(()),
+        }
+    }
+
     pub(super) fn web_gerektir(&self) -> Result<(), String> {
         self.gerektir(Yetkinlik::AgSunucusu)
     }

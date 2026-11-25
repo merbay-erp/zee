@@ -463,7 +463,10 @@ impl GirdiCikti for ToplayanIo {
             .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))?
             .clone();
         if icerik.len() as u64 > crate::icerik_turu::WEB_DOSYA_YANITI_BAYTI {
-            return Err("dosya yanıtı 16 MiB sınırını aşıyor".into());
+            return Err(format!(
+                "dosya yanıtı {} MiB sınırını aşıyor",
+                crate::icerik_turu::WEB_DOSYA_YANITI_BAYTI / (1024 * 1024)
+            ));
         }
         if self.bekleyen_sunucu_yaniti.is_some() {
             return Err("bu isteğin yanıtı zaten belirlendi".into());

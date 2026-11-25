@@ -1,10 +1,10 @@
-# ADR-170 — Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu
+# ADR-171 — Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu
 
 - **Durum:** kabul
 - **Tarih:** 25 Kasım 2026
 - **İlgili kayıt:** K-400, spec/12 §5a, ADR-034 (HTTPS reverse-proxy sınırı),
   ADR-059 (core freeze), ADR-066 (güvenlik bulguları), ADR-162 (adlı
-  dinleyici devri), ADR-164 (CSP), ADR-168 (istek boyut sınırları), GB-168
+  dinleyici devri), ADR-164 (CSP), ADR-168 (istek boyut sınırları), GB-170
 
 ## Bağlam
 
