@@ -136,7 +136,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   (`… adıyla ek olarak göndermeyi dene`) verilebilir. Bozuk kodlama yeni
   **C032** ile döner (`tür`: `alfabe`, `dolgu`, `uzunluk`, `kaçış`,
   `satır_sonu`, `utf8`, `boyut_aşımı`; `konum` hatalı baytı gösterir) ve
-  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir.
+  dosyaya hiçbir şey yazılmaz. Ek dosyası en çok 16 MiB olabilir (K-395 ile 32 MiB).
   `özet metnin sha256 özeti olsun` bellekteki metnin özetini dosya
   özetiyle aynı biçimde (64 küçük harf onaltılık) verir. Okuma `dosya-okuma`,
   yazma `dosya-yazma` yetkinliği ister; IO izine içerik değil yalnız uzunluk
@@ -206,6 +206,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 - **zeedili.com 24–25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-390 DNS sorgusu (MX, TXT, TLSA, adres; RFC-0044), K-391 uzun iletiler ve rota bazında gövde sınırı, K-389 dosyayı parça parça okuma, base64/quoted-printable çözerek yazma ve metnin SHA-256 özeti (RFC-0043), K-386 listede sıra ile öğe erişimi (RFC-0029), K-387 tek dosya kipinde `--izin ağ` ile açılan dış ağ ve K-380/K-392/K-388 derleyici ve bağlantı bütçesi düzeltmeleri haberleri eklendi. Dil davranışı değişmedi.
 
 ### Değişenler
+
+- **Çözerek eklenen ek dosyası artık 32 MiB'a kadar (K-395):**
+  `… base64|quoted_printable çözerek … dosyasına yazmayı|eklemeyi dene`
+  hedef dosyasının toplam sınırı 16 MiB'tan **32 MiB'a** çıktı; 25 MB'lık bir
+  e-postanın ~18 MB'lık eki artık parça parça eklenerek tek dosyaya
+  çıkarılabilir. Sınıra tam ulaşan ekleme kabul edilir, bir bayt fazlası
+  yine C013 verir ve dosyaya hiçbir şey yazılmaz. 16 MiB'tan büyük bir
+  dosyaya ekleme önceden okuma sınırına çarpıyordu; bu da düzeldi. Dosya
+  yükleme, dosya indirme yanıtı ve dosya özeti sınırları 16 MiB kalır.
+
+  **Göç:** Gerekmez. 16 MiB'ı aşan eki kendisi bölen ya da uyarı veren kod
+  bu sınırı 32 MiB'a çekebilir.
 
 - **Tanılar ad seçimini söylüyor (K-384):** adı `yaz` ya da `gönder` ile
   biten bir işlem (`işlem yanıtı yaz`) cümle olarak çağrılınca satır

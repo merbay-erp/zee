@@ -3,6 +3,9 @@
 //! MIME ileti dosyasından aralıklı okuma + çözerek yazma ile çıkarılan ekin
 //! bayt-kesinliği, RFC-0041 dosya yanıtına bağlanması, no-clobber, tavan,
 //! proje dosya sınırı ve içeriksiz IO izi.
+//!
+//! K-395 (ADR-167 eki, ZM-F039): çözerek yazma/ekleme hedef tavanı 32 MiB;
+//! tam sınır kabul, bir bayt fazlası hedefe dokunmadan ret.
 
 use dil::kaynagi_derle;
 use dil::yorumlayici::{self, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
@@ -558,7 +561,8 @@ ucuncu ile sonucuYaz
     std::os::unix::fs::symlink(&dis, proje.0.join("bag")).unwrap();
     std::fs::create_dir_all(proje.0.join("dizin")).unwrap();
     std::fs::write(proje.0.join("var.bin"), b"eski").unwrap();
-    let tavan = 16 * 1024 * 1024;
+    // K-395: hedef tavanı 16 → 32 MiB.
+    let tavan = 32 * 1024 * 1024;
     std::fs::write(proje.0.join("dolu.bin"), vec![1u8; tavan - 2]).unwrap();
     let (tamam, stdout, stderr) = proje.calistir();
     let _ = std::fs::remove_dir_all(&dis);
@@ -566,7 +570,7 @@ ucuncu ile sonucuYaz
     let satirlar: Vec<&str> = stdout.lines().collect();
     assert_eq!(satirlar[0], "C013 \"var.bin\" hedef dosyası zaten var");
     assert!(
-        satirlar[1].starts_with("C013") && satirlar[1].contains("16 MiB"),
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
         "{satirlar:?}"
     );
     assert!(satirlar[2].contains("proje dosya sınırı"), "{satirlar:?}");
@@ -671,4 +675,57 @@ GET "/ek" adresine istek geldiğinde
         "{basliklar}"
     );
     assert!(govde == ek, "indirilen ek bayt bayt aynı");
+}
+
+/// K-395 (ADR-167 eki, ZM-F039): 25 MB iletinin ~18 MB eki için hedef tavanı
+/// 32 MiB. Tam 32 MiB'a ulaşan ekleme kabul, bir bayt fazlası reddedilir ve
+/// hedef değişmez; eski 16 MiB sınırının ötesi artık geçerlidir.
+#[test]
+fn eklemeyi_dene_hedef_tavani_32_mib_tam_sinirda() {
+    let tavan: usize = 32 * 1024 * 1024;
+    let ana = r#"işlem sonaEkle
+    yolu Metin olarak al
+    değer döndürmez
+    sonuç "QUJD" base64 çözerek yolu dosyasına eklemeyi dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu ile " " ile hatanın mesajı yaz
+
+"tam.bin" ile sonaEkle
+"tasan.bin" ile sonaEkle
+"eski-sinir.bin" ile sonaEkle
+"#;
+    let proje = Proje::yeni(DOSYA, ana);
+    std::fs::write(proje.0.join("tam.bin"), vec![7u8; tavan - 3]).unwrap();
+    std::fs::write(proje.0.join("tasan.bin"), vec![7u8; tavan - 2]).unwrap();
+    std::fs::write(proje.0.join("eski-sinir.bin"), vec![7u8; 16 * 1024 * 1024]).unwrap();
+    let (tamam, stdout, stderr) = proje.calistir();
+    assert!(tamam, "{stdout}\n{stderr}");
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    let mut tam = vec![7u8; tavan - 3];
+    tam.extend_from_slice(b"ABC");
+    assert_eq!(
+        satirlar[0],
+        format!("yol: tam.bin, sha256: {}, bayt: {tavan}", sha256(&tam)),
+        "tam 32 MiB kabul"
+    );
+    assert!(
+        satirlar[1].starts_with("C013") && satirlar[1].contains("32 MiB"),
+        "{satirlar:?}"
+    );
+    assert!(
+        satirlar[2].ends_with(&format!("bayt: {}", 16 * 1024 * 1024 + 3)),
+        "16 MiB ötesi artık geçerli: {satirlar:?}"
+    );
+    assert_eq!(
+        std::fs::metadata(proje.0.join("tam.bin")).unwrap().len(),
+        tavan as u64
+    );
+    assert_eq!(
+        std::fs::metadata(proje.0.join("tasan.bin")).unwrap().len(),
+        (tavan - 2) as u64,
+        "bir bayt fazlası hedefe hiç yazmaz"
+    );
 }

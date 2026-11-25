@@ -228,7 +228,7 @@ Bayt/kodlama/özet yüzeyinin ilk dilimi **gerçekleşti**: K-389
 [RFC-0043](../rfcs/0043-bayt-kodlama-ve-ozet-yuzeyi.md) Dilim 1) ile dosya
 ≤ 1 MiB aralıklarla katı UTF-8 ya da base64 `Metin` olarak okunur,
 base64/quoted-printable içerik katı çözülüp no-clobber yeni dosyaya ya da
-atomik eklemeyle (16 MiB hedef tavanı) yazılır; `yol`/`sha256`/`bayt`
+atomik eklemeyle (32 MiB hedef tavanı; K-395 öncesi 16 MiB) yazılır; `yol`/`sha256`/`bayt`
 tutamağı RFC-0041 dosya yanıtına bağlanır; `metnin sha256 özeti` bellekte
 özet verir; kodlama hatası C032, IO izi içeriksizdir (`urun-h` ZM-F034/
 ZM-F024). **Açık:** RFC-0043 Dilim 2 (UTF-8 bayt sayısı, metin↔base64/
