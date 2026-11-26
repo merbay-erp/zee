@@ -12,6 +12,25 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
+- **RC fuzz kapısı sekiz hedefte yeşil (K-412, K-417):** ağdan gelen
+  MIME, quoted-printable ve AUTH girdisini çözen `kodlama` modülü, kendi
+  RFC 4648/2045 kâhiniyle RC fuzz kapısının sekizinci hedefi oldu (K-412).
+  Yedi hedefli ilk kampanyada `dkim_imza_girdisi` hedefinin kalması bir
+  kâhin hatasıydı: RFC 6376 etiket adıyla `=` arasında boşluğa izin verir,
+  dilin denetimi bunu doğru kabul ediyordu, kâhin ise reddediyordu. Kâhin
+  düzeltildi; ürün kodu değişmedi, güvenlik bulgusu yok (K-417). Ardından
+  `9c003fff` üzerinde sekiz hedef iki ortamda da yeşil geçti: yerelde
+  (macOS arm64) hedef başına 1.801 sn ve toplam 65.479.628 yürütme,
+  GitHub `fuzz-rc` koşusunda dokuz işin dokuzu başarılı, hedef başına
+  3.601 sn ve toplam 3.586.383.968 yürütme. Crash, timeout ve sanitizer
+  bulgusu sıfır; seçili Miri grupları 2/2 geçti. Sonuçlar
+  `docs/fuzz-rc-gecmisi-v1.tsv` tarihçesindedir.
+
+  Bu bir sürüm etiketi değildir: `guvenlik-kapisi.sh --surum-adayi`
+  kapısının clippy, tam test ve koruk adımları ayrıca koşulacaktır.
+
+  **Göç:** Gerekmez; dil davranışı değişmedi.
+
 - **Satırlı base64 aktarımında dosya sonundaki aralık (K-414, GB-183):**
   `… dosyasının base64 satırlarının K baytından N baytını bağlantıya
   aktarmayı dene`, boyu 57'ye bölümünden 55 ya da 56 kalan dosyada K
@@ -230,6 +249,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
 - **zeedili.com 26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-397 giden posta DKIM imzası ve dosyadan akışlı gövde özeti (RFC-0044) ile K-402 metnin bayt sayısı, base64 ve kod noktası kalıpları (RFC-0043) haberleri eklendi. Dil davranışı değişmedi.
 - **zeedili.com 26 Kasım akşam haberleri:** ana sayfa Gelişmeler bölümüne K-405 makine uç noktası, K-406 türlü metin yanıtı, K-407 `dil göçür --ileri-kayitlara-izin` (ADR-181), K-408 dosyanın base64 satırlarını dosyaya ekleme, K-413 açılışta DKIM DNS denetimi, K-410 katı base64 ve `zee1:` göç notu, K-414 bağlantı aktarım penceresi (GB-183) ile K-411/K-416 DKIM güvence işleri haberleri eklendi. K-414 kaydı Düzeltilenler'den Güvenlik'e taşındı; K-411 ve K-416 kayıtları eklendi. Dil davranışı değişmedi.
+- **zeedili.com RC fuzz haberi:** ana sayfa Gelişmeler bölümüne K-412 ve K-417'yi kapsayan “RC fuzz kapısı sekiz hedefte” haberi eklendi; sürüm etiketi olmadığı ve `--surum-adayi` adımlarının ayrıca koşulacağı belirtildi. K-412/K-417 ve `9c003fff` kampanya sonucu Güvenlik kaydına eklendi. Dil davranışı değişmedi.
 
 ## 25 Kasım 2026 — Geliştirme güncellemeleri
 
