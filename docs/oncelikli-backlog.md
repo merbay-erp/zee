@@ -2608,6 +2608,19 @@ diferansiyel (`compiler/tests/ortak/x509_ozellikleri.rs`); korpus openssl
 sertifikada openssl `-pubkey` eşliği). RC kapısı yedi hedefli.
 Açık: ilk yedi hedefli RC koşusu ve tarihçe satırı.
 
+## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (RFC-0044 B3 kabul 2)
+
+**Durum: yöntem KAPALI (26 Kasım 2026); kanıt satırı AÇIK (operatör
+adımı).** Kaynak: kullanıcı isteği. [Runbook](dkim-alici-kaniti.md):
+anahtar ve TXT kaydı elle (K-415 aday), yayım ve gönderim operatörde, ham
+`.eml` özel depoda. `scripts/dkim-alici-kaniti.py` (stdlib, `-I`, ağsız)
+alıcının en üstteki `Authentication-Results` başlığından dkim/spf/dmarc ve
+hizalamayı okur, anonim satır üretir (`<kurum-alanı>`, `<seçici>`,
+`.eml` SHA-256, zee SHA). Satır alan, adres, IP ve Received taşımaz.
+Kayıt defteri [`dkim-alici-kanitlari-v1.tsv`](dkim-alici-kanitlari-v1.tsv)
+boş başlar. Kanıt: `scripts/tests/dkim-alici-kaniti-test.py` (6 sentetik
+`.eml` vakası, CI ubuntu). compiler/src değişmedi.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
 **Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
