@@ -10,28 +10,26 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
-### Eklenen
-
-- **Makine uç noktası (K-405):** Outlook'un otomatik hesap kurulumu gibi
-  tarayıcı olmayan istemciler için CSRF istemeyen POST rotası yazılabilir:
-
-  ```text
-  POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
-      herkese açık makine uç noktası
-      gövde isteğin ham gövdesi olsun
-  ```
-
-  Bu rota `_csrf` ve `Origin` istemez; karşılığında oturuma, çerezlere ve
-  CSRF belirtecine hiç ulaşamaz (derlemede T061), yanıtı asla `Set-Cookie`
-  taşımaz. `isteğin ham gövdesi` gövdeyi en çok 8 KiB UTF-8 metin olarak
-  verir; yalnız `text/xml`, `application/xml` ve `application/json` kabul
-  edilir (başkası 415, büyük gövde 413). Yol sabit olmalı, yöntem POST
-  (T060); ham gövde başka rotada okunamaz (T062). Dil XML ayrıştırmaz.
-
-  **Göç:** Gerekmez; mevcut rotaların davranışı değişmez. Sıradan POST
-  rotaları CSRF ve Origin istemeye devam eder.
-
 ### Güvenlik
+
+- **Satırlı base64 aktarımında dosya sonundaki aralık (K-414, GB-183):**
+  `… dosyasının base64 satırlarının K baytından N baytını bağlantıya
+  aktarmayı dene`, boyu 57'ye bölümünden 55 ya da 56 kalan dosyada K
+  kodlanmış çıktının sonuna eşit ya da daha büyükse `dil dene`/test
+  ortamında paniğe, gerçek sunucunun debug derlemesinde bağlantı görevinin
+  çökmesine yol açıyordu; istemcinin seçtiği aralıkla (IMAP `BODY[]<o.n>`)
+  tetiklenebilen bir hizmet dışı bırakma açığıydı, veri sızıntısı yoktu. Artık her dosya boyunda belgelendiği gibi 0 bayt
+  yazılır ve `0` döner.
+
+  **Göç:** Gerekmez.
+
+- **DKIM ve X.509 ayrıştırıcıları sürüm adayı fuzz kapısında (K-411):**
+  DKIM imza girdisi ile sertifikadan açık anahtar çıkaran X.509 ayrıştırıcısı
+  için iki yeni fuzz hedefi eklendi; sürüm adayı fuzz kapısı beş hedeften
+  yediye çıktı. Her aday artık bu iki hedefi de AddressSanitizer altında
+  çalıştırmak zorunda. Dil davranışı değişmedi.
+
+  **Göç:** Gerekmez.
 
 - **Gizli değer biçimi tek katı base64 çözücüyle okunuyor (K-410):**
   derleyicideki dört ayrı base64 kodlayıcı/çözücü tek uygulamada
@@ -71,6 +69,25 @@ Bu kayıt yeni sürüm etiketi değildir.
   yanıt cümleleri de eskisi gibi akışı sürdürür.
 
 ### Eklenenler
+
+- **Makine uç noktası (K-405):** Outlook'un otomatik hesap kurulumu gibi
+  tarayıcı olmayan istemciler için CSRF istemeyen POST rotası yazılabilir:
+
+  ```text
+  POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
+      herkese açık makine uç noktası
+      gövde isteğin ham gövdesi olsun
+  ```
+
+  Bu rota `_csrf` ve `Origin` istemez; karşılığında oturuma, çerezlere ve
+  CSRF belirtecine hiç ulaşamaz (derlemede T061), yanıtı asla `Set-Cookie`
+  taşımaz. `isteğin ham gövdesi` gövdeyi en çok 8 KiB UTF-8 metin olarak
+  verir; yalnız `text/xml`, `application/xml` ve `application/json` kabul
+  edilir (başkası 415, büyük gövde 413). Yol sabit olmalı, yöntem POST
+  (T060); ham gövde başka rotada okunamaz (T062). Dil XML ayrıştırmaz.
+
+  **Göç:** Gerekmez; mevcut rotaların davranışı değişmez. Sıradan POST
+  rotaları CSRF ve Origin istemeye devam eder.
 
 - **Ekli iletinin gövdesi tek dosyada kurulabiliyor (K-408):** bir dosyayı
   e-posta ekinin biçiminde (RFC 2045 base64, 76 karakterlik CRLF
@@ -118,6 +135,7 @@ Bu kayıt yeni sürüm etiketi değildir.
   seçiciyi güncelleyin. Ürün kodu bu iki hatayı yakalayıp iletiyi imzasız
   gönderebilir ve yöneticiyi uyarabilir. `dns` bildirmeyen projeler
   etkilenmez.
+
 - **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
   kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
 
@@ -198,23 +216,20 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez. Elle yazılmış base64 döngüleri bu kalıplarla
   değiştirilebilir.
 
+- **Gerçek alıcıda DKIM kanıtı yöntemi (K-416):** imzalı iletinin gerçek
+  bir posta sağlayıcısında `dkim=pass` ve DMARC `pass` aldığını kanıtlamak
+  için adım adım rehber ([docs/dkim-alici-kaniti.md](dkim-alici-kaniti.md))
+  ve ağsız bir denetim betiği (`scripts/dkim-alici-kaniti.py`) eklendi.
+  Betik yalnız alıcının eklediği en üstteki `Authentication-Results`
+  başlığına güvenir, alttaki sahte `pass` başlıklarını yok sayar ve alan,
+  seçici, adres ya da IP basmadan anonim bir kanıt satırı üretir. Kanıtın
+  kendisi operatör adımıdır; dil davranışı değişmedi.
+
 ### Site
 
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
 - **zeedili.com 26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-397 giden posta DKIM imzası ve dosyadan akışlı gövde özeti (RFC-0044) ile K-402 metnin bayt sayısı, base64 ve kod noktası kalıpları (RFC-0043) haberleri eklendi. Dil davranışı değişmedi.
-
-### Düzeltilenler
-
-- **Satırlı base64 aktarımında dosya sonundaki aralık (K-414):**
-  `… dosyasının base64 satırlarının K baytından N baytını bağlantıya
-  aktarmayı dene`, boyu 57'ye bölümünden 55 ya da 56 kalan dosyada K
-  kodlanmış çıktının sonuna eşit ya da daha büyükse `dil dene`/test
-  ortamında paniğe, gerçek sunucunun debug derlemesinde bağlantı görevinin
-  çökmesine yol açıyordu. Artık her dosya boyunda belgelendiği gibi 0 bayt
-  yazılır ve `0` döner.
-
-  **Göç:** Gerekmez.
-
+- **zeedili.com 26 Kasım akşam haberleri:** ana sayfa Gelişmeler bölümüne K-405 makine uç noktası, K-406 türlü metin yanıtı, K-407 `dil göçür --ileri-kayitlara-izin` (ADR-181), K-408 dosyanın base64 satırlarını dosyaya ekleme, K-413 açılışta DKIM DNS denetimi, K-410 katı base64 ve `zee1:` göç notu, K-414 bağlantı aktarım penceresi (GB-183) ile K-411/K-416 DKIM güvence işleri haberleri eklendi. K-414 kaydı Düzeltilenler'den Güvenlik'e taşındı; K-411 ve K-416 kayıtları eklendi. Dil davranışı değişmedi.
 
 ## 25 Kasım 2026 — Geliştirme güncellemeleri
 
