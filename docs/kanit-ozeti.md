@@ -42,10 +42,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 20 | 0 | 0 | 20 |
 | orta | 57 | 16 | 4 | 77 |
-| dusuk | 51 | 30 | 1 | 82 |
+| dusuk | 52 | 30 | 1 | 83 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 180.
+Toplam bulgu: 181.
 
 ## Spec maddeleri
 
@@ -78,13 +78,13 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 50 | 1 | 2 | 53 | 94 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 12 | 0 | 1 | 13 | 92 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 25 | 0 | 2 | 27 | 92 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 26 | 0 | 2 | 28 | 92 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 41 | 0 | 3 | 44 | 93 |
-| **Toplam** | 442 | 6 | 22 | 470 | 94 |
+| **Toplam** | 443 | 6 | 22 | 471 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -110,13 +110,13 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 21 | 8 | 0 | 28 | 1 | 29 |
+| urun-h | 22 | 8 | 0 | 29 | 1 | 30 |
 | urun-i | 2 | 0 | 0 | 2 | 0 | 2 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 96.
+Toplam korpus vakası: 97.
 
 ## Deprecation kayıtları
 
@@ -149,16 +149,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 162 |
+| maintenance | 165 |
 | semantic-bugfix | 45 |
-| semantic-change | 83 |
+| semantic-change | 85 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
-| correctness | 45 |
-| dogfood-change | 57 |
-| maintenance | 159 |
+| correctness | 46 |
+| dogfood-change | 58 |
+| maintenance | 162 |
 | security | 22 |
 
-Toplam: 290 compiler değişiklik beyanı, 286 core freeze beyanı.
+Toplam: 295 compiler değişiklik beyanı, 291 core freeze beyanı.

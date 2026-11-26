@@ -309,6 +309,47 @@ impl GirdiCikti for ToplayanIo {
         hedef.extend_from_slice(baytlar);
         Ok((crate::guvenlik::sha256_hex(hedef), hedef.len() as u64))
     }
+    /// K-408: hermetik taraf aynı saf kodlamayla (`kodlama`) ikili hedefe ekler.
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        let ham = match self.ikili_dosyalar.get(kaynak) {
+            Some(baytlar) => baytlar.clone(),
+            None => self
+                .dosyalar
+                .get(kaynak)
+                .map(|metin| metin.as_bytes().to_vec())
+                .ok_or_else(|| format!("\"{kaynak}\" dosyası bulunamadı"))?,
+        };
+        if ham.len() as u64 > crate::kodlama::BASE64_SATIRLARI_TAVANI {
+            return Err(format!(
+                "\"{kaynak}\" kaynak dosyası 32 MiB base64 satırları tavanını aşıyor; hiçbir bayt yazılmadı"
+            ));
+        }
+        if !self.eylem_yedekleri.is_empty() {
+            return Err("base64 satırlarıyla eklemeyi dene eylem içinde kullanılamaz".into());
+        }
+        let eklenecek = crate::kodlama::base64_satirli_uzunluk(ham.len() as u64);
+        let onceki = match self.dosyalar.get(hedef) {
+            Some(metin) => metin.len(),
+            None => self.ikili_dosyalar.get(hedef).map_or(0, Vec::len),
+        } as u64;
+        if onceki + eklenecek > crate::kodlama::BASE64_SATIRLARI_TAVANI {
+            return Err(format!(
+                "\"{hedef}\" dosyasına yazılamadı: hedefin toplam boyutu 32 MiB sınırını aşıyor"
+            ));
+        }
+        let mut cikti = Vec::new();
+        crate::kodlama::base64_satirlari_kodla(&ham, &mut cikti);
+        // Base64 satırları ASCII'dir: metin hedef (ör. MIME başlıkları) metin kalır.
+        match self.dosyalar.get_mut(hedef) {
+            Some(metin) => metin.push_str(std::str::from_utf8(&cikti).unwrap_or_default()),
+            None => self
+                .ikili_dosyalar
+                .entry(hedef.to_string())
+                .or_default()
+                .extend_from_slice(&cikti),
+        }
+        Ok(eklenecek as i64)
+    }
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         let icerik = self
             .dosyalar

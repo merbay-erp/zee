@@ -6405,3 +6405,25 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   gider, CR'yi ürün K-402 `kod noktası harfi` ile üretir (en küçük yüzey).
 - Önbellek izinli rotada da `no-store`: belirteçli takvim adresi paylaşılan
   önbelleğe girmemeli. K-406 kapandı.
+## K-408 — Satırlı base64'ü dosyaya akışla ekleme; ADR-172 eki (26 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F049: ekli giden ileti imzasız gidiyor; gövde tek
+  dosyada kurulamadığından ADR-174 §8 dosyadan `bh=` kullanılamıyor. Görev
+  merkezden (K-396 kalıbının dosya hedefli aynası). Freeze sınıfı
+  `dogfood-change`; K-164 sınıfı "yerleşik yüzey eksik".
+- Ev: ADR-172 eki (yeni ADR değil): biçim, formül ve kodlayıcı A2d
+  sözleşmesi; değişen yalnız hedef. Normatif metin spec/26 (dosya ↔
+  kodlanmış içerik bölümü), çünkü ekleme modeli K-389 `eklemeyi dene`dir.
+- Tavan: kaynak 32 MiB (görev), hedef toplamı 32 MiB (K-395 ekleme hedef
+  tavanı ve ADR-174 §8 gövde özeti tavanıyla aynı). Etkin üst sınır ≈ 23,4
+  MiB ham ek; ZeeMail 25 MB iletideki ~18 MB ek sığar. Hedef tavanını
+  büyütmek reddedildi: 32 MiB üstü gövdenin `bh=`'si zaten alınamaz.
+- Gerçekleme: önek kilit altında bağ izlemeden okunur (K-394), geçici
+  dosyaya önek + 57·256 baytlık parçalarla kodlanmış akış, fsync, rename.
+  `atomik_icerik_yaz` akışlı yazıcıya genellendi (davranış aynı).
+  Kaynak bildirilen boydan kısa/uzun çıkarsa yayımlanmaz.
+- Reddedilen: hedefin Metin olarak birleştirilmesi (C024), QP ve aralıklı
+  dosya hedefi (ürün ihtiyacı yok), eylem içi geri alınabilir ekleme
+  (K-389 çalışma dosyası modeli).
+- Geçici numaralar K-408, GB-181 (GB-178…180 bekleyen PR'larda).
+

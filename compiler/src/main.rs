@@ -4558,6 +4558,44 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         // Özet, kilit altında yayımlanan bütün içerikten hesaplanır.
         Ok((hex(&Sha256::digest(&icerik)), icerik.len() as u64))
     }
+    /// K-408 (ADR-172 eki): kaynak satırlı base64 olarak akışla hedefe eklenir;
+    /// içerik Zee Metin'i olmaz. Kaynak ve hedef toplamı 32 MiB; aşımda,
+    /// eylem içinde ya da yetkisiz yolda hiçbir bayt yazılmaz.
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        use dil::yetkinlik::Yetkinlik;
+        let tavan = dil::kodlama::BASE64_SATIRLARI_TAVANI;
+        self.politika
+            .gerektir(Yetkinlik::dosya_icin(kaynak, false))?;
+        self.politika.gerektir(Yetkinlik::dosya_icin(hedef, true))?;
+        if !self.eylem_yedekleri.is_empty() {
+            return Err(
+                "base64 satırlarıyla eklemeyi dene eylem içinde kullanılamaz; gövdeyi eylem dışında kurup eylemde atomik taşıyın"
+                    .into(),
+            );
+        }
+        // Windows dizini açarken erişim hatası verir; tanı her platformda aynı
+        // olsun diye açmadan önce de bakılır (açılan tanıtıcı yine denetlenir).
+        let normal_degil = || format!("\"{kaynak}\" normal dosya değil");
+        if std::fs::metadata(self.dosya_yolu(kaynak, false)?).is_ok_and(|b| !b.is_file()) {
+            return Err(normal_degil());
+        }
+        let mut dosya = self.okuma_icin_ac(kaynak)?;
+        let bilgi = dosya
+            .metadata()
+            .map_err(|hata| format!("\"{kaynak}\" dosyası okunamadı: {hata}"))?;
+        if !bilgi.is_file() {
+            return Err(normal_degil());
+        }
+        if bilgi.len() > tavan {
+            return Err(format!(
+                "\"{kaynak}\" kaynak dosyası 32 MiB base64 satırları tavanını aşıyor; hiçbir bayt yazılmadı"
+            ));
+        }
+        let gercek = self.dosya_yolu(hedef, true)?;
+        dil::kalici_dosya::base64_satirlari_sona_ekle(&mut dosya, bilgi.len(), &gercek, tavan)
+            .map(|yazilan| yazilan as i64)
+            .map_err(|hata| format!("\"{hedef}\" dosyasına yazılamadı: {hata}"))
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
         let saniye = std::time::SystemTime::now()

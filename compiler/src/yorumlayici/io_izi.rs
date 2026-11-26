@@ -64,6 +64,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosya_ilk_baytlari"
             | "dosya_araligi_oku"
             | "dosyaya_bayt_yaz"
+            | "dosyaya_base64_satirlari_ekle"
             | "dosya_yaniti_gonder"
             | "baglanti_kaydet"
             | "baglanti_bekle"
@@ -215,7 +216,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
             birim_semasi(olay, 3)?;
             bool_coz(&olay.argumanlar[2]).map(|_| ())
         }
-        "dosya_atomik_tasi" => tamsayi_sonuc_semasi(olay, 2),
+        "dosya_atomik_tasi" | "dosyaya_base64_satirlari_ekle" => tamsayi_sonuc_semasi(olay, 2),
         "dosya_sil" => tamsayi_sonuc_semasi(olay, 1),
         "dosya_yaniti_gonder" => tamsayi_sonuc_semasi(olay, 3),
         "baglanti_kaydet" | "baglanti_bekle" | "baglanti_islemi" | "baglanti_gunluk" => {
@@ -465,6 +466,17 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         let sonuc = self.ic.dosya_atomik_tasi(kaynak, hedef);
         self.kaydet(
             "dosya_atomik_tasi",
+            vec![kaynak.into(), hedef.into()],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    /// K-408: iz yalnız yolları ve yazılan bayt sayısını taşır, içerik yok.
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        let sonuc = self.ic.dosyaya_base64_satirlari_ekle(kaynak, hedef);
+        self.kaydet(
+            "dosyaya_base64_satirlari_ekle",
             vec![kaynak.into(), hedef.into()],
             tamsayi_sonuc_yaz(&sonuc),
         );

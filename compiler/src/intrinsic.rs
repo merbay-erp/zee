@@ -51,6 +51,10 @@ pub const DOSYA_BASE64_EKLE: &str = "dosya.base64_cozerek_ekle";
 pub const DOSYA_QP_YAZ: &str = "dosya.qp_cozerek_yaz";
 /// K-389: `<içerik> quoted_printable çözerek <yol> dosyasına eklemeyi dene`.
 pub const DOSYA_QP_EKLE: &str = "dosya.qp_cozerek_ekle";
+/// K-408 (ADR-172 eki, ZM-F049): `<kaynak> dosyasını base64 satırlarıyla
+/// <hedef> dosyasına eklemeyi dene` — K-396 bağlantı aktarımının dosya
+/// hedefli aynası; RFC 2045 satırları akışla hedefin sonuna → TamSayı Sonucu.
+pub const DOSYA_BASE64_SATIRLARI_EKLE: &str = "dosya.base64_satirlari_ekle";
 /// K-378: `<yol> dosyasını <tür> türünde <ad> adıyla ek olarak göndermeyi dene`
 /// — rota yanıtını kayıtlı içerik türüyle `Content-Disposition: attachment`
 /// dosya yanıtı yapar → TamSayı Sonucu (bayt).
@@ -89,7 +93,9 @@ pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar"
 /// Tanımındaki yetkinliğe ek olarak dosya okuyan intrinsic'ler (derleme
 /// zamanı `dosya-okuma`; `veri:` yolunda `veri-okuma` ile karşılanır).
 pub fn dosya_da_okur(kimlik: &str) -> bool {
-    baglantiya_dosya_aktarir(kimlik) || kimlik == POSTA_DKIM_DOSYA_GOVDE_OZETI
+    baglantiya_dosya_aktarir(kimlik)
+        || kimlik == POSTA_DKIM_DOSYA_GOVDE_OZETI
+        || kimlik == DOSYA_BASE64_SATIRLARI_EKLE
 }
 
 pub fn baglantiya_dosya_aktarir(kimlik: &str) -> bool {
@@ -662,6 +668,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::MetinSozlukSonucu,
         etki: IntrinsicEtkisi::DisYazma,
         tur_hatasi: "Çözülecek içerik ve hedef dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_BASE64_SATIRLARI_EKLE,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: IKI_METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Kaynak ve hedef dosya yolları Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_GONDER,

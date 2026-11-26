@@ -92,6 +92,12 @@ impl GirdiCikti for IzYenidenOynatici {
         })
     }
 
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        let islem = "dosyaya_base64_satirlari_ekle";
+        let sonuc = self.siradaki(islem, vec![kaynak.into(), hedef.into()]);
+        self.tamsayi_sonuc(islem, sonuc)
+    }
+
     fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
         let sonuc = self.siradaki("dosya_sha256", vec![yol.into()]);
         self.metin_sonuc("dosya_sha256", sonuc)

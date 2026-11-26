@@ -75,6 +75,12 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
         self.ic.dosyaya_bayt_yaz(yol, baytlar, ekleme)
     }
+    /// K-408: kaynak okuma (`veri:` → `veri-okuma`), hedef yazma yetkisi ister.
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        self.dosya_yolunu_denetle(kaynak, Yetkinlik::DosyaOkuma)?;
+        self.dosya_yolunu_denetle(hedef, Yetkinlik::DosyaYazma)?;
+        self.ic.dosyaya_base64_satirlari_ekle(kaynak, hedef)
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.simdi()
     }

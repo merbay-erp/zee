@@ -1005,3 +1005,50 @@ fn base64_aktarim_veri_kokunden_okur_kok_disina_cikmaz() {
     assert_eq!(kod, Some(0), "{stderr}");
     let _ = std::fs::remove_dir_all(&taban);
 }
+
+/// K-408 (ZM-F049): `… dosyasını base64 satırlarıyla "<hedef>" dosyasına
+/// eklemeyi dene` K-396 bağlantı aktarımının dosya hedefli aynasıdır; aynı
+/// kaynaktan bağlantıya akan baytlar ile hedefe eklenen baytlar bayt bayt
+/// aynıdır (ekli giden iletinin DKIM `bh=`'si dosyadan alınabilsin diye).
+const BASE64_AYNA: &str = r#"# K-408 test: bağlantı ve dosya çıktısı aynı.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    komut başarılıysa
+        kodlu "ekler/ek.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+        bağlantıya ")" satırını yaz
+        eklenen "ekler/ek.bin" dosyasını base64 satırlarıyla "govde.eml" dosyasına eklemeyi dene olsun
+        kodlu başarılıysa
+            eklenen başarılıysa
+                bağlantıya "C1 OK " ile kodlunun değeri ile " " ile eklenenin değeri satırını yaz
+    bağlantıyı kapat
+"#;
+
+#[test]
+fn base64_satirlari_dosyaya_ekleme_baglanti_aktarimiyla_bayt_bayt_ayni() {
+    let ayarlar = "yetkinlikler \"ağ-dinleyici\", \"dosya-okuma\", \"dosya-yazma\" listesi olsun\nbağlantı_boşta_süresi 20 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, BASE64_AYNA, None);
+    // Son satır kısa ve dolgulu: 1 MiB + 5 bayt.
+    let ek = ikili_ek(1024 * 1024 + 5);
+    std::fs::create_dir_all(sunucu.kok().join("ekler")).unwrap();
+    std::fs::write(sunucu.kok().join("ekler/ek.bin"), &ek).unwrap();
+    let onek = b"Content-Transfer-Encoding: base64\r\n\r\n";
+    std::fs::write(sunucu.kok().join("govde.eml"), onek).unwrap();
+    let beklenen = basvuru_base64_satirli(&ek);
+    let mut a = sunucu.baglan();
+    a.gonder(b"C1 FETCH 1 BODY[2]\r\n");
+    let agdan = a.bayt(beklenen.len());
+    assert!(agdan == beklenen, "bağlantı çıktısı başvurudan farklı");
+    assert_eq!(a.satir(), ")");
+    let n = beklenen.len();
+    assert_eq!(a.satir(), format!("C1 OK {n} {n}"));
+    assert!(a.kapandi_mi());
+    let dosya = std::fs::read(sunucu.kok().join("govde.eml")).unwrap();
+    assert_eq!(&dosya[..onek.len()], onek, "önek korunur");
+    assert!(
+        dosya[onek.len()..] == agdan[..],
+        "dosya çıktısı bağlantıyla aynı"
+    );
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}

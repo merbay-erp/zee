@@ -59,6 +59,24 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Ekli iletinin gövdesi tek dosyada kurulabiliyor (K-408):** bir dosyayı
+  e-posta ekinin biçiminde (RFC 2045 base64, 76 karakterlik CRLF
+  satırları) başka bir dosyanın sonuna ekleyen yeni kalıp:
+  `n "ekler/ek.bin" dosyasını base64 satırlarıyla "giden/govde.eml"
+  dosyasına eklemeyi dene olsun`. Sonuç yazılan bayt sayısıdır; çıktı
+  aynı dosyanın `bağlantıya aktarmayı dene` çıktısıyla bayt bayt aynıdır.
+  Böylece başlıklar ve metin parçası yazılmış gövde dosyasına ek eklenir,
+  ardından `bh=` aynı dosyadan `… dkim gövde özetini almayı dene` ile
+  alınır: ekli giden ileti de DKIM ile imzalanabilir. Ek belleğe alınmaz;
+  ekleme mevcut `eklemeyi dene` gibi atomiktir (dosyanın önceki içeriği
+  korunur, okuyan eski ya da yeni bütünü görür). Kaynak en çok 32 MiB,
+  hedefin toplamı en çok 32 MiB olabilir (≈ 23 MiB ham ek); aşımda, eylem
+  içinde ya da yetkisiz yolda dosyaya hiç bayt yazılmaz ve C013 döner.
+  Kaynak `dosya-okuma` (`veri:` için `veri-okuma`), hedef `dosya-yazma`
+  (`veri:` için `veri-yazma`) ister.
+
+  **Göç:** yok; yeni kalıptır.
+
 - **`dil göçür --ileri-kayitlara-izin` (K-407):** Aynı veritabanını paylaşan
   iki uygulama sürümünden yenisi daha yeni bir göçü uyguladıktan sonra eski
   sürüme geri dönüldüğünde, eski sürümün `dil göçür` çağrısı artık bu bayrakla
