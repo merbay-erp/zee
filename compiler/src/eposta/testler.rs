@@ -311,3 +311,45 @@ fn smtp_yavas_yanit_mutlak_butceyi_yenileyemez() {
         "200ms bütçe yenilendi: {gecen:?}"
     );
 }
+
+/// K-410: kaldırılan eski `eposta::base64` (3761bcb4) referans kopyası.
+fn eski_base64(baytlar: &[u8]) -> String {
+    const ALFABE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut cikti = String::with_capacity(baytlar.len().div_ceil(3) * 4);
+    for parca in baytlar.chunks(3) {
+        let b = [
+            parca[0],
+            *parca.get(1).unwrap_or(&0),
+            *parca.get(2).unwrap_or(&0),
+        ];
+        let n = (u32::from(b[0]) << 16) | (u32::from(b[1]) << 8) | u32::from(b[2]);
+        cikti.push(ALFABE[(n >> 18) as usize & 63] as char);
+        cikti.push(ALFABE[(n >> 12) as usize & 63] as char);
+        cikti.push(if parca.len() > 1 {
+            ALFABE[(n >> 6) as usize & 63] as char
+        } else {
+            '='
+        });
+        cikti.push(if parca.len() > 2 {
+            ALFABE[n as usize & 63] as char
+        } else {
+            '='
+        });
+    }
+    cikti
+}
+#[test]
+fn k410_ortak_kodlayici_eski_eposta_base64_ile_bayt_bayt_ayni() {
+    let mut durum = 0x9e37_79b9u32;
+    for boy in 0..=300usize {
+        let veri: Vec<u8> = (0..boy)
+            .map(|_| {
+                durum ^= durum << 13;
+                durum ^= durum >> 17;
+                durum ^= durum << 5;
+                (durum >> 24) as u8
+            })
+            .collect();
+        assert_eq!(super::base64(&veri), eski_base64(&veri), "{boy}");
+    }
+}

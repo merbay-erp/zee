@@ -6320,7 +6320,9 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   (RFC-0043 Dilim 2 açık maddesi 5). Üç kopya kodlayıcı aynı çıktıyı
   verdiği için doğrudan `kodlama::base64_kodla`'ya bağlandı.
 - Gizli değer çözücüsü kanonik olmayan dolgu bitlerini kabul ediyordu
-  (`…Zh==` ile `…Zg==` aynı baytlar). Seçenek "davranışı aynen koru"
+  (`…Zh==` ile `…Zg==` aynı baytlar); merkezin istediği eşdeğerlik testi
+  ikinci bir gevşekliği de buldu: ortada dolgulu birleşik dörtlüler
+  (`Zg==Zg==`). Seçenek "davranışı aynen koru"
   (çözücü ayrı kalır) ile "katı çözücüye bağla" idi; Mustafa ikincisini
   seçti. Bu yüzden iş `maintenance` değil, güvenlik sıkılaştırmasıdır
   (spec/23 ZORUNLU madde, ADR-083 eki, GB-179). Zee'nin ürettiği her

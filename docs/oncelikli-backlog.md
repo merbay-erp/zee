@@ -2929,12 +2929,14 @@ hepsi `kodlama::base64_kodla` ve `kodlama::base64_coz` kullanır.
 
 Kodlama çıktısı bayt bayt aynıdır. Tek davranış farkı (Mustafa kararı,
 güvenlik sıkılaştırması): gizli değer çözümü kanonik olmayan dolgu bitli
-ikinci yazımı artık reddeder (spec/23 §Gizli değer biçimi, ADR-083 eki,
+ikinci yazımı ve ortada dolgulu birleşik dörtlüleri artık reddeder (spec/23 §Gizli değer biçimi, ADR-083 eki,
 GB-179). `kodlama` bağımlılıksız ilkel olarak `temel` katmana alındı
 (`guvenlik → kodlama`, `eposta → kodlama`; katman fixture'ı ve
 `docs/katman-mimarisi.md`). Yeni Zee yüzeyi, tanı ya da bağımlılık yok.
 
-Kanıt: `guvenlik::gizli::testler::base64_dongusu_ve_kanonik_olmayan_kodlama_reddi`
+Kanıt: eşdeğerlik testleri (eski üç kodlayıcı test içinde referans, 0–300
+bayt bayt bayt eşit: `k410_*` `eposta`, `main.rs`, `gizli`);
+`guvenlik::gizli::testler::base64_dongusu_ve_kanonik_olmayan_kodlama_reddi`
 (gidiş-dönüş, kanonik olmayan yazım, satır sonu ve kısa gövde reddi);
 mevcut `eposta` RFC 2047/MIME/AUTH testleri ve `main.rs` RFC 4648
 vektörleri ortak kodlayıcıyla geçer; `katman_mimarisi_testi`.
