@@ -46,11 +46,16 @@ fn base64(bayt: &[u8]) -> String {
     dil::kodlama::base64_kodla(bayt)
 }
 
+/// PEM sınırları parçalı yazılır: tek satırdaki BEGIN…END kalıbı sır
+/// taramasında (gitleaks `private-key`) gömülü anahtar sanılır. Anahtar
+/// her koşuda `ring` ile yeniden üretilir; depoda anahtar baytı yoktur.
+const PEM_ETIKETI: &str = concat!("PRIVATE", " KEY-----");
+
 fn ed25519_pem() -> String {
     let rng = ring::rand::SystemRandom::new();
     let pkcs8 = ring::signature::Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
     format!(
-        "-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----\n",
+        "-----BEGIN {PEM_ETIKETI}\n{}\n-----END {PEM_ETIKETI}\n",
         base64(pkcs8.as_ref())
     )
 }

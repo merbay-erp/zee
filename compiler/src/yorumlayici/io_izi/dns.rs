@@ -22,11 +22,7 @@ pub(super) const DKIM_IMZALA: &str = "dkim_imzala";
 pub(super) const DOSYA_GOVDE_OZETI: &str = "dosya_dkim_govde_ozeti";
 
 pub(super) fn dkim_argumanlari(anahtar: &str, algoritma: &str, veri: &str) -> Vec<String> {
-    use sha2::{Digest, Sha256};
-    let ozet: String = Sha256::digest(veri.as_bytes())
-        .iter()
-        .map(|b| format!("{b:02x}"))
-        .collect();
+    let ozet = crate::guvenlik::sha256_hex(veri.as_bytes());
     vec![anahtar.into(), algoritma.into(), ozet]
 }
 
