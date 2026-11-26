@@ -6168,6 +6168,20 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
 
 
+## K-407 — `dil göçür` ileri kayıt toleransı; ADR-181 (26 Kasım 2026)
+
+- `urun-i` (ZeeOS) A/B kök geri dönüşü: yeni dilimin uyguladığı göç kaydı
+  eski dilimin ağacında yok, eski dilim göç biriminde düşüyor. Kullanıcı
+  "ileri şema toleransı" kararını verdi.
+- Seçenekler: (a) bayraksız otomatik tolerans — kaybolan göçü gizler,
+  reddedildi; (b) kayıtları eski dilimde silmek — N+1'e yeniden geçişte
+  şemayı tutarsız bırakır, reddedildi; (c) açık bayrakla yalnız üst sınır
+  üstündeki kayıtları tolere etmek — seçildi.
+- Araya giren uygulanmamış göç bayrakla da reddedilir: eski ağaç yeni şema
+  üzerinde yarım bir göç yürütmemeli. Yeni tanı kodu yok (C026).
+- K-164 kataloğu (F001–F016) dil/tanı sürtünmeleridir; bu CLI göç işletimi
+  sürtünmesi o sınıflardan biriyle örtüşmez, tekrar sayılmaz.
+
 ## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir; ADR-178 (25 Kasım 2026)
 
 - Kaynak: `urun-h` (ZeeMail) güvenlik denetimi, "Yüksek" (23.11, ürün

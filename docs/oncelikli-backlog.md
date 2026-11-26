@@ -2991,6 +2991,25 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-407 — `dil göçür` ileri kayıt toleransı (ADR-181)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-i`
+(ZeeOS) A/B kök güncellemesi: yeni dilim daha yeni bir göçü uyguladıktan
+sonra eski dilime geri dönüşte göç birimi "proje ağacında yok" C026 ile
+düşüyordu. Kullanıcı kararı: ileri şema toleransı, açık bayrakla. Freeze
+sınıfı `dogfood-change`.
+
+Karar: `--ileri-kayitlara-izin` yalnız "ağaçtaki her göç aynı ad/özetle
+uygulanmış, fazla kayıtlar ağaçtaki en yüksek sürümden büyük" şeklini kabul
+eder; SQL yürütmez, kaydı değiştirmez, ileri kayıtları raporlar. Değişmiş
+ad/özet, en yüksek sürüm altındaki kayıp dosya, ileri kayıt varken bekleyen
+göç ve bayraksız çağrı C026 kalır. Aşağı göç/kayıt temizliği AÇIK.
+
+Kanıt: `compiler/src/postgresql.rs` üç saf plan testi, gerçek PostgreSQL 16
+dedicated kapısı (`scripts/postgresql-goc-ci.py`, 1/1; `dogfood/urun-i`
+defter aynasının a–d adımları dahil), `compiler/tests/cli_goc_plani_testi.rs`;
+spec/25 K-407 maddesi.
+
 ## K-406 — Türlü metin yanıtı: `X metnini "<tür>" türünde gönder` (ADR-163 eki)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi

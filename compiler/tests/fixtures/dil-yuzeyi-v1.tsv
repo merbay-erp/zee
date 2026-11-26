@@ -355,6 +355,7 @@ profil	cli-ag-izni	aktif	1.0.0-dev	compiler/src/cli/ag_izni.rs	pub(crate) const 
 profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
 profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
+profil	cli-goc-ileri-kayit	aktif	1.0.0-dev	compiler/src/main.rs	"--ileri-kayitlara-izin"
 profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
 profil	cli-kaynak-kapsami	aktif	0.8.0-dev	compiler/src/cli/kapsam.rs	"--kapsam"
 profil	cli-lint	aktif	0.8.0-dev	compiler/src/main.rs	"--lint"
