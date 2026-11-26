@@ -29,7 +29,7 @@ pub(super) fn rota_yaniti_belirlendi(satir: usize) -> Result<(), Tani> {
 
 /// Rota gövdesini nöbetçi açıkken koşar; yanıtla biten gövde (Ç004) olağan
 /// bitiştir ve taslak başarı yolundaki gibi commit edilir.
-pub(super) fn govdeyi_calistir(govde: impl FnOnce() -> Result<Akis, Tani>) -> Result<Akis, Tani> {
+pub(super) fn kos(govde: impl FnOnce() -> Result<Akis, Tani>) -> Result<Akis, Tani> {
     let _nobetci = RotaNobetcisi::yeni();
     match govde() {
         Err(tani) if tani.kod == ROTA_SONU => Ok(Akis::Devam),

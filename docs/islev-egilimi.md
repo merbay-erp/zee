@@ -42,7 +42,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/eposta.rs::gonder_ic#1` | 87→87 (+0/+9) | 7→7 (+0/+2) | SABİT |
 | `compiler/src/eposta/mime.rs::ileti_kur#1` | 93→98 (+5/+10) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/gorsel.rs::kucult#1` | 82→82 (+0/+9) | 2→2 (+0/+2) | SABİT |
-| `compiler/src/hir/lint.rs::blok#1` | 92→93 (+1/+10) | 17→17 (+0/+4) | PAY İÇİNDE |
+| `compiler/src/hir/lint.rs::blok#1` | 92→100 (+8/+10) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/hir/lint.rs::uyarilari#1` | 64→65 (+1/+8) | 13→13 (+0/+3) | PAY İÇİNDE |
 | `compiler/src/invariant/cumle.rs::cumleyi_dogrula#1` | 296→316 (+20/+24) | 13→14 (+1/+3) | PAY İÇİNDE |
 | `compiler/src/invariant/ifade.rs::ifadenin_faz_bagini_dogrula#1` | 126→126 (+0/+13) | 5→5 (+0/+2) | SABİT |
@@ -82,7 +82,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/web_listener.rs::extract#1` | 104→89 (-15/+11) | 8→7 (-1/+2) | İYİLEŞTİ |
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→144 (+8/+14) | 2→2 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→822 (+7/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→824 (+9/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→853 (+3/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→160 (+11/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |

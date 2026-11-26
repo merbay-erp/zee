@@ -23,14 +23,14 @@ impl HirProgram {
             if let Some(islem) = self.islem(kimlik) {
                 if yerel(islem.koken.as_deref(), koken) {
                     kapsamlar.insert(kimlik.sirasi() + 1);
-                    blok(&islem.govde, &mut sonuc);
+                    blok(&islem.govde, &mut sonuc, false);
                 }
             }
         }
         for (i, test) in self.program.testler.iter().enumerate() {
             if yerel(test.koken.as_deref(), koken) {
                 kapsamlar.insert((1usize << 30) + i);
-                blok(&test.govde, &mut sonuc);
+                blok(&test.govde, &mut sonuc, false);
             }
         }
         // Kapsam kimlikleri checker Baglam ile aynı tanım sözleşmesidir.
@@ -50,7 +50,7 @@ impl HirProgram {
                     kapsamlar.insert((1usize << 31) + bilgi.kimlik().sirasi());
                 }
                 // K-403: rota gövdesinde yanıt/yönlendirme rotayı bitirir.
-                blok_ic(govde, &mut sonuc, true);
+                blok(govde, &mut sonuc, true);
                 if !cagri_etkisi_belirsiz && !yanit_var(govde) && !belirsiz_cagri(govde) {
                     ekle(&mut sonuc, Tani::yeni("S048", "Bu rotanın bazı yolları yanıt veya yönlendirme üretmeden bitebilir.".into(), *satir, 1, 1)
                         .onerili("Her dala uygun yanıt ekle; örnek: değilse → girintili `\"Geçersiz istek\" yanıtını 400 durumuyla gönder`. Yanıt veya yönlendirme rotayı orada bitirir.".into()));
@@ -58,7 +58,7 @@ impl HirProgram {
             }
         }
         self.baglanti_bloklari(&mut kapsamlar, &mut sonuc);
-        blok(&self.program.cumleler, &mut sonuc);
+        blok(&self.program.cumleler, &mut sonuc, false);
         let okunanlar: HashSet<_> = self
             .ifadeler
             .values()
@@ -94,7 +94,7 @@ impl HirProgram {
                 if let Some(bilgi) = self.ifade_bilgisi(dinleyici) {
                     kapsamlar.insert((1usize << 31) + bilgi.kimlik().sirasi());
                 }
-                blok(govde, sonuc);
+                blok(govde, sonuc, false);
             }
         }
     }
@@ -104,13 +104,9 @@ fn yerel(sahibi: Option<&str>, ana: Option<&str>) -> bool {
     sahibi.is_none() || sahibi == ana
 }
 
-fn blok(cs: &[Cumle], out: &mut Vec<Tani>) {
-    blok_ic(cs, out, false);
-}
-
 /// `rota` doğruysa blok bir rota gövdesine aittir: K-403 uyarınca orada
 /// `yanıtını gönder`/`yönlendir` de kesin sondur.
-fn blok_ic(cs: &[Cumle], out: &mut Vec<Tani>, rota: bool) {
+fn blok(cs: &[Cumle], out: &mut Vec<Tani>, rota: bool) {
     let mut bitti = false;
     let mut yanitla_bitti = false;
     for c in cs {
@@ -157,7 +153,7 @@ fn blok_ic(cs: &[Cumle], out: &mut Vec<Tani>, rota: bool) {
                             );
                         }
                     } else {
-                        blok_ic(&kol.govde, out, rota);
+                        blok(&kol.govde, out, rota);
                     }
                     secildi |= matches!(kol.kosul.turu(), Ifade::MantiksalSabiti(true));
                 }
@@ -181,7 +177,7 @@ fn blok_ic(cs: &[Cumle], out: &mut Vec<Tani>, rota: bool) {
                             );
                         }
                     } else {
-                        blok_ic(d, out, rota);
+                        blok(d, out, rota);
                     }
                 }
             }
@@ -189,23 +185,23 @@ fn blok_ic(cs: &[Cumle], out: &mut Vec<Tani>, rota: bool) {
                 kollar, degilse, ..
             } => {
                 for (_, b) in kollar {
-                    blok_ic(b, out, rota);
+                    blok(b, out, rota);
                 }
                 if let Some(b) = degilse {
-                    blok_ic(b, out, rota);
+                    blok(b, out, rota);
                 }
             }
             Cumle::KezTekrarla { govde, .. }
             | Cumle::HerBiri { govde, .. }
             | Cumle::AralikDongusu { govde, .. }
             | Cumle::OlduguSurece { govde, .. }
-            | Cumle::OlanaKadar { govde, .. } => blok_ic(govde, out, rota),
+            | Cumle::OlanaKadar { govde, .. } => blok(govde, out, rota),
             Cumle::IcindeBlogu {
                 govde, yetismezse, ..
             } => {
-                blok_ic(govde, out, rota);
+                blok(govde, out, rota);
                 if let Some(b) = yetismezse {
-                    blok_ic(b, out, rota);
+                    blok(b, out, rota);
                 }
             }
             _ => {}

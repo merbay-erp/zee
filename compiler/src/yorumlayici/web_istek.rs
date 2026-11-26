@@ -122,8 +122,7 @@ pub(super) fn web_istegini_calistir(
             .http()
             .calistirma_zaman_asimi_ms();
         let nobetci = SonTarihNobetcisi::yeni(io.an_ms().saturating_add(zaman_asimi));
-        let sonuc =
-            rota_sonu::govdeyi_calistir(|| blok_calistir(govde, &mut rota_ortami, program, io, 0));
+        let sonuc = rota_sonu::kos(|| blok_calistir(govde, &mut rota_ortami, program, io, 0));
         drop(nobetci);
         match sonuc {
             Err(tani) if tani.kod == "Ç000" => {
