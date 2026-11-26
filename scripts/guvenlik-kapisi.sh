@@ -72,7 +72,7 @@ if [[ "$kip" == "--surum-adayi" ]]; then
             --bundle "$rc_kanit" --sha256 "$rc_kanit_sha"
     else
         echo "-- Exact $sha için RC fuzz kanıtı (docs/fuzz-rc-gecmisi-v1.tsv)"
-        for hedef in lexer_parser morfoloji http_istegi dns_yaniti dkim_imza_girdisi wasm_abi; do
+        for hedef in lexer_parser morfoloji http_istegi dns_yaniti dkim_imza_girdisi x509_spki wasm_abi; do
             if ! awk -F '\t' -v sha="$sha" -v hedef="$hedef" \
                 '$1 == sha && $9 == hedef && $16 == "gecti" && $11 >= 1800 { ok = 1 } END { exit ok ? 0 : 1 }' \
                 docs/fuzz-rc-gecmisi-v1.tsv; then

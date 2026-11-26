@@ -2589,7 +2589,7 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
-## K-411 — `dkim_imza_girdisi` fuzz hedefi RC kapısında (ADR-174)
+## K-411 — `dkim_imza_girdisi` ve `x509_spki` fuzz hedefleri RC kapısında (ADR-174, ADR-173)
 
 **Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174
 (K-397 Dilim 2) aday fuzz hedefi. RC fuzz kapısının altıncı hedefi; kanonik
@@ -2598,7 +2598,15 @@ AddressSanitizer altında. Kâhin değişmezlerdir (parça sınırı ve LF/CRLF
 bağımsızlığı, kâhin denetiminin tutarlılığı); ortak denetim
 `compiler/tests/ortak/dkim_ozellikleri.rs`, stable korpus replay
 `dkim_imza_testi.rs` (tohum başına 2.000 bozulmuş girdi). compiler/src
-değişmedi. Açık: ilk RC koşusu (altı hedefli) ve tarihçe satırı.
+değişmedi.
+
+İkinci hedef `x509_spki` (ADR-173, K-397 Dilim 1): TLS uç sertifikasından SPKI
+çıkaran sınırlı DER yürüyücüsü, ayrı yazılmış referans DER okuyucusuyla
+diferansiyel (`compiler/tests/ortak/x509_ozellikleri.rs`); korpus openssl
+üretimi RSA/Ed25519 sertifikaları ve bozuk DER tohumları; stable replay
+`giden_baglanti_testi.rs` (tohum başına 3.000 bozulmuş girdi, gerçek
+sertifikada openssl `-pubkey` eşliği). RC kapısı yedi hedefli.
+Açık: ilk yedi hedefli RC koşusu ve tarihçe satırı.
 
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
@@ -2662,8 +2670,9 @@ birimleri.
 özellik denetimi `tests/ortak/dkim_ozellikleri.rs`, korpus replay
 `dkim_imza_testi.rs`).
 
-Açık: `x509_spki` fuzz hedefinin RC kapısına
-alınması; açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
+`x509_spki` fuzz hedefi de K-411 ile RC kapısına alındı.
+
+Açık: açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
 teslim ve `dkim=pass` kanıtı (insan adımı).
 
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)

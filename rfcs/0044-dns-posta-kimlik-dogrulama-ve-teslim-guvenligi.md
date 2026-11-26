@@ -826,7 +826,7 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
   girdisi etiket denetimi (Dilim 2). İkisi saf modüldür; birim testleri
   bozuk/kesik/aşırı uzun DER'i ve etiket kenar durumlarını kapsar. Fuzz
   hedefleri (`x509_spki`, `dkim_imza_girdisi`) ADR-173/174'te kayıtlıdır;
-  `dkim_imza_girdisi` RC fuzz kapısındadır (K-411), `x509_spki` açık iştir (ayrıştırıcılar
+  ikisi de K-411 ile RC fuzz kapısındadır (ayrıştırıcılar
   saldırganın gönderdiği sertifikayı yalnız rustls/webpki kabul ettikten
   sonra görür).
 

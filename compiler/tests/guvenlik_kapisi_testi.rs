@@ -193,7 +193,7 @@ fn guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir() {
         "cargo check --manifest-path fuzz/Cargo.toml --locked --bins",
         "--test guvenlik_kapisi_testi --test tedarik_kapisi_testi",
         "docs/fuzz-rc-gecmisi-v1.tsv",
-        "lexer_parser morfoloji http_istegi dns_yaniti dkim_imza_girdisi wasm_abi",
+        "lexer_parser morfoloji http_istegi dns_yaniti dkim_imza_girdisi x509_spki wasm_abi",
         "git status --porcelain",
         "cargo clippy --locked --all-targets -- -D warnings",
         "cargo test --locked --no-fail-fast",

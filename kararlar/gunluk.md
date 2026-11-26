@@ -6234,7 +6234,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
-## K-411 — `dkim_imza_girdisi` RC fuzz kapısında; ADR-174 (26 Kasım 2026)
+## K-411 — `dkim_imza_girdisi` ve `x509_spki` RC fuzz kapısında; ADR-174, ADR-173 (26 Kasım 2026)
 
 - Kullanıcı isteğiyle (numara merkezden: K-411; K-397 kapalıydı) ADR-174'ün
   aday fuzz hedefi RC kapısına alındı: altıncı
@@ -6244,8 +6244,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   seçiminden bağımsız gövde özeti, kâhin denetiminin kabul ettiği girdide
   tutarlı alanlar. Denetim `tests/ortak/dkim_ozellikleri.rs`'te ortak; stable
   korpus replay'i fuzz araç zinciri olmadan da çalışır.
+- Kullanıcının ikinci isteğiyle ADR-173'ün `x509_spki` hedefi de eklendi
+  (yedinci hedef). Kâhin, aynı X.690 DER kurallarını ayrı yazılmış referans
+  okuyucuyla uygulayan diferansiyel karşılaştırmadır; yeni DER crate'i
+  eklenmedi (tedarik yüzeyi). `max_len` 65537: 64 KiB sınırının bir bayt
+  ötesi de denenir. Korpustaki sertifikalar openssl üretimi açık
+  sertifikalardır, anahtarları silindi.
 - Bu değişiklik compiler/src'ye dokunmaz; RC fuzz tarihçesine satır yazılmadı
-  (koşu yok). Sonraki RC adayı altı hedefin hepsini ister.
+  (koşu yok). Sonraki RC adayı yedi hedefin hepsini ister.
 
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 

@@ -55,6 +55,13 @@ doc = false
 bench = false
 
 [[bin]]
+name = "x509_spki"
+path = "fuzz_targets/x509_spki.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
 name = "wasm_abi"
 path = "fuzz_targets/wasm_abi.rs"
 test = false
