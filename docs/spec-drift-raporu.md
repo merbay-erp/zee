@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 42 | 39 | 0 | 3 |
-| **Toplam** | **451** | **425** | **6** | **20** |
+| **Toplam** | **458** | **431** | **6** | **21** |
 
 ## Kısmi kanıtlı maddeler
 
