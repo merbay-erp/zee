@@ -2662,8 +2662,8 @@ hatasıyla kaldı (K-417).
 
 ## K-417 — RC fuzz bulgusu: `dkim_imza_girdisi` kâhininde FWS'li son `b=`
 
-**Durum: KAPALI (26 Kasım 2026); yeni master'da sekiz hedefli RC koşusu
-AÇIK.** Kaynak: `b3b9d752` üzerinde ilk yedi hedefli RC kampanyası
+**Durum: KAPALI (26 Kasım 2026); sekiz hedefli RC koşusu `9c003fff`te
+yeşil (yerel ve GitHub 45867659484).** Kaynak: `b3b9d752` üzerinde ilk yedi hedefli RC kampanyası
 (K-411). GitHub `fuzz-rc` koşusu 45838195765'te `dkim_imza_girdisi`
 57 saniyede `tests/ortak/dkim_ozellikleri.rs:47` iddiasında panik verdi:
 kâhin girdinin `b=` ile bitmesini istiyordu, fuzzer `…; b\t=` üretti.

@@ -85,6 +85,18 @@ bütün hedefleri ister (`scripts/guvenlik-kapisi.sh`), bu yüzden bu commit
 RC adayı olamaz. K-417 ve K-412 birleşince yeni master'da sekiz hedef birlikte yeniden
 koşulur.
 
+## İlk sekiz hedefli yeşil kampanya (26 Kasım 2026)
+
+K-417 ve K-412 birleştikten sonra `9c003fff7c5d496eb32b5c8fa634dea2e043d99a`
+üzerinde sekiz hedef birlikte koşuldu. Yerel kanonik üretici sonucu
+`passed-local-technical-campaign`: hedef başına 1.801 sn, toplam 65.479.628
+yürütme. GitHub `fuzz-rc` koşusu 45867659484 de yeşil: hedef başına 3.601 sn,
+toplam 3.586.383.968 yürütme. İki ortamda da crash, timeout ve sanitizer bulgusu
+sıfır. İki Miri grubu (3 test) iki ortamda da geçti. `dkim_imza_girdisi`
+K-417 tohumuyla temiz. Bu SHA için `scripts/guvenlik-kapisi.sh` RC fuzz adımı
+sekiz hedefte de karşılanır. Kapının clippy, tam test ve koruk adımları ayrıca
+koşulur; bu kayıt sürüm etiketi değildir.
+
 ## K-265 explicit dış RC kanıtı
 
 [Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.
