@@ -1,0 +1,9 @@
+# RFC-0040 B — istek başlığı okuma. PROPFIND yanıtı Depth (0 / 1) başlığına göre koleksiyonun
+# kendisini ya da çocuklarını listeler; If-Match / If-None-Match koşullu PUT/DELETE için gerekir.
+# Başlık okuma yüzeyi yok. Beklenen: S015, exit 1.
+8080 kapısında sunucu başlat
+
+POST "/dav/takvimler/" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    derinlik isteğin "Depth" başlığı olsun
+    derinlik yanıtını gönder

@@ -6476,3 +6476,28 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Korpusun CRLF baytları anlamlıdır (MIME/QP); `* text=auto eol=lf`
   normalleştirmesi tohumları bozacağından `.gitattributes`'ta ikili.
   Nightly RC kampanyası bu işte koşulmadı. K-412 kapandı.
+
+## K-364 — RFC-0040 depo içi reproducer'ları; ZM-F027, ZM-F050 (26 Kasım 2026)
+
+- Ürün sahibi kararı (26 Kasım): önce reproducer, alt RFC kararı sonra
+  (büyük olasılıkla V1 sonrası). `urun-h` (ZeeMail) on iki vakayı ürün
+  commit'i `a39356ded33f0058aacaa0f3e93bd685c745a6ce` (vakaların eklendiği
+  `ef71d39faf79a7ff15ecb4af2fae3f351eb2a270`) ile verdi; dosyalar birebir
+  alındı, köken `dogfood/urun-h/dav-reproducer.md`.
+- RFC-0040 A/B/C/E/F dokuz vaka ve ZM-F027 tek dosyalı `denetle` vakasıdır;
+  ürün kökü politikasıyla vakanın kendi `proje.dil`'indeki tanıyı verir
+  (S036, S015, S037, T050, T060, T062). Ürün `proje.dil`'i genişletilmedi.
+  ZM-F050 iki vaka proje bildirimi tanısıdır (P015); tek dosya derlemesiyle
+  temsil edilemediğinden `proje` kipi `basarisiz` beklentisini kabul eder
+  (tanı kodu proje yükleyicisinden ya da ürün politikasından); başarılı proje
+  vakası eskisi gibi testlerini koşar.
+- **K-164 karşılaştırması:** RFC-0040 vakaları ve ZM-F027 “web adaptörü
+  yüzeyi eksik” sınıfıdır (ZM-F022, ZM-F033, ZM-F048 ile aynı üründe
+  tekrar; ikinci ürün yok, yeni backlog maddesi açılmadı; tasarım maddesi
+  K-364). ZM-F050 (DKIM anahtar tavanı ve credential tekilliği) tek üründe,
+  K-164 karşılığı yok.
+- **Kaynak işi eşlemesi:** RFC-0040 vakaları K-364; ZM-F050 tavan ve
+  tekilliği koyan K-397 (Dilim 2, ADR-174); ZM-F027 için ayrı K-işi yok, ürün
+  kaydı K-355 (yeni K numarası açılmadı). T050/T060/T062 bilinçli güvenlik
+  sınırlarıdır; reproducer onları gevşetme kararı değildir.
+- Compiler, grammar, tanı, CLI ve dil::api::v1 değişmedi. K-364 açık kalır.

@@ -1,0 +1,9 @@
+# RFC-0040 F — CSRF / Origin muafiyeti. Etkinlik yazma PUT ile gelir (RFC 4791 §5.3.2); istemci
+# _csrf alanı ve Origin göndermez. Tek muafiyet olan makine uç noktası yalnız POST'ta.
+# Beklenen: T060, exit 1.
+8080 kapısında sunucu başlat
+
+PUT "/dav/takvimler/varsayilan/toplanti.ics" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    gövde isteğin ham gövdesi olsun
+    "" yanıtını 201 durumuyla gönder

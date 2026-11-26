@@ -110,13 +110,13 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 22 | 8 | 0 | 29 | 1 | 30 |
+| urun-h | 32 | 8 | 2 | 29 | 13 | 42 |
 | urun-i | 2 | 0 | 0 | 2 | 0 | 2 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 97.
+Toplam korpus vakası: 109.
 
 ## Deprecation kayıtları
 

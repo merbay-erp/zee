@@ -4107,8 +4107,13 @@ LF→CRLF, K-356'ya bağlanmaz). Yedi katman: yöntem kaydı, kapalı başlık o
 türü/başlık kaydı, DOCTYPE'sız sınırlı XML ağacı, uygulama parolası (128+ bit,
 HMAC, cihaz başına iptal) ile çerezsiz Basic ve ayrı oran kapıları, açık
 `dav istemcisi` politikasına bağlı CSRF/Origin muafiyeti, well-known keşif.
-Core freeze altında uygulama yok; her katman `urun-h`nin depo içi DAV
-reproducer'ını (henüz yok) ister. RFC-0039'a bağımlı değildir, büyük gövde
+Core freeze altında uygulama yok. Depo içi DAV reproducer'ları 26 Kasım
+2026'da korpusa girdi: A/B/C/E/F için dokuz tek dosyalı ret vakası
+(`dogfood/urun-h/korpus/rfc0040-*.dil`; S036, S015, S037, T050, T060, T062),
+köken [dav-reproducer.md](../dogfood/urun-h/dav-reproducer.md). Alt RFC kararı
+ürün sahibinin 26 Kasım “önce reproducer” kararıyla beklemededir (büyük
+olasılıkla V1 sonrası); ürünün en küçük çalışan uç notu RFC-0040 açık
+sorularındadır. RFC-0039'a bağımlı değildir, büyük gövde
 tutamak ilkelini onunla paylaşır. V1 kapısı değildir.
 
 ## K-354 — Ağ sunucusu yetkinliği çatı RFC taslağı

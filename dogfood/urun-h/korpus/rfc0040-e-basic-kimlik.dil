@@ -1,0 +1,15 @@
+# RFC-0040 E — çerezsiz Basic + uygulama parolası. Eşitleme istemcisi çerez tutmaz, her isteği
+# Authorization: Basic ile gönderir. Ürünün uygulama parolaları (Argon2id, cihaz başına, iptal
+# edilebilir) IMAP'te doğrulanıyor; web rotası kimlik bilgisini alamıyor. Başlık okunabilse bile
+# istek başına Argon2id spec/12 §5 parola oran sınırına (300 sn / 5) takılır — RFC-0040 E'nin
+# HMAC modeli gerekir. Beklenen: S015, exit 1.
+8080 kapısında sunucu başlat
+
+POST "/dav/takvimler/" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    kimlik isteğin "Authorization" başlığı olsun
+    parçalar kimliğin " " ile parçaları olsun
+    adet parçaların adedi olsun
+    adet 2 ye eşit değilse
+        "Kimlik gerekli." yanıtını 401 durumuyla gönder
+    "x" yanıtını 207 durumuyla gönder

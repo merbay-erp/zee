@@ -203,7 +203,8 @@ türleri ve ETag, güvenli XML gövdesi, uygulama parolasıyla çerezsiz Basic v
 dar CSRF muafiyeti, well-known keşif) **açık iştir**; mevcut HTTP adaptörü
 içinde kalır, yeni dinleyici istemez. K-364/[RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md)
 taslağı katmanları ve kabul ölçütlerini bağlar; core freeze altında
-uygulanmaz, V1 sözü değildir.
+uygulanmaz, V1 sözü değildir. Ürün H'nin A/B/C/E/F ret reproducer'ları
+26 Kasım 2026'dan beri dogfood korpusundadır; alt RFC kararı beklemededir.
 
 Web arayüzünde ek indirme, JS'siz yükleme ve genişletilmiş SMTP ek türleri
 K-378 ile `dogfood-change` olarak açılıyor ([RFC-0041](../rfcs/0041-ikili-yanit-ve-ek-akisi.md)
