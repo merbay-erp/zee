@@ -6325,7 +6325,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   (`Zg==Zg==`). Seçenek "davranışı aynen koru"
   (çözücü ayrı kalır) ile "katı çözücüye bağla" idi; Mustafa ikincisini
   seçti. Bu yüzden iş `maintenance` değil, güvenlik sıkılaştırmasıdır
-  (spec/23 ZORUNLU madde, ADR-083 eki, GB-179). Zee'nin ürettiği her
+  (spec/23 ZORUNLU madde, ADR-083 eki, GB-182). Zee'nin ürettiği her
   değer kanoniktir; ürün verisi etkilenmez.
 - Katman: `guvenlik` temel, `kodlama` altyapıydı → ters kenar. `kodlama`
   hiçbir iç modüle bağımlı olmadığından `temel`e alındı; ADR-046 kuralları

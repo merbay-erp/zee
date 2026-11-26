@@ -96,7 +96,7 @@ temel `guvenlik` (gizli değer `zee1:` biçimi) ve altyapı `eposta` (RFC
 2047, MIME, AUTH PLAIN) kendi kopya kodlayıcı/çözücüleri yerine aynı katı
 uygulamayı kullanır (`guvenlik → kodlama`, `eposta → kodlama`); CLI'nin CSP
 özet kodlayıcısı da aynıdır. Katman kuralları (ADR-046) değişmedi; yeni SCC
-ve ters kenar yoktur.
+ve ters kenar yoktur (ADR-046 K-410 eki).
 
 ## K-149'da temizlenen iki ters kenar
 

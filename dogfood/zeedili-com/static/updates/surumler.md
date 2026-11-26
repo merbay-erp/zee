@@ -20,8 +20,10 @@ Bu kayıt yeni sürüm etiketi değildir.
   dolgu taşıyan birleşik dörtlüler artık `gizli değer base64 biçimi bozuk`
   ile reddedilir.
 
-  **Göç:** Gerekmez. Zee'nin ürettiği şifreli değerler her zaman kanoniktir;
-  yalnız elle değiştirilmiş bir `zee1:` değeri yeniden şifrelenmelidir.
+  **Göç:** Zee'nin ürettiği şifreli değerler her zaman kanoniktir ve
+  eskisi gibi çözülür; bir şey yapmanız gerekmez. Elle bozulmuş bir `zee1:`
+  değeri artık reddedilir: böyle bir değeriniz varsa özgün metni
+  `<metin>in gizli şifrelenmişi` ile yeniden şifreleyin.
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
   rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya

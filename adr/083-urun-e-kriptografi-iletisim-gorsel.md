@@ -110,9 +110,10 @@ okunur (spec/23 §Gizli değer biçimi). Kodlama çıktısı bayt bayt aynıdır
 ediyordu — kanonik olmayan dolgu bitli ikinci yazım (aynı baytlara çözülen,
 ör. `…Zh==`) ve ortada dolgu taşıyan birleşik dörtlüler (ör. `Zg==Zg==`);
 ikisi de artık `gizli değer base64 biçimi bozuk` ile reddedilir
-(eşdeğerlik testi `k410_eski_yazici_ve_okuyucuyla_esdeger`). Zee yalnız kanonik
+(eşdeğerlik testi `k410_eski_yazici_ve_okuyucuyla_esdeger`, regresyon
+`regression/runtime/gizli-kanonik-olmayan-dolgu.dil`). Zee yalnız kanonik
 biçim ürettiğinden ürettiği her değer eskisi gibi çözülür; reddedilen yalnız
 elle değiştirilmiş biçimdir. Gerekçe: bir şifreli değerin tek yazımı olur
 (karşılaştırma/önbellek anahtarı olarak kullanılan değerde iki yazım
 yoktur) ve SMTP/gizli değer/protokol alanları aynı katı kuralları paylaşır
-(GB-179).
+(GB-182).

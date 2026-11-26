@@ -88,7 +88,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-079 | [ERP için güvenli oturum listeleme ve tekil iptal](079-erp-oturum-listeleme-ve-iptal.md) | **kabul** (K-188/GB-028) |
 | ADR-081 | [Resmî site ve üretim sınırı](081-resmi-site-ve-uretim-siniri.md) | **kabul** (K-203/GB-038) |
 | ADR-082 | [Legacy giriş ve kanonik istemci kimliği](082-legacy-giris-ve-kanonik-istemci-kimligi.md) | **kabul** (K-208/K-209) |
-| ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** (K-410 eki: `zee1:` gövdesi tek katı base64 çözücüyle/GB-179) |
+| ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** (K-410 eki: `zee1:` gövdesi tek katı base64 çözücüyle/GB-182) |
 | ADR-084 | [Rota birimleri: `<ad> rotalarını kullan` (K-211)](084-rota-birimleri.md) | **kabul** |
 | ADR-085 | [Görünüm bloğu: tipli HTML ağacı (K-212)](085-gorunum-blogu.md) | **kabul** |
 | ADR-086 | [Site derleyici hatlarının birleştirilmesi](086-site-hatlarinin-birlestirilmesi.md) | **kabul** (K-213) |
