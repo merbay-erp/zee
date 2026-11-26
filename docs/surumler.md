@@ -54,6 +54,23 @@ Bu kayıt yeni sürüm etiketi değildir.
   seçiciyi güncelleyin. Ürün kodu bu iki hatayı yakalayıp iletiyi imzasız
   gönderebilir ve yöneticiyi uyarabilir. `dns` bildirmeyen projeler
   etkilenmez.
+- **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
+  kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
+
+  ```text
+  GET "/takvim/yayin.ics" adresine istek geldiğinde
+      herkese açık
+      takvim metnini "text/calendar" türünde gönder
+  ```
+
+  Tür yalnız `"text/plain"`, `"text/csv"`, `"text/calendar"` ya da
+  `"application/xml"` olabilir ve tırnak içinde yazılır; başka tür (HTML, SVG,
+  betik, PDF/görsel gibi ikili türler) derlemede S037'dir. Yanıt dosya
+  yanıtıyla aynı güvenlik başlıklarını taşır (`nosniff`, `no-store`, sandbox
+  CSP), indirme eki değildir ve gövdeyi değiştirmez: RFC 5545'in istediği
+  CRLF satır sonlarını metnin kendisi taşımalıdır — CR karakterini
+  `cr 13 kod noktası harfini almayı dene olsun` (K-402) ile üretin. Cümle `yanıtını gönder`
+  gibi rotayı bitirir. Var olan programlar etkilenmez; göç gerekmez.
 
 - **Giden posta için DKIM imzası (K-397):** posta sunucusu yazan bir Zee
   programı artık gönderdiği iletiyi kendi alanı adına DKIM ile

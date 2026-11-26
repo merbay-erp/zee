@@ -78,6 +78,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "istek_al"
             | "yanit_gonder"
             | "durum_yaniti_gonder"
+            | "turlu_yanit_gonder"
             | "yonlendir_gonder"
             | "cerez_yaz"
             | "cerez_sil"
@@ -169,9 +170,20 @@ fn metin_listesi_sonuc_semasi(olay: &IzOlay, arguman: usize) -> Result<(), Strin
     Ok(())
 }
 
+/// K-406: türlü metin yanıtı olayı (tür, gövde); tür kapalı metin kümesinde.
+fn turlu_yanit_semasi(olay: &IzOlay) -> Result<(), String> {
+    alan_sayisi(olay, 2, 0)?;
+    if crate::icerik_turu::web_metin_turu(&olay.argumanlar[0]).is_some() {
+        Ok(())
+    } else {
+        Err("türlü metin yanıtının türü kayıtlı metin satırı olmalı".into())
+    }
+}
+
 fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
     match olay.islem.as_str() {
         "yazdir" | "yanit_gonder" => alan_sayisi(olay, 1, 0),
+        "turlu_yanit_gonder" => turlu_yanit_semasi(olay),
         "durum_yaniti_gonder" => {
             alan_sayisi(olay, 2, 0)?;
             if kanonik_tamsayi::<u16>(&olay.argumanlar[0]) {
@@ -609,6 +621,15 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         self.kaydet(
             "durum_yaniti_gonder",
             vec![durum.to_string(), yanit.into()],
+            Vec::new(),
+        );
+    }
+
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        self.ic.turlu_yanit_gonder(tur, yanit);
+        self.kaydet(
+            "turlu_yanit_gonder",
+            vec![tur.into(), yanit.into()],
             Vec::new(),
         );
     }

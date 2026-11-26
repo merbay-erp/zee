@@ -474,6 +474,15 @@ pub trait GirdiCikti {
     }
     /// K-381: bağlantı görevi tanıyla bitti; neden yalnız operatör günlüğüne.
     fn baglanti_tanisini_gunlukle(&mut self, _kimlik: u64, _neden: &str) {}
+    /// K-406 (ADR-163 eki): son isteğe bellekteki metni kapalı `icerik_turu`
+    /// metin satırlarından `tur` ile 200 yanıtı olarak gönderir; başlıkları
+    /// (nosniff, no-store, sandbox CSP, CORP) dosya yanıtıyla aynı kurar,
+    /// `Content-Disposition` yazmaz ve gövdeyi bayt bayt değiştirmez.
+    /// Desteklemeyen adaptör türü düşürüp HTML koklamasına açılmaz: varsayılan
+    /// fail-closed 500 durum yanıtıdır.
+    fn turlu_yanit_gonder(&mut self, _tur: &str, _yanit: &str) {
+        self.durum_yaniti_gonder(500, "istek işlenemedi; sunucu hatası");
+    }
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
     /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.
     fn durum_yaniti_gonder(&mut self, _durum: u16, yanit: &str) {

@@ -1,0 +1,8 @@
+# K-406: ürün H web arayüzünün (ZeeMail) takvim yayını rotasının anonim
+# kesiti.
+proje "takvim-yayini" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu" listesi olsun
+ağ_hedefleri boş liste olsun

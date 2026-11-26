@@ -117,4 +117,4 @@ ZORUNLU: Proje `dkim_anahtarları` ile birlikte `dns` yetkinliği ve çözücü 
 
 TANIMLI: Adda DKIM anahtar kaydı yoksa ya da DNS sorgusu geçici hata verirse stderr'e `UYARI:` yazılır ve anahtar etkin kalır. `dns` bildirimi olmayan projede yayımlanmış anahtar denetimi yapılmaz.
 
-AÇIK: `dil dkim-denetle` komutu, `dkim_imza_girdisi` fuzz hedefi ve gerçek alıcıda `dkim=pass` kanıtı.
+AÇIK: `dil dkim-denetle` komutu (K-415, backlog adayı) ve gerçek alıcıda `dkim=pass` kanıtı (yöntem K-416: [docs/dkim-alici-kaniti.md](../docs/dkim-alici-kaniti.md); ilk kayıt satırına kadar açık). (`dkim_imza_girdisi` fuzz hedefi 26 Kasım 2026'dan beri RC fuzz kapısındadır.)

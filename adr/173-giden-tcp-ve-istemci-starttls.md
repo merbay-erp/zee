@@ -139,9 +139,10 @@ giden TCP yüksek riskli bir yüzeydir: SSRF ve DNS yeniden bağlama bu kararın
   public IP denetiminden geçer (`urun-h/giden-teslim` kesiti). Host adı
   verilirse çözüm işletim sisteminin engelleyen çözücüsüyle yapılır; süresi
   OS'a bağlıdır, yine bağlanma bütçesiyle sınırlıdır.
-- Fuzz: `x509_spki` hedefi adaydır. Yürüyücü saldırgan baytını yalnız
-  rustls/webpki kabul ettikten sonra görür; birim testleri kesik, bozuk,
-  kanonik olmayan ve rastgele çevrilmiş DER'i kapsar. RC kapısına alınması
-  açık iştir.
+- Fuzz: `x509_spki` hedefi (K-411, 26 Kasım 2026) RC fuzz kapısındadır.
+  Yürüyücü saldırgan baytını yalnız rustls/webpki kabul ettikten sonra
+  görür; yine de her RC adayında 30–60 dakika AddressSanitizer altında,
+  ayrı yazılmış referans DER okuyucusuyla diferansiyel çalışır. Birim
+  testleri kesik, bozuk, kanonik olmayan ve rastgele çevrilmiş DER'i kapsar.
 - Soak gerekmez: süreç içi önbellek yoktur. Kök deposu süreç başına bir kez
   kurulan sabit `OnceLock`'tur; bağlantı durumu bağlantıyla yaşar.

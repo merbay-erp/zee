@@ -216,7 +216,10 @@ açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytında
 ölçülebilir yerel ret). K-385 (ADR-163 eki) e-posta istemcisi
 yapılandırma XML'i ve Apple profili için `application/xml` ile
 `application/x-apple-aspen-config` türlerini yalnız web dosya sınıfına
-ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+ekledi. K-406 (ADR-163 eki, ZM-F048) bellekteki metni aynı kaydın metin
+satırlarıyla (`text/plain`, `text/csv`, `text/calendar`, `application/xml`)
+`… metnini "<tür>" türünde gönder` cümlesiyle 200 yanıtı yaptı (dosya
+yanıtının güvenlik başlıkları, ek yok, gövde bayt bayt). K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
 Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag

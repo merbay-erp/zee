@@ -535,6 +535,11 @@ komutu (`dil dkim-denetle` adayı, K-167 yüzeyi) açık sorudur.
    (OpenDKIM `opendkim-testmsg` ya da eşdeğeri) tarafından `pass`.
 2. Gerçek alıcıda (ör. Gmail'e test gönderimi, insan adımı) `dkim=pass`
    ve DMARC hizalaması `pass` — sürüm kanıtında elle kayıt.
+   K-416: yöntem [`docs/dkim-alici-kaniti.md`](../docs/dkim-alici-kaniti.md),
+   denetleyici `scripts/dkim-alici-kaniti.py` (alıcının en üstteki
+   `Authentication-Results` başlığı) ve anonim kayıt defteri
+   `docs/dkim-alici-kanitlari-v1.tsv`. Gönderim ve DNS yayımı operatör
+   adımıdır; ilk kayıt satırına kadar ölçüt açıktır.
 3. 1024 bit RSA, `rsa-sha1`, bozuk PKCS#8, aynı ad hem ortamda hem
    credential'da → açılış reddi.
 4. `From:` alanı bildirilmemiş alan → imza reddi.
@@ -798,7 +803,8 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
 - Açılışta DNS `p=` eşleme denetimi K-413 ile uygulandı (ADR-174 §9:
   uyuşmazlık ve iptal yalnız o anahtarı devre dışı bırakır, çok kiracılı
   kurulumda süreç durmaz; kayıt yokluğu ve DNS hatası uyarı);
-  `dkim_imza_girdisi` fuzz hedefi açık iştir. Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
+  `dkim_imza_girdisi` fuzz hedefi 26 Kasım 2026'da RC kapısına alındı
+  (K-411). Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
 
 ### Tehdit modeli (K-397)
 
@@ -827,8 +833,8 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
 - Yeni ayrıştırıcılar: X.509 SPKI DER yürüyücüsü (Dilim 1) ve DKIM imza
   girdisi etiket denetimi (Dilim 2). İkisi saf modüldür; birim testleri
   bozuk/kesik/aşırı uzun DER'i ve etiket kenar durumlarını kapsar. Fuzz
-  hedefleri (`x509_spki`, `dkim_imza_girdisi`) aday olarak ADR-173/174'te
-  kayıtlıdır; RC fuzz kapısına alınmaları açık iştir (ayrıştırıcılar
+  hedefleri (`x509_spki`, `dkim_imza_girdisi`) ADR-173/174'te kayıtlıdır;
+  ikisi de K-411 ile RC fuzz kapısındadır (ayrıştırıcılar
   saldırganın gönderdiği sertifikayı yalnız rustls/webpki kabul ettikten
   sonra görür).
 

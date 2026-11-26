@@ -223,7 +223,9 @@ olursa sızar.
     yetkilendirmesi ürünündür.
   - Süreç belleği ve çekirdek dökümü risk taşır. ZeeOS birimine
     `LimitCORE=0` önerilir.
-- Fuzz: `dkim_imza_girdisi` hedefi adaydır, RC kapısına alınması açık iştir.
+- Fuzz: `dkim_imza_girdisi` hedefi (K-411, 26 Kasım 2026) RC fuzz kapısındadır:
+  kanonik gövde özetleyicisi ve imza kâhini denetimi her RC adayında 30–60
+  dakika AddressSanitizer altında çalışır (docs/fuzz-rc.md).
   Birim testleri kenar durumları ve kâhin girdilerini kapsar.
 - Soak gerekmez. Anahtar deposu süreç başına bir kez kurulan sabit
   `OnceLock`'tur; önbellek ya da büyüyen durum yoktur.

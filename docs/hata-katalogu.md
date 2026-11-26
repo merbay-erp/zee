@@ -54,7 +54,7 @@ kalır (ADR-025).
 | S034 | Birim/paket kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki dosyayı; `grafik paketini kullan` — proje bağımlılığını alır |
 | S035 | Sunucu açma biçimi | `8080 kapısında sunucu başlat` |
 | S036 | Olay/zaman aşımı bloğu biçimi | `"/durum" adresine istek geldiğinde` · `yetişmezse` tek başına satır |
-| S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` veya `"hazır değil" yanıtını 503 durumuyla gönder`; durum kaynakta görünen 100..599 literalidir. K-384: adı `gönder` ile biten işlemi cümle olarak çağırınca öneri çakışan işlemi anar — işleme başka ad ver |
+| S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` veya `"hazır değil" yanıtını 503 durumuyla gönder`; durum kaynakta görünen 100..599 literalidir. K-384: adı `gönder` ile biten işlemi cümle olarak çağırınca öneri çakışan işlemi anar — işleme başka ad ver. K-406: `takvim metnini "text/calendar" türünde gönder` türü tırnaklı literal ve yalnız `text/plain`, `text/csv`, `text/calendar`, `application/xml`; HTML/SVG/betik, ikili tür ya da değişken tür S037 — ikili içerik için dosya yanıtı kullan |
 | S038 | Eşzamanlı blok biçimi | `eşzamanlı olarak` + girintide `<ad> <ifade>` görev satırları |
 | S039 | Işık komutu biçimi | `kırmızı ışığı yak` / `mavi ışığı söndür` |
 | S043 | Web güvenlik cümlesi biçimi | Rota önsözünü, oturum açmayı veya kapatmayı tanıda gösterilen tam kalıpla yaz |

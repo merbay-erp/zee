@@ -13,6 +13,9 @@ use dil::dkim_kripto::DkimAlgoritmasi;
 use dil::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
 use dil::yorumlayici::{calistir_io, ToplayanIo};
 
+#[path = "ortak/dkim_ozellikleri.rs"]
+mod dkim_ozellikleri;
+
 /// Zee'nin kanonikleştirdiği imza girdisi (relaxed başlıklar + boş `b=`).
 fn girdi(a: &str) -> String {
     format!(
@@ -754,6 +757,50 @@ değilse\n    hata {sin} hatası olsun\n    veri2 hatanın verisi olsun\n    ver
         stdout.lines().collect::<Vec<_>>(),
         vec![beklenen.as_str(), "sınır", "veri_bozuk"]
     );
+}
+
+/// `dkim_imza_girdisi` fuzz korpusu stable'da aynı özellik denetiminden
+/// geçer; her tohum deterministik xorshift ile 2000 kez bozulur (bayt
+/// değiştirme, kesme, CR/LF ekleme).
+#[test]
+fn dkim_fuzz_korpusu_ozellikleri_korur() {
+    let kok = Path::new(env!("CARGO_MANIFEST_DIR")).join("fuzz/corpus/dkim_imza_girdisi");
+    let mut tohumlar: Vec<Vec<u8>> = std::fs::read_dir(&kok)
+        .unwrap()
+        .map(|g| std::fs::read(g.unwrap().path()).unwrap())
+        .collect();
+    tohumlar.sort();
+    assert!(tohumlar.len() >= 6, "korpus tohumu eksik");
+    let gecerli = tohumlar
+        .iter()
+        .filter(|t| {
+            std::str::from_utf8(&t[1..])
+                .is_ok_and(|m| dil::dkim_imza::imza_girdisini_denetle(m).is_ok())
+        })
+        .count();
+    assert!(gecerli >= 2, "kâhin dalını kapsayan geçerli tohum yok");
+    let mut durum = 0x9e37_79b9_7f4a_7c15_u64;
+    let mut sonraki = || {
+        durum ^= durum << 13;
+        durum ^= durum >> 7;
+        durum ^= durum << 17;
+        durum
+    };
+    for tohum in &tohumlar {
+        dkim_ozellikleri::denetle(tohum);
+        for _ in 0..2000 {
+            let mut bozuk = tohum.clone();
+            let r = sonraki();
+            let yer = (r as usize) % bozuk.len().max(1);
+            match r % 4 {
+                0 if !bozuk.is_empty() => bozuk[yer] ^= (r >> 8) as u8 | 1,
+                1 => bozuk.truncate(yer),
+                2 => bozuk.insert(yer.min(bozuk.len()), b'\r'),
+                _ => bozuk.insert(yer.min(bozuk.len()), b'\n'),
+            }
+            dkim_ozellikleri::denetle(&bozuk);
+        }
+    }
 }
 
 // ---- K-413: açılışta yayımlanmış DKIM anahtarı (DNS p=) denetimi ----
