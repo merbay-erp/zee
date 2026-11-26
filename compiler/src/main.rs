@@ -730,7 +730,17 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     };
     if durum + kuru == 1 {
-        return goc_planini_yaz(bildirim, proje.ana_kok(), durum == 1, ileri_kayitlara_izin);
+        return match dil::postgresql::gocleri_planla_secenekli(
+            bildirim,
+            proje.ana_kok(),
+            ileri_kayitlara_izin,
+        ) {
+            Ok(plan) => goc_planini_yaz(plan, durum == 1),
+            Err(hata) => {
+                eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
+                ExitCode::FAILURE
+            }
+        };
     }
     match dil::postgresql::gocleri_uygula_secenekli(bildirim, proje.ana_kok(), ileri_kayitlara_izin)
     {
@@ -754,41 +764,28 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
 
 /// `--durum` (bütün adımlar) ya da `--kuru` (yalnız bekleyen) planını SQL
 /// yürütmeden yazar.
-fn goc_planini_yaz(
-    bildirim: &dil::veritabani_modeli::VeritabaniBildirimi,
-    kok: &std::path::Path,
-    durum: bool,
-    ileri_kayitlara_izin: bool,
-) -> ExitCode {
-    match dil::postgresql::gocleri_planla_secenekli(bildirim, kok, ileri_kayitlara_izin) {
-        Ok(plan) => {
+fn goc_planini_yaz(plan: dil::postgresql::GocPlani, durum: bool) -> ExitCode {
+    println!(
+        "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
+        plan.uygulanmis, plan.bekleyen
+    );
+    for adim in plan.adimlar {
+        if durum || !adim.uygulanmis {
             println!(
-                "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
-                plan.uygulanmis, plan.bekleyen
+                "{}\t{}\t{}\t{}",
+                adim.surum,
+                if adim.uygulanmis {
+                    "uygulanmış"
+                } else {
+                    "bekleyen"
+                },
+                adim.ad,
+                adim.sha256
             );
-            for adim in plan.adimlar {
-                if durum || !adim.uygulanmis {
-                    println!(
-                        "{}\t{}\t{}\t{}",
-                        adim.surum,
-                        if adim.uygulanmis {
-                            "uygulanmış"
-                        } else {
-                            "bekleyen"
-                        },
-                        adim.ad,
-                        adim.sha256
-                    );
-                }
-            }
-            ileri_kayitlari_yaz(&plan.ileri, durum);
-            ExitCode::SUCCESS
-        }
-        Err(hata) => {
-            eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
-            ExitCode::FAILURE
         }
     }
+    ileri_kayitlari_yaz(&plan.ileri, durum);
+    ExitCode::SUCCESS
 }
 
 /// K-407: tolere edilen ileri kayıtlar özet satırı ve (istenirse) sürüm
