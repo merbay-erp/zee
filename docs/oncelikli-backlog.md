@@ -2589,6 +2589,25 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-411 — `dkim_imza_girdisi` ve `x509_spki` fuzz hedefleri RC kapısında (ADR-174, ADR-173)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174
+(K-397 Dilim 2) aday fuzz hedefi. RC fuzz kapısının altıncı hedefi; kanonik
+gövde özetleyicisi ve imza kâhini denetimi her RC adayında 30–60 dakika
+AddressSanitizer altında. Kâhin değişmezlerdir (parça sınırı ve LF/CRLF
+bağımsızlığı, kâhin denetiminin tutarlılığı); ortak denetim
+`compiler/tests/ortak/dkim_ozellikleri.rs`, stable korpus replay
+`dkim_imza_testi.rs` (tohum başına 2.000 bozulmuş girdi). compiler/src
+değişmedi.
+
+İkinci hedef `x509_spki` (ADR-173, K-397 Dilim 1): TLS uç sertifikasından SPKI
+çıkaran sınırlı DER yürüyücüsü, ayrı yazılmış referans DER okuyucusuyla
+diferansiyel (`compiler/tests/ortak/x509_ozellikleri.rs`); korpus openssl
+üretimi RSA/Ed25519 sertifikaları ve bozuk DER tohumları; stable replay
+`giden_baglanti_testi.rs` (tohum başına 3.000 bozulmuş girdi, gerçek
+sertifikada openssl `-pubkey` eşliği). RC kapısı yedi hedefli.
+Açık: ilk yedi hedefli RC koşusu ve tarihçe satırı.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
 **Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
@@ -2647,8 +2666,13 @@ ve Metin ilkesi eşdeğerliği, baş ofseti, kip/CR/32 MiB reddi, yetkinlik, iz
 ve gerçek süreçte 400 KB ham CRLF ileti) ve `dkim_kripto` kanonikleştirme
 birimleri.
 
-Açık: `x509_spki` ve `dkim_imza_girdisi` fuzz hedeflerinin RC kapısına
-alınması; açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
+`dkim_imza_girdisi` fuzz hedefi K-411 ile RC kapısına alındı (26 Kasım 2026; ortak
+özellik denetimi `tests/ortak/dkim_ozellikleri.rs`, korpus replay
+`dkim_imza_testi.rs`).
+
+`x509_spki` fuzz hedefi de K-411 ile RC kapısına alındı.
+
+Açık: açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
 teslim ve `dkim=pass` kanıtı (insan adımı).
 
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
@@ -2936,8 +2960,32 @@ XML/JSON dışı 415, 8 KiB üstü 413. Oran sınırı rotanın kendi kovasında
 Kanıt: `compiler/tests/web_testi.rs` (iki vaka), `compiler/tests/web_cok_surec_testi.rs`
 `makine_uc_noktasi_origin_csrf_cerezsiz_calisir_413_415_verir`,
 `compiler/src/cli/makine_ucu.rs` birim testi; dogfood `urun-h-outlook-autodiscover`.
-Açık: kullanıcıya göre üretilen `application/xml` metin yanıtı, kimlikli DAV
-muafiyeti (RFC-0040 #5(c)), harfe duyarsız yol.
+Kullanıcıya göre üretilen `application/xml` yanıtı K-406 türlü metin
+yanıtıyla yazılabilir. Açık: kimlikli DAV muafiyeti (RFC-0040 #5(c)), harfe duyarsız yol.
+
+## K-406 — Türlü metin yanıtı: `X metnini "<tür>" türünde gönder` (ADR-163 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F048 (ürün `b75db4c`); merkez onayı 26.11.2026 09:05, küçük yüzey.
+Freeze sınıfı `dogfood-change` (semantic-change). GB-179.
+
+Sürtünme: takvim yayını (`GET /takvim/yayin.ics?k=<belirteç>`) bellekte
+kurulan iCalendar metnidir; bellekteki metin yanıtı yalnız `text/html` /
+`text/plain`, `text/calendar` ise yalnız dosya yanıtındaydı ve GET rotası dosya
+yazamaz (T045). Karar: yanıt cümlesinin kardeş biçimi, tür kapalı
+`icerik_turu` kaydının metin satırlarından (`text/plain`, `text/csv`,
+`text/calendar`, `application/xml`) kaynakta görünen literal; aksi S037.
+Başlıklar dosya yanıtıyla aynı (nosniff, no-store, sandbox CSP, CORP),
+`Content-Disposition` yok; gövde bayt bayt (CRLF için yeni sözdizimi yok,
+CR K-402 kod noktası yüzeyinden). Rotayı bitirir (K-403), eylemde T044.
+Yeni kalıp kelimesi yalnız `metnini`; tanı kodu, AST değer türü, bağımlılık
+ve `dil::api::v1` yok.
+
+Kanıt: `compiler/tests/dosya_yaniti_testi.rs` (4 vaka: gerçek TCP başlık +
+ham CRLF/LF/CR gövde + HEAD, S037 kapalı küme, hermetik adaptör + IO izi
+şeması, lint S047), `icerik_turu.rs::web_metin_turu_yalniz_metin_satirlarini_acar`;
+dogfood `urun-h/takvim-yayini/`. Açık: `attachment` biçimi ve abonelik
+istemcilerinin (Outlook, Google) gerçek davranış ölçümü (insan).
 
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 

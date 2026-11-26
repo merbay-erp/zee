@@ -6249,6 +6249,25 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
+## K-411 — `dkim_imza_girdisi` ve `x509_spki` RC fuzz kapısında; ADR-174, ADR-173 (26 Kasım 2026)
+
+- Kullanıcı isteğiyle (numara merkezden: K-411; K-397 kapalıydı) ADR-174'ün
+  aday fuzz hedefi RC kapısına alındı: altıncı
+  hedef. Workflow matrisleri (fuzz ve fuzz-rc), RC kampanya/kanıt betikleri,
+  güvenlik kapısı ve korpus doğrulayıcı aynı hedef kümesini taşır.
+- Kâhin bağımsız bir uygulama değil, değişmezlerdir: parça sınırı ve LF/CRLF
+  seçiminden bağımsız gövde özeti, kâhin denetiminin kabul ettiği girdide
+  tutarlı alanlar. Denetim `tests/ortak/dkim_ozellikleri.rs`'te ortak; stable
+  korpus replay'i fuzz araç zinciri olmadan da çalışır.
+- Kullanıcının ikinci isteğiyle ADR-173'ün `x509_spki` hedefi de eklendi
+  (yedinci hedef). Kâhin, aynı X.690 DER kurallarını ayrı yazılmış referans
+  okuyucuyla uygulayan diferansiyel karşılaştırmadır; yeni DER crate'i
+  eklenmedi (tedarik yüzeyi). `max_len` 65537: 64 KiB sınırının bir bayt
+  ötesi de denenir. Korpustaki sertifikalar openssl üretimi açık
+  sertifikalardır, anahtarları silindi.
+- Bu değişiklik compiler/src'ye dokunmaz; RC fuzz tarihçesine satır yazılmadı
+  (koşu yok). Sonraki RC adayı yedi hedefin hepsini ister.
+
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 
 - Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden
@@ -6328,3 +6347,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   iziyle birebir). Yeni `Ozellik` kolları `yorumlayici/metin_kodlama.rs` ve
   `ayristirici/ifade/metin_kodlama.rs` modüllerinde; `sha256 özeti` de oraya
   taşındı (satır bütçeleri). GB-178. K-402 kapandı.
+## K-406 — Türlü metin yanıtı; ADR-163 eki (26 Kasım 2026)
+
+- Kaynak: `urun-h` (ZeeMail) ZM-F048 (ürün `b75db4c`): takvim yayını
+  bellekteki metin olduğundan `text/calendar` verilemiyordu; dosya yanıtı GET
+  rotasında dosya yazmayı gerektirir (T045). Merkez onayı 26.11 09:05.
+- Biçim yanıt cümlesinin kardeşidir (`… metnini "<tür>" türünde gönder`),
+  yeni cümle türü değil: K-403 rota sonu, T044, yetkinlik ve lint olduğu gibi
+  uygulanır. Tür literal (durum kodu gibi review'da exact) ve kapalı kaydın
+  dar metin alt kümesi; HTML/SVG/betik kayıtta zaten yok, ikili türler ve
+  imzalı Apple profili bilinçli dışarıda. Hata S037'ye öneriyle bağlandı.
+- CRLF: niteleyici (`CRLF satır sonlarıyla`, üç kelime + normalleştirme
+  semantiği) ve türe bağlı örtük normalleştirme reddedildi; gövde bayt bayt
+  gider, CR'yi ürün K-402 `kod noktası harfi` ile üretir (en küçük yüzey).
+- Önbellek izinli rotada da `no-store`: belirteçli takvim adresi paylaşılan
+  önbelleğe girmemeli. K-406 kapandı.

@@ -2090,6 +2090,8 @@ enum WebYanitTaslagi {
     Yonlendirme(String),
     /// K-378: rotanın kayıtlı türle `attachment` olarak verdiği dosya.
     Dosya(DosyaYaniti),
+    /// K-406: kayıtlı metin türüyle (Content-Type değeri) bellekteki gövde.
+    Turlu(String, String),
 }
 
 /// K-378: doğrulanmış, açık dosya tanıtıcısı ve çağrı anındaki uzunluğu.
@@ -2538,7 +2540,7 @@ impl GercekIo {
             WebYanitTaslagi::Durum(status, _) => *status,
             WebYanitTaslagi::Yonlendirme(_) => 303,
             WebYanitTaslagi::Govde(_) if asim => 413,
-            WebYanitTaslagi::Govde(_) | WebYanitTaslagi::Dosya(_) => 200,
+            _ => 200,
         };
         let (baslik, govde) = match taslak {
             WebYanitTaslagi::Dosya(yanit) => return Ok(self.dosya_taslagini_yaz(akis, head, yanit)),
@@ -2558,6 +2560,9 @@ impl GercekIo {
                     guvenlik_basliklari
                 );
                 (baslik, govde)
+            }
+            WebYanitTaslagi::Turlu(tur, govde) => {
+                (self.turlu_yanit_basligi(&tur, govde.len()), govde)
             }
             WebYanitTaslagi::Durum(durum, govde) => {
                 let guvenlik_basliklari = self.guvenlik_basliklari();
@@ -2791,6 +2796,16 @@ impl GercekIo {
 
     /// K-378: dosya yanıtını yazar; çerezler 200 yanıtıyla aynı, güvenlik
     /// başlıkları dosya sınıfına özgüdür.
+    /// K-406: türlü metin yanıtı başlığı — dosya yanıtının başlık kümesi
+    /// (nosniff, no-store, sandbox CSP, CORP); `Content-Disposition` yok, rota
+    /// önbellek izni uygulanmaz, gövde dönüştürülmez.
+    fn turlu_yanit_basligi(&mut self, icerik_turu: &str, uzunluk: usize) -> String {
+        let guvenlik = dosya_guvenlik_basliklari(self.guvenli_proxy_origin().is_some());
+        let cerezler = self.cerez_basliklarini_al();
+        format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: {icerik_turu}\r\nContent-Length: {uzunluk}\r\n{cerezler}{guvenlik}Connection: close\r\n\r\n"
+        )
+    }
     fn dosya_taslagini_yaz(
         &mut self,
         mut akis: web_metrikleri::Akis,
@@ -5141,6 +5156,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             disposition,
         }));
         i64::try_from(uzunluk).map_err(|_| "dosya uzunluğu taştı".into())
+    }
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        // Ayrıştırıcı türü denetledi; çalışma zamanı kapalı kümeyi yeniden
+        // uygular (iz/oynatıcı ya da gömme yolu): kayıt dışı tür 500'dür.
+        let taslak = match dil::icerik_turu::web_metin_turu(tur) {
+            Some(kayit) => {
+                WebYanitTaslagi::Turlu(dil::icerik_turu::baslik_degeri(kayit), yanit.to_string())
+            }
+            None => WebYanitTaslagi::Durum(500, "istek işlenemedi; sunucu hatası".into()),
+        };
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_web_yaniti.is_none() {
+                self.bekleyen_web_yaniti = Some(taslak);
+            }
+            return;
+        }
+        let _ = self.web_yanit_taslagini_yaz(taslak);
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.web_istek_yedegi.is_some() {

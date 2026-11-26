@@ -16,7 +16,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/08-kalici-dosya.md` | 9 | 8 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
-| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 27 | 27 | 0 | 0 |
+| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 31 | 31 | 0 | 0 |
 | `spec/12-web-guvenlik-profili.md` | 93 | 85 | 0 | 8 |
 | `spec/13-surumlu-morfoloji-profili.md` | 9 | 8 | 0 | 1 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 42 | 39 | 0 | 3 |
-| **Toplam** | **463** | **435** | **6** | **22** |
+| **Toplam** | **467** | **439** | **6** | **22** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -59,7 +59,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/12-web-guvenlik-profili.md#c0c4aaba019b2440` — AÇIK: Adlı dinleyicilerden bağlantı kabulü yalnız §9'daki bağlantı bloğu… — K-381: çok işçi grubuna adla aktarım ve HTTP dinleyicisinin adlı devirden alınması açık; bloksuz dinleyici K-376 gibi tutulur.
 - `spec/12-web-guvenlik-profili.md#1cbfffe0b684d7eb` — AÇIK: Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları ile b… — Katman C, bağlantılar arası uyandırma, Unix dışı ret, RSS ölçümü ve ham dosyanın kısmi aktarımı açık (base64 kodlu kısmi getirme K-396 A2d). K-388: birimler arası canlı değer birikimi ve birim içi atılan değer iadesi açık.
 - `spec/12-web-guvenlik-profili.md#d0c68c44c7c98c4b` — AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek t… — K-335 kapsamı dışı; Vary/ETag/purge ve sorgu anahtarı ön kapının sorumluluğundadır.
-- `spec/12-web-guvenlik-profili.md#68288b9051388b31` — AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle iş… — K-405 kapsamı dışı; türlü metin yanıtı, harfe duyarsız yol, PUT/PATCH ve CORS ayrı iştir; günlük ve sayım ürün kuralıdır (RFC-0046 tehdit modeli).
+- `spec/12-web-guvenlik-profili.md#b794607bf1fe922f` — AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle iş… — K-405 kapsamı dışı (kullanıcıya göre yanıt K-406 türlü metin yanıtıyla); harfe duyarsız yol, PUT/PATCH ve CORS ayrı iştir; günlük ve sayım ürün kuralıdır (RFC-0046 tehdit modeli).
 - `spec/12-web-guvenlik-profili.md#a969792eb3d50575` — AÇIK: Kaynak değişmezindeki bir betiği gövdeye yansıtan istemci o betiği… — K-379 kapsamı dışı: özet CSP'nin genel sınırı (yalnız geliştirici betikleri); öznitelikli script özetlenmez; durum yanıtı satır içi betik izni taşımaz.
 - `spec/13-surumlu-morfoloji-profili.md#8a414db8b5ca5b82` — AÇIK: `zee-tr-1` `â`, `î`, `û` harflerini ünlü saymaz. Bu harfleri taşıy… — K-367: düzeltme uyumluluk kaydını değiştirir (53.248 üretimin 10.306'sı, 2.865 çözüm kümesi); zee-tr-1 içinde yapılamaz, zee-tr-2 adayı (RFC + yeni kayıt + kilit geçişi + edition). Çözücü doğru yazımı kabul eder.
 - `spec/23-yetkinlik-ve-outbound-guvenligi.md#15b3c0c87713d1ae` — AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte ro… — K-339 kapsamı dışı; canlı systemd servis kabulü ve rotasyon ürün/işletim tarafında.
@@ -71,7 +71,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR ve genel gerçek ürün gecikmesi açık; tarihsel S3 66e4149e53451111d153f47283c219079a8d1cab kaynağındaki kabul korunur. S4 4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2 kaynağında ayrı 1800sn RSS ve lint açık/kapalı 1/41 belge stdio gözlemi vardır; 41 belge lint açık p95 223,698ms ile 200ms hedefi açıktır, UI/ürün SLA'sı değildir.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#f6da609c2bdaca46` — AÇIK: Zee yüzeyinde NXDOMAIN/NODATA ayrımı, olumsuz yanıtın doğrulanmışl… — K-390: NXDOMAIN/NODATA Zee ayrımı ve CNAME adı B4; dil dene bölge dosyası, PTR, SRV ve SVCB, U-label, süreç/oturum bütçesi B2 açık.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#b62fde1c435ead61` — AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (R… — K-390: B2a/B2c–B2e, dil dene listesi, psl/DKIM fuzz hedefleri, IDN ve DMARCbis açık.
-- `spec/31-dns-ve-posta-kimlik-dogrulama.md#45c643963a4f22bf` — AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `di… — K-397: DNS p= eşleme, dil dkim-denetle, dkim_imza_girdisi fuzz ve gerçek alıcı dkim=pass açık.
+- `spec/31-dns-ve-posta-kimlik-dogrulama.md#17b65629a1d91fbe` — AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `di… — K-397: DNS p= eşleme, dil dkim-denetle ve gerçek alıcı dkim=pass açık; dkim_imza_girdisi fuzz hedefi RC kapısında (K-411, 26.11.2026).
 
 ## Sürüklenme
 

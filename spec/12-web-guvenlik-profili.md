@@ -515,7 +515,7 @@ ZORUNLU: Makine uç noktasına giden istek CSRF ve `Origin` denetiminden geçmez
 
 ZORUNLU: Makine isteğinin tek `Content-Type` başlığı `text/xml`, `application/xml` ya da `application/json` medya türü taşımalı, `charset` parametresi varsa `utf-8` olmalıdır; başlık yoksa ya da tür başkaysa yanıt 415'tir. Gövde 8 KiB (8192 bayt) ile sınırlıdır; aşım gövde okunmadan 413, geçersiz UTF-8 400'dür. Gövde form olarak ayrıştırılmaz: `istek` sözlüğü yalnız `yol`, `yöntem` ve sorgu alanlarını taşır. CSP ve diğer güvenlik başlıkları (`Cache-Control: no-store` dahil) değişmez.
 
-AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle işler. E-posta adresinin günlüğe yazılmaması ve yanıtın alan adına göre değişmemesi (sayım) ürünün sorumluluğundadır. Türlü metin yanıtı, büyük/küçük harfe duyarsız yol, PUT/PATCH ve CORS başlıkları bu sözleşmenin parçası değildir. Normatif gerekçe ve tehdit modeli: RFC-0046, ADR-179.
+AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle işler. E-posta adresinin günlüğe yazılmaması ve yanıtın alan adına göre değişmemesi (sayım) ürünün sorumluluğundadır. Kullanıcıya göre üretilen yanıt K-406 türlü metin yanıtıyla (`application/xml`) yazılabilir; adresi XML'e kaçışlamak ürünün işidir. Büyük/küçük harfe duyarsız yol, PUT/PATCH ve CORS başlıkları bu sözleşmenin parçası değildir. Normatif gerekçe ve tehdit modeli: RFC-0046, ADR-179.
 
 ## K-379 — Satır içi betik CSP özeti
 

@@ -106,13 +106,11 @@ POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
   uygulama parolası) ister.
 - **Yanıt.** MS-OXDSCLI yanıtı istekteki kullanıcıyı anlatır; durağan dosya
   yanıtı (K-385, `attachment`) ara çözümdür. Kullanıcıya göre üretilen
-  `application/xml` metin yanıtı ayrı iştir; ürün o zaman da adresi XML'e
-  kaçışlayarak yazmak ve alan adına göre farklı hata vermemek zorundadır.
+  `application/xml` metin yanıtı K-406 türlü metin yanıtıyla yazılır; ürün
+  adresi XML'e kaçışlayarak yazmak ve alan adına göre farklı hata vermemek zorundadır.
 
 ## Açık
 
-- Metin yanıtının içerik türü: bugün `application/xml` yanıtı yalnız dosya
-  yanıtıyla (K-385, `attachment`) yazılır; türlü metin yanıtı ayrı iştir.
 - Kimlikli makine istemcileri (DAV, Basic) — RFC-0040 #5(c).
 - Yol eşleşmesi büyük/küçük harfe duyarlıdır; `/Autodiscover/Autodiscover.xml`
   gibi biçimler için ürün ayrı rota tanımlar.

@@ -83,8 +83,8 @@ CSRF'yi rotada kapatan bir yol ve ham gövde okuması yoktur.
 
 ## Sonuçlar
 
-- Ürün H Outlook POX autodiscover'ı Zee kodunda sunar; yanıt bugün dosya
-  yanıtıyla (`application/xml`, K-385) yazılır.
+- Ürün H Outlook POX autodiscover'ı Zee kodunda sunar; yanıt durağan dosya
+  yanıtıyla (K-385) ya da türlü metin yanıtıyla (K-406) yazılır.
 - CSRF'siz rotanın tarayıcı kimliğine ulaşması dilde imkânsızdır: derleme
   T061, adaptör çerezi okumaz ve Set-Cookie yazmaz.
 - Ürün sorumlulukları (RFC-0046 tehdit modeli): adresi günlüğe/tanıya
@@ -92,7 +92,9 @@ CSRF'yi rotada kapatan bir yol ve ham gövde okuması yoktur.
   bölmeyle sınırlı tutmak.
 - Freeze yüzeyi: kalıplar `makine`, `gövdesi`; API `web.istek_ham_govdesi`;
   tanılar S050/T060/T061/T062 (`dil-yuzeyi-v1.tsv`, 1.0.0-dev).
-- Açık: türlü metin yanıtı, büyük/küçük harfe duyarsız yol, PUT/PATCH,
+- Kullanıcıya göre üretilen `application/xml` yanıtı K-406 türlü metin
+  yanıtıyla (`… metnini "application/xml" türünde gönder`) yazılabilir.
+- Açık: büyük/küçük harfe duyarsız yol, PUT/PATCH,
   CORS başlıkları, JSON ayrıştırma.
 
 ## Kanıt

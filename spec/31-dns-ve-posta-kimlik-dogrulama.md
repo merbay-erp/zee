@@ -113,4 +113,4 @@ TANIMLI: İlke gövdenin tamamını özetler; `l=` desteklenmez. `l=` taşıyan 
 
 TANIMLI: İmza IO izine `dkim_imzala` olayı olarak argüman `[AD, algoritma, VERİ'nin SHA-256'sı (onaltılık)]` ve sonuç `b=` ya da `tür` ile girer. Replay anahtar gerektirmez.
 
-AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `dil dkim-denetle` komutu, `dkim_imza_girdisi` fuzz hedefi ve gerçek alıcıda `dkim=pass` kanıtı.
+AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `dil dkim-denetle` komutu ve gerçek alıcıda `dkim=pass` kanıtı. (`dkim_imza_girdisi` fuzz hedefi 26 Kasım 2026'dan beri RC fuzz kapısındadır.)

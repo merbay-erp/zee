@@ -39,4 +39,5 @@ ile sınanır.
 Açık: ürün taslağındaki GET `/autodiscover/autodiscover.xml` makine ucu
 değildir (yalnız POST; GET zaten CSRF istemez, sıradan `herkese açık` rota
 olarak yazılır). MS-OXDSCLI yanıtı kullanıcıyı anlatır; kullanıcıya göre üretilen
-metin yanıtı ayrı iştir, durağan dosya yanıtı (`attachment`) ara çözümdür.
+yanıt K-406 türlü metin yanıtıyla (`… metnini "application/xml" türünde
+gönder`) yazılabilir; bu kesit durağan dosya yanıtıyla (`attachment`) kalır.

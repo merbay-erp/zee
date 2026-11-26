@@ -793,9 +793,12 @@ pub enum Cumle {
     /// K-381: `bağlantıyı kapat`.
     BaglantiyiKapat { satir: usize },
     /// `"çalışıyor" yanıtını gönder` veya sabit `503 durumuyla gönder`.
+    /// K-406: `takvim metnini "text/calendar" türünde gönder` — `tur` kapalı
+    /// `icerik_turu` metin satırının exact MIME yazımıdır (durum her zaman 200).
     YanitGonder {
         deger: Ifade,
         durum: Option<u16>,
+        tur: Option<String>,
         satir: usize,
     },
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).
