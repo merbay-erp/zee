@@ -59,6 +59,12 @@ pub enum DkimHatasi {
     ImzaBozuk,
     /// Zee verisinde CR var (satır sonu LF ile yazılır, CRLF host'ta kurulur).
     VeriBozuk,
+    /// K-397 imza: Zee'nin verdiği ad `dkim_anahtarları` içinde yok.
+    AnahtarBilinmiyor,
+    /// K-397 imza: girdinin `d=`/`s=`/`a=` değeri bildirilmiş anahtara uymuyor.
+    AnahtarUyusmuyor,
+    /// K-397 imza: imza girdisi kâhin önlemini geçmedi (sabit neden).
+    GirdiGecersiz(&'static str),
 }
 
 impl DkimHatasi {
@@ -73,6 +79,9 @@ impl DkimHatasi {
             Self::AnahtarUzun => "anahtar_uzun",
             Self::ImzaBozuk => "imza_bozuk",
             Self::VeriBozuk => "veri_bozuk",
+            Self::AnahtarBilinmiyor => "anahtar_bilinmiyor",
+            Self::AnahtarUyusmuyor => "anahtar_uyuşmuyor",
+            Self::GirdiGecersiz(_) => "geçersiz",
         }
     }
 
@@ -92,7 +101,33 @@ impl DkimHatasi {
             Self::VeriBozuk => {
                 "DKIM verisinde CR var; satır sonunu \\n ile yaz (imza girdisinde CRLF olur)"
             }
+            Self::AnahtarBilinmiyor => {
+                "DKIM özel anahtarı proje `dkim_anahtarları` bildiriminde yok"
+            }
+            Self::AnahtarUyusmuyor => {
+                "DKIM imza girdisinin d=/s=/a= değeri bildirilmiş anahtara uymuyor"
+            }
+            Self::GirdiGecersiz(neden) => neden,
         }
+    }
+
+    /// IO izinde ve adaptör sınırında taşınan `tür` değerinden geri çevirir.
+    pub fn turden(tur: &str) -> Option<Self> {
+        [
+            Self::AlgoritmaReddedildi,
+            Self::AlgoritmaBilinmiyor,
+            Self::AnahtarIptal,
+            Self::AnahtarBozuk,
+            Self::AnahtarKisa,
+            Self::AnahtarUzun,
+            Self::ImzaBozuk,
+            Self::VeriBozuk,
+            Self::AnahtarBilinmiyor,
+            Self::AnahtarUyusmuyor,
+            Self::GirdiGecersiz("DKIM imza girdisi geçersiz"),
+        ]
+        .into_iter()
+        .find(|hata| hata.turu() == tur)
     }
 }
 
@@ -221,6 +256,158 @@ pub fn govde_ozeti(govde: &str) -> Result<String, DkimHatasi> {
     Ok(crate::kodlama::base64_kodla(ozet.as_ref()))
 }
 
+/// Dosyadan gövde özetinin işlenen gövde bayt tavanı (32 MiB; dosya
+/// SHA-256'sı ve K-395 çözerek yazma tavanıyla aynı).
+pub const DOSYA_GOVDE_OZETI_SINIRI: usize = 32 * 1024 * 1024;
+
+/// Adaptörlerin ortak akış döngüsü: okuyucu gövde başına konumlanmış
+/// olmalı. Hata metni IO sınırının sözleşmesidir: tam `veri_bozuk`,
+/// `sınır: …` ya da okuma hatası (`dosya`).
+pub fn govde_ozetini_akit(
+    okuyucu: &mut dyn std::io::Read,
+    kip: GovdeKipi,
+    yol: &str,
+) -> Result<String, String> {
+    let mut ozetleyici = KanonikGovdeOzetleyici::yeni(kip);
+    let mut parca = [0u8; 16 * 1024];
+    loop {
+        let okunan = okuyucu
+            .read(&mut parca)
+            .map_err(|hata| format!("\"{yol}\" dosyası okunamadı: {}", hata.kind()))?;
+        if okunan == 0 {
+            return ozetleyici.bitir().map_err(|hata| hata.turu().to_string());
+        }
+        if ozetleyici.bayt + okunan as u64 > DOSYA_GOVDE_OZETI_SINIRI as u64 {
+            return Err("sınır: DKIM gövdesi 32 MiB'ı aşıyor".into());
+        }
+        ozetleyici
+            .ekle(&parca[..okunan])
+            .map_err(|hata| hata.turu().to_string())?;
+    }
+}
+
+/// RFC 6376 §3.4 `c=` gövde kipi.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GovdeKipi {
+    /// §3.4.3: sondaki boş satırlar atılır; boş gövde tek CRLF'dir.
+    Simple,
+    /// §3.4.4: satır sonu boşlukları atılır, satır içi WSP dizileri tek SP
+    /// olur, sondaki boş satırlar atılır; boş gövde boştur.
+    Relaxed,
+}
+
+impl GovdeKipi {
+    pub fn ayristir(ad: &str) -> Option<Self> {
+        match ad {
+            "simple" => Some(Self::Simple),
+            "relaxed" => Some(Self::Relaxed),
+            _ => None,
+        }
+    }
+}
+
+/// K-397 B3 (ADR-174 §8, ZM-F046): dosyadan akışlı kanonik gövde özeti.
+/// Gövde kanonikleştirmesi (yalnız gövde; başlıklar Zee'de) burada yapılır.
+/// Satır sonu LF ya da CRLF olabilir; LF'siz CR `VeriBozuk`tur. Özet
+/// kanonik CRLF baytları üzerinde alınır; gövde bellekte tutulmaz.
+pub struct KanonikGovdeOzetleyici {
+    kip: GovdeKipi,
+    ozet: ring::digest::Context,
+    tampon: Vec<u8>,
+    /// Henüz yazılmamış boş satırlar (sonda kalırsa atılır).
+    bekleyen_bos: u64,
+    satir_dolu: bool,
+    bosluk: bool,
+    cr: bool,
+    cikti_var: bool,
+    /// İşlenen girdi baytı.
+    pub bayt: u64,
+}
+
+impl KanonikGovdeOzetleyici {
+    pub fn yeni(kip: GovdeKipi) -> Self {
+        Self {
+            kip,
+            ozet: ring::digest::Context::new(&ring::digest::SHA256),
+            tampon: Vec::with_capacity(16 * 1024),
+            bekleyen_bos: 0,
+            satir_dolu: false,
+            bosluk: false,
+            cr: false,
+            cikti_var: false,
+            bayt: 0,
+        }
+    }
+
+    fn yaz(&mut self, veri: &[u8]) {
+        self.cikti_var = true;
+        self.tampon.extend_from_slice(veri);
+        if self.tampon.len() >= 16 * 1024 {
+            self.ozet.update(&self.tampon);
+            self.tampon.clear();
+        }
+    }
+
+    fn satir_sonu(&mut self) {
+        if self.satir_dolu {
+            self.yaz(b"\r\n");
+        } else {
+            self.bekleyen_bos += 1;
+        }
+        self.satir_dolu = false;
+        self.bosluk = false;
+    }
+
+    pub fn ekle(&mut self, parca: &[u8]) -> Result<(), DkimHatasi> {
+        for &b in parca {
+            if self.cr {
+                if b != b'\n' {
+                    return Err(DkimHatasi::VeriBozuk);
+                }
+                self.cr = false;
+                self.satir_sonu();
+                continue;
+            }
+            match b {
+                b'\r' => self.cr = true,
+                b'\n' => self.satir_sonu(),
+                b' ' | b'\t' if self.kip == GovdeKipi::Relaxed => self.bosluk = true,
+                _ => {
+                    if !self.satir_dolu {
+                        while self.bekleyen_bos > 0 {
+                            self.bekleyen_bos -= 1;
+                            self.yaz(b"\r\n");
+                        }
+                        self.satir_dolu = true;
+                    }
+                    if self.bosluk {
+                        self.bosluk = false;
+                        self.yaz(b" ");
+                    }
+                    self.yaz(&[b]);
+                }
+            }
+        }
+        self.bayt += parca.len() as u64;
+        Ok(())
+    }
+
+    /// base64 SHA-256 (`bh=` biçimi).
+    pub fn bitir(mut self) -> Result<String, DkimHatasi> {
+        if self.cr {
+            return Err(DkimHatasi::VeriBozuk);
+        }
+        if self.satir_dolu {
+            self.yaz(b"\r\n");
+        }
+        if self.kip == GovdeKipi::Simple && !self.cikti_var {
+            self.yaz(b"\r\n");
+        }
+        self.ozet.update(&self.tampon);
+        Ok(crate::kodlama::base64_kodla(self.ozet.finish().as_ref()))
+    }
+}
+
 // ---- en küçük DER okuyucusu (yalnız kesin uzunluklu, DER-kanonik) ----
 
 /// `(etiket, içerik, kalan)`; uzun biçim uzunlukta kanonik olmayan
@@ -299,6 +486,87 @@ fn rsa_acik_anahtari(bayt: &[u8]) -> Option<(&[u8], usize)> {
 #[cfg(test)]
 mod testler {
     use super::*;
+
+    fn kanonik(kip: GovdeKipi, parcalar: &[&[u8]]) -> Result<String, DkimHatasi> {
+        let mut ozetleyici = KanonikGovdeOzetleyici::yeni(kip);
+        for parca in parcalar {
+            ozetleyici.ekle(parca)?;
+        }
+        ozetleyici.bitir()
+    }
+
+    fn sha(bayt: &[u8]) -> String {
+        crate::kodlama::base64_kodla(ring::digest::digest(&ring::digest::SHA256, bayt).as_ref())
+    }
+
+    #[test]
+    fn kanonik_govde_rfc6376_ornekleri_ve_kenarlari() {
+        use GovdeKipi::*;
+        // RFC 6376 §3.4.5 örneği.
+        let ornek: &[u8] = b" C \r\nD \t E\r\n\r\n\r\n";
+        assert_eq!(kanonik(Relaxed, &[ornek]).unwrap(), sha(b" C\r\nD E\r\n"));
+        assert_eq!(
+            kanonik(Simple, &[ornek]).unwrap(),
+            sha(b" C \r\nD \t E\r\n")
+        );
+        // Boş gövde (§3.4.3/§3.4.4) ve yalnız boş satırlar.
+        for bos in [&b""[..], b"\r\n", b"\n\n\r\n"] {
+            assert_eq!(
+                kanonik(Simple, &[bos]).unwrap(),
+                "frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY="
+            );
+            assert_eq!(
+                kanonik(Relaxed, &[bos]).unwrap(),
+                "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="
+            );
+        }
+        // Relaxed'de yalnız boşluklu satır boştur; simple'da değildir.
+        assert_eq!(kanonik(Relaxed, &[b"a\n \t\n"]).unwrap(), sha(b"a\r\n"));
+        assert_eq!(
+            kanonik(Simple, &[b"a\n \t\n"]).unwrap(),
+            sha(b"a\r\n \t\r\n")
+        );
+        // Ara boş satırlar korunur, sonda satır sonu eklenir.
+        assert_eq!(
+            kanonik(Simple, &[b"a\n\nb"]).unwrap(),
+            sha(b"a\r\n\r\nb\r\n")
+        );
+        assert_eq!(kanonik(Relaxed, &[b"  a  b  "]).unwrap(), sha(b" a b\r\n"));
+    }
+
+    #[test]
+    fn kanonik_govde_lf_crlf_ve_parca_siniri_esdegerdir() {
+        let crlf = b"Satir 1 \t x\r\n\r\n  ikinci\r\n\r\n";
+        let lf = b"Satir 1 \t x\n\n  ikinci\n\n";
+        for kip in [GovdeKipi::Simple, GovdeKipi::Relaxed] {
+            let beklenen = kanonik(kip, &[crlf]).unwrap();
+            assert_eq!(kanonik(kip, &[lf]).unwrap(), beklenen);
+            for kes in 0..=crlf.len() {
+                assert_eq!(
+                    kanonik(kip, &[&crlf[..kes], &crlf[kes..]]).unwrap(),
+                    beklenen,
+                    "{kes}"
+                );
+            }
+        }
+        // Simple + LF: K-390 Metin ilkesiyle aynı (Zee'nin kanonik gövdesi).
+        let govde = "Merhaba\n\nDünya\n";
+        assert_eq!(
+            kanonik(GovdeKipi::Simple, &[govde.as_bytes()]).unwrap(),
+            govde_ozeti(govde).unwrap()
+        );
+        for bozuk in [&b"a\rb\n"[..], b"a\r", b"\r\r\n"] {
+            assert_eq!(
+                kanonik(GovdeKipi::Simple, &[bozuk]),
+                Err(DkimHatasi::VeriBozuk)
+            );
+        }
+        assert_eq!(
+            kanonik(GovdeKipi::Relaxed, &[b"a\r", b"\nb"]).unwrap(),
+            sha(b"a\r\nb\r\n")
+        );
+        assert_eq!(GovdeKipi::ayristir("Relaxed"), None);
+    }
 
     #[test]
     fn algoritma_adlari() {

@@ -49,7 +49,9 @@ api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	
 api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
 api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
 api	posta.dkim_dogrula	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
+api	posta.dkim_dosya_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOSYA_GOVDE_OZETI: &str = "posta.dkim_dosya_govde_ozeti";
 api	posta.dkim_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_GOVDE_OZETI: &str = "posta.dkim_govde_ozeti";
+api	posta.dkim_imzala	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_IMZALA: &str = "posta.dkim_imzala";
 api	posta.kurumsal_alan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_KURUMSAL_ALAN: &str = "posta.kurumsal_alan";
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
@@ -212,6 +214,7 @@ kalip	her	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	herkese	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ile	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ileti	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	imzalamayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	imzasını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	iptal	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -226,6 +229,7 @@ kalip	kalanı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	karşılığı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kayıtlarını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kez	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	kipinde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kodlu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kodu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kullan	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -293,6 +297,7 @@ kalip	çözmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	çözümünü	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	önbelleklenebilir	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	önekli	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	özel	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	özeti	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	öğesi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	öğesini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -371,6 +376,7 @@ profil	derleyici-yerel-launcher	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'laun
 profil	dinleyiciler-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dinleyiciler"
 profil	dispatcher-service-calendar	aktif	0.8.0-dev	scripts/dispatcher-service.py	--calendar
 profil	dispatcher-service-run	aktif	0.8.0-dev	scripts/dispatcher-service.py	--run
+profil	dkim-anahtarlari-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dkim_anahtarları"
 profil	dns-bildirimi-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "dns_çözücü"
 profil	e-posta-ek-turleri-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "e_posta_ek_türleri"
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"

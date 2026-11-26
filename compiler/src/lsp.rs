@@ -35,7 +35,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 163] = [
+const KALIP_KELIMELERI: [&str; 166] = [
     "yaz",
     "olsun",
     "ise",
@@ -198,6 +198,9 @@ const KALIP_KELIMELERI: [&str; 163] = [
     "dkim",
     "imzasını",
     "olarak",
+    "özel",
+    "imzalamayı",
+    "kipinde",
     "doğrulamayı",
 ];
 

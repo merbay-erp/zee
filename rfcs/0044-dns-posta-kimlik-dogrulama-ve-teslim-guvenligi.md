@@ -4,7 +4,8 @@
   uygulandı** (K-390, ADR-169, spec/31 §1); **B1b (PSL) ve B2b (DKIM
   doğrulama ilkeli) kabul edildi ve uygulandı** (K-390 ikinci dilimi,
   ADR-177, spec/31 §2–§3); **B4a uygulandı** (K-397 Dilim 1, ADR-173);
-  B2a/B2c/B2d/B2e, B3 (K-397 Dilim 2, ADR-174) ve B4'ün kalanı taslak. Core
+  **B3 DKIM imza ilkeli uygulandı** (K-397 Dilim 2, ADR-174, spec/31 §4);
+  B2a/B2c/B2d/B2e ve B4'ün kalanı taslak. Core
   freeze (K-160A/ADR-059) altında her aşama ayrı `dogfood-change` K-işi,
   ADR'si ve depo içi reproducer'ıyla açılır.
 - **Uygulama:** K-397 Dilim 1 (B4a giden TCP + istemci STARTTLS, ADR-173)
@@ -782,6 +783,20 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
   değeri, IO izi, günlük ya da tanı olmaz; okuma tamponu `zeroize` edilir.
 - B2 doğrulayıcısı (K-390 B2) ve K-389 `sha256` ile tek kripto yüzeyi:
   hepsi `ring`; DKIM özeti `ring::digest::SHA256`, base64 RFC-0043 kodlayıcısı.
+
+**Dilim 2 uygulama notu (25 Kasım 2026, ADR-174).** Taslaktan sapmalar:
+- Bildirim `dkim_anahtarları "<alan> <seçici> <algoritma> <credential>", …
+  listesi olsun` olur (en çok 16).
+- Kalıp K-390 doğrulama kalıbının aynasıdır: `VERİ verisi için AD özel
+  anahtarıyla A olarak imzalamayı dene` → `Sonuç<Metin>`. AD, bildirimdeki
+  credential adıdır.
+- Kâhin denetimi taslaktaki maddelere ek olarak `v=1`, dolu `bh=`, `l=`
+  yokluğu, tekil etiket, tek From ve `i=` hizasını ister. Yorumlayıcıda ve
+  adaptörde iki kez yapılır.
+- DKIM credential'ı projedeki başka bir gizli değerin adı olamaz (P015).
+- Tampon sıfırlama `zeroize` crate'i eklemeden en iyi çabadır.
+- Açılışta DNS `p=` eşleme denetimi ve `dkim_imza_girdisi` fuzz hedefi açık
+  iştir. Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
 
 ### Tehdit modeli (K-397)
 

@@ -36,8 +36,8 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 32 | 30 | 0 | 2 |
-| **Toplam** | **448** | **422** | **6** | **20** |
+| `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 42 | 39 | 0 | 3 |
+| **Toplam** | **451** | **425** | **6** | **20** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -70,6 +70,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR ve genel gerçek ürün gecikmesi açık; tarihsel S3 66e4149e53451111d153f47283c219079a8d1cab kaynağındaki kabul korunur. S4 4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2 kaynağında ayrı 1800sn RSS ve lint açık/kapalı 1/41 belge stdio gözlemi vardır; 41 belge lint açık p95 223,698ms ile 200ms hedefi açıktır, UI/ürün SLA'sı değildir.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#f6da609c2bdaca46` — AÇIK: Zee yüzeyinde NXDOMAIN/NODATA ayrımı, olumsuz yanıtın doğrulanmışl… — K-390: NXDOMAIN/NODATA Zee ayrımı ve CNAME adı B4; dil dene bölge dosyası, PTR, SRV ve SVCB, U-label, süreç/oturum bütçesi B2 açık.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#b62fde1c435ead61` — AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (R… — K-390: B2a/B2c–B2e, dil dene listesi, psl/DKIM fuzz hedefleri, IDN ve DMARCbis açık.
+- `spec/31-dns-ve-posta-kimlik-dogrulama.md#45c643963a4f22bf` — AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `di… — K-397: DNS p= eşleme, dil dkim-denetle, dkim_imza_girdisi fuzz ve gerçek alıcı dkim=pass açık.
 
 ## Sürüklenme
 
