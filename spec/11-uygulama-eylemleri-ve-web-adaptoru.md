@@ -148,6 +148,48 @@ GET "/ek" adresine istek geldiğinde
   dosya içeriği ize girmez. Hermetik adaptör (`dil dene`) aynı kayıt, ad ve
   tavan kuralını uygular.
 
+### Türlü metin yanıtı — K-406
+
+Normatif kaynak: [ADR-163](../adr/163-ikili-yanit-multipart-ve-ek-turu-kaydi.md)
+K-406 eki. Rota bellekteki bir `Metin`i kayıtlı bir metin türüyle (ör. takvim
+yayını) gönderebilir:
+
+```text
+GET "/takvim/yayin.ics" adresine istek geldiğinde
+    herkese açık
+    takvim metnini "text/calendar" türünde gönder
+```
+
+- ZORUNLU (K-406): `<ifade> metnini "<tür>" türünde gönder` cümlesinde tür
+  kaynakta görünen tırnaklı Metin literalidir ve kapalı `icerik_turu`
+  kaydının web metin satırlarından biriyle exact, küçük harf, parametresiz
+  eşleşmek ZORUNDADIR: `text/plain`, `text/csv`, `text/calendar`,
+  `application/xml`. Değişken/hesaplanmış tür, boş tür, öteki kayıt satırları
+  (ikili türler, `application/octet-stream`, `application/x-apple-aspen-config`),
+  kayıt dışı türler ve `text/html`, SVG, XHTML, betik türleri derlemede
+  önerili **S037**'dir. Durum her zaman 200'dür; durumlu biçimle birleşmez.
+- ZORUNLU (K-406): Yanıt dosya yanıtının başlık kümesini taşır:
+  `Content-Type` (metin türlerine `charset=utf-8`, `application/xml`e
+  parametre eklenmez), `X-Content-Type-Options: nosniff`, `Cache-Control:
+  no-store`, `Content-Security-Policy: default-src 'none'; sandbox` ve
+  `Cross-Origin-Resource-Policy: same-origin`. `Content-Disposition` yazılmaz
+  (`attachment` biçimi AÇIK sınırdır); rota önbellek izni (K-335) uygulanmaz.
+  Gövdenin `<` ile başlaması türü `text/html`e çevirmez. HEAD aynı başlıkları
+  gövdesiz verir. Çerez taslağı öteki 200 yanıtlarındaki gibi yazılır.
+- ZORUNLU (K-406): Gövde UTF-8 baytlarıyla olduğu gibi gider; CR, LF ve CRLF
+  dönüştürülmez, satır sonu eklenmez ya da normalleştirilmez. RFC 5545/4180
+  CRLF satır sonlarını ürün kurar; CR karakteri kaçışla yazılamadığından
+  K-402 `13'ün kod noktası harfini almayı dene` yüzeyiyle ya da istek/dosya
+  verisinden gelir. Gövde K-372 yanıt yazım bütçesine ve spec/24 metin
+  sınırına tabidir.
+- TANIMLI (K-406): Cümle öteki yanıt cümleleri gibi yalnız rota gövdesinde
+  HTTP etkisi taşır, eylem içinde T044'tür, `ağ-sunucusu` yetkinliği ister ve
+  K-403 uyarınca rotayı bitirir (`dil denetle --lint` sonraki cümleye S047).
+  IO izi `turlu_yanit_gonder` olayına tür ve gövdeyi yazar; iz şeması ve
+  hermetik adaptör (`dil dene`) aynı kapalı kümeyi uygular, kayıt dışı tür
+  içeren iz okunmaz ve adaptöre doğrudan verilen kayıt dışı tür 500 durum
+  yanıtına düşer (HTML koklamasına açılmaz).
+
 Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`dir.
 Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; yeni kod
 yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla

@@ -10,6 +10,25 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
+  kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
+
+  ```text
+  GET "/takvim/yayin.ics" adresine istek geldiğinde
+      herkese açık
+      takvim metnini "text/calendar" türünde gönder
+  ```
+
+  Tür yalnız `"text/plain"`, `"text/csv"`, `"text/calendar"` ya da
+  `"application/xml"` olabilir ve tırnak içinde yazılır; başka tür (HTML, SVG,
+  betik, PDF/görsel gibi ikili türler) derlemede S037'dir. Yanıt dosya
+  yanıtıyla aynı güvenlik başlıklarını taşır (`nosniff`, `no-store`, sandbox
+  CSP), indirme eki değildir ve gövdeyi değiştirmez: RFC 5545'in istediği
+  CRLF satır sonlarını metnin kendisi taşımalıdır. Cümle `yanıtını gönder`
+  gibi rotayı bitirir. Var olan programlar etkilenmez; göç gerekmez.
+
 ### Güvenlik
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden

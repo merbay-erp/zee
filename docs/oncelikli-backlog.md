@@ -2893,6 +2893,30 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-406 — Türlü metin yanıtı: `X metnini "<tür>" türünde gönder` (ADR-163 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F048 (ürün `b75db4c`); merkez onayı 26.11.2026 09:05, küçük yüzey.
+Freeze sınıfı `dogfood-change` (semantic-change). GB-177.
+
+Sürtünme: takvim yayını (`GET /takvim/yayin.ics?k=<belirteç>`) bellekte
+kurulan iCalendar metnidir; bellekteki metin yanıtı yalnız `text/html` /
+`text/plain`, `text/calendar` ise yalnız dosya yanıtındaydı ve GET rotası dosya
+yazamaz (T045). Karar: yanıt cümlesinin kardeş biçimi, tür kapalı
+`icerik_turu` kaydının metin satırlarından (`text/plain`, `text/csv`,
+`text/calendar`, `application/xml`) kaynakta görünen literal; aksi S037.
+Başlıklar dosya yanıtıyla aynı (nosniff, no-store, sandbox CSP, CORP),
+`Content-Disposition` yok; gövde bayt bayt (CRLF için yeni sözdizimi yok,
+CR K-402 kod noktası yüzeyinden). Rotayı bitirir (K-403), eylemde T044.
+Yeni kalıp kelimesi yalnız `metnini`; tanı kodu, AST değer türü, bağımlılık
+ve `dil::api::v1` yok.
+
+Kanıt: `compiler/tests/dosya_yaniti_testi.rs` (4 vaka: gerçek TCP başlık +
+ham CRLF/LF/CR gövde + HEAD, S037 kapalı küme, hermetik adaptör + IO izi
+şeması, lint S047), `icerik_turu.rs::web_metin_turu_yalniz_metin_satirlarini_acar`;
+dogfood `urun-h/takvim-yayini/`. Açık: `attachment` biçimi ve abonelik
+istemcilerinin (Outlook, Google) gerçek davranış ölçümü (insan).
+
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 
 **Durum: KAPALI (25 Kasım 2026), belge kararı.** Kaynak: ZeeMail (`urun-h`)

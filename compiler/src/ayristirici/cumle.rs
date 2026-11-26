@@ -345,7 +345,7 @@ impl Ayristirici {
                     ))
                 }
             }
-            Some("gönder") => self.yanit_ayristir(satir_tokenlari, satir_no),
+            Some("gönder") => self.gonder_ayristir(satir_tokenlari, satir_no),
             Some("olarak") => {
                 if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "eşzamanlı") {
                     self.eszamanli_ayristir(satir_no)

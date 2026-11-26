@@ -1,0 +1,24 @@
+# K-406 (ZM-F048): gizli bağlantılı İnternet takvimi aboneliği. Takvim
+# bellekte kurulur; GET rotası dosya yazamaz (T045), bu yüzden dosya yanıtı
+# değil türlü metin yanıtı kullanılır. Değişiklik öncesi ürün aynı metni
+# `metin yanıtını gönder` ile text/plain olarak veriyordu.
+
+işlem yayın takvimi
+    özet Metin olarak al
+    Metin döndürür
+    c "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Ornek//Takvim//TR\nBEGIN:VEVENT\n" olsun
+    c c ile "SUMMARY:" ile özet ile "\n" olsun
+    c c ile "END:VEVENT\nEND:VCALENDAR\n" olsun
+    c döndür
+
+8080 kapısında sunucu başlat
+
+GET "/takvim/yayin.ics" adresine istek geldiğinde
+    herkese açık
+    jeton "" olsun
+    istekte "k" varsa
+        jeton isteğin "k" değeri olsun
+    jeton boşsa
+        "Takvim bulunamadı." yanıtını 404 durumuyla gönder
+    takvim "Toplantı" ile yayın takvimi olsun
+    takvim metnini "text/calendar" türünde gönder

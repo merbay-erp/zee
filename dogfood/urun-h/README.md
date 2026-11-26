@@ -14,6 +14,7 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | Zee kodu adlı dinleyiciden bağlantı kabul edemiyor, satır okuma istem basıyor (F009/F010; K-381, çözüldü: A2a) | `baglanti-yankisi/`, `korpus/f009-dinleyici-yok.dil` | A2a (uygulandı) |
 | Web arayüzü ek indiremiyor, JS'siz dosya yükleyemiyor, PDF/görsel dışı ek gönderemiyor (ZM-F022; K-378, çözüldü: RFC-0041 A, B, C) | `ek-akisi/` | RFC-0041 A, B, C (uygulandı) |
 | Webmail e-posta istemcisi autoconfig XML'ini ve Apple yapılandırma profilini kayıtlı türle sunamıyor (ZM-F033; K-385, çözüldü: ADR-163 eki) | `istemci-yapilandirma/` | RFC-0041 A (tür kaydı satırı) |
+| Bellekteki takvim metni `text/calendar` ile verilemiyor; GET rotası dosya yazamadığından takvim yayını `text/plain` iniyor (ZM-F048; K-406, çözüldü: ADR-163 eki) | `takvim-yayini/` | RFC-0041 A (tür kaydı, metin yanıtı) |
 | Gelen iletinin ekleri çıkarılamıyor: blok dosyası parça parça okunamıyor, base64/QP gövde bayt olarak yazılamıyor, bellekte SHA-256 yok (ZM-F034/ZM-F024; K-389, çözüldü: RFC-0043 Dilim 1) | `ek-cikarma/`, `korpus/zm-r005-bellekte-sha256.dil` | D (RFC-0043 Dilim 1) |
 | Ekleri yazan hizmetler ile sunan web ayrı proje kökleri; proje dosya sınırı paylaşılan depoyu engelliyor (ZM-F038; K-394, çözüldü: RFC-0045) | `paylasilan-depo/` | G (veri kökü yazımı) |
 | Dosyayı bağlantıya RFC 2045 base64 satırlarıyla akıtan yüzey yok; 57 baytlık okuma döngüsü 16 MB ekte 29,6 sn + C024 (ZM-F040; K-396, çözüldü: RFC-0039 A2d) | `imap-govde-base64/` | G (yerleşik yüzey eksik) |
