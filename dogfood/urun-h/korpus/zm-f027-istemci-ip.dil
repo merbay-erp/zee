@@ -1,0 +1,12 @@
+# ZM-F027 — web rotası istemci IP'sini (ve User-Agent'ı) göremiyor. Giriş denetim kaydında IP /
+# cihaz yok; IP başına giriş kilidi (IMAP/SMTP'de var) webmail'de yazılamıyor; "yeni konumdan
+# giriş" uyarısı yok. Ters vekil arkasında güvenilir vekil listesine göre çözülmüş adres gerekir
+# (ADR-036). Dikkat: `istekte "istemci_ip" varsa` derlenir ama form alanıdır, saldırgan
+# belirler — çözüm istek sözlüğü anahtarı OLAMAZ. Beklenen: S015, exit 1.
+8080 kapısında sunucu başlat
+
+POST "/giris-yap" adresine istek geldiğinde
+    herkese açık
+    "adres" alanı gerekli
+    ip isteğin istemci adresi olsun
+    ip yanıtını gönder

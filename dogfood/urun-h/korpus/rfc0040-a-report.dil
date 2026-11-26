@@ -1,0 +1,7 @@
+# RFC-0040 A — yöntem kaydı. Eşitleme turu REPORT ile yapılır (RFC 4791 §7.8 calendar-query,
+# RFC 6578 sync-collection). Beklenen: S036, exit 1.
+8080 kapısında sunucu başlat
+
+REPORT "/dav/takvimler/varsayilan/" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    "<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\"/>" yanıtını 207 durumuyla gönder

@@ -94,10 +94,6 @@ fn vakalari_oku() -> Vec<Vaka> {
             "{vaka}: kip denetle|calistir|proje olmalı"
         );
         if *kip == "proje" {
-            assert_eq!(
-                *beklenti, "basarili",
-                "{vaka}: proje vakası başarılı olmalı"
-            );
             assert_eq!(*cikti, "-", "{vaka}: proje kipinde çıktı yoktur");
         }
         assert!(
@@ -332,6 +328,18 @@ fn dogfood_korpusu_basari_ve_basarisizlik_beklentilerini_korur() {
                         sonuc.hata
                     );
                 }
+            }
+            // Proje bildirimi (`proje.dil`) tanısı tek dosya derlemesiyle temsil
+            // edilemez; giriş CLI ile aynı yükleyiciden geçer ve tanı kodu
+            // `projeyi_derle` ya da ürün politikası hatasından karşılaştırılır.
+            ("proje", "basarisiz") => {
+                let hata = projeyi_derle(&vaka.dosya)
+                    .and_then(|program| {
+                        dil::cozumleyici::yetkinlikleri_denetle(&program, &politika)
+                    })
+                    .err()
+                    .unwrap_or_else(|| panic!("{}: {} beklenirdi", vaka.vaka, vaka.tani));
+                assert_eq!(hata.kod, vaka.tani, "{}: {}", vaka.vaka, hata.mesaj);
             }
             ("denetle", "basarili") => {
                 assert!(

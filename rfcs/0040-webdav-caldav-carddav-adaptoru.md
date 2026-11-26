@@ -410,12 +410,17 @@ RFC'nin hiçbir katmanı şu zincir kurulmadan uygulanmaz:
    içi kanıt kökü [`dogfood/urun-h`](../dogfood/urun-h/README.md) ile kayıtlı.
    Bu adım karşılanmıştır.
 2. **Gerçek Zee kodu.** Ürünün web tarafındaki takvim/kişi/görev kodu Zee
-   + PostgreSQL ile çalışıyor; ama **DAV sürtünmesinin depo içi reproducer'ı
-   henüz yok**. Her katman açılmadan önce ürün, eksik yetkinliğe çarpan gerçek
-   Zee kaynağını (ör. `PROPFIND` rotası → S036/yöntem reddi; XML gövdesinin
-   form çözümünde 400 alması; Basic başlığının okunamaması) `dogfood/urun-h/
-   korpus/` altına exact beklentiyle koyar ve K-164 kataloğuyla karşılaştırır.
-   Bu RFC o vakaları önden saymaz.
+   + PostgreSQL ile çalışıyor. DAV sürtünmesinin depo içi reproducer'ları
+   26 Kasım 2026'da korpusa girdi (ürün sahibi kararı “önce reproducer”):
+   A, B, C, E ve F katmanları için dokuz tek dosyalı vaka
+   `dogfood/urun-h/korpus/rfc0040-*.dil` altında ürün politikasıyla S036,
+   S015, S037, T050, T060 ve T062 verir; köken ve K-164 karşılaştırması
+   [`dogfood/urun-h/dav-reproducer.md`](../dogfood/urun-h/dav-reproducer.md).
+   D (XML gövdesi) ve G (well-known) için ayrı vaka yoktur: D'nin gövde
+   sürtünmesi `rfc0040-f-oturumlu-ham-govde` (T062) ile birlikte görünür, G
+   bugün GET/303 ile yazılabilir. Alt RFC kararı bu reproducer'lardan sonra
+   verilir ve büyük olasılıkla V1 sonrasıdır; reproducer'ların varlığı hiçbir
+   katmanı açmaz.
 3. **Katman başına zincir.** Alt RFC → ADR → spec maddesi +
    `spec-madde-kaniti` satırı → olumlu/olumsuz test → reproducer → K-167
    yüzey kaydı (yöntem, başlık adı, içerik türü, politika cümlesi, tanı
@@ -511,9 +516,9 @@ Bu taslak ancak şunlar kanıtlandığında "geçici kabul"e aday olur:
 
 ## Korpus etkisi
 
-Taslağın kendisi golden, regression, dogfood korpusu ve dil yüzeyi
-fixture'ını değiştirmez. Her katman açıldığında `urun-h` reproducer'ları
-ret/çözüm çiftine dönüşür.
+Taslağın kendisi golden, regression ve dil yüzeyi fixture'ını değiştirmez.
+Dogfood korpusunda bugün dokuz `rfc0040-*` ret vakası vardır (K-364); her
+katman açıldığında ilgili `urun-h` reproducer'ı ret/çözüm çiftine dönüşür.
 
 ## Açık sorular
 
@@ -543,6 +548,20 @@ ret/çözüm çiftine dönüşür.
   kovasının anahtarı (kullanıcı mı istemci mi)?
 - CRLF çevirisinin (i) yalnız DAV türlerinde mi, yoksa RFC-0039 satır
   yazıcısıyla ortak tek çalışma zamanı kuralı olarak mı tanımlanacağı.
+- Ürünün sıra notu (26 Kasım 2026, reproducer'larla birlikte): E+F+A tek
+  başına çalışan istemci vermez — başlıksız PROPFIND `Depth: infinity`
+  sayılıp 403 alır, multistatus 207 + `application/xml` ister. En küçük
+  çalışan uç A + B (`Depth`, `If-Match`, `If-None-Match`) + C (207 + XML
+  türü, ETag) + E + F'dir. Salt okunur abonelik bugün takvim yayınıyla
+  (K-406) var; asıl kazanç iki yönlü eşitleme olduğundan F, PUT ve DELETE'i
+  kapsamalıdır. E'de istek başına Argon2id doğrulaması spec/12 §5 oran
+  sınırına takılır (bir PROPFIND + REPORT + N GET turu altıncı istekte 429);
+  bu HMAC modelini (E) zorunlu kılar. Sıra önerisi (madde 4) bu nota göre alt
+  RFC'de yeniden değerlendirilir.
+- İstemci IP'si (ZM-F027, `zm-f027-istemci-ip`): DAV dışı ama aynı web
+  adaptörü sürtünmesi. Çözüm istek sözlüğü anahtarı ya da form alanı
+  olamaz (değeri saldırgan belirler); ADR-036 güvenilir vekil modeline göre
+  çözülmüş ayrı bir yüzey gerekir. Bu RFC'nin katmanı değildir.
 - Zamanlama/davet (CalDAV scheduling, RFC 6638: `schedule-inbox`,
   iTIP e-postası) bu RFC kapsamı dışında; posta tarafıyla (RFC-0039)
   birleştiği yerde ayrı RFC.

@@ -1,0 +1,8 @@
+# RFC-0040 A — yöntem kaydı. CalDAV istemcisi (Apple Takvim, Thunderbird, DAVx5) keşfe
+# PROPFIND ile başlar (RFC 4918 §9.1). Rota yöntemi kapalı kümede (GET/HEAD/POST/PUT/PATCH/DELETE)
+# olmadığından takvim koleksiyonu tanımlanamıyor. Beklenen: S036, exit 1.
+8080 kapısında sunucu başlat
+
+PROPFIND "/dav/takvimler/" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    "<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\"/>" yanıtını 207 durumuyla gönder

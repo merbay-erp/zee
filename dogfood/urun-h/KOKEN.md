@@ -34,6 +34,7 @@ dilimleridir.
 | `paylasilan-depo/alici/ana.dil`, `paylasilan-depo/web/ana.dil` | ürün paylaşılan ek deposu kesiti (ZM-F038, ürün commit'i `35df031accc4d010ed1ca3db1f2c479df40f2916`) | P001; K-394 sonrası temiz |
 | `imap-govde-base64/ana.dil` | ürün IMAP FETCH gövde akışı kesiti (ZM-F040, ürün commit'leri `171f6b2a8dc5fcbb2f42c4f769f94a8ced968eca`, `c455cc8d1780ade481adc44752700bf6c9fdef8c`) | S015; K-396 sonrası temiz |
 | `takvim-yayini/ana.dil` | ürün webmail takvim yayını rotası kesiti (ZM-F048, ürün commit'i `b75db4c7a460652f24c5d96d60817593587fbc70`) | S037; K-406 sonrası temiz |
+| `korpus/rfc0040-*.dil`, `korpus/zm-f027-istemci-ip.dil`, `zm-f050-*/` | ZeeMail korpus adayları (ürün commit'i `a39356ded33f0058aacaa0f3e93bd685c745a6ce`, vakalar `ef71d39faf79a7ff15ecb4af2fae3f351eb2a270`; birebir, blob ve SHA-256 [dav-reproducer.md](dav-reproducer.md)) | S036, S015, S037, T050, T060, T062, P015 (açık) |
 
 Reproducer'lar ürün kodundan hermetik küçültmedir; sunucu adı, alan adı,
 adres, yerel yol ve ürünün geri kalan kaynağı taşınmaz (ADR-087). Etkilenen

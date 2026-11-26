@@ -1,0 +1,9 @@
+# RFC-0040 C — yanıt içerik türü + durum. K-406 ile `metin metnini "application/xml" türünde
+# gönder` var ve `yanıtını 207 durumuyla gönder` var; ama ikisi birlikte yazılamıyor: DAV
+# multistatus 207 + application/xml ister (RFC 4918 §13). Beklenen: S037, exit 1.
+8080 kapısında sunucu başlat
+
+POST "/dav/takvimler/" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    xml "<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\"/>" olsun
+    xml metnini "application/xml" türünde 207 durumuyla gönder

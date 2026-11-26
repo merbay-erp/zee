@@ -26,6 +26,9 @@ yetkinliğinin depo içi kanıt aynasıdır. Köken: [KOKEN.md](KOKEN.md).
 | 256 KiB üstü gövdenin DKIM `bh=`'si hesaplanamıyor; 400 KB ekli imzalı ileti İstenmeyen'e düşüyor, ekli giden ileti imzalanamıyor (ZM-F046, S015; K-397 Dilim 2, çözüldü: dosyadan akışlı simple/relaxed gövde özeti) | `korpus/zm-f046-dkim-govde-dosyadan.dil` | RFC-0044 B3 (uygulandı, ADR-174 §8) |
 | Ekli giden iletinin gövdesi tek dosyada kurulamıyor (ek parçaları yalnız SMTP'ye akarken oluşuyor); dosyadan `bh=` alınamadığından ekli dış ileti imzasız gidiyor (ZM-F049, kalıp yok; K-408, çözüldü: ADR-172 eki, satırlı base64'ü dosyaya akışla ekleme) | `korpus/zm-f049-ekli-govde-dosyada.dil` | G (yerleşik yüzey eksik) |
 | Kurumsal alan (PSL) ve DKIM imza doğrulaması yok; DMARC hizalaması ve gelen imza denetimi yapılamıyor (ZM-F043, ZM-F024/F025, S015; K-390, çözüldü: RFC-0044 B1b/B2b; CRLF'li gövde özeti açık) | `korpus/zm-f043-dkim-dogrulama-yok.dil` | RFC-0044 B1b/B2b (uygulandı) |
+| CalDAV/CardDAV istemcisi için yöntem (PROPFIND/REPORT, S036), istek başlığı (`Depth`, S015), 207 + XML türü (S037), ETag (S015), çerezsiz Basic (S015) ve CSRF'siz kimlikli PUT/ham gövde (T050/T060/T062) yok (RFC-0040; K-364, açık) | `korpus/rfc0040-*.dil`, köken [dav-reproducer.md](dav-reproducer.md) | RFC-0040 A, B, C, E, F (taslak) |
+| Web rotası istemci IP'sini göremiyor; form alanı saldırgan denetiminde (ZM-F027, S015; açık, ADR-036 güvenilir vekil modeli) | `korpus/zm-f027-istemci-ip.dil` | web adaptörü (RFC-0040 dışı) |
+| `dkim_anahtarları` 16 öğe tavanı ve credential tekilliği çok kiracılı kurulumu durduruyor (ZM-F050, P015; açık, ADR-174 kararı) | `zm-f050-dkim-16-ustu/`, `zm-f050-dkim-ortak-credential/` | RFC-0044 B3 sınırı |
 
 Sürtünmelerin K-164 kataloğuyla karşılaştırması `kararlar/gunluk.md` K-355
 kaydındadır. Korpus vakaları `dogfood/korpus-v1.tsv` içinde exact

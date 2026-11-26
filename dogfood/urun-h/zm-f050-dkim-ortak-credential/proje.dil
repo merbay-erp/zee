@@ -1,0 +1,10 @@
+# ZM-F050 — aynı sunucu anahtarı (tek PEM, tek credential) birden çok alanı imzalayamıyor; kurulum
+# aynı dosyayı her alan için ayrı credential adıyla LoadCredential eder. Beklenen: P015 "aynı
+# alan+seçici ya da aynı credential iki kez bildirilmiş.", exit 1.
+proje "zm-f050-dkim-ortak-credential" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "kriptografi" listesi olsun
+ağ_hedefleri boş liste olsun
+dkim_anahtarları "a.ornek.test zm1 rsa-sha256 zeemail_dkim_anahtari", "b.ornek.test zm1 rsa-sha256 zeemail_dkim_anahtari" listesi olsun

@@ -1,0 +1,10 @@
+# RFC-0040 F — kimlikli muafiyet yok. Makine uç noktası kimliksizdir; aynı rotaya kullanıcı
+# kimliği bağlanamıyor (ilk ve tek politika cümlesi kuralı). DAV için "CSRF'siz ama kimlikli"
+# politika (RFC-0040 F fikri: `dav istemcisi gerekli`) gerekir. Beklenen: T050, exit 1.
+8080 kapısında sunucu başlat
+
+POST "/dav/takvimler/" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    "kullanıcı" yetkisi gerekli
+    gövde isteğin ham gövdesi olsun
+    "x" yanıtını 207 durumuyla gönder

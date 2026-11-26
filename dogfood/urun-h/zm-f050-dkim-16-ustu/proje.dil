@@ -1,0 +1,10 @@
+# ZM-F050 — çok kiracılı kurulumda alanlar veritabanında; dış teslim hizmeti her alan için
+# ayrı dkim_anahtarları öğesi ister, en çok 16. 17. kurum alanı imzalanamaz, kurulum betiği
+# durmak zorunda. Beklenen: P015 "17 DKIM anahtarı bildirildi; en çok 16 olabilir.", exit 1.
+proje "zm-f050-dkim-16-ustu" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "kriptografi" listesi olsun
+ağ_hedefleri boş liste olsun
+dkim_anahtarları "alan1.ornek.test zm1 rsa-sha256 zeemail_dkim_alan1_ornek_test", "alan2.ornek.test zm1 rsa-sha256 zeemail_dkim_alan2_ornek_test", "alan3.ornek.test zm1 rsa-sha256 zeemail_dkim_alan3_ornek_test", "alan4.ornek.test zm1 rsa-sha256 zeemail_dkim_alan4_ornek_test", "alan5.ornek.test zm1 rsa-sha256 zeemail_dkim_alan5_ornek_test", "alan6.ornek.test zm1 rsa-sha256 zeemail_dkim_alan6_ornek_test", "alan7.ornek.test zm1 rsa-sha256 zeemail_dkim_alan7_ornek_test", "alan8.ornek.test zm1 rsa-sha256 zeemail_dkim_alan8_ornek_test", "alan9.ornek.test zm1 rsa-sha256 zeemail_dkim_alan9_ornek_test", "alan10.ornek.test zm1 rsa-sha256 zeemail_dkim_alan10_ornek_test", "alan11.ornek.test zm1 rsa-sha256 zeemail_dkim_alan11_ornek_test", "alan12.ornek.test zm1 rsa-sha256 zeemail_dkim_alan12_ornek_test", "alan13.ornek.test zm1 rsa-sha256 zeemail_dkim_alan13_ornek_test", "alan14.ornek.test zm1 rsa-sha256 zeemail_dkim_alan14_ornek_test", "alan15.ornek.test zm1 rsa-sha256 zeemail_dkim_alan15_ornek_test", "alan16.ornek.test zm1 rsa-sha256 zeemail_dkim_alan16_ornek_test", "alan17.ornek.test zm1 rsa-sha256 zeemail_dkim_alan17_ornek_test" listesi olsun

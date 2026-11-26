@@ -1,0 +1,10 @@
+# RFC-0040 C — yanıt başlığı. İstemci etkinliği ETag ile izler; GET/PUT yanıtında ETag yoksa her
+# turda bütün takvimi yeniden indirir, çakışma (412) algılanamaz. Yanıt başlığı yazma yüzeyi yok.
+# Beklenen: S015, exit 1.
+8080 kapısında sunucu başlat
+
+GET "/dav/takvimler/varsayilan/toplanti.ics" adresine istek geldiğinde
+    "kullanıcı" yetkisi gerekli
+    ics "BEGIN:VCALENDAR" olsun
+    yanıta "ETag" başlığını "\"v1\"" olarak ekle
+    ics metnini "text/calendar" türünde gönder
