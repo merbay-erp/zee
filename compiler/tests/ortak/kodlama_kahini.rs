@@ -128,9 +128,12 @@ fn pencere(ham: &[u8]) {
     for (konum, adet) in [(konum, adet), (0, u64::MAX), (u64::MAX, 1)] {
         let p = kodlama::base64_satir_penceresi(b, konum, adet);
         // Ham konum dosya içindedir ve satır başıdır; yalnız boş pencere
-        // dosya sonuna (57'nin katı olmayabilir) sabitlenir (K-412).
+        // dosya sonuna (57'nin katı olmayabilir) sabitlenir (K-414).
         assert!(p.atla < 78 && p.ham_baslangic <= b, "{p:?} b={b}");
-        assert!(p.ham_baslangic % 57 == 0 || p.uzunluk == 0, "{p:?} b={b}");
+        assert!(
+            p.ham_baslangic.is_multiple_of(57) || p.uzunluk == 0,
+            "{p:?} b={b}"
+        );
         let mut parca = Vec::new();
         kodlama::base64_satirlari_kodla(&ham[p.ham_baslangic as usize..], &mut parca);
         let bas = (p.atla as usize).min(parca.len());
