@@ -4,7 +4,7 @@
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-pub(super) const KELIME_ACIKLAMALARI: [(&str, &str); 92] = [
+pub(super) const KELIME_ACIKLAMALARI: [(&str, &str); 93] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -45,6 +45,7 @@ pub(super) const KELIME_ACIKLAMALARI: [(&str, &str); 92] = [
     ("çerezine", "Web: yanıtla Set-Cookie gönderir; okumak için rota içinde `çerezler` sözlüğü hazırdır.\n\n`\"oturum\" çerezine kimlik yaz`"),
     ("herkese", "Durum değiştiren rotanın açık erişim politikasıdır; CSRF yine zorunludur.\n\n`herkese açık`"),
     ("önbelleklenebilir", "GET/HEAD rotasının açık politikası: oturum/CSRF/çerez kullanmayan 200 yanıtı paylaşılan önbelleğe `public, max-age=0, s-maxage=N` ile açar; Set-Cookie'li yanıt `no-store` kalır.\n\n`herkese açık önbelleklenebilir 300 saniye`"),
+    ("makine", "POST rotasının açık politikası: CSRF/Origin istemeyen makine ucu (ör. Outlook autodiscover). Oturum, çerez ve CSRF belirteci derlemede yasaktır (T061), yanıt Set-Cookie taşımaz; gövde yalnız XML/JSON, en çok 8 KiB.\n\n`herkese açık makine uç noktası`"),
     ("oturum", "Kimliği doğrulanmış kullanıcı isteyen rota politikasıdır.\n\n`oturum gerekli`"),
     ("yetkisi", "Sunucu tarafı rozet denetimi yapan rota politikasıdır.\n\n`\"yönetici\" yetkisi gerekli`"),
     ("istemci", "Handler için oran sınırıyla aynı trusted IP metni.\n\n`ip istemci adresi olsun`"),

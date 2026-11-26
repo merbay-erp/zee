@@ -10,6 +10,27 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenen
+
+- **Makine uç noktası (K-405):** Outlook'un otomatik hesap kurulumu gibi
+  tarayıcı olmayan istemciler için CSRF istemeyen POST rotası yazılabilir:
+
+  ```text
+  POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
+      herkese açık makine uç noktası
+      gövde isteğin ham gövdesi olsun
+  ```
+
+  Bu rota `_csrf` ve `Origin` istemez; karşılığında oturuma, çerezlere ve
+  CSRF belirtecine hiç ulaşamaz (derlemede T061), yanıtı asla `Set-Cookie`
+  taşımaz. `isteğin ham gövdesi` gövdeyi en çok 8 KiB UTF-8 metin olarak
+  verir; yalnız `text/xml`, `application/xml` ve `application/json` kabul
+  edilir (başkası 415, büyük gövde 413). Yol sabit olmalı, yöntem POST
+  (T060); ham gövde başka rotada okunamaz (T062). Dil XML ayrıştırmaz.
+
+  **Göç:** Gerekmez; mevcut rotaların davranışı değişmez. Sıradan POST
+  rotaları CSRF ve Origin istemeye devam eder.
+
 ### Güvenlik
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden

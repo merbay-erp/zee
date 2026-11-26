@@ -64,6 +64,7 @@ kalır (ADR-025).
 | S047 | Lint: erişilemeyen cümle veya sabit koşul dalı | Kesin `döndür`/`programı bitir` sonrasını ya da literal yanlış dalı gözden geçir; uygun dala taşı veya kaldır. Rota gövdesinde `yanıtını gönder`/`yönlendir` rotayı bitirir (K-403): sonrası ulaşılamaz, yanıttan sonra yapılacak işi yanıttan önceye taşı. Yalnız isteğe bağlı uyarıdır |
 | S048 | Lint: rotanın yanıt üretmeyen yolu olabilir | Her dala yanıt veya yönlendirme ekle. Örnek: `değilse` altında `"Geçersiz istek" yanıtını 400 durumuyla gönder`. Belirsiz çağrı etkisinde tahmin yapılmaz; yalnız isteğe bağlı uyarıdır |
 | S049 | Sıra eki noktası RFC-0029 kalıbına oturmuyor | Kalıp `<liste>nin <sıra>. öğesi` ya da `… öğesini almayı dene`; sıra tek ad ya da TamSayı sabitidir, hesaplanan sırayı önce bir ada ver: `konum sıra ile 1 in toplamı olsun` (K-386). Bitişik olmayan, `öğe…` öncesi olmayan ya da `3.14` gibi nokta S001 kalır |
+| S050 | Makine uç noktası `herkese açık makine uç noktası` dışında yazılmış | Rotanın ilk satırı tam olarak `herkese açık makine uç noktası` olmalı; oturumlu/yetkili rota ya da tek başına `makine uç noktası` makine ucu olamaz (K-405) |
 
 ## A — Ad çözümleme
 
@@ -145,6 +146,9 @@ kalır (ADR-025).
 | T057 | Önbelleklenebilir rota oturum, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; oturuma bağlı parçayı ayrı rotaya taşı ya da `önbelleklenebilir` iznini kaldır; paylaşılan yanıt kimliğe bağlanamaz (K-335) |
 | T058 | Sıra ile öğe erişiminde tür uyuşmuyor: nesne liste değil, listenin öğe türü belli değil ya da sıra TamSayı değil | Sıra 1, 2, 3 gibi TamSayıdır (metinse önce `metnin sayısı`); metnin harfleri için `metnin harfleri` listesini al; boş başlayan listeye önce öğe ekle ya da `… öğesini almayı dene` kullan (K-386) |
 | T059 | Sabit sıra 1'den küçük | Sıra 1 tabanlıdır: ilk öğe `listenin 1. öğesi` (ya da `listenin ilki`), son öğe `listenin sonu`; 0 ve negatif sıra yoktur (K-386) |
+| T060 | Makine uç noktası POST dışı rotada ya da sabit öneksiz yolda değil | Makine ucunu `POST "/tam/yol" adresine istek geldiğinde` biçiminde sabit, öneksiz yollu ayrı bir rota yap; adaptör yolu gövdeyi okumadan tanır (K-405) |
+| T061 | Makine uç noktası oturum, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; CSRF'siz rota tarayıcı kimliğine ulaşamaz, oturuma bağlı işi ayrı CSRF korumalı rotaya taşı (K-405) |
+| T062 | `isteğin ham gövdesi` makine uç noktası rotası dışında okunuyor | Gövdeyi makine rotasında `gövde isteğin ham gövdesi olsun` ile al, işleme argüman olarak geçir; sıradan rotada form alanlarını `istek` sözlüğünden oku (K-405) |
 
 ## C — Çalışma zamanı
 

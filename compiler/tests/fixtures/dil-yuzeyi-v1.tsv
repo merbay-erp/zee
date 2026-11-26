@@ -57,6 +57,7 @@ api	posta.kurumsal_alan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POST
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
 api	web.dosya_yaniti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
+api	web.istek_ham_govdesi	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_HAM_GOVDE: &str = "web.istek_ham_govdesi";
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 bicim	icerik-turu.csv	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/csv",
 bicim	icerik-turu.docx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -207,6 +208,7 @@ kalip	göre	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	görselini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	görünüm	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	gövde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	gövdesi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	gövdesinin	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	harfini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -241,6 +243,7 @@ kalip	kuruşlusu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	küçültmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	listelemeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	makine	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	mesajı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	metni	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	metnini	aktif	1.0.0-dev	compiler/src/lsp.rs	-

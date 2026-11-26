@@ -201,7 +201,9 @@ yöntem+yol çifti iki kez tanımlanamaz (T047). HEAD gerçek TCP adaptöründe 
 ile aynı başlık hesabını yapar ama yanıt gövdesi göndermez.
 
 Yol eşleşip yöntem eşleşmezse 405, yol eşleşmezse 404 döner. PUT/PATCH/DELETE
-form gövdesi POST ile aynı sınırlı alan çözümlemesini kullanır.
+form gövdesi POST ile aynı sınırlı alan çözümlemesini kullanır. Makine uç noktasının
+(spec/12 §K-405) gövdesi form olarak çözülmez; rota onu `isteğin ham gövdesi`
+ile en çok 8 KiB katı UTF-8 `Metin` olarak okur.
 
 Sorgu ve form alan adları/değerleri strict URL-form kodlamasıyla çözülür. `+`
 boşluktur; `%` işaretini tam iki ASCII hexadecimal hane izler. Eksik/kuralsız

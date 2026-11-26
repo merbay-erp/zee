@@ -10,6 +10,9 @@ pub const HTTP_GIZLI_ORTAM: &str = "ag.http_gizli_ortam";
 pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
 pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
+/// K-405: `isteğin ham gövdesi` — yalnız makine uç noktası rota gövdesinde,
+/// en çok 8 KiB katı UTF-8 istek gövdesi → Metin.
+pub const WEB_HAM_GOVDE: &str = "web.istek_ham_govdesi";
 /// K-337: `birincil süreç` — çok işçi grubunun ilk birincil işçisinde ve tek
 /// süreçte doğru; ikincil ya da yeniden başlatılan işçide yanlış.
 pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
@@ -475,6 +478,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::Metin,
         etki: IntrinsicEtkisi::WebAdaptoru,
         tur_hatasi: "İstemci adresi argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_HAM_GOVDE,
+        yetkinlik: Yetkinlik::AgSunucusu,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::Metin,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "İsteğin ham gövdesi argüman almaz.",
     },
     IntrinsicTanimi {
         kimlik: WEB_BIRINCIL_SUREC,
