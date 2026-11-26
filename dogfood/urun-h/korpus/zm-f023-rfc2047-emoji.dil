@@ -1,0 +1,16 @@
+# K-402 (RFC-0043 Dilim 2) — ürün H ZM-F023: RFC 2047 B kodlu konu. Ürün
+# (commit 23af030, `motor/kaynak/ileti_olustur.dil` blob 40aefd2 ve
+# `kodlamalar.dil` blob 3ee434b) kod noktası ↔ harf ve base64'ü U+0000–04FF
+# tablosuyla yapıyor: gelen "=?UTF-8?B?8J+YgCBGYXR1cmE=?=" konusu "� Fatura"
+# oluyor (matematik alfanümerik harflerle taklit konu süzgece kör gelir),
+# giden emojili konu "?" ile bozuluyor. Değişiklik öncesi S015.
+
+kod "8J+YgCBGYXR1cmE=" olsun
+çözüm kodun base64 çözümünü almayı dene olsun
+çözüm başarılıysa
+    konu çözümün değeri olsun
+    konu yaz
+    harfler konunun harfleri olsun
+    ilk harflerin ilki olsun
+    ilkin kod noktası yaz
+    konunun base64 karşılığı yaz
