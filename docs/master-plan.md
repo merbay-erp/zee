@@ -216,11 +216,15 @@ açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytında
 ölçülebilir yerel ret). K-385 (ADR-163 eki) e-posta istemcisi
 yapılandırma XML'i ve Apple profili için `application/xml` ile
 `application/x-apple-aspen-config` türlerini yalnız web dosya sınıfına
-ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+ekledi. K-406 (ADR-163 eki, ZM-F048) bellekteki metni aynı kaydın metin
+satırlarıyla (`text/plain`, `text/csv`, `text/calendar`, `application/xml`)
+`… metnini "<tür>" türünde gönder` cümlesiyle 200 yanıtı yaptı (dosya
+yanıtının güvenlik başlıkları, ek yok, gövde bayt bayt). K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
 Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag
-sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
+sonrası; kimlikli DAV için CSRF muafiyeti (RFC-0040 #5(c); Outlook POX'un
+kimliksiz yarısı K-405/ADR-179 `herkese açık makine uç noktası` ile kapandı);
 `sandbox allow-downloads`. K-391 Dilim 2 rota bazlı gövde sınırını
 (`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
@@ -240,7 +244,8 @@ değişmeziyle bağlanma ikinci ad çözümü yapmaz. Giden DKIM imzası da
 **gerçekleşti** (K-397 Dilim 2, [ADR-174](../adr/174-dkim-imza-ilkeli.md)):
 `dkim_anahtarları` credential anahtarı ve imza kâhini önlemiyle
 `imzalamayı dene`. **Açık:** gerçek internette DANE/MTA-STS teslim ve
-`dkim=pass` kanıtı; açılışta DNS `p=` eşleme denetimi. V1 sözü değildir.
+`dkim=pass` kanıtı. Açılışta yayımlanmış DKIM anahtarı denetimi K-413 ile
+gerçekleşti. V1 sözü değildir.
 
 Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 ([ADR-170](../adr/170-paylasilan-veri-koku.md),

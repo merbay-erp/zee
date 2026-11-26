@@ -388,6 +388,7 @@ pub(super) fn blok_calistir_async<'a>(
                 Cumle::YanitGonder {
                     deger,
                     durum,
+                    tur,
                     satir,
                 } => {
                     let deger =
@@ -395,11 +396,7 @@ pub(super) fn blok_calistir_async<'a>(
                     let metin = metne_sinirli(&deger, *satir)?;
                     cikti_butcesini_tuket(&metin, *satir)?;
                     son_tarihi_denetle(cikti, *satir)?;
-                    if let Some(durum) = durum {
-                        cikti.durum_yaniti_gonder(*durum, &metin);
-                    } else {
-                        cikti.yanit_gonder(&metin);
-                    }
+                    rota_sonu::yanit_cumlesini_gonder(cikti, tur.as_deref(), *durum, &metin);
                     // K-403: yanıt rotayı bitirir; sonraki cümleler koşmaz.
                     rota_sonu::rota_yaniti_belirlendi(*satir)?;
                 }

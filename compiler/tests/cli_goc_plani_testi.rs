@@ -42,3 +42,28 @@ fn goc_plan_secimi_yol_olmayan_secenek_gibi_islenir() {
         }
     }
 }
+
+#[test]
+fn goc_ileri_kayit_toleransi_kiplerle_birlikte_kabul_edilir_ve_tekrari_reddedilir() {
+    let out = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["göçür", "--ileri-kayitlara-izin", "--ileri-kayitlara-izin"])
+        .output()
+        .unwrap();
+    assert_eq!(out.status.code(), Some(2));
+    assert!(String::from_utf8(out.stderr)
+        .unwrap()
+        .contains("kipler tekil ve ayrı"));
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../dogfood/kanit-ozeti");
+    for kip in [None, Some("--durum"), Some("--kuru")] {
+        let mut c = Command::new(env!("CARGO_BIN_EXE_dil"));
+        c.arg("göçür").arg("--ileri-kayitlara-izin");
+        if let Some(kip) = kip {
+            c.arg(kip);
+        }
+        let out = c.arg(&root).output().unwrap();
+        assert_eq!(out.status.code(), Some(2));
+        let error = String::from_utf8(out.stderr).unwrap();
+        assert!(error.contains("P015"), "{error}");
+        assert!(!error.contains("Bilinmeyen seçenek"), "{error}");
+    }
+}

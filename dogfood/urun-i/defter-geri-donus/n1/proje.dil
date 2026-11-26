@@ -1,0 +1,10 @@
+# K-407 (ADR-181): ZeeOS defter uygulaması, A/B kök kümesi N+1 (anonim kesit).
+proje "defter" olsun
+sürüm "0.2.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "veritabanı" listesi olsun
+ağ_hedefleri boş liste olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/defter" olsun
+veritabanı_bağlantı_değişkeni "DEFTER_DATABASE_URL" olsun
+veritabanı_göçleri "gocler" olsun

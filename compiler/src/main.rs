@@ -40,6 +40,8 @@ mod ag_tls;
 mod dil_registry;
 #[path = "cli/dkim.rs"]
 mod dkim;
+#[path = "cli/makine_ucu.rs"]
+mod makine_ucu;
 #[path = "cli/systemd_bildirim.rs"]
 mod systemd_bildirim;
 mod web_cok_parcali;
@@ -610,7 +612,7 @@ fn cli_seceneklerini_denetle(argumanlar: &mut Vec<String>, guvenli: bool) -> Res
         "denetle" => (&["--json", "--lint"], &[]),
         "sürüm" | "surum" => (&["--json", "--ayar-semasi"], &[]),
         "biçimle" | "bicimle" => (&["--denetle"], &[]),
-        "göçür" | "gocur" => (&["--durum", "--kuru"], &[]),
+        "göçür" | "gocur" => (&["--durum", "--kuru", "--ileri-kayitlara-izin"], &[]),
         "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
         "ekle" | "kilitle" | "paketler" => (
             &["--yenile", "--çevrimdışı", "--cevrimdisi"],
@@ -672,6 +674,9 @@ fn kullanim() {
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
     eprintln!("  dil kilitle [proje] [--çevrimdışı] bütün bağımlılıkları sabitler");
     eprintln!("  dil göçür [--durum|--kuru] [proje] migration uygular veya SQL yazmadan planlar");
+    eprintln!(
+        "  dil göçür --ileri-kayitlara-izin    A/B geri dönüşünde daha yeni kayıtları tolere eder"
+    );
     eprintln!("  dil anahtar üret <dosya>    0600 izinli Ed25519 yayıncı anahtarı üretir");
     eprintln!("  dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
     eprintln!("  dil paketler [proje] [--yenile] doğrudan/geçişli grafiği gösterir");
@@ -693,15 +698,23 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         .filter(|a| a.as_str() == "--durum")
         .count();
     let kuru = argumanlar.iter().filter(|a| a.as_str() == "--kuru").count();
+    // K-407: kip değil, uyuşmazlık toleransıdır; her kiple birlikte verilebilir.
+    let ileri = argumanlar
+        .iter()
+        .filter(|a| a.as_str() == "--ileri-kayitlara-izin")
+        .count();
     let yollar: Vec<&String> = argumanlar
         .iter()
         .skip(1)
-        .filter(|a| !matches!(a.as_str(), "--durum" | "--kuru"))
+        .filter(|a| !matches!(a.as_str(), "--durum" | "--kuru" | "--ileri-kayitlara-izin"))
         .collect();
-    if durum + kuru > 1 || yollar.len() > 1 {
-        eprintln!("Kullanım: dil göçür [--durum|--kuru] [proje]; kipler tekil ve ayrı olmalı");
+    if durum + kuru > 1 || ileri > 1 || yollar.len() > 1 {
+        eprintln!(
+            "Kullanım: dil göçür [--durum|--kuru] [--ileri-kayitlara-izin] [proje]; kipler tekil ve ayrı olmalı"
+        );
         return ExitCode::from(2);
     }
+    let ileri_kayitlara_izin = ileri == 1;
     let yol = std::path::Path::new(yollar.first().map_or(".", |a| a.as_str()));
     let proje = match dil::paket::ProjeGrafigi::cozumle(yol) {
         Ok(proje) => proje,
@@ -719,41 +732,26 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     };
     if durum + kuru == 1 {
-        return match dil::postgresql::gocleri_planla(bildirim, proje.ana_kok()) {
-            Ok(plan) => {
-                println!(
-                    "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
-                    plan.uygulanmis, plan.bekleyen
-                );
-                for adim in plan.adimlar {
-                    if durum == 1 || !adim.uygulanmis {
-                        println!(
-                            "{}\t{}\t{}\t{}",
-                            adim.surum,
-                            if adim.uygulanmis {
-                                "uygulanmış"
-                            } else {
-                                "bekleyen"
-                            },
-                            adim.ad,
-                            adim.sha256
-                        );
-                    }
-                }
-                ExitCode::SUCCESS
-            }
+        return match dil::postgresql::gocleri_planla_secenekli(
+            bildirim,
+            proje.ana_kok(),
+            ileri_kayitlara_izin,
+        ) {
+            Ok(plan) => goc_planini_yaz(plan, durum == 1),
             Err(hata) => {
                 eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
                 ExitCode::FAILURE
             }
         };
     }
-    match dil::postgresql::gocleri_uygula(bildirim, proje.ana_kok()) {
+    match dil::postgresql::gocleri_uygula_secenekli(bildirim, proje.ana_kok(), ileri_kayitlara_izin)
+    {
         Ok(rapor) => {
             println!(
                 "Migration tamamlandı: {} uygulandı, {} zaten günceldi.",
                 rapor.uygulanan, rapor.atlanan
             );
+            ileri_kayitlari_yaz(&rapor.ileri, true);
             ExitCode::SUCCESS
         }
         Err(hata) => {
@@ -762,6 +760,49 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
                 eprintln!("  {}: {}", ad, deger);
             }
             ExitCode::FAILURE
+        }
+    }
+}
+
+/// `--durum` (bütün adımlar) ya da `--kuru` (yalnız bekleyen) planını SQL
+/// yürütmeden yazar.
+fn goc_planini_yaz(plan: dil::postgresql::GocPlani, durum: bool) -> ExitCode {
+    println!(
+        "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
+        plan.uygulanmis, plan.bekleyen
+    );
+    for adim in plan.adimlar {
+        if durum || !adim.uygulanmis {
+            println!(
+                "{}\t{}\t{}\t{}",
+                adim.surum,
+                if adim.uygulanmis {
+                    "uygulanmış"
+                } else {
+                    "bekleyen"
+                },
+                adim.ad,
+                adim.sha256
+            );
+        }
+    }
+    ileri_kayitlari_yaz(&plan.ileri, durum);
+    ExitCode::SUCCESS
+}
+
+/// K-407: tolere edilen ileri kayıtlar özet satırı ve (istenirse) sürüm
+/// başına `ileri` durumlu satırla yazılır; boşsa çıktı değişmez.
+fn ileri_kayitlari_yaz(ileri: &[dil::postgresql::GocAdimi], satirlar: bool) {
+    if ileri.is_empty() {
+        return;
+    }
+    println!(
+        "İleri kayıt: {} kayıt proje ağacındaki en yüksek sürümden yeni; SQL uygulanmadı, kayıtlar korunuyor.",
+        ileri.len()
+    );
+    if satirlar {
+        for adim in ileri {
+            println!("{}\tileri\t{}\t{}", adim.surum, adim.ad, adim.sha256);
         }
     }
 }
@@ -2053,13 +2094,22 @@ struct GercekIo {
     /// K-379: derlenen kaynak birimlerinin dize değişmezlerindeki satır içi
     /// betiklerin CSP özetleri; program derlendikten sonra bir kez dolar.
     guvenilir_betikler: GuvenilirBetikler,
+    /// K-405: bu istek bir makine uç noktasına gidiyor (istek başında sıfırlanır).
+    makine_istegi: bool,
     /// K-390: `dns` yetkinliğinin bildirilmiş loopback çözücüsü.
     dns: Option<dil::dns_teli::DnsAyari>,
 }
 
 /// K-379: CSP `script-src` yalnız bu kümedeki `sha256-` özetlerine izin
 /// verir. Küme dolmadıysa (derleme bitmeden) hiçbir satır içi betik izinli değildir.
-type GuvenilirBetikler = std::sync::Arc<std::sync::OnceLock<std::collections::BTreeSet<String>>>;
+/// K-405: aynı derleme sonrası kümeye makine uç noktası POST yolları da girer.
+type GuvenilirBetikler = std::sync::Arc<DerlemeKumeleri>;
+
+#[derive(Default)]
+struct DerlemeKumeleri {
+    betikler: std::sync::OnceLock<std::collections::BTreeSet<String>>,
+    makine_yollari: std::sync::OnceLock<std::collections::BTreeSet<String>>,
+}
 
 #[derive(Clone)]
 struct BekleyenCerez {
@@ -2079,6 +2129,8 @@ enum WebYanitTaslagi {
     Yonlendirme(String),
     /// K-378: rotanın kayıtlı türle `attachment` olarak verdiği dosya.
     Dosya(DosyaYaniti),
+    /// K-406: kayıtlı metin türüyle (Content-Type değeri) bellekteki gövde.
+    Turlu(String, String),
 }
 
 /// K-378: doğrulanmış, açık dosya tanıtıcısı ve çağrı anındaki uzunluğu.
@@ -2188,6 +2240,7 @@ impl GercekIo {
             son_parca_supurmesi: None,
             bekleyen_head: false,
             guvenilir_betikler: GuvenilirBetikler::default(),
+            makine_istegi: false,
             son_istek: None,
             eylem_yedekleri: Vec::new(),
             web_guvenligi,
@@ -2456,6 +2509,13 @@ impl GercekIo {
     }
 
     fn cerez_basliklarini_al(&mut self) -> String {
+        if self.makine_istegi {
+            // K-405: makine ucu hiçbir koşulda Set-Cookie göndermez.
+            self.bekleyen_cerezler.clear();
+            self.bekleyen_silinen_cerezler.clear();
+            self.kayar_oturum_belirteci = None;
+            return String::new();
+        }
         let secure = self.guvenli_proxy_origin().is_some();
         let mut sonuc = String::new();
         // Kayar yenileme: giriş/çıkış/iptal bu istekte süreyi sıfırladıysa
@@ -2519,7 +2579,7 @@ impl GercekIo {
             WebYanitTaslagi::Durum(status, _) => *status,
             WebYanitTaslagi::Yonlendirme(_) => 303,
             WebYanitTaslagi::Govde(_) if asim => 413,
-            WebYanitTaslagi::Govde(_) | WebYanitTaslagi::Dosya(_) => 200,
+            _ => 200,
         };
         let (baslik, govde) = match taslak {
             WebYanitTaslagi::Dosya(yanit) => return Ok(self.dosya_taslagini_yaz(akis, head, yanit)),
@@ -2539,6 +2599,9 @@ impl GercekIo {
                     guvenlik_basliklari
                 );
                 (baslik, govde)
+            }
+            WebYanitTaslagi::Turlu(tur, govde) => {
+                (self.turlu_yanit_basligi(&tur, govde.len()), govde)
             }
             WebYanitTaslagi::Durum(durum, govde) => {
                 let guvenlik_basliklari = self.guvenlik_basliklari();
@@ -2691,6 +2754,9 @@ impl GercekIo {
         son_tarih: std::time::Instant,
         https: bool,
     ) -> Option<(String, Option<web_yukleme::IstekYuklemesi>, usize)> {
+        if self.makine_istegi {
+            return self.makine_zarfini_kur(akis, baslik, ilk_govde, es, son_tarih, https);
+        }
         let form_butcesi = self.form_butcesi(baslik);
         match self.govdeyi_oku_ve_istegi_baslat(akis, baslik, ilk_govde, es, son_tarih, https) {
             Ok((govde, yukleme, cerez_satiri)) => {
@@ -2759,7 +2825,8 @@ impl GercekIo {
     fn govde_turu_ve_basliklari(&self, govde: &str) -> (&'static str, String) {
         if govde.trim_start().starts_with('<') {
             let https = self.guvenli_proxy_origin().is_some();
-            let basliklar = html_guvenlik_basliklari(https, govde, self.guvenilir_betikler.get());
+            let basliklar =
+                html_guvenlik_basliklari(https, govde, self.guvenilir_betikler.betikler.get());
             ("text/html", basliklar)
         } else {
             ("text/plain", self.guvenlik_basliklari())
@@ -2768,6 +2835,16 @@ impl GercekIo {
 
     /// K-378: dosya yanıtını yazar; çerezler 200 yanıtıyla aynı, güvenlik
     /// başlıkları dosya sınıfına özgüdür.
+    /// K-406: türlü metin yanıtı başlığı — dosya yanıtının başlık kümesi
+    /// (nosniff, no-store, sandbox CSP, CORP); `Content-Disposition` yok, rota
+    /// önbellek izni uygulanmaz, gövde dönüştürülmez.
+    fn turlu_yanit_basligi(&mut self, icerik_turu: &str, uzunluk: usize) -> String {
+        let guvenlik = dosya_guvenlik_basliklari(self.guvenli_proxy_origin().is_some());
+        let cerezler = self.cerez_basliklarini_al();
+        format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: {icerik_turu}\r\nContent-Length: {uzunluk}\r\n{cerezler}{guvenlik}Connection: close\r\n\r\n"
+        )
+    }
     fn dosya_taslagini_yaz(
         &mut self,
         mut akis: web_metrikleri::Akis,
@@ -2811,7 +2888,7 @@ impl GercekIo {
         let hedef = baslik.hedef();
         let head = yontem.eq_ignore_ascii_case("HEAD");
         let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
-            match guvenli_proxy_istegini_denetle(baslik, origin, yontem) {
+            match guvenli_proxy_istegini_denetle(baslik, origin, yontem, self.makine_istegi) {
                 Ok(kimlik) => kimlik,
                 Err((durum, mesaj)) => {
                     ham_http_hatasi_gonder(akis, durum, mesaj, head, true);
@@ -2833,7 +2910,11 @@ impl GercekIo {
             );
             return None;
         }
-        let cerez = cerez_degerleri.first().copied().unwrap_or_default();
+        // K-405: makine ucu çerezi hiç okumaz; oturum anonim, kayar yenileme yok.
+        let cerez = match self.makine_istegi {
+            true => "",
+            false => cerez_degerleri.first().copied().unwrap_or_default(),
+        };
         let oturum = cerez
             .split(';')
             .filter_map(|parca| parca.trim().split_once('='))
@@ -2864,6 +2945,24 @@ impl GercekIo {
             self.web_istek_yedegi = None;
             return None;
         }
+        self.ucnokta_oran_siniri(akis, yontem, hedef, an, head, https)?;
+        Some(if cerez.is_empty() {
+            String::new()
+        } else {
+            format!("çerez {}\n", cerez)
+        })
+    }
+    /// Uç nokta (yöntem + sorgusuz yol) oran sınırı kovası; makine ucu dahil
+    /// her rota kendi kovasındadır. Red yanıtı yazıldıysa `None`.
+    fn ucnokta_oran_siniri(
+        &mut self,
+        akis: &mut impl WebTasima,
+        yontem: &str,
+        hedef: &str,
+        an: i64,
+        head: bool,
+        https: bool,
+    ) -> Option<()> {
         let kapsam = format!(
             "{} {}",
             yontem.to_ascii_uppercase(),
@@ -2897,11 +2996,7 @@ impl GercekIo {
                 return None;
             }
         }
-        Some(if cerez.is_empty() {
-            String::new()
-        } else {
-            format!("çerez {}\n", cerez)
-        })
+        Some(())
     }
 }
 
@@ -3160,10 +3255,13 @@ fn deneysel_istegi_reddet(
     true
 }
 
+/// K-405: makine ucu (`makine`) Host/Forwarded/HTTPS kapısından geçer ama
+/// Origin istemez; ortam kimlik bilgisi taşımadığı için CSRF etkisi yoktur.
 fn guvenli_proxy_istegini_denetle(
     istek: &HttpIstekBasligi<'_>,
     origin: &AgHedefi,
     yontem: &str,
+    makine: bool,
 ) -> Result<String, (u16, &'static str)> {
     let host = tek_http_basligi(istek, "Host").ok_or((400, "tek bir Host başlığı gerekli"))?;
     if AgHedefi::https_otoritesinden(host).as_ref() != Ok(origin) {
@@ -3219,10 +3317,11 @@ fn guvenli_proxy_istegini_denetle(
     let istemci = istemci
         .parse::<std::net::IpAddr>()
         .map_err(|_| (400, "Forwarded for kanonik IP adresi olmalı"))?;
-    let guvenli_yontem = matches!(
-        yontem.to_ascii_uppercase().as_str(),
-        "GET" | "HEAD" | "OPTIONS"
-    );
+    let guvenli_yontem = makine
+        || matches!(
+            yontem.to_ascii_uppercase().as_str(),
+            "GET" | "HEAD" | "OPTIONS"
+        );
     if !guvenli_yontem {
         let gelen = tek_http_basligi(istek, "Origin")
             .ok_or((403, "durum değiştiren istek Origin başlığı istiyor"))?;
@@ -4757,6 +4856,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         // K-391: önceki isteğin yazılmamış aşım işareti sonrakine taşınmaz.
         self.bekleyen_govde_asimi = None;
+        self.makine_istegi = false;
         loop {
             #[cfg(unix)]
             if web_kapanisi_istendi(&self.web_kapanis) {
@@ -4843,6 +4943,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             {
                 continue;
             }
+            self.makine_istegi = self.makine_istegi_mi(&baslik);
             let Some((ham, yukleme, yorum_siniri)) = self.istek_zarfini_kur(
                 &mut akis,
                 &baslik,
@@ -4859,6 +4960,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
             self.son_istek = Some((baslik.yontem().to_string(), baslik.hedef().to_string()));
             (self.yanit_onbellegi, self.istek_oturuma_dokundu) = (None, false);
+            if self.makine_istegi {
+                return Some(ham);
+            }
             let bilgi = self.web_guvenligi.oturum_bilgisi(web_duvar_saati_ms());
             let ham = dil::yorumlayici::dogrulanmis_oturumu_istege_ekle(&ham, bilgi.as_ref());
             return Some(dil::yorumlayici::govde_sinirini_istege_ekle(
@@ -5123,6 +5227,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             disposition,
         }));
         i64::try_from(uzunluk).map_err(|_| "dosya uzunluğu taştı".into())
+    }
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        // Ayrıştırıcı türü denetledi; çalışma zamanı kapalı kümeyi yeniden
+        // uygular (iz/oynatıcı ya da gömme yolu): kayıt dışı tür 500'dür.
+        let taslak = match dil::icerik_turu::web_metin_turu(tur) {
+            Some(kayit) => {
+                WebYanitTaslagi::Turlu(dil::icerik_turu::baslik_degeri(kayit), yanit.to_string())
+            }
+            None => WebYanitTaslagi::Durum(500, "istek işlenemedi; sunucu hatası".into()),
+        };
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_web_yaniti.is_none() {
+                self.bekleyen_web_yaniti = Some(taslak);
+            }
+            return;
+        }
+        let _ = self.web_yanit_taslagini_yaz(taslak);
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.web_istek_yedegi.is_some() {
@@ -5755,12 +5876,15 @@ fn dns_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
     Ok(())
 }
 
-/// K-397 B3 (ADR-174): `dkim_anahtarları` yürütmeden önce yüklenir.
+/// K-397 B3 (ADR-174): `dkim_anahtarları` yürütmeden önce yüklenir; K-413
+/// ile `dns` varsa yayımlanmış `p=` eşleşmesi anahtar başına denetlenir.
 fn dkim_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
-    match girdi.proje.as_ref() {
-        Some(proje) => dkim::hazirla(&proje.ana_bildirim().dkim_anahtarlari),
-        None => Ok(()),
-    }
+    let Some(proje) = girdi.proje.as_ref() else {
+        return Ok(());
+    };
+    // K-413: `dns` bildirimi yoksa yayımlanmış anahtar denetimi atlanır.
+    let bildirim = proje.ana_bildirim();
+    dkim::hazirla(&bildirim.dkim_anahtarlari, bildirim.dns.as_ref())
 }
 
 /// K-390 B1b (ADR-177): süreçte tek proje; liste açılışta bir kez okunur,
@@ -5840,7 +5964,8 @@ fn calistir_io_ile(
             std::iter::once(girdi.kaynak.as_str())
                 .chain(birim_kaynaklari.iter().map(String::as_str)),
         );
-        let _ = kume.set(ozetler);
+        let _ = kume.betikler.set(ozetler);
+        let _ = kume.makine_yollari.set(program.makine_uc_noktasi_yollari());
     }
     if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, politika) {
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
@@ -6005,7 +6130,7 @@ mod web_profili_testleri {
         yontem: &str,
     ) -> Result<String, (u16, &'static str)> {
         let baslik = HttpIstekBasligi::ayristir(ham.as_bytes()).unwrap();
-        guvenli_proxy_istegini_denetle(&baslik, origin, yontem)
+        guvenli_proxy_istegini_denetle(&baslik, origin, yontem, false)
     }
 
     #[test]

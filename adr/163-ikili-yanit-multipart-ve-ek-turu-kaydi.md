@@ -6,7 +6,7 @@
   RFC-0040 katman C, RFC-0036, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-096 (ekli e-posta), ADR-159 (imza okuma), ADR-160 (rota önbelleği),
   spec/11, spec/26, spec/23, GB-154, GB-155, GB-156; ek: K-385 (ZM-F033),
-  GB-160
+  GB-160; ek: K-406 (ZM-F048), GB-179
 
 ## Bağlam
 
@@ -196,7 +196,10 @@ iOS Safari profil kurulum akışını başlatmıyordu. İçerik sır taşımaz.
    `Origin` ZORUNLUDUR; Outlook ikisini de göndermez → 403. Aynı engel
    RFC-0040 #5(c) CalDAV/CardDAV için doğrulanmıştır; dar CSRF muafiyeti o
    işte tek model olarak karara bağlanır. Ürün bugün yalnız `autodiscover`
-   kaydını DNS/vekil katmanında karşılayabilir.
+   kaydını DNS/vekil katmanında karşılayabilir. **Güncelleme (K-405,
+   ADR-179):** kimliksiz yarısı `herkese açık makine uç noktası` ile kapandı
+   (CSRF/Origin yok, çerez okunmaz, Set-Cookie yok, XML/JSON ≤ 8 KiB);
+   kimlikli DAV muafiyeti açık kalır.
 
 **Güvenlik değerlendirmesi (GB-160).** XML sunucuda ayrıştırılmaz: XXE/DTD
 riski Zee tarafında yoktur. Tarayıcıda `attachment` belge oluşturmaz;
@@ -212,6 +215,65 @@ iştir. iOS cihazda profil kurulumunun insan ölçümü de açıktır.
 
 **Sonuç.** ZeeMail autoconfig XML'ini ve Apple profilini kayıtlı türle
 sunar; bildirimsiz/kalıpsız projeler ve mevcut on iki tür bayt bayt aynıdır.
+
+## Ek — K-406: türlü metin yanıtı (26 Kasım 2026)
+
+**Bağlam.** `urun-h` (ZeeMail) sürtünmesi ZM-F048: ürün takvimleri
+`GET /takvim/yayin.ics?k=<belirteç>` adresinde yayımlıyor (Outlook "takvim
+yayımla", Google "gizli iCal adresi" abonelikleri). Takvim gövdesi bellekte
+kurulan bir `Metin`dir. Bellekteki metin yanıtı yalnız `text/html` (gövde `<`
+ile başlıyorsa) ya da `text/plain` olabiliyordu; `text/calendar` yalnız dosya
+yanıtında vardı ve GET rotası dosya yazamaz (T045, doğru kural). Ürün takvimi
+`text/plain` ve LF satır sonlarıyla veriyor; katı abonelik istemcileri bunu
+reddedebilir. Merkez 26 Kasım 2026 09:05'te küçük yüzey olarak onayladı.
+
+**Birincil kaynak.** RFC 5545 §3.1: içerik satırları CRLF ile ayrılır; §8.1
+medya türü `text/calendar`, `charset` varsayılanı UTF-8. RFC 4180 §2 CSV
+kayıtları için CRLF yazar. RFC 7303: `application/xml`. Abonelik
+istemcilerinin `text/plain`/LF takvime gerçek davranışı (Outlook, Google)
+bu ekte ölçülmedi; insan ölçümü açıktır.
+
+**Karar.**
+
+1. Yanıt cümlesine tek kardeş biçim: `<ifade> metnini "<tür>" türünde gönder`
+   (`Cumle::YanitGonder` + `tur`; yeni AST türü yok). Yeni kalıp kelimesi
+   yalnız `metnini`; `türünde` K-378 dosya yanıtının kelimesidir.
+2. **Tür aynı kapalı kayıttan, daha dar alt kümeyle.** `WEB_METIN_TURLERI` =
+   `txt`, `csv`, `ics`, `xml` — UTF-8 metin taşıyan ve tarayıcıda betik
+   yürütmeyen dosya sınıfı satırları. İkili türler, `octet-stream` ve Apple
+   profili (imzalı hâli ikili CMS) dışarıdadır; HTML/SVG/XHTML/betik kayıtta
+   hiç yoktur. Tür kaynakta görünen literaldir (durum kodu gibi review'da
+   exact görünür); aksi önerili S037 — yeni tanı kodu açılmaz. K-167
+   `bicim web-metin-yaniti-turleri`.
+3. **Başlıklar dosya yanıtıyla aynı**, yalnız `Content-Disposition` yok:
+   `nosniff`, `no-store`, `default-src 'none'; sandbox`, CORP same-origin;
+   `charset` kuralı `baslik_degeri` ile ortak. Rota önbellek izni (K-335)
+   uygulanmaz: belirteçli takvim adresi paylaşılan önbelleğe girmemelidir.
+   `attachment` biçimi abonelik istemcilerinde gerekmediği için açılmadı.
+4. **CRLF için yeni sözdizimi yok.** Gövde bayt bayt gider; satır sonu
+   dönüştürülmez. Seçenekler: (a) `CRLF satır sonlarıyla` niteleyicisi — üç
+   yeni kalıp kelimesi ve normalleştirme semantiği (çıplak CR/LF ne olur?);
+   (b) türe göre örtük CRLF normalleştirmesi — kaynakta görünmeyen dönüşüm,
+   ürünün kurduğu baytı değiştirir; (c) K-402 (RFC-0043 Dilim 2) `13 kod
+   noktası harfini almayı dene` ile CR'yi ürün üretir. (c) en küçük yüzeydir
+   ve K-402 bunu açıkça amaçlar; seçildi. İstek ve dosya verisinden gelen CR
+   de olduğu gibi geçer.
+5. Cümle K-403 kesin yanıtıdır, eylem içinde T044'tür; IO izi
+   `turlu_yanit_gonder` (tür, gövde) olayı, şema ve hermetik adaptör aynı
+   kapalı kümeyi uygular. Desteklemeyen adaptörün varsayılanı türü düşürüp
+   `text/html` koklamasına açılmaz: fail-closed 500 durum yanıtı.
+
+**Güvenlik değerlendirmesi (GB-179).** Risk: kullanıcı verisi taşıyan
+bellek metninin tarayıcıda belge/betik olarak yorumlanması (XSS), tür
+başlığına enjeksiyon, gizli belirteçli adresin paylaşılan önbelleğe girmesi.
+Tür derlemede kapalı kümeden literaldir, çalışma zamanı başlık değerini
+kayıttan kurar (Zee metni başlığa girmez); `application/xml` gövdesi
+`<script>` taşısa da `nosniff` + sandbox CSP betiği durdurur ve gövde `<` ile
+başlasa `text/html` seçilmez; `no-store` önbellek iznine rağmen korunur.
+Belirtecin gizliliği, iptali ve oran sınırı ürün sorumluluğudur.
+
+**Sonuç.** ZeeMail takvimi `text/calendar; charset=utf-8` ile sunar; mevcut
+yanıt biçimleri ve dosya yanıtı bayt bayt aynıdır.
 
 ## Değerlendirilen seçenekler
 

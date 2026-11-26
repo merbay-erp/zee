@@ -10,6 +10,27 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenen
+
+- **Makine uç noktası (K-405):** Outlook'un otomatik hesap kurulumu gibi
+  tarayıcı olmayan istemciler için CSRF istemeyen POST rotası yazılabilir:
+
+  ```text
+  POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
+      herkese açık makine uç noktası
+      gövde isteğin ham gövdesi olsun
+  ```
+
+  Bu rota `_csrf` ve `Origin` istemez; karşılığında oturuma, çerezlere ve
+  CSRF belirtecine hiç ulaşamaz (derlemede T061), yanıtı asla `Set-Cookie`
+  taşımaz. `isteğin ham gövdesi` gövdeyi en çok 8 KiB UTF-8 metin olarak
+  verir; yalnız `text/xml`, `application/xml` ve `application/json` kabul
+  edilir (başkası 415, büyük gövde 413). Yol sabit olmalı, yöntem POST
+  (T060); ham gövde başka rotada okunamaz (T062). Dil XML ayrıştırmaz.
+
+  **Göç:** Gerekmez; mevcut rotaların davranışı değişmez. Sıradan POST
+  rotaları CSRF ve Origin istemeye devam eder.
+
 ### Güvenlik
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
@@ -56,6 +77,51 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** yok; yeni kalıptır.
 
+- **`dil göçür --ileri-kayitlara-izin` (K-407):** Aynı veritabanını paylaşan
+  iki uygulama sürümünden yenisi daha yeni bir göçü uyguladıktan sonra eski
+  sürüme geri dönüldüğünde, eski sürümün `dil göçür` çağrısı artık bu bayrakla
+  düşmeden açılabiliyor. Ağacınızdaki bütün göçler aynı ad ve içerikle
+  uygulanmışsa ve fazla kayıtlar ağacınızdaki en yüksek sürümden yeniyse hiçbir
+  SQL çalışmaz, kayıtlara dokunulmaz ve fazlalar `İleri kayıt` satırıyla
+  raporlanır; `--durum` ve `--kuru` ile de kullanılır. Değişmiş göç, aradaki
+  kayıp dosya ya da ileri kayıt varken bekleyen göç eskisi gibi C026'dır.
+  Bayraksız davranış değişmedi; göç adımı gerekmez. İleri göçlerin eski kodla
+  uyumlu kalması uygulamanın sorumluluğudur
+  ([ADR-181](../adr/181-goc-ileri-kayit-toleransi.md)).
+
+- **DKIM anahtarı DNS'te yayımlananla açılışta karşılaştırılır (K-413):**
+  `dkim_anahtarları` bildiren ve `dns` yetkinliği olan bir Zee programı
+  başlarken her anahtarın `<seçici>._domainkey.<alan>` TXT kaydını sorar.
+  Yayımlanan açık anahtar özel anahtarınıza uymuyorsa ya da iptal edilmişse
+  (boş `p=`), yalnız o anahtar devre dışı kalır. Açılışta hangi alan ile
+  seçicide sorun olduğu `HATA:` satırıyla yazılır, o anahtarla imza denemesi
+  `anahtar_dns_uyuşmuyor` ya da `anahtar_iptal` hatası döner. Program ve
+  öteki alanların anahtarları çalışmaya devam eder: çok kiracılı bir posta
+  sunucusunda tek bir müşterinin DNS değişikliği bütün hizmeti durdurmaz.
+  Kayıt henüz yoksa ya da DNS o an yanıt vermiyorsa yalnız uyarı yazılır ve
+  anahtar kullanılmaya devam eder.
+
+  **Göç:** Yeni anahtar yayımlarken önce DNS kaydını, sonra `proje.dil`'deki
+  seçiciyi güncelleyin. Ürün kodu bu iki hatayı yakalayıp iletiyi imzasız
+  gönderebilir ve yöneticiyi uyarabilir. `dns` bildirmeyen projeler
+  etkilenmez.
+- **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
+  kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
+
+  ```text
+  GET "/takvim/yayin.ics" adresine istek geldiğinde
+      herkese açık
+      takvim metnini "text/calendar" türünde gönder
+  ```
+
+  Tür yalnız `"text/plain"`, `"text/csv"`, `"text/calendar"` ya da
+  `"application/xml"` olabilir ve tırnak içinde yazılır; başka tür (HTML, SVG,
+  betik, PDF/görsel gibi ikili türler) derlemede S037'dir. Yanıt dosya
+  yanıtıyla aynı güvenlik başlıklarını taşır (`nosniff`, `no-store`, sandbox
+  CSP), indirme eki değildir ve gövdeyi değiştirmez: RFC 5545'in istediği
+  CRLF satır sonlarını metnin kendisi taşımalıdır — CR karakterini
+  `cr 13 kod noktası harfini almayı dene olsun` (K-402) ile üretin. Cümle `yanıtını gönder`
+  gibi rotayı bitirir. Var olan programlar etkilenmez; göç gerekmez.
 
 - **Giden posta için DKIM imzası (K-397):** posta sunucusu yazan bir Zee
   programı artık gönderdiği iletiyi kendi alanı adına DKIM ile
@@ -122,6 +188,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 ### Site
 
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
+- **zeedili.com 26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-397 giden posta DKIM imzası ve dosyadan akışlı gövde özeti (RFC-0044) ile K-402 metnin bayt sayısı, base64 ve kod noktası kalıpları (RFC-0043) haberleri eklendi. Dil davranışı değişmedi.
 
 ## 25 Kasım 2026 — Geliştirme güncellemeleri
 

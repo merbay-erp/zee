@@ -10,8 +10,9 @@ use crate::tani::Tani;
 use std::collections::{HashMap, HashSet};
 
 mod baglanti;
+mod makine;
 mod onbellek;
-use onbellek::{onbellekli_rotayi_denetle, OnbellekIzi};
+use onbellek::OnbellekIzi;
 
 #[derive(Clone, Default)]
 struct Bilgi {
@@ -42,11 +43,7 @@ impl Bilgi {
 pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
     eylem_imzalarini_denetle(&program.islemler)?;
 
-    let dogrudan = program
-        .islemler
-        .iter()
-        .map(|(ad, islem)| (ad.clone(), blok_bilgisi(&islem.govde)))
-        .collect::<HashMap<_, _>>();
+    let dogrudan = makine::islem_bilgileri(program, blok_bilgisi)?;
     let etkiler = etkileri_yay(&dogrudan);
 
     let mut adlar = program.islemler.keys().cloned().collect::<Vec<_>>();
@@ -107,7 +104,7 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
         rota_onsozunu_denetle(yontem, govde, *satir)?;
         let dogrudan_rota = blok_bilgisi(govde);
         let toplam = toplam_bilgi(&dogrudan_rota, &etkiler);
-        onbellekli_rotayi_denetle(yontem, govde, &dogrudan_rota.onbellek, &toplam.onbellek)?;
+        makine::ozel_kipleri_denetle(cumle, yontem, &dogrudan_rota.onbellek, &toplam.onbellek)?;
 
         if yontem.guvenli() && toplam.durum_yazma {
             return Err(Tani::yeni(

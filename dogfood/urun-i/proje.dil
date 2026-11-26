@@ -1,0 +1,16 @@
+# Ürün I — ZeeOS: zee uygulamalarını A/B kök dilimleriyle güncelleyen işletim
+# imajı (K-407). Gerçek ürün özel depodadır; bu klasör depo içi kanıt
+# aynasıdır. K-407: defter uygulaması iki dilim arasında aynı PostgreSQL
+# veritabanını paylaşır; geri dönüşte eski dilim `dil göçür
+# --ileri-kayitlara-izin` ile açılır (ADR-181). Hedef anonim loopback.
+
+proje "urun-i" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "defter-geri-donus/n/ana.dil" olsun
+yetkinlikler "veritabanı" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/defter" olsun
+veritabanı_bağlantı_değişkeni "DEFTER_DATABASE_URL" olsun
+veritabanı_göçleri "defter-geri-donus/n/gocler" olsun

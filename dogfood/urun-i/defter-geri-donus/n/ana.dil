@@ -1,0 +1,10 @@
+# K-407 (ADR-181): küme N yalnız 0001'i bilir. Küme N+1 0002'yi uyguladıktan
+# sonra geri dönüşte `dil göçür --ileri-kayitlara-izin` 0002'yi ileri kayıt
+# olarak raporlar, SQL yürütmez; bu kod `etiket` sütununa dokunmaz.
+eylem notu kaydet
+    metni Metin olarak al
+    TamSayı sonucu döndürür
+
+    parametreler metni listesi olsun
+    sonuç "INSERT INTO notlar (metin) VALUES ($1)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    sonuç döndür

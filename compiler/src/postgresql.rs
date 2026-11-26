@@ -11,10 +11,13 @@ mod sonuc;
 use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHatasi, VeritabaniHedefi};
 use postgres::types::{ToSql, Type};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GocRaporu {
     pub uygulanan: usize,
     pub atlanan: usize,
+    /// K-407: `--ileri-kayitlara-izin` ile tolere edilen, proje ağacındaki en
+    /// yüksek sürümden büyük kayıtlar. Bayraksız koşuda her zaman boştur.
+    pub ileri: Vec<GocAdimi>,
 }
 
 /// SQL yürütmeyen migration durum/kuru çalışma görüntüsü.
@@ -23,6 +26,8 @@ pub struct GocPlani {
     pub adimlar: Vec<GocAdimi>,
     pub uygulanmis: usize,
     pub bekleyen: usize,
+    /// K-407: tolere edilen ileri kayıtlar (yalnız bayrakla dolabilir).
+    pub ileri: Vec<GocAdimi>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -780,22 +785,38 @@ fn goc_kayitlarini_guvenli_coz(
     Ok(uygulananlar)
 }
 
+/// K-407: `ileri_kayitlara_izin` yalnız A/B kök geri dönüşü şeklini tolere
+/// eder: proje ağacındaki bütün göçler aynı ad/özetle uygulanmış ve fazla
+/// kayıtların hepsi ağaçtaki en yüksek sürümden büyükse fazla kayıtlar
+/// `ileri` olarak raporlanır. Diğer her uyuşmazlık bayraktan bağımsız C026'dır.
 fn goc_planini_kur(
     gocler: &[(i64, String, String, String)],
     uygulananlar: &std::collections::BTreeMap<i64, (String, String)>,
+    ileri_kayitlara_izin: bool,
 ) -> Result<GocPlani, VeritabaniHatasi> {
-    if uygulananlar
-        .keys()
-        .any(|surum| !gocler.iter().any(|goc| &goc.0 == surum))
-    {
-        return Err(hata(
-            "Veritabanında kayıtlı bir migration dosyası proje ağacında yok",
-        ));
+    let en_yuksek = gocler.iter().map(|goc| goc.0).max().unwrap_or(0);
+    let mut ileri = Vec::new();
+    for (surum, (ad, ozet)) in uygulananlar {
+        if gocler.iter().any(|goc| &goc.0 == surum) {
+            continue;
+        }
+        if !ileri_kayitlara_izin || *surum <= en_yuksek {
+            return Err(hata(
+                "Veritabanında kayıtlı bir migration dosyası proje ağacında yok",
+            ));
+        }
+        ileri.push(GocAdimi {
+            surum: *surum,
+            ad: ad.clone(),
+            sha256: ozet.clone(),
+            uygulanmis: true,
+        });
     }
     let mut plan = GocPlani {
         adimlar: Vec::with_capacity(gocler.len()),
         uygulanmis: 0,
         bekleyen: 0,
+        ileri,
     };
     for (surum, ad, ozet, _) in gocler {
         let uygulanmis = if let Some((eski_ad, eski_ozet)) = uygulananlar.get(surum) {
@@ -818,6 +839,14 @@ fn goc_planini_kur(
             uygulanmis,
         });
     }
+    if !plan.ileri.is_empty() && plan.bekleyen > 0 {
+        let ilk = plan.adimlar.iter().find(|adim| !adim.uygulanmis);
+        return Err(verili_hata(
+            "İleri kayıtlar varken bekleyen migration uygulanamaz; ağaç ileri kayıtların gerisinde",
+            ilk.map(|adim| vec![("surum".into(), adim.surum.to_string())])
+                .unwrap_or_default(),
+        ));
+    }
     Ok(plan)
 }
 
@@ -826,6 +855,15 @@ fn goc_planini_kur(
 pub fn gocleri_planla(
     bildirim: &VeritabaniBildirimi,
     proje_koku: &std::path::Path,
+) -> Result<GocPlani, VeritabaniHatasi> {
+    gocleri_planla_secenekli(bildirim, proje_koku, false)
+}
+
+/// K-407: `ileri_kayitlara_izin` için [`goc_planini_kur`] sözleşmesine bakın.
+pub fn gocleri_planla_secenekli(
+    bildirim: &VeritabaniBildirimi,
+    proje_koku: &std::path::Path,
+    ileri_kayitlara_izin: bool,
 ) -> Result<GocPlani, VeritabaniHatasi> {
     let gocler = projenin_goclerini_topla(bildirim, proje_koku)?;
     let havuz = havuz::kur(bildirim)?;
@@ -845,7 +883,7 @@ pub fn gocleri_planla(
     } else {
         std::collections::BTreeMap::new()
     };
-    let plan = goc_planini_kur(&gocler, &kayitlar)?;
+    let plan = goc_planini_kur(&gocler, &kayitlar, ileri_kayitlara_izin)?;
     tx.commit()
         .map_err(|h| postgres_hatasi("Migration durum transaction'ı tamamlanamadı", h))?;
     Ok(plan)
@@ -854,6 +892,16 @@ pub fn gocleri_planla(
 pub fn gocleri_uygula(
     bildirim: &VeritabaniBildirimi,
     proje_koku: &std::path::Path,
+) -> Result<GocRaporu, VeritabaniHatasi> {
+    gocleri_uygula_secenekli(bildirim, proje_koku, false)
+}
+
+/// K-407: ileri kayıt tolere edildiğinde bekleyen göç yoktur; hiçbir migration
+/// SQL'i yürütülmez, yalnız metadata tablosu/kilit hazırlığı ve commit kalır.
+pub fn gocleri_uygula_secenekli(
+    bildirim: &VeritabaniBildirimi,
+    proje_koku: &std::path::Path,
+    ileri_kayitlara_izin: bool,
 ) -> Result<GocRaporu, VeritabaniHatasi> {
     let gocler = projenin_goclerini_topla(bildirim, proje_koku)?;
     let havuz = havuz::kur(bildirim)?;
@@ -879,10 +927,11 @@ pub fn gocleri_uygula(
             )
         })
         .collect::<std::collections::BTreeMap<_, _>>();
-    let plan = goc_planini_kur(&gocler, &kayitlar)?;
+    let plan = goc_planini_kur(&gocler, &kayitlar, ileri_kayitlara_izin)?;
     let mut rapor = GocRaporu {
         uygulanan: 0,
         atlanan: plan.uygulanmis,
+        ileri: plan.ileri,
     };
     for ((surum, ad, ozet, sql), adim) in gocler.into_iter().zip(plan.adimlar) {
         if adim.uygulanmis {
@@ -1138,7 +1187,7 @@ mod testler {
         ];
         let kayitlar =
             std::collections::BTreeMap::from([(1, ("0001_ilk.sql".into(), "aaa".into()))]);
-        let plan = goc_planini_kur(&gocler, &kayitlar).unwrap();
+        let plan = goc_planini_kur(&gocler, &kayitlar, false).unwrap();
         assert_eq!((plan.uygulanmis, plan.bekleyen), (1, 1));
         assert_eq!(
             plan.adimlar.iter().map(|a| a.surum).collect::<Vec<_>>(),
@@ -1154,7 +1203,7 @@ mod testler {
         let gocler = vec![(1, "0001_ilk.sql".into(), "aaa".into(), "SELECT 1".into())];
         for (ad, hash) in [("0001_degismis.sql", "aaa"), ("0001_ilk.sql", "bbb")] {
             let kayitlar = std::collections::BTreeMap::from([(1, (ad.into(), hash.into()))]);
-            let h = goc_planini_kur(&gocler, &kayitlar).unwrap_err();
+            let h = goc_planini_kur(&gocler, &kayitlar, false).unwrap_err();
             assert_eq!(h.veri, [("surum".into(), "1".into())]);
             assert_eq!(
                 h.mesaj,
@@ -1164,8 +1213,102 @@ mod testler {
         let kayip =
             std::collections::BTreeMap::from([(2, ("0002_kayip.sql".into(), "bbb".into()))]);
         assert_eq!(
-            goc_planini_kur(&gocler, &kayip).unwrap_err().mesaj,
+            goc_planini_kur(&gocler, &kayip, false).unwrap_err().mesaj,
             "Veritabanında kayıtlı bir migration dosyası proje ağacında yok"
+        );
+    }
+
+    fn ab_gocleri() -> Vec<(i64, String, String, String)> {
+        vec![
+            (1, "0001_ilk.sql".into(), "aaa".into(), "SELECT 1".into()),
+            (2, "0002_iki.sql".into(), "bbb".into(), "SELECT 2".into()),
+        ]
+    }
+
+    fn ab_kayitlari(
+        ekler: &[(i64, &str, &str)],
+    ) -> std::collections::BTreeMap<i64, (String, String)> {
+        let mut kayitlar = std::collections::BTreeMap::from([
+            (1, ("0001_ilk.sql".into(), "aaa".into())),
+            (2, ("0002_iki.sql".into(), "bbb".into())),
+        ]);
+        for (surum, ad, ozet) in ekler {
+            kayitlar.insert(*surum, ((*ad).into(), (*ozet).into()));
+        }
+        kayitlar
+    }
+
+    #[test]
+    fn goc_plani_ileri_kayitlari_yalniz_bayrakla_ve_ust_sinirda_tolere_eder() {
+        let gocler = ab_gocleri();
+        let kayitlar = ab_kayitlari(&[(3, "0003_yeni.sql", "ccc"), (5, "0005_daha.sql", "eee")]);
+        let plan = goc_planini_kur(&gocler, &kayitlar, true).unwrap();
+        assert_eq!((plan.uygulanmis, plan.bekleyen), (2, 0));
+        assert_eq!(
+            plan.ileri
+                .iter()
+                .map(|a| (a.surum, a.ad.as_str(), a.sha256.as_str()))
+                .collect::<Vec<_>>(),
+            [(3, "0003_yeni.sql", "ccc"), (5, "0005_daha.sql", "eee")]
+        );
+        assert!(plan.adimlar.iter().all(|a| a.uygulanmis));
+        // Fazla kayıt yoksa bayrak planı değiştirmez.
+        assert_eq!(
+            goc_planini_kur(&gocler, &ab_kayitlari(&[]), true).unwrap(),
+            goc_planini_kur(&gocler, &ab_kayitlari(&[]), false).unwrap()
+        );
+    }
+
+    #[test]
+    fn goc_plani_ileri_kayit_bayraksiz_ve_ara_kayipta_reddedilir() {
+        let gocler = ab_gocleri();
+        let ileri = ab_kayitlari(&[(3, "0003_yeni.sql", "ccc")]);
+        assert_eq!(
+            goc_planini_kur(&gocler, &ileri, false).unwrap_err().mesaj,
+            "Veritabanında kayıtlı bir migration dosyası proje ağacında yok"
+        );
+        // Ağacın en yüksek sürümünün altındaki kayıp dosya ileri kayıt değildir.
+        let gocler_bosluklu = vec![
+            (1, "0001_ilk.sql".into(), "aaa".into(), "SELECT 1".into()),
+            (4, "0004_dort.sql".into(), "ddd".into(), "SELECT 4".into()),
+        ];
+        let ara = std::collections::BTreeMap::from([
+            (1, ("0001_ilk.sql".into(), "aaa".into())),
+            (2, ("0002_kayip.sql".into(), "bbb".into())),
+            (4, ("0004_dort.sql".into(), "ddd".into())),
+            (6, ("0006_ileri.sql".into(), "fff".into())),
+        ]);
+        assert_eq!(
+            goc_planini_kur(&gocler_bosluklu, &ara, true)
+                .unwrap_err()
+                .mesaj,
+            "Veritabanında kayıtlı bir migration dosyası proje ağacında yok"
+        );
+    }
+
+    #[test]
+    fn goc_plani_ileri_kayit_degismis_ad_ozet_ve_bekleyen_gocu_gizlemez() {
+        let gocler = ab_gocleri();
+        for (ad, ozet) in [("0002_degismis.sql", "bbb"), ("0002_iki.sql", "zzz")] {
+            let mut kayitlar = ab_kayitlari(&[(3, "0003_yeni.sql", "ccc")]);
+            kayitlar.insert(2, (ad.into(), ozet.into()));
+            let h = goc_planini_kur(&gocler, &kayitlar, true).unwrap_err();
+            assert_eq!(h.veri, [("surum".into(), "2".into())]);
+            assert_eq!(
+                h.mesaj,
+                "0002_iki.sql uygulanmış migration içeriğiyle uyuşmuyor"
+            );
+        }
+        // Araya giren uygulanmamış göç: 0002 ağaçta var, kayıtta yok; 0003 ileri.
+        let mut kayitlar = ab_kayitlari(&[(3, "0003_yeni.sql", "ccc")]);
+        kayitlar.remove(&2);
+        let h = goc_planini_kur(&gocler, &kayitlar, true).unwrap_err();
+        assert_eq!(h.veri, [("surum".into(), "2".into())]);
+        assert!(
+            h.mesaj
+                .starts_with("İleri kayıtlar varken bekleyen migration"),
+            "{}",
+            h.mesaj
         );
     }
 
