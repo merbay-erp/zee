@@ -104,7 +104,7 @@ fn dosya_hatasi(mesaj: String) -> Deger {
     }
 }
 
-fn kodlama_hatasi(hata: KodlamaHatasi) -> Deger {
+pub(super) fn kodlama_hatasi(hata: KodlamaHatasi) -> Deger {
     let mut veri = vec![("tür".to_string(), Deger::Metin(hata.tur.into()))];
     if let Some(konum) = hata.konum {
         veri.push(("konum".into(), Deger::Metin(konum.to_string())));

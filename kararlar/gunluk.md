@@ -6285,3 +6285,31 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   koşusu sızıntısı uygulama sırasında yakalandı).
 - B3 (DKIM imzası) ayrı dilim/PR: ADR-174, K-390 B2 doğrulayıcısıyla tek
   `ring` yüzeyi.
+
+## K-402 — RFC-0043 Dilim 2: bellekteki metin ↔ bayt; ADR-167 eki (25 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F023 (dogfood-change). Mustafa'nın "Dilim 2'ye geç"
+  kararıyla K-389 oturumunda açıldı. Ürün kanıtı ZeeMail oturumundan
+  (ürün commit'i `23af030`, dosya/blob'lar `dogfood/urun-h/KOKEN.md`):
+  ürün bayt sayımı, kod noktası ↔ harf ve base64'ü U+0000–04FF kod
+  tablosuyla saf Zee'de yapıyor. Öncelik ürünün kendi sırası: (a) IMAP
+  literal/yanıt oktet sayımı bloklayıcı ("Fatura 😀 hazır" 15, doğrusu 18),
+  (d) RFC 2047 çözmede tablo dışı harf U+FFFD (güvenlik: taklit konu
+  süzgece kör), (b) giden B kodlamasında `?` veri kaybı, (c) AUTH PLAIN
+  çözümünde tablo dışı parola U+FFFD. Ürün AUTH PLAIN NUL'unu bayt düzeyinde
+  ayırıyor; `kod noktası harfi`nin tüketicisi (d)'dir. (a)+(d) ile ürün kod
+  tablosunu tümüyle kaldırabilir. K-164: F004 (CR kaçışı, S040) ile aynı
+  sınıfa da değer — kaçışla yazılamayan karakter `kod noktası harfi` ile
+  üretilir; kaçış grammar'ına dokunulmadı.
+- Kapsam ürün kanıtıyla daraltıldı: RFC'deki onaltılık ↔ metin/base64,
+  `onaltılıktan sha256 özeti`, `özetinin base64 hâli` ve `base64url` açılmadı;
+  DKIM `bh=`/anahtar biçimleri K-390'ın host yüzeyinde. Bu kalemler RFC'de
+  "açık" olarak duruyor, gerçekleşmiş gösterilmedi.
+- Kelime: `hâli` yerine `karşılığı` (şapka ve `hal` çekimi belirsizliği),
+  çözmede `çözümünü almayı dene`. Tek satır çözümü MIME'den katı: gömülü
+  CR/LF de alfabe dışı (protokol alanında satır sonu kaçırma). Tek harf
+  dışındaki `kod noktası` yakalanamaz C032 çalışma hatası; ters yön Sonuç.
+- Saflık: yetkinlik yok, IO izi olayı yok (test: iz, sabit çıktılı programın
+  iziyle birebir). Yeni `Ozellik` kolları `yorumlayici/metin_kodlama.rs` ve
+  `ayristirici/ifade/metin_kodlama.rs` modüllerinde; `sha256 özeti` de oraya
+  taşındı (satır bütçeleri). GB-178. K-402 kapandı.

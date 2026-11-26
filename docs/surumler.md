@@ -76,6 +76,30 @@ Bu kayıt yeni sürüm etiketi değildir.
   `anahtar_bilinmiyor` döner. Büyük gövdede Metin ilkesi yerine dosya
   ilkesini kullanın.
 
+- **Metnin bayt sayısı, base64 ve kod noktası (K-402, RFC-0043 Dilim 2):**
+  bellekteki metin için beş yeni kalıp eklendi. Hepsi yetkinlik istemez:
+
+  ```text
+  oktet satırın utf8 bayt sayısı olsun                 # "ç" → 2, "😀" → 4
+  kod alanın base64 karşılığı olsun                    # dolgulu RFC 4648 base64
+  düz kodun base64 çözümünü almayı dene olsun          # Sonuç<Metin>
+  sayı harfin kod noktası olsun                        # "A" → 65
+  nul 0 kod noktası harfini almayı dene olsun          # Sonuç<Metin>
+  ```
+
+  `uzunluğu` harf saymayı sürdürür; SMTP/IMAP gibi oktet sınırları artık
+  `utf8 bayt sayısı` ile doğru denetlenir. base64 çözümü tek satırlık
+  protokol alanı içindir ve katıdır: dolgu zorunludur; boşluk, satır sonu
+  ve alfabe dışı karakter reddedilir; çıktı en çok 1 MiB ve geçerli UTF-8
+  olmalıdır. Bozuk girdi C032 verir (`tür` ve `konum`); hata mesajı
+  girdiyi (ör. parolayı) taşımaz. `kod noktası harfi` NUL ve CR gibi kaçışla
+  yazılamayan karakterleri de üretir. Tek harf
+  olmayan metnin `kod noktası` çalışma hatasıdır. Onaltılık dönüşüm ve
+  base64url bu sürümde yoktur.
+
+  **Göç:** Gerekmez. Elle yazılmış base64 döngüleri bu kalıplarla
+  değiştirilebilir.
+
 ### Site
 
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.

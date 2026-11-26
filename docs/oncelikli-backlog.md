@@ -3128,6 +3128,32 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-402 — RFC-0043 Dilim 2: bellekteki metin ↔ bayt (ADR-167 eki)
+
+**Durum:** kapalı (25 Kasım 2026). Kaynak `urun-h` ZeeMail sürtünmesi
+**ZM-F023** (ürün commit'i `23af030`): ürün bayt sayımı, kod noktası ↔
+harf ve base64'ü saf Zee'de U+0000–04FF kod tablosuyla yapıyor; tablo
+dışındaki harf IMAP literal `{n}` sayımında 1 bayt sayılıyor (oturum kayar),
+RFC 2047 konusu ve AUTH PLAIN parolası U+FFFD'ye, giden emojili konu `?`'e
+dönüyor (taklit konu denetimi kör). Reproducer'lar `zm-r004`,
+`zm-f023-imap-literal-oktet`, `zm-f023-rfc2047-emoji`, `zm-f023-auth-plain`
+(değişiklik öncesi S015). Freeze sınıfı `dogfood-change`; yeni tür, grammar
+kuralı, yetkinlik ya da tanı kodu yok.
+
+Karar (ADR-167 K-402 eki, spec/26 §Bellekteki metin ↔ bayt): beş saf
+özellik — `utf8 bayt sayısı`, `base64 karşılığı`, `base64 çözümünü almayı
+dene` (tek satır, katı RFC 4648, CR/LF/boşluk alfabe dışı, ≤ 1 MiB, katı
+UTF-8), `kod noktası` (tek harf dışı C032 çalışma hatası), `kod noktası
+harfini almayı dene` (vekil/aralık dışı C032 `kod_noktası`). RFC-0043 kabul;
+Dilim 1 ve 2 uygulandı. GB-178.
+
+Kanıt: `compiler/tests/metin_kodlama_testi.rs` (10 vaka),
+`compiler/src/kodlama.rs::tek_satir_base64_gomulu_boslugu_reddeder`;
+dogfood `zm-r004-uzunluk-oktet-saymaz` (`1|2`) ve üç `zm-f023-*` vakası.
+
+Açık: onaltılık ↔ metin/base64 ve `base64url` (ürün kaydı yok; DKIM K-390
+host yüzeyinde); SMTP/CLI/gizli değer iç base64 yardımcılarının tek
+uygulamada birleştirilmesi (bakım); `kodlama` fuzz hedefi.
 ## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040
