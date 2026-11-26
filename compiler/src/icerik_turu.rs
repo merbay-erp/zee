@@ -199,6 +199,18 @@ pub fn web_dosya_turu(mime: &str) -> Option<&'static IcerikTuru> {
     TURLER.iter().find(|tur| tur.web_dosya && tur.mime == mime)
 }
 
+/// K-406 (ADR-163 eki, ZM-F048): bellekteki `Metin`in rota yanıtı olarak
+/// verilebileceği kayıt satırları. Yalnız UTF-8 metin taşıyan, tarayıcıda
+/// betik yürütmeyen dosya sınıfı türleri; ikili türler, `octet-stream` ve
+/// Apple profili (imzalı hâli ikili CMS'tir) bilinçli olarak dışarıdadır.
+pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "xml"];
+
+/// `<metin> metnini "<tür>" türünde gönder` için exact (küçük harf,
+/// parametresiz) MIME yazımıyla satır.
+pub fn web_metin_turu(mime: &str) -> Option<&'static IcerikTuru> {
+    web_dosya_turu(mime).filter(|tur| WEB_METIN_TURLERI.contains(&tur.ad))
+}
+
 /// Dosya adının son uzantısına göre SMTP'de seçilebilir satır (büyük/küçük
 /// harf duyarsız). İzin kararı çağıranın kümesindedir.
 pub fn uzantidan(ad: &str) -> Option<&'static IcerikTuru> {
@@ -368,6 +380,39 @@ mod tests {
         assert_eq!(uzantidan("Rapor.DOCX").map(|t| t.ad), Some("docx"));
         assert_eq!(uzantidan("foto.jpg").map(|t| t.ad), Some("jpeg"));
         assert!(uzantidan("uzantisiz").is_none());
+    }
+
+    #[test]
+    fn web_metin_turu_yalniz_metin_satirlarini_acar() {
+        for (mime, baslik) in [
+            ("text/plain", "text/plain; charset=utf-8"),
+            ("text/csv", "text/csv; charset=utf-8"),
+            ("text/calendar", "text/calendar; charset=utf-8"),
+            ("application/xml", "application/xml"),
+        ] {
+            let tur = web_metin_turu(mime).expect(mime);
+            assert_eq!(baslik_degeri(tur), baslik);
+        }
+        for kotu in [
+            "text/html",
+            "image/svg+xml",
+            "application/xhtml+xml",
+            "text/javascript",
+            "application/javascript",
+            "application/octet-stream",
+            "application/pdf",
+            "image/png",
+            "application/zip",
+            "application/x-apple-aspen-config",
+            "Text/Calendar",
+            "text/calendar; charset=utf-8",
+            "text/xml",
+        ] {
+            assert!(web_metin_turu(kotu).is_none(), "{kotu}");
+        }
+        for ad in WEB_METIN_TURLERI {
+            assert!(adla(ad).is_some_and(|tur| tur.web_dosya), "{ad}");
+        }
     }
 
     #[test]

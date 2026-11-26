@@ -617,3 +617,225 @@ fn dosya_yaniti_32_mib_tam_sinirda_akar_bellek_tepesi_buyumez() {
         "yerleşik bellek tepesi akış boyunca büyümemeli: taban {taban} KiB, tepe {tepe} KiB"
     );
 }
+
+/// K-406 (ADR-163 eki, ZM-F048): bellekteki metin kayıtlı metin türüyle
+/// 200 yanıtı olur. Takvim yayını (RFC 5545 CRLF) gövdesi bayt bayt aynı
+/// gider: CR/LF dönüştürülmez, `<` ile başlayan gövde HTML koklanmaz.
+const TURLU: &str = r#"8080 kapısında sunucu başlat
+
+GET "/takvim/yayin.ics" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 60 saniye
+    takvim isteğin "g" değeri olsun
+    takvim metnini "text/calendar" türünde gönder
+    "bu yanıt görünmemeli" yanıtını gönder
+
+HEAD "/takvim/yayin.ics" adresine istek geldiğinde
+    herkese açık
+    "BEGIN:VCALENDAR" metnini "text/calendar" türünde gönder
+
+GET "/xml" adresine istek geldiğinde
+    herkese açık
+    belge isteğin "g" değeri olsun
+    belge metnini "application/xml" türünde gönder
+
+GET "/csv" adresine istek geldiğinde
+    herkese açık
+    "ad;soyad" metnini "text/csv" türünde gönder
+
+GET "/takvim/crlf.ics" adresine istek geldiğinde
+    herkese açık
+    cr_sonucu 13 kod noktası harfini almayı dene olsun
+    cr_sonucu başarılıysa
+        crlf cr_sonucunun değeri ile "\n" olsun
+        takvim "BEGIN:VCALENDAR" ile crlf ile "END:VCALENDAR" ile crlf olsun
+        takvim metnini "text/calendar" türünde gönder
+"#;
+
+#[test]
+fn turlu_metin_yaniti_kayitli_tur_guvenlik_basliklari_ve_ham_crlf_govdeyle_gider() {
+    let proje = Proje::yeni(TURLU);
+    let kapi = kopma::bos_kapi();
+    let _sunucu = baslat(&proje.0, kapi);
+    let ortak = |basliklar: &str| {
+        assert!(basliklar.starts_with("HTTP/1.1 200 OK\r\n"), "{basliklar}");
+        assert_eq!(baslik(basliklar, "X-Content-Type-Options"), ["nosniff"]);
+        assert_eq!(
+            baslik(basliklar, "Content-Security-Policy"),
+            ["default-src 'none'; sandbox"]
+        );
+        // Rota önbellek izni (K-335) türlü metin yanıtına uygulanmaz.
+        assert_eq!(baslik(basliklar, "Cache-Control"), ["no-store"]);
+        assert_eq!(
+            baslik(basliklar, "Cross-Origin-Resource-Policy"),
+            ["same-origin"]
+        );
+        assert!(
+            baslik(basliklar, "Content-Disposition").is_empty(),
+            "{basliklar}"
+        );
+    };
+
+    let takvim =
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nSUMMARY:Toplantı ç\r\n karma\nsatır\rEND:VCALENDAR\r\n";
+    let (basliklar, govde) = istek(
+        kapi,
+        "GET",
+        &format!("/takvim/yayin.ics?g={}", yuzde(takvim)),
+    );
+    ortak(&basliklar);
+    assert_eq!(
+        baslik(&basliklar, "Content-Type"),
+        ["text/calendar; charset=utf-8"]
+    );
+    assert_eq!(
+        baslik(&basliklar, "Content-Length"),
+        [takvim.len().to_string().as_str()]
+    );
+    // CRLF, çıplak LF ve çıplak CR olduğu gibi; yanıt rotayı bitirdi.
+    assert_eq!(govde, takvim.as_bytes());
+
+    let (basliklar, govde) = istek(kapi, "HEAD", "/takvim/yayin.ics");
+    ortak(&basliklar);
+    assert_eq!(
+        baslik(&basliklar, "Content-Type"),
+        ["text/calendar; charset=utf-8"]
+    );
+    assert_eq!(baslik(&basliklar, "Content-Length"), ["15"]);
+    assert!(govde.is_empty(), "HEAD gövdesiz");
+
+    // `<` ile başlayan XML text/html'e dönmez; charset eklenmez (RFC 7303).
+    let xml = "<?xml version=\"1.0\"?><script>alert(1)</script>";
+    let (basliklar, govde) = istek(kapi, "GET", &format!("/xml?g={}", yuzde(xml)));
+    ortak(&basliklar);
+    assert_eq!(baslik(&basliklar, "Content-Type"), ["application/xml"]);
+    assert_eq!(govde, xml.as_bytes());
+
+    // K-402 kod noktası yüzeyiyle kurulan RFC 5545 CRLF satır sonları.
+    let (basliklar, govde) = istek(kapi, "GET", "/takvim/crlf.ics");
+    ortak(&basliklar);
+    assert_eq!(govde, b"BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
+
+    let (basliklar, govde) = istek(kapi, "GET", "/csv");
+    ortak(&basliklar);
+    assert_eq!(
+        baslik(&basliklar, "Content-Type"),
+        ["text/csv; charset=utf-8"]
+    );
+    assert_eq!(govde, b"ad;soyad");
+}
+
+#[test]
+fn turlu_metin_yaniti_kayit_disi_html_betik_ikili_ve_degisken_turu_s037() {
+    let rota = |tur: &str| {
+        format!(
+            "8080 kapısında sunucu başlat\n\nGET \"/t\" adresine istek geldiğinde\n    herkese açık\n    \"x\" metnini {tur} türünde gönder\n"
+        )
+    };
+    for tur in [
+        "\"text/html\"",
+        "\"image/svg+xml\"",
+        "\"application/xhtml+xml\"",
+        "\"text/javascript\"",
+        "\"application/javascript\"",
+        "\"application/pdf\"",
+        "\"image/png\"",
+        "\"application/octet-stream\"",
+        "\"application/x-apple-aspen-config\"",
+        "\"Text/Calendar\"",
+        "\"text/calendar; charset=utf-8\"",
+        "\"text/xml\"",
+        "\"\"",
+        "tur",
+        "\"text/calendar\" \"text/csv\"",
+    ] {
+        let hata = dil::kaynagi_derle(&rota(tur)).expect_err(tur);
+        assert_eq!(hata.kod, "S037", "{tur}: {}", hata.mesaj);
+        assert!(
+            hata.oneri
+                .as_deref()
+                .is_some_and(|o| o.contains("text/calendar")),
+            "{tur}: öneri kapalı kümeyi anmalı"
+        );
+    }
+    let hata = dil::kaynagi_derle(
+        "8080 kapısında sunucu başlat\n\nGET \"/t\" adresine istek geldiğinde\n    herkese açık\n    metnini \"text/calendar\" türünde gönder\n",
+    )
+    .expect_err("değersiz");
+    assert_eq!(hata.kod, "S037");
+    // Eylem HTTP adaptörüne bağımlı olamaz (T044).
+    let kaynak =
+        "eylem yayinla\n    değer döndürmez\n    \"x\" metnini \"text/calendar\" türünde gönder\n";
+    assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T044").kod, "T044");
+}
+
+#[test]
+fn turlu_metin_yaniti_hermetik_adaptorde_ve_io_izinde_ayni_kural() {
+    use dil::yorumlayici::{calistir_io, GirdiCikti, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
+
+    let program = dil::kaynagi_derle(TURLU).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec![
+        "GET /takvim/yayin.ics?g=BEGIN%3AVCALENDAR%0D%0AEND%3AVCALENDAR%0D%0A".to_string(),
+        "GET /xml?g=%3Ca%2F%3E".to_string(),
+    ]
+    .into();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.sunucu_durumlari, [200, 200]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n"
+    );
+    assert_eq!(io.sunucu_yanitlari[1].1, "<a/>");
+    assert_eq!(
+        io.turlu_yanitlar,
+        ["text/calendar; charset=utf-8", "application/xml"]
+    );
+    assert!(io.dosya_yanitlari.is_empty());
+
+    // Gömme/oynatma yolu da kapalı kümeyi uygular: kayıt dışı tür 500.
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler.push_back("GET /".into());
+    assert!(io.istek_al().is_some());
+    io.turlu_yanit_gonder("text/html", "<script>");
+    io.istek_islemini_tamamla().expect("tamamlanmalı");
+    assert_eq!(io.sunucu_durumlari, [500]);
+    assert!(io.turlu_yanitlar.is_empty());
+
+    // IO izi: tür ve gövde kaydedilir; oynatıcı aynı olayı bekler, şema
+    // kayıt dışı türü reddeder.
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban.istekler.push_back("GET /takvim/yayin.ics".into());
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    assert!(kaydeden.istek_al().is_some());
+    kaydeden.turlu_yanit_gonder("text/calendar", "A\r\nB");
+    let iz = kaydeden.iz_metni().expect("iz");
+    assert!(iz.contains("turlu_yanit_gonder"), "{iz}");
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    assert!(oynatici.istek_al().is_some());
+    oynatici.turlu_yanit_gonder("text/calendar", "A\r\nB");
+    oynatici.bitir().expect("iz tükenmeli");
+    // Alanlar onaltılık kodludur; tür alanı kayıt dışı türle değiştirilir.
+    let hex = |m: &str| m.bytes().map(|b| format!("{b:02x}")).collect::<String>();
+    assert!(iz.contains(&hex("text/calendar")), "{iz}");
+    let bozuk = iz.replace(&hex("text/calendar"), &hex("text/html"));
+    assert!(
+        IzYenidenOynatici::yeni(&bozuk).is_err(),
+        "şema kayıt dışı türü reddeder"
+    );
+}
+
+/// K-406 + K-403: türlü metin yanıtı kesin yanıttır; lint sonraki cümleyi
+/// S047 ile gösterir.
+#[test]
+fn turlu_metin_yaniti_rotayi_bitirir_lint_s047() {
+    let proje = Proje::yeni(TURLU);
+    let cikti = std::process::Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["denetle", "--lint"])
+        .arg(&proje.0)
+        .output()
+        .expect("dil denetle --lint");
+    let metin = String::from_utf8_lossy(&cikti.stderr).into_owned()
+        + &String::from_utf8_lossy(&cikti.stdout);
+    assert!(metin.contains("S047"), "{metin}");
+    assert!(metin.contains("bu yanıt görünmemeli"), "{metin}");
+}

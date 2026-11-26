@@ -224,6 +224,11 @@ impl GirdiCikti for IzYenidenOynatici {
         self.bos_sonuc("durum_yaniti_gonder", sonuc);
     }
 
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        let sonuc = self.siradaki("turlu_yanit_gonder", vec![tur.into(), yanit.into()]);
+        self.bos_sonuc("turlu_yanit_gonder", sonuc);
+    }
+
     fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {
         super::baglanti::kaydet_oynat(self, ad)
     }

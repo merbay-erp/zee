@@ -2608,6 +2608,19 @@ diferansiyel (`compiler/tests/ortak/x509_ozellikleri.rs`); korpus openssl
 sertifikada openssl `-pubkey` eşliği). RC kapısı yedi hedefli.
 Açık: ilk yedi hedefli RC koşusu ve tarihçe satırı.
 
+## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (RFC-0044 B3 kabul 2)
+
+**Durum: yöntem KAPALI (26 Kasım 2026); kanıt satırı AÇIK (operatör
+adımı).** Kaynak: kullanıcı isteği. [Runbook](dkim-alici-kaniti.md):
+anahtar ve TXT kaydı elle (K-415 aday), yayım ve gönderim operatörde, ham
+`.eml` özel depoda. `scripts/dkim-alici-kaniti.py` (stdlib, `-I`, ağsız)
+alıcının en üstteki `Authentication-Results` başlığından dkim/spf/dmarc ve
+hizalamayı okur, anonim satır üretir (`<kurum-alanı>`, `<seçici>`,
+`.eml` SHA-256, zee SHA). Satır alan, adres, IP ve Received taşımaz.
+Kayıt defteri [`dkim-alici-kanitlari-v1.tsv`](dkim-alici-kanitlari-v1.tsv)
+boş başlar. Kanıt: `scripts/tests/dkim-alici-kaniti-test.py` (6 sentetik
+`.eml` vakası, CI ubuntu). compiler/src değişmedi.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
 **Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
@@ -2960,6 +2973,30 @@ Kanıt: `compiler/src/postgresql.rs` üç saf plan testi, gerçek PostgreSQL 16
 dedicated kapısı (`scripts/postgresql-goc-ci.py`, 1/1; `dogfood/urun-i`
 defter aynasının a–d adımları dahil), `compiler/tests/cli_goc_plani_testi.rs`;
 spec/25 K-407 maddesi.
+
+## K-406 — Türlü metin yanıtı: `X metnini "<tür>" türünde gönder` (ADR-163 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F048 (ürün `b75db4c`); merkez onayı 26.11.2026 09:05, küçük yüzey.
+Freeze sınıfı `dogfood-change` (semantic-change). GB-179.
+
+Sürtünme: takvim yayını (`GET /takvim/yayin.ics?k=<belirteç>`) bellekte
+kurulan iCalendar metnidir; bellekteki metin yanıtı yalnız `text/html` /
+`text/plain`, `text/calendar` ise yalnız dosya yanıtındaydı ve GET rotası dosya
+yazamaz (T045). Karar: yanıt cümlesinin kardeş biçimi, tür kapalı
+`icerik_turu` kaydının metin satırlarından (`text/plain`, `text/csv`,
+`text/calendar`, `application/xml`) kaynakta görünen literal; aksi S037.
+Başlıklar dosya yanıtıyla aynı (nosniff, no-store, sandbox CSP, CORP),
+`Content-Disposition` yok; gövde bayt bayt (CRLF için yeni sözdizimi yok,
+CR K-402 kod noktası yüzeyinden). Rotayı bitirir (K-403), eylemde T044.
+Yeni kalıp kelimesi yalnız `metnini`; tanı kodu, AST değer türü, bağımlılık
+ve `dil::api::v1` yok.
+
+Kanıt: `compiler/tests/dosya_yaniti_testi.rs` (4 vaka: gerçek TCP başlık +
+ham CRLF/LF/CR gövde + HEAD, S037 kapalı küme, hermetik adaptör + IO izi
+şeması, lint S047), `icerik_turu.rs::web_metin_turu_yalniz_metin_satirlarini_acar`;
+dogfood `urun-h/takvim-yayini/`. Açık: `attachment` biçimi ve abonelik
+istemcilerinin (Outlook, Google) gerçek davranış ölçümü (insan).
 
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 

@@ -1,0 +1,5 @@
+# zee-dkim-alici-kanitlari-1
+# K-416 (RFC-0044 B3 kabul 2, ADR-174): gerçek alıcıda dkim=pass ve DMARC pass kanıtı.
+# Satırlar yalnız scripts/dkim-alici-kaniti.py çıktısıdır; gerçek alan/seçici, alıcı adresi,
+# IP ve Received zinciri açık depoya girmez. Gerçek .eml özel depoda, eml_sha256 ile bağlıdır.
+tarih	saglayici	alan	secici	dkim	spf	dmarc	hizalama	eml_sha256	zee_sha

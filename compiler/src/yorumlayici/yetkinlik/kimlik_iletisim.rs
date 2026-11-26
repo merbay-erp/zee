@@ -1,4 +1,4 @@
-//! K-210 kimlik/iletişim/görsel ve K-378 dosya yanıtı (ek indirme) kapıları;
+//! K-210 kimlik/iletişim/görsel, K-378 dosya yanıtı (ek indirme) ve K-406 türlü metin yanıtı kapıları;
 //! trait yöntemlerini aynı politika ile açar.
 macro_rules! yontemler {
     () => {
@@ -6,6 +6,12 @@ macro_rules! yontemler {
             self.web_gerektir()?;
             self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
             self.ic.dosya_yaniti_gonder(yol, tur, ad)
+        }
+
+        fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+            if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
+                self.ic.turlu_yanit_gonder(tur, yanit);
+            }
         }
 
         fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {

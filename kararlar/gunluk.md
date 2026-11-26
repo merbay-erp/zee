@@ -6267,6 +6267,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Bu değişiklik compiler/src'ye dokunmaz; RC fuzz tarihçesine satır yazılmadı
   (koşu yok). Sonraki RC adayı yedi hedefin hepsini ister.
 
+## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (26 Kasım 2026)
+
+- Kullanıcı isteği; merkez kararı: yalnız runbook, kayıt biçimi ve
+  `Authentication-Results` ayrıştırıcısı. İmzayı yeniden doğrulayan Zee
+  programı eklenmedi (bağımsız doğrulama ZeeMail `disteslim-deneme`'de);
+  asıl kanıt alıcının kendi başlığıdır.
+- Açık depo sınırı: gerçek alan, seçici, alıcı adresi, IP ve Received
+  zinciri açık depoya girmez; satır `.eml` SHA-256'sıyla özel depoya bağlanır.
+- Yalnız en üstteki `Authentication-Results` sayılır: alttakiler gönderici
+  ya da aradan gelmiş olabilir (RFC 8601 §5).
+- Hizalama PSL'siz yaklaşıktır (aynı alan ya da alt alan); hüküm alıcının
+  `dmarc=` sonucudur.
+
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 
 - Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden
@@ -6346,3 +6359,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   iziyle birebir). Yeni `Ozellik` kolları `yorumlayici/metin_kodlama.rs` ve
   `ayristirici/ifade/metin_kodlama.rs` modüllerinde; `sha256 özeti` de oraya
   taşındı (satır bütçeleri). GB-178. K-402 kapandı.
+## K-406 — Türlü metin yanıtı; ADR-163 eki (26 Kasım 2026)
+
+- Kaynak: `urun-h` (ZeeMail) ZM-F048 (ürün `b75db4c`): takvim yayını
+  bellekteki metin olduğundan `text/calendar` verilemiyordu; dosya yanıtı GET
+  rotasında dosya yazmayı gerektirir (T045). Merkez onayı 26.11 09:05.
+- Biçim yanıt cümlesinin kardeşidir (`… metnini "<tür>" türünde gönder`),
+  yeni cümle türü değil: K-403 rota sonu, T044, yetkinlik ve lint olduğu gibi
+  uygulanır. Tür literal (durum kodu gibi review'da exact) ve kapalı kaydın
+  dar metin alt kümesi; HTML/SVG/betik kayıtta zaten yok, ikili türler ve
+  imzalı Apple profili bilinçli dışarıda. Hata S037'ye öneriyle bağlandı.
+- CRLF: niteleyici (`CRLF satır sonlarıyla`, üç kelime + normalleştirme
+  semantiği) ve türe bağlı örtük normalleştirme reddedildi; gövde bayt bayt
+  gider, CR'yi ürün K-402 `kod noktası harfi` ile üretir (en küçük yüzey).
+- Önbellek izinli rotada da `no-store`: belirteçli takvim adresi paylaşılan
+  önbelleğe girmemeli. K-406 kapandı.

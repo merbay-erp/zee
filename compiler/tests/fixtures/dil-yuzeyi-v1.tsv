@@ -48,6 +48,7 @@ api	io-izi.istemci_adresi	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"is
 api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"parola_ozeti_uret"
 api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
 api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
+api	io-izi.turlu_yanit_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"turlu_yanit_gonder"
 api	posta.dkim_dogrula	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
 api	posta.dkim_dosya_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOSYA_GOVDE_OZETI: &str = "posta.dkim_dosya_govde_ozeti";
 api	posta.dkim_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_GOVDE_OZETI: &str = "posta.dkim_govde_ozeti";
@@ -75,6 +76,7 @@ bicim	multipart-yukleme-alanlari	aktif	1.0.0-dev	compiler/src/main.rs	"yukleme_g
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	smtp-yerel-ek-reddi	aktif	1.0.0-dev	compiler/src/eposta.rs	pub const MIME_EK_REDDI_ONEKI: &str = "MIME e-posta gönderilemedi: ek reddedildi (";
 bicim	web-dosya-yaniti-disposition	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	"attachment; filename=\"{}\"; filename*=UTF-8''{}",
+bicim	web-metin-yaniti-turleri	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "xml"];
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 bicim	zee-active-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-active-1
 bicim	zee-app-dispatch-inflight-1	aktif	0.8.0-dev	scripts/dispatcher-service.py	zee-app-dispatch-inflight-1
@@ -241,6 +243,7 @@ kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	listelemeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	mesajı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	metni	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	metnini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	nedeni	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nedeniyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nokta	aktif	1.0.0-dev	compiler/src/lsp.rs	-
