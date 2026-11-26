@@ -2589,6 +2589,26 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-415 — `dil dkim-denetle` işletim komutu (aday)
+
+**Durum: BEKLİYOR — aday; gerçek ürün ihtiyacı yok.** Kaynak: ADR-174 açık
+maddesi "`dil dkim-denetle` adayı". ZeeMail 26 Kasım 2026 yanıtı: "sürtünme
+değil, kolaylık; öncelik vermeyin". Core freeze altında yeni CLI komutu
+(K-167 uyumluluk yüzeyi) dogfood ihtiyacı olmadan açılmaz; kullanıcı kararı
+(26.11.2026) backlog'a aday olarak yazmaktır.
+
+Tasarım notu (açılırsa):
+- `dil dkim-denetle [proje]` kaynak yürütmeden `dkim_anahtarları`
+  anahtarlarını yükler ve K-413'ün `dns_kaydini_denetle` mantığını çağırır.
+- Anahtar başına durum satırı basar: `eşleşti`, `uyuşmuyor`, `iptal`,
+  `kayıt_yok`, `denetlenemedi`, `dns_yok`.
+- DNS'e konacak `<s>._domainkey.<d>. IN TXT` kaydını en çok 255 baytlık
+  parçalarla basar. RSA'da `p=` SPKI'dir; özel anahtar ve credential yolu
+  basılmaz.
+- Çıkış kodları: 0 hepsi eşleşti ya da `dns` yok; 1 uyuşmuyor/iptal;
+  3 kayıt yok ya da denetlenemedi; 2 kullanım/yükleme hatası. spec/31'de
+  normatif tablo olarak yazılır.
+
 ## K-413 — Açılışta yayımlanmış DKIM anahtarı denetimi (ADR-174 §9)
 
 **Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174 açık
