@@ -795,8 +795,8 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
   adaptörde iki kez yapılır.
 - DKIM credential'ı projedeki başka bir gizli değerin adı olamaz (P015).
 - Tampon sıfırlama `zeroize` crate'i eklemeden en iyi çabadır.
-- Açılışta DNS `p=` eşleme denetimi ve `dkim_imza_girdisi` fuzz hedefi açık
-  iştir. Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
+- Açılışta DNS `p=` eşleme denetimi açık iştir; `dkim_imza_girdisi` fuzz
+  hedefi 26 Kasım 2026'da RC kapısına alındı (K-411). Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
 
 ### Tehdit modeli (K-397)
 
@@ -825,8 +825,8 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
 - Yeni ayrıştırıcılar: X.509 SPKI DER yürüyücüsü (Dilim 1) ve DKIM imza
   girdisi etiket denetimi (Dilim 2). İkisi saf modüldür; birim testleri
   bozuk/kesik/aşırı uzun DER'i ve etiket kenar durumlarını kapsar. Fuzz
-  hedefleri (`x509_spki`, `dkim_imza_girdisi`) aday olarak ADR-173/174'te
-  kayıtlıdır; RC fuzz kapısına alınmaları açık iştir (ayrıştırıcılar
+  hedefleri (`x509_spki`, `dkim_imza_girdisi`) ADR-173/174'te kayıtlıdır;
+  ikisi de K-411 ile RC fuzz kapısındadır (ayrıştırıcılar
   saldırganın gönderdiği sertifikayı yalnız rustls/webpki kabul ettikten
   sonra görür).
 

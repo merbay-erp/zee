@@ -8,6 +8,9 @@
 # HTTP fuzz korpusu wire satır sonlarını (CRLF/bare-LF) byte-byte korur.
 compiler/fuzz/corpus/http_istegi/*.http binary
 compiler/fuzz/corpus/dns_yaniti/*.dns binary
+# DKIM korpusunun ilk baytı parça sınırı seçicisidir; CRLF/çıplak CR korunur.
+compiler/fuzz/corpus/dkim_imza_girdisi/* binary
+compiler/fuzz/corpus/x509_spki/*.der binary
 
 # WASM ABI korpusunun ilk kontrol baytı metin niteliğinde değildir.
 compiler/fuzz/corpus/wasm_abi/* binary
