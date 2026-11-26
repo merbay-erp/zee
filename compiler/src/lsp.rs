@@ -9,10 +9,12 @@
 use crate::tani::Tani;
 use std::collections::HashMap;
 
+mod aciklamalar;
 mod analiz;
 mod cikti;
 mod esitleme;
 mod json;
+use aciklamalar::KELIME_ACIKLAMALARI;
 use analiz::AcikBelgeler;
 use cikti::{CiktiSonucu, SinirliJson};
 pub use json::{json_coz, Json, JsonSayisi};
@@ -197,103 +199,6 @@ const KALIP_KELIMELERI: [&str; 163] = [
     "imzasını",
     "olarak",
     "doğrulamayı",
-];
-
-/// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
-/// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
-/// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 91] = [
-    ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
-    ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
-    ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
-    ("değilse", "Bir `... ise` bloğunun aksi dalı; `değilse <koşul>` ile zincirlenir.\n\n`değilse tahmin gizliden büyükse`"),
-    ("tekrarla", "Döngü açar: `10 kez tekrarla` ya da `bildi doğru olana kadar tekrarla`."),
-    ("için", "İki iş görür: `her sayı için` (gezinme) ve `4 için karesini hesapla` (işlem çağrısı)."),
-    ("sürece", "Koşullu döngü: `sayaç 0 dan büyük olduğu sürece`."),
-    ("sor", "Kullanıcıya sorar; cevap `yanıt` adına gelir.\n\n`\"Adın ne?\" diye sor`"),
-    ("yanıt", "Son `diye sor` cevabı. Sayı gerekiyorsa: `yanıtın sayısı`."),
-    ("ile", "Değerleri birleştirir: metinde ekleme, aritmetik kalıpta ilk terim, çağrıda ayraç."),
-    ("işlem", "İşlem tanımı açar; başlangıç parametresi `... al`dır. Birim/paket sözleşmesinde `... <Tür> olarak al` ve ardından `<Tür> döndürür` ya da `değer döndürmez` yazılır; değer `... döndür` ile çıkar.\n\n`işlem karesini hesapla`"),
-    ("eylem", "HTTP protokolünden bağımsız, açık imzalı uygulama iş kuralı ve transaction sınırı tanımlar. Web, CLI ya da görevden aynı biçimde çağrılır.\n\n`eylem notu kaydet`"),
-    ("al", "İşlem parametresi bildirir. Başlangıç: `sayıyı al`; açık API: `sayıyı Ondalık olarak al`."),
-    ("döndür", "İşlemden değer döndürür. `yok döndür` Seçenek, `\"...\" hatasını döndür` Sonuç üretir. Yapılandırılmış biçim: `\"KOD\" kodlu \"mesaj\" hatasını döndür`."),
-    ("kodlu", "Kararlı etiketli Hata üretir. Kod A-Z ile başlar; A-Z, 0-9 ve `_` kullanır.\n\n`\"DOSYA_YOK\" kodlu \"Dosya bulunamadı\" hatasını döndür`"),
-    ("nedeniyle", "Yeni bir Hata'yı başka bir Hata ile sararak neden zinciri kurar."),
-    ("verisiyle", "Hata'ya Metin sözlüğü biçiminde makinece okunabilir bağlam ekler."),
-    ("kodu", "Hata'nın kararlı etiketini verir; `göre` ile eşlenebilir.\n\n`hatanın kodu`"),
-    ("yapı", "Alanları türleriyle bildirilen kayıt türü tanımlar; `yeni <Ad>` ile kurulur."),
-    ("yeni", "Bir yapıdan değer oluşturur.\n\n`ayşe yeni Öğrenci olsun`"),
-    ("test", "Test bloğu açar; `dil dene` (ve playground) koşar. Doğrulama: `... olmalı`."),
-    ("olmalı", "Test doğrulaması: `kare 16 ya eşit olmalı`. Tutmazsa D001 beklenen/bulunanı gösterir."),
-    ("ekle", "Listeye öğe ekler ya da dosya sonuna satır ekler.\n\n`sayılara 5 ekle`"),
-    ("artır", "Sayıyı yerinde artırır.\n\n`toplamı notla artır`"),
-    ("azalt", "Sayıyı yerinde azaltır.\n\n`sayacı 1 azalt`"),
-    ("böl", "Bölme cümlesi: `ortalamayı toplamı adede böl`."),
-    ("göre", "Desen eşleştirme açar; kollar `\"kare\" ise`, varsayılan `değilse`."),
-    ("dene", "Başarabilir işi Sonuç'a çevirir: `dosyasını okumayı dene`, `sayısını almayı dene`."),
-    ("varsa", "Seçenek sorgusu; bu dalda `değeri` erişimi güvenlidir (T036 daraltması)."),
-    ("başarılıysa", "Sonuç sorgusu; bu dalda `değeri` güvenlidir, `değilse` dalında `hatası`."),
-    ("yok", "Değerin yokluğu (Seçenek). Koleksiyon boşluğu ayrıdır: `boşsa`."),
-    ("kullan", "Kaynak bağlar: `hesap_araclari birimini kullan` aynı klasördeki dosyayı, `grafik paketini kullan` proje bağımlılığını alır (RFC-0009)."),
-    ("bitir", "`programı bitir` — programı o noktada sonlandırır."),
-    ("bekle", "`yarım saniye bekle` ya da eşzamanlı bloktan sonra `hepsini bekle`."),
-    ("listesi", "Liste sabiti: `3, 7, 1, 9 listesi`. Virgülden sonra boşluk liste ayracıdır."),
-    ("sil", "Listeden ilk eşleşen öğeyi ya da sözlükten anahtarı siler; yoksa sessizdir.\n\n`sayılardan 5 i sil`"),
-    ("yönlendir", "Web: tarayıcıyı başka adrese gönderir (303).\n\n`\"/liste\" adresine yönlendir`"),
-    ("çerezine", "Web: yanıtla Set-Cookie gönderir; okumak için rota içinde `çerezler` sözlüğü hazırdır.\n\n`\"oturum\" çerezine kimlik yaz`"),
-    ("herkese", "Durum değiştiren rotanın açık erişim politikasıdır; CSRF yine zorunludur.\n\n`herkese açık`"),
-    ("önbelleklenebilir", "GET/HEAD rotasının açık politikası: oturum/CSRF/çerez kullanmayan 200 yanıtı paylaşılan önbelleğe `public, max-age=0, s-maxage=N` ile açar; Set-Cookie'li yanıt `no-store` kalır.\n\n`herkese açık önbelleklenebilir 300 saniye`"),
-    ("oturum", "Kimliği doğrulanmış kullanıcı isteyen rota politikasıdır.\n\n`oturum gerekli`"),
-    ("yetkisi", "Sunucu tarafı rozet denetimi yapan rota politikasıdır.\n\n`\"yönetici\" yetkisi gerekli`"),
-    ("istemci", "Handler için oran sınırıyla aynı trusted IP metni.\n\n`ip istemci adresi olsun`"),
-    ("birincil", "Açılış işinin sahibi mi: tek süreçte ve çok işçi grubunun ilk birincil işçisinde doğru, ikincil/yeniden başlatılan işçide yanlış.\n\n`açılış_sahibi birincil süreç olsun`"),
-    ("belirteci", "Form için sunucu oturumuna bağlı CSRF değeri üretir.\n\n`csrf csrf belirteci olsun`"),
-    ("doğrulanıyorsa", "Parolayı Argon2id veya maliyeti 4–14 olan legacy bcrypt özetiyle doğrular; düz parola karşılaştırması yapmaz.\n\n`verilen özet ile doğrulanıyorsa`"),
-    ("rolüyle", "Başarılı girişte yeni, döndürülmüş sunucu oturumu açar.\n\n`\"Zeynep\" kullanıcısını \"yönetici\" rolüyle oturuma al`"),
-    ("HTTP", "Native HTTPS GET/POST: başlık ve gövdeyle, süre milisaniye; Metin sözlüğü Sonucu.\n\n`sonuç adres \"POST\" başlıklar gövde 5000 ile HTTP isteğini dene olsun`"),
-    ("JSON", "HTTP JSON alanları kanonik JSON metni olarak Metin sözlüğü Sonucu’nda döner; bool true ile metin true ayrıdır.\n\n`sonuç metin HTTP JSON sözlüğünü okumayı dene olsun`"),
-    ("ortam", "Yalnız ana projenin http_gizli_değişkenleri listesinde izinli adı okur; iz kaydında kapalıdır.\n\n`sonuç \"TURNSTILE_SECRET\" gizli ortam değerini okumayı dene olsun`"),
-    ("isteğini", "HTTP istek adaptörünün başarısızlığı Sonuç olur; yeni çağrı eylem transaction’ında kapalıdır."),
-    ("sözlüğünü", "HTTP JSON nesnesini sınırlı, kanonik değerli Metin sözlüğü Sonucu olarak okur."),
-    ("argon2", "Parolanın Argon2id PHC özetini üretir (kriptografi yetkinliği); düz parola saklanmaz.\n\n`özet parolanın argon2 özeti olsun`"),
-    ("totp", "160 bit Base32 TOTP gizli anahtarı üretir; otpauth bağlantısında kullanılır.\n\n`gizli yeni totp anahtarı olsun`"),
-    ("anahtarıyla", "RFC 6238 TOTP kodunu adaptörün saatiyle ±30 saniye penceresinde doğrular.\n\n`kod gizli anahtarıyla doğrulanıyorsa`"),
-    ("göndermeyi", "SMTP ile düz metin e-posta gönderir (ağ yetkinliği + `e_posta_bağlantı_değişkeni`); geri alınamaz, eylem içinde kullanılmaz.\n\n`sonuç alıcı konu gövde ile ileti göndermeyi dene olsun`"),
-    ("ekli", "SMTP MIME e-posta: Metin alıcı/konu/gövde/HTML/yanıt-adresi/bağlantı ve Metin yol listesi. Boş bağlantı proje ortam ayarını kullanır; ekler için dosya-okuma gerekir. Geri alınamaz; eylem ve iz kaydı kapalıdır.\n\n`sonuç alıcı konu düz html yanıt ekler bağlantı ile ekli ileti göndermeyi dene olsun`"),
-    ("görünüm", "`<ad> görünüm olsun` + girintili HTML ağacı: her satır `etiket öznitelik değer …`, `\"sabit\"`, `metin ifade` (kaçışlı) ya da `ham ifade` (kaçışsız); sonuç Metin.\n\n`form_html görünüm olsun\n    form method \"post\" action adres\n        input type \"email\" name \"eposta\" value eposta`"),
-    ("üzerinden", "E-postayı ortam değişkeni yerine verilen SMTP bağlantı metniyle gönderir (panelden ayarlanan SMTP); ağ hedefi denetimi aynen uygulanır.\n\n`sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun`"),
-    ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
-    ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
-    ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
-    ("sorgulamayı", "Bildirilmiş loopback çözücüye DNS sorgusu (`dns` yetkinliği, `dns_çözücü`, `dns_dnssec`): MX, TXT, TLSA ya da adres (A + AAAA) → kayıt başına satırlı Metin sözlük listesi Sonucu (`ad`, `ttl`, `doğrulanmış` + türe özgü alanlar). Kayıt/alan yoksa boş liste; geçici hata C033 `tür` verisiyle.\n\n`kayıtlar \"ornek.test\" için MX kayıtlarını sorgulamayı dene olsun`"),
-    ("kurumsal", "Alan adının RFC 7489 kurumsal alanı (DMARC hizalaması): proje `kamu_son_ekleri` listesi + bir etiket, küçük harfli; ad geçersizse ya da kamu son ekinin kendisiyse boş Metin. `dns` yetkinliği; liste exact SHA-256 ile açılışta yüklenir.\n\n`kök gönderen_alanı alanının kurumsal alanı olsun`"),
-    ("imzasını", "DKIM imzasını (`b=`) Zee'nin kanonikleştirdiği veri ve `p=` açık anahtarıyla doğrular (`kriptografi`): `rsa-sha256` (1024–4096 bit) ya da `ed25519-sha256`; veride satır sonu `\\n` yazılır, imza girdisinde CRLF olur. Başarı `doğrulandı`/`algoritma`/`anahtar_biti` sözlüğü; `rsa-sha1`, kısa/uzun/iptal anahtar ve bozuk imza C034.\n\n`sonuç b dkim imzasını veri verisi için p anahtarıyla a olarak doğrulamayı dene olsun`"),
-    ("gövdesinin", "DKIM gövde özeti (`bh=`): Zee'nin kanonikleştirdiği gövdenin SHA-256'sı, base64 (`kriptografi`). Satır sonunu `\\n` yaz; özet CRLF baytları üzerinde alınır, gövdede CR varsa yürütme C034 ile durur. Boş simple gövde `\"\\n\"`, boş relaxed gövde `\"\"`dir.\n\n`bh gövde gövdesinin dkim gövde özeti olsun`"),
-    ("dinleyicisinde", "Adlı dinleyiciden (proje.dil `dinleyiciler`, systemd soket devri) kabul edilen her bağlantı için bloğu taze ortamda koşar; blok `bağlantı` Sözlüğünü (dinleyici, uzak_adres, uzak_kapı, yerel_kapı) görür. `ağ-dinleyici` yetkinliği ister.\n\n`\"smtp_v4\" dinleyicisinde bağlantı geldiğinde`"),
-    ("bağlantıdan", "O anki bağlantıdan CRLF ile biten tek satırı okur → Metin Sonucu; çıplak CR/LF, uzun satır, kodlama, zaman aşımı, kapanma ve kapanış C030 Hata verisinde `tür` ile ayrılır.\n\n`komut bağlantıdan satır okumayı dene olsun`"),
-    ("bağlantıda", "STARTTLS: ara bellekte bekleyen düz metin yoksa o anki bağlantıyı TLS'e yükseltir → Metin Sonucu (sürüm ve şifre takımı); aynı pakette gelen komut varsa bağlantı kapanır (`tür=tls`). Önce protokolün hazır satırını yaz.\n\n`sonuç bağlantıda TLS başlatmayı dene olsun`"),
-    ("bloğunu", "SMTP DATA gövdesini (nokta doldurma çözülür, yalnız birebir CRLF.CRLF biter) belleğe almadan `0600` geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); çıplak CR/LF `satır_sonu`, sınır `boyut_aşımı` (blok sonlandırıcıya kadar tüketilir, dosya silinir).\n\n`ileti bağlantıdan nokta bloğunu dosyaya almayı dene olsun`"),
-    ("baytı", "IMAP literal'inin tam n baytını geçici dosyaya akıtır → Sözlük Sonucu (`yol`, `sha256`, `bayt`); n `bağlantı_blok_sınırı`nı aşarsa hiç bayt okunmadan `boyut_aşımı`.\n\n`ek bağlantıdan uzunluk baytı dosyaya almayı dene olsun`"),
-    ("parçasını", "O anki bağlantıya satır sonu EKLEMEDEN yazar (ör. IMAP `+ `); CR/LF/NUL reddedilir, satır sonunu yalnız `satırını yaz` üretir. Cümle biçiminde hata görevi bitirir, `… yazmayı dene` Sonuç verir.\n\n`bağlantıya \"+ \" parçasını yaz`"),
-    ("satırlarıyla", "Dosyayı RFC 2045 base64 satırları olarak (76 karakter + CRLF, son satır dahil) belleğe almadan bağlantıya akıtır → TamSayı Sonucu (yazılan bayt = e + 2·⌈e/76⌉, e = 4·⌈b/3⌉); `dosya-okuma`/`veri-okuma` ister. Aralıklı biçim `satırlarının K baytından N baytını` kodlanmış çıktıda konumlanır (IMAP `BODY[n]<K.N>`).\n\n`n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`"),
-    ("aktarmayı", "Dosyayı belleğe almadan bağlantıya akıtır → TamSayı Sonucu (kuyruğa alınan bayt); `dosya-okuma` da ister, `bağlantı_blok_sınırı`nı aşan dosya `boyut_aşımı`.\n\n`sonuç bağlantıya yol dosyasını aktarmayı dene olsun`"),
-    ("öğesi", "Listede 1 tabanlı sıra ile öğenin kopyası (RFC-0029); sıra tek ad ya da TamSayı sabitidir, aralık dışı C031. Olmayabilecek öğe için `… öğesini almayı dene` → Sonuç (`SIRA_DISI`).\n\n`harf harflerin sıra. öğesi olsun`"),
-    ("bağlanmayı", "Giden TCP: `ağ` + proje.dil `ağ_hedefleri` içindeki `tcp://<konak>:<kapı>` ya da `tcp://*:25` (yalnız public IP) hedefine bağlanır → Sözlük Sonucu (`uzak_adres`, `uzak_kapı`, `yerel_kapı`); ad bir kez çözülür, bağlantı denetlenen IP'ye açılır. Başarıda görevin bağlantısı olur ve satır/parça/blok kalıpları onun üzerinde çalışır. Ret `tür`: hedef_yasak, çözülemedi, bağlanamadı, zaman_aşımı, zaten_bağlı, sınır, geçersiz.\n\n`sonuç \"mx1.alici.ornek:25\" adresine bağlanmayı dene olsun`"),
-    ("istemcisi", "Giden bağlantıda istemci STARTTLS → Sözlük Sonucu (`doğrulandı` evet/hayır, `doğrulama_hatası`, `sürüm`, `takım`, `sunucu_adı`, `sertifika_sha256`, `spki_sha256`, `zincir_sha256`, `zincir_spki_sha256`). PKIX hatası el sıkışmayı durdurmaz ama açıkça raporlanır (DANE/fırsatçı TLS); MTA-STS `enforce` için `doğrulandı` denetlenmeli.\n\n`tls bağlantıda TLS istemcisi başlatmayı dene \"mx1.alici.ornek\" ile olsun`"),
-    ("bağlantıya", "O anki bağlantıya bir satır yazar; CRLF'yi çalışma zamanı ekler, CR/LF/NUL içeren metin reddedilir. Cümle biçiminde hata bağlantı görevini C030 ile bitirir, `... yazmayı dene` Sonuç verir.\n\n`bağlantıya \"220 hazır\" satırını yaz`"),
-    ("türünde", "Dosya yanıtının kayıtlı içerik türü (application/pdf, image/png, text/csv, application/zip, OOXML, application/xml, application/x-apple-aspen-config, application/octet-stream …); kayıtta olmayan tür C013 Sonucu.\n\n`sonuç yol dosyasını \"application/pdf\" türünde \"fatura.pdf\" adıyla ek olarak göndermeyi dene olsun`"),
-    ("adıyla", "Dosya yanıtında tarayıcıya önerilen ad; çalışma zamanı `Content-Disposition: attachment` + RFC 6266 `filename*` kurar, CR/LF, tırnak, yol ve yön karakterli ad C013.\n\n`sonuç yol dosyasını \"text/csv\" türünde \"kişiler.csv\" adıyla ek olarak göndermeyi dene olsun`"),
-    ("onaltılık", "Dosyanın ilk 1–64 baytını küçük harf onaltılık Metin Sonucu olarak okur (dosya-okuma); içerik imzası denetimi içindir, dosya daha kısaysa olan kadar.\n\n`imza yol dosyasının ilk 8 baytını onaltılık okumayı dene olsun`"),
-    ("baytından", "Dosyanın verilen bayt konumundan en çok 1 MiB'lık aralığını okur (dosya-okuma): `metin olarak` katı UTF-8 Metin, `base64` ikili içeriği base64 Metin olarak verir; dosya sonunda olan kadar.\n\n`bölüm yol dosyasının 0 baytından 65536 baytını metin olarak okumayı dene olsun`"),
-    ("base64", "Kodlama adı: aralıklı okumada ikili içeriği RFC 4648 base64 Metin olarak verir; `çözerek` kalıbında MIME base64'ü (CRLF/boşluk atlanır, dolgu zorunlu) baytlara çözer.\n\n`ek parça base64 çözerek yol dosyasına yazmayı dene olsun`"),
-    ("quoted_printable", "Kodlama adı: RFC 2045 quoted-printable gövdeyi baytlara çözer; yumuşak satır sonu birleşir, bozuk `=` dizisi C032 `kaçış`.\n\n`ek parça quoted_printable çözerek yol dosyasına yazmayı dene olsun`"),
-    ("çözerek", "Kodlanmış Metni (base64 ya da quoted_printable) çözüp dosyaya bayt-kesin yazar (dosya-yazma): `yazmayı dene` yeni dosya (var olan hedef ezilmez), `eklemeyi dene` sona ekler; sonuç `yol`/`sha256`/`bayt` sözlüğüdür. Bozuk kodlama C032.\n\n`ek parça base64 çözerek \"ek.bin\" dosyasına eklemeyi dene olsun`"),
-    ("özeti", "Metnin UTF-8 baytlarının SHA-256 özeti: 64 küçük harf onaltılık Metin; dosya özetiyle aynı biçim, yetkinlik istemez.\n\n`özet gövdenin sha256 özeti olsun`"),
-    ("utf8", "Metnin UTF-8 oktet sayısı (TamSayı): `uzunluğu` harf sayar, bu bayt sayar — SMTP/IMAP oktet sınırları için; yetkinlik istemez.\n\n`oktet satırın utf8 bayt sayısı olsun`"),
-    ("karşılığı", "Metnin UTF-8 baytlarının dolgulu RFC 4648 base64'ü (Metin, satır kırmadan); yetkinlik istemez.\n\n`kod alanın base64 karşılığı olsun`"),
-    ("çözümünü", "Tek satır base64'ü katı çözer → Sonuç<Metin>: dolgu zorunlu, boşluk/satır sonu yok, çıktı ≤ 1 MiB ve geçerli UTF-8; bozuk girdi C032 (`tür`, `konum`), mesaj girdiyi taşımaz.\n\n`düz kodun base64 çözümünü almayı dene olsun`"),
-    ("noktası", "`harfin kod noktası` tek harfin Unicode değeri (TamSayı; tek harf değilse C032 çalışma hatası); `sayının kod noktası harfini almayı dene` ters yön → Sonuç<Metin> (vekil ve 1114111 üstü C032).\n\n`nul 0 kod noktası harfini almayı dene olsun`"),
-    ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];
 
 #[derive(Default)]
