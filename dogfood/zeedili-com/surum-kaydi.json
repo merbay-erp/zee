@@ -1,7 +1,7 @@
 {
   "schema": "zee-site-release-note-1",
-  "kayit": "25 Kasım 2026 — Geliştirme güncellemeleri",
+  "kayit": "26 Kasım 2026 — Geliştirme güncellemeleri",
   "sayfa": "/belge/surumler/",
-  "kaynak_sha256": "e975d141ed35da54ed73df94ee925880fab1e012546da36e004721595fb3f320",
-  "surum_notlari_sha256": "78e1fc61cea1f7d2d16f7a022c12aec1e844fc1d9cc2106724493a9f4d8b74ac"
+  "kaynak_sha256": "4f303f99994d0f303edf453138741554f57bed38ac5fc443390e29225fc97e91",
+  "surum_notlari_sha256": "6e0f90fc77095665372a2125d4fa1d7147e421a87503fa8e986b6b3d3ac9f92d"
 }

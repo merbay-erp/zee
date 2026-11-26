@@ -5,24 +5,12 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## 25 Kasım 2026 — Geliştirme güncellemeleri
+## 26 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
-
-- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
-  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
-  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
-  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
-  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
-  tek istek içinde güvenle yapar. Desen ve sınırları
-  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
-  maddesinde ve testte. Davranış değişmedi.
-
-  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
-  ekleyin.
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
   rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya
@@ -47,28 +35,6 @@ Bu kayıt yeni sürüm etiketi değildir.
   taşıyın. Dosya yanıtı (`… ek olarak göndermeyi dene`) bir `Sonuç`
   ifadesidir, rotayı bitirmez; rota dışındaki (`test` bloğu, üst düzey)
   yanıt cümleleri de eskisi gibi akışı sürdürür.
-
-- **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
-  (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
-  dinliyordu, ama gelen isteğin `Host` başlığına bakmıyordu. Bu yüzden
-  ziyaret edilen kötü niyetli bir site kendi alan adını 127.0.0.1'e çözdürüp
-  (DNS rebinding) yerel prototipinizin sayfalarını okuyabiliyor, public adı
-  koruyan bir tünel/proxy de deneysel sunucuyu sessizce internete
-  açabiliyordu. Artık deneysel kip yalnız `localhost`, `*.localhost`,
-  `127.x.x.x` ve `[::1]` Host'larını kabul eder; başka Host **421** alır ve
-  yanıt üretim bayraklarını önerir. systemd soket devriyle başlatılan
-  deneysel süreç çıkış 2 ile durur. Spec/12 §5a geliştirme ile üretim
-  kipinin ne garanti ettiğini ve neyin hiçbir zaman izinli olmadığını
-  normatif olarak yazar.
-
-  **Göç:** Tarayıcıda `http://localhost:<kapı>` ya da
-  `http://127.0.0.1:<kapı>` kullanan yerel akış ve Host'u `127.0.0.1:<kapı>`
-  yapan yerel ön kapılar (resmî sitenin `yerel-baslat.sh` önizlemesi dahil)
-  değişmeden çalışır. Deneysel sunucuyu başka bir adla ya da tünelle
-  açıyorsanız üretim yoluna geçin: `dil çalıştır --web-proxy https://<alan>
-  --web-worker-port <kapı>` (çok süreç için `--web-isci-sayisi N
-  --web-systemd-soketi`). Filo denetimi: üretimdeki hiçbir Zee web süreci
-  `--deneysel-web` kullanmıyor.
 
 ### Eklenenler
 
@@ -109,6 +75,53 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Yok; yeni yüzey. `dil dene` anahtar yüklemez, imza C034
   `anahtar_bilinmiyor` döner. Büyük gövdede Metin ilkesi yerine dosya
   ilkesini kullanın.
+
+### Site
+
+- **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
+
+## 25 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
+  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
+  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
+  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
+  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
+  tek istek içinde güvenle yapar. Desen ve sınırları
+  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
+  maddesinde ve testte. Davranış değişmedi.
+
+  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
+  ekleyin.
+
+- **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
+  (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
+  dinliyordu, ama gelen isteğin `Host` başlığına bakmıyordu. Bu yüzden
+  ziyaret edilen kötü niyetli bir site kendi alan adını 127.0.0.1'e çözdürüp
+  (DNS rebinding) yerel prototipinizin sayfalarını okuyabiliyor, public adı
+  koruyan bir tünel/proxy de deneysel sunucuyu sessizce internete
+  açabiliyordu. Artık deneysel kip yalnız `localhost`, `*.localhost`,
+  `127.x.x.x` ve `[::1]` Host'larını kabul eder; başka Host **421** alır ve
+  yanıt üretim bayraklarını önerir. systemd soket devriyle başlatılan
+  deneysel süreç çıkış 2 ile durur. Spec/12 §5a geliştirme ile üretim
+  kipinin ne garanti ettiğini ve neyin hiçbir zaman izinli olmadığını
+  normatif olarak yazar.
+
+  **Göç:** Tarayıcıda `http://localhost:<kapı>` ya da
+  `http://127.0.0.1:<kapı>` kullanan yerel akış ve Host'u `127.0.0.1:<kapı>`
+  yapan yerel ön kapılar (resmî sitenin `yerel-baslat.sh` önizlemesi dahil)
+  değişmeden çalışır. Deneysel sunucuyu başka bir adla ya da tünelle
+  açıyorsanız üretim yoluna geçin: `dil çalıştır --web-proxy https://<alan>
+  --web-worker-port <kapı>` (çok süreç için `--web-isci-sayisi N
+  --web-systemd-soketi`). Filo denetimi: üretimdeki hiçbir Zee web süreci
+  `--deneysel-web` kullanmıyor.
+
+### Eklenenler
 
 - **Kurumsal alan ve DKIM imza doğrulaması (K-390):** posta sunucusu yazan
   Zee programı artık gelen iletinin DMARC hizalaması için gönderen alanın
