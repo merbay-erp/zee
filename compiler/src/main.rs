@@ -730,39 +730,7 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     };
     if durum + kuru == 1 {
-        return match dil::postgresql::gocleri_planla_secenekli(
-            bildirim,
-            proje.ana_kok(),
-            ileri_kayitlara_izin,
-        ) {
-            Ok(plan) => {
-                println!(
-                    "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
-                    plan.uygulanmis, plan.bekleyen
-                );
-                for adim in plan.adimlar {
-                    if durum == 1 || !adim.uygulanmis {
-                        println!(
-                            "{}\t{}\t{}\t{}",
-                            adim.surum,
-                            if adim.uygulanmis {
-                                "uygulanmış"
-                            } else {
-                                "bekleyen"
-                            },
-                            adim.ad,
-                            adim.sha256
-                        );
-                    }
-                }
-                ileri_kayitlari_yaz(&plan.ileri, durum == 1);
-                ExitCode::SUCCESS
-            }
-            Err(hata) => {
-                eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
-                ExitCode::FAILURE
-            }
-        };
+        return goc_planini_yaz(bildirim, proje.ana_kok(), durum == 1, ileri_kayitlara_izin);
     }
     match dil::postgresql::gocleri_uygula_secenekli(bildirim, proje.ana_kok(), ileri_kayitlara_izin)
     {
@@ -779,6 +747,45 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
             for (ad, deger) in hata.veri {
                 eprintln!("  {}: {}", ad, deger);
             }
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// `--durum` (bütün adımlar) ya da `--kuru` (yalnız bekleyen) planını SQL
+/// yürütmeden yazar.
+fn goc_planini_yaz(
+    bildirim: &dil::veritabani_modeli::VeritabaniBildirimi,
+    kok: &std::path::Path,
+    durum: bool,
+    ileri_kayitlara_izin: bool,
+) -> ExitCode {
+    match dil::postgresql::gocleri_planla_secenekli(bildirim, kok, ileri_kayitlara_izin) {
+        Ok(plan) => {
+            println!(
+                "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
+                plan.uygulanmis, plan.bekleyen
+            );
+            for adim in plan.adimlar {
+                if durum || !adim.uygulanmis {
+                    println!(
+                        "{}\t{}\t{}\t{}",
+                        adim.surum,
+                        if adim.uygulanmis {
+                            "uygulanmış"
+                        } else {
+                            "bekleyen"
+                        },
+                        adim.ad,
+                        adim.sha256
+                    );
+                }
+            }
+            ileri_kayitlari_yaz(&plan.ileri, durum);
+            ExitCode::SUCCESS
+        }
+        Err(hata) => {
+            eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
             ExitCode::FAILURE
         }
     }
