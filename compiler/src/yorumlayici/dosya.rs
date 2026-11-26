@@ -2,6 +2,17 @@
 
 use super::*;
 
+/// Bu modülün değerlendirdiği dosya intrinsic'leri (ifade dağıtıcısı buna bakar).
+pub(super) const INTRINSICLER: &[&str] = &[
+    DOSYA_ATOMIK_TASI,
+    DOSYA_SIL,
+    DOSYALARI_LISTELE,
+    DOSYA_SHA256,
+    DOSYA_ILK_BAYTLAR,
+    WEB_DOSYA_YANITI,
+    DOSYA_BASE64_SATIRLARI_EKLE,
+];
+
 pub(super) fn intrinsic_degerlendir(
     kimlik: &str,
     degerler: &[Deger],

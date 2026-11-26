@@ -98,13 +98,7 @@ pub(super) fn degerlendir_async<'a>(
                     POSTGRESQL_DEGISTIR => {
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, true)
                     }
-                    DOSYA_ATOMIK_TASI
-                    | DOSYA_SIL
-                    | DOSYALARI_LISTELE
-                    | DOSYA_SHA256
-                    | DOSYA_ILK_BAYTLAR
-                    | WEB_DOSYA_YANITI
-                    | DOSYA_BASE64_SATIRLARI_EKLE => {
+                    k if dosya::INTRINSICLER.contains(&k) => {
                         dosya::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
                     PAROLA_OZETI
