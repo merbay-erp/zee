@@ -2589,6 +2589,17 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-411 — `dkim_imza_girdisi` fuzz hedefi RC kapısında (ADR-174)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174
+(K-397 Dilim 2) aday fuzz hedefi. RC fuzz kapısının altıncı hedefi; kanonik
+gövde özetleyicisi ve imza kâhini denetimi her RC adayında 30–60 dakika
+AddressSanitizer altında. Kâhin değişmezlerdir (parça sınırı ve LF/CRLF
+bağımsızlığı, kâhin denetiminin tutarlılığı); ortak denetim
+`compiler/tests/ortak/dkim_ozellikleri.rs`, stable korpus replay
+`dkim_imza_testi.rs` (tohum başına 2.000 bozulmuş girdi). compiler/src
+değişmedi. Açık: ilk RC koşusu (altı hedefli) ve tarihçe satırı.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
 **Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
@@ -2647,7 +2658,11 @@ ve Metin ilkesi eşdeğerliği, baş ofseti, kip/CR/32 MiB reddi, yetkinlik, iz
 ve gerçek süreçte 400 KB ham CRLF ileti) ve `dkim_kripto` kanonikleştirme
 birimleri.
 
-Açık: `x509_spki` ve `dkim_imza_girdisi` fuzz hedeflerinin RC kapısına
+`dkim_imza_girdisi` fuzz hedefi K-411 ile RC kapısına alındı (26 Kasım 2026; ortak
+özellik denetimi `tests/ortak/dkim_ozellikleri.rs`, korpus replay
+`dkim_imza_testi.rs`).
+
+Açık: `x509_spki` fuzz hedefinin RC kapısına
 alınması; açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
 teslim ve `dkim=pass` kanıtı (insan adımı).
 

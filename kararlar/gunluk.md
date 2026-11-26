@@ -6234,6 +6234,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
+## K-411 — `dkim_imza_girdisi` RC fuzz kapısında; ADR-174 (26 Kasım 2026)
+
+- Kullanıcı isteğiyle (numara merkezden: K-411; K-397 kapalıydı) ADR-174'ün
+  aday fuzz hedefi RC kapısına alındı: altıncı
+  hedef. Workflow matrisleri (fuzz ve fuzz-rc), RC kampanya/kanıt betikleri,
+  güvenlik kapısı ve korpus doğrulayıcı aynı hedef kümesini taşır.
+- Kâhin bağımsız bir uygulama değil, değişmezlerdir: parça sınırı ve LF/CRLF
+  seçiminden bağımsız gövde özeti, kâhin denetiminin kabul ettiği girdide
+  tutarlı alanlar. Denetim `tests/ortak/dkim_ozellikleri.rs`'te ortak; stable
+  korpus replay'i fuzz araç zinciri olmadan da çalışır.
+- Bu değişiklik compiler/src'ye dokunmaz; RC fuzz tarihçesine satır yazılmadı
+  (koşu yok). Sonraki RC adayı altı hedefin hepsini ister.
+
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 
 - Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden

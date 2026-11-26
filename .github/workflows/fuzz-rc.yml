@@ -28,6 +28,9 @@ jobs:
           - hedef: dns_yaniti
             korpus: dns_yaniti
             azami_girdi: 65536
+          - hedef: dkim_imza_girdisi
+            korpus: dkim_imza_girdisi
+            azami_girdi: 65536
           - hedef: wasm_abi
             korpus: wasm_abi
             azami_girdi: 4097

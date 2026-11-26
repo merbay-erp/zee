@@ -1,0 +1,3 @@
+from:Ali <ali@posta.ornek.test>
+subject:Selam
+dkim-signature:v=1; a=ed25519-sha256; c=relaxed/relaxed; d=ornek.test; s=z2026a; h=from:subject; bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=
