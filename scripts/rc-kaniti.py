@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 
-TARGETS = {'lexer_parser':65536,'morfoloji':128,'http_istegi':81920,'dns_yaniti':65536,'wasm_abi':4097}
+TARGETS = {'lexer_parser':65536,'morfoloji':128,'http_istegi':81920,'dns_yaniti':65536,'dkim_imza_girdisi':65536,'x509_spki':65537,'wasm_abi':4097}
 MIRI = ('ondalik','zaman')
 MAX_FILE = 64 * 1024 * 1024
 MAX_TOTAL = 256 * 1024 * 1024
