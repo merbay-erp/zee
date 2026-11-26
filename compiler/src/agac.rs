@@ -96,6 +96,54 @@ pub enum RotaErisimi {
 pub const ROTA_ONBELLEK_ALT_SANIYE: u32 = 1;
 pub const ROTA_ONBELLEK_UST_SANIYE: u32 = 86_400;
 
+/// K-335/K-405: `herkese açık` politikasının özel biçimleri.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum RotaKipi {
+    #[default]
+    Olagan,
+    /// `herkese açık önbelleklenebilir N saniye` — paylaşılan önbellek ömrü (s-maxage).
+    Onbellekli(u32),
+    /// `herkese açık makine uç noktası` — CSRF/Origin, oturum ve çerez yüzeyi
+    /// olmayan POST makine ucu (ADR-179).
+    Makine,
+}
+
+/// K-405: makine uç noktası isteğinin ham gövde tavanı (bayt); aşım 413'tür.
+pub const MAKINE_GOVDE_SINIRI: usize = 8 * 1024;
+
+impl Program {
+    /// K-405 (ADR-179): `herkese açık makine uç noktası` taşıyan POST
+    /// rotalarının sabit, öneksiz yolları. Native adaptör istek gövdesini
+    /// okumadan, yorumlayıcı formu ayrıştırmadan önce aynı kümeye bakar.
+    pub fn makine_uc_noktasi_yollari(&self) -> std::collections::BTreeSet<String> {
+        self.cumleler
+            .iter()
+            .filter_map(|cumle| match cumle {
+                Cumle::IstekGeldiginde {
+                    yontem: Some(HttpYontemi::Post),
+                    yol,
+                    onekli: false,
+                    govde,
+                    ..
+                } if matches!(
+                    govde.first(),
+                    Some(Cumle::RotaPolitikasi {
+                        kip: RotaKipi::Makine,
+                        ..
+                    })
+                ) =>
+                {
+                    match yol.turu() {
+                        Ifade::MetinSabiti(yol) => Some(yol.clone()),
+                        _ => None,
+                    }
+                }
+                _ => None,
+            })
+            .collect()
+    }
+}
+
 impl HttpYontemi {
     pub fn ayristir(yazim: &str) -> Option<Self> {
         match yazim {
@@ -745,9 +793,12 @@ pub enum Cumle {
     /// K-381: `bağlantıyı kapat`.
     BaglantiyiKapat { satir: usize },
     /// `"çalışıyor" yanıtını gönder` veya sabit `503 durumuyla gönder`.
+    /// K-406: `takvim metnini "text/calendar" türünde gönder` — `tur` kapalı
+    /// `icerik_turu` metin satırının exact MIME yazımıdır (durum her zaman 200).
     YanitGonder {
         deger: Ifade,
         durum: Option<u16>,
+        tur: Option<String>,
         satir: usize,
     },
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).
@@ -767,11 +818,10 @@ pub enum Cumle {
     /// `"oturum" çerezini sil` — tarayıcıya Max-Age=0 gönderilir (K-073).
     CerezSil { ad: Ifade, satir: usize },
     /// `herkese açık` / `oturum gerekli` / `"rol" yetkisi gerekli`.
-    /// K-335: `herkese açık önbelleklenebilir N saniye` aynı açık politikadır;
-    /// `onbellek_saniye` paylaşılan önbellek ömrünü (s-maxage) taşır.
+    /// K-335/K-405: `kip` açık politikanın önbellek ya da makine biçimidir.
     RotaPolitikasi {
         erisim: RotaErisimi,
-        onbellek_saniye: Option<u32>,
+        kip: RotaKipi,
         satir: usize,
     },
     /// `"alan" alanı gerekli` — eksik/boş form-sorgu değeri 400'dür.

@@ -1590,3 +1590,106 @@ POST "/parola-hata" adresine istek geldiğinde
     assert_eq!(kim(&mut io, &yeni), 401);
     assert_eq!(kim(&mut io, &veli), 200);
 }
+
+const MAKINE_KAYNAGI: &str = "\
+8080 kapısında sunucu başlat
+POST \"/autodiscover/autodiscover.xml\" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    gövde isteğin ham gövdesi olsun
+    gövde \"EMailAddress\" içeriyorsa
+        gövde yanıtını gönder
+    değilse
+        \"eksik\" yanıtını 400 durumuyla gönder
+POST \"/form\" adresine istek geldiğinde
+    herkese açık
+    \"form\" yanıtını gönder
+";
+
+/// K-405 (ADR-179): makine uç noktası yalnız `herkese açık` ile, POST ve
+/// sabit öneksiz yolda derlenir; oturum/CSRF/çerez yüzeyi (çağrılan işlem
+/// dahil) T061, ham gövdenin makine rotası dışında okunması T062'dir.
+#[test]
+fn makine_uc_noktasi_yalniz_kimliksiz_sabit_post_rotasinda_derlenir() {
+    assert!(dil::kaynagi_derle(MAKINE_KAYNAGI).is_ok());
+    let kod = |kaynak: &str| dil::kaynagi_derle(kaynak).expect_err("tanı").kod;
+    for bozuk in [
+        "makine uç noktası",
+        "oturum gerekli makine uç noktası",
+        "\"yönetici\" yetkisi gerekli makine uç noktası",
+        "herkese açık önbelleklenebilir makine uç noktası",
+    ] {
+        let kaynak = format!(
+            "POST \"/m\" adresine istek geldiğinde\n    {bozuk}\n    \"x\" yanıtını gönder\n"
+        );
+        assert_eq!(kod(&kaynak), "S050", "{bozuk}");
+    }
+    for rota in [
+        "GET \"/m\" adresine",
+        "PUT \"/m\" adresine",
+        "DELETE \"/m\" adresine",
+        "POST \"/m/\" önekli adrese",
+    ] {
+        let kaynak = format!(
+            "{rota} istek geldiğinde\n    herkese açık makine uç noktası\n    \"x\" yanıtını gönder\n"
+        );
+        assert_eq!(kod(&kaynak), "T060", "{rota}");
+    }
+    for govde in [
+        "    b csrf belirteci olsun\n    b yanıtını gönder\n",
+        "    ad oturumun \"kullanıcı\" değeri olsun\n    ad yanıtını gönder\n",
+        "    tema çerezlerin \"tema\" değeri olsun\n    tema yanıtını gönder\n",
+        "    \"ali\" kullanıcısını \"üye\" rolüyle oturuma al\n    \"x\" yanıtını gönder\n",
+        "    oturumu kapat\n    \"x\" yanıtını gönder\n",
+        "    \"tema\" çerezine \"koyu\" yaz\n    \"x\" yanıtını gönder\n",
+        "    s belirteç ver olsun\n    s yanıtını gönder\n",
+    ] {
+        let kaynak = format!(
+            "işlem belirteç ver\n    csrf belirteci döndür\n\nPOST \"/m\" adresine istek geldiğinde\n    herkese açık makine uç noktası\n{govde}"
+        );
+        assert_eq!(kod(&kaynak), "T061", "{govde}");
+    }
+    for kaynak in [
+        "POST \"/f\" adresine istek geldiğinde\n    herkese açık\n    g isteğin ham gövdesi olsun\n    g yanıtını gönder\n",
+        "işlem gövde al\n    isteğin ham gövdesi döndür\n\nPOST \"/m\" adresine istek geldiğinde\n    herkese açık makine uç noktası\n    g gövde al olsun\n    g yanıtını gönder\n",
+        "g isteğin ham gövdesi olsun\ng yaz\n",
+    ] {
+        assert_eq!(kod(kaynak), "T062", "{kaynak}");
+    }
+}
+
+/// K-405: makine ucu CSRF'siz çalışır, gövdeyi form olarak ayrıştırmaz,
+/// çerez satırını (iç oturum alanları dahil) atar ve 8 KiB sınırını korur;
+/// sıradan POST rotası CSRF'siz 403 kalır.
+#[test]
+fn makine_uc_noktasi_csrfsiz_ham_govde_alir_siradan_post_degismez() {
+    let program = dil::kaynagi_derle(MAKINE_KAYNAGI).expect("derlenmeli");
+    let xml = "<?xml version=\"1.0\"?><Autodiscover><Request>\
+               <EMailAddress>ali@ornek.test</EMailAddress></Request></Autodiscover>";
+    let ampersand = format!("{}<EMailAddress>%zz{}</EMailAddress>", "&".repeat(150), "x");
+    let tavan = format!("<EMailAddress>{}</EMailAddress>", "a".repeat(8192 - 29));
+    assert_eq!(tavan.len(), 8192);
+    let istekler = vec![
+        format!("POST /autodiscover/autodiscover.xml\n{xml}"),
+        format!(
+            "POST /autodiscover/autodiscover.xml\nçerez __zee_ic_oturum_kimligi=bozuk; a=1\n{xml}"
+        ),
+        format!("POST /autodiscover/autodiscover.xml?x=1\nçerez \n{ampersand}"),
+        format!("POST /autodiscover/autodiscover.xml\nçerez \n{tavan}"),
+        format!("POST /autodiscover/autodiscover.xml\nçerez \n{tavan}a"),
+        "POST /autodiscover/autodiscover.xml\nçerez \n<Bos/>".to_string(),
+        "POST /form\n_csrf=yok".to_string(),
+        "GET /autodiscover/autodiscover.xml".to_string(),
+    ];
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = istekler.into();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(
+        io.sunucu_durumlari,
+        vec![200, 200, 200, 200, 413, 400, 403, 405]
+    );
+    assert_eq!(io.sunucu_yanitlari[0].1, xml);
+    assert_eq!(io.sunucu_yanitlari[1].1, xml);
+    assert_eq!(io.sunucu_yanitlari[2].1, ampersand);
+    assert_eq!(io.sunucu_yanitlari[3].1, tavan);
+    assert!(io.yazilan_cerezler.is_empty());
+}

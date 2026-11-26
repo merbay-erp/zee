@@ -88,6 +88,16 @@ izin sayısı sıfırdır. Yeni çevrim veya yeni izin CI'ı durdurur; C001
 silinmiştir. Gelecekte zorunlu bir istisna doğarsa tanı kodlarıyla karışmayan
 `SCC-NNN` kimliği kullanılır; tarihsel C001 kayıtları yeniden adlandırılmaz.
 
+## K-410: `kodlama` temel katmanda
+
+RFC-0043'ün tek iç base64 uygulaması `kodlama` hiçbir iç modüle bağımlı
+olmayan saf bir ilkeldir; `altyapi`dan `temel` katmana alındı. Böylece
+temel `guvenlik` (gizli değer `zee1:` biçimi) ve altyapı `eposta` (RFC
+2047, MIME, AUTH PLAIN) kendi kopya kodlayıcı/çözücüleri yerine aynı katı
+uygulamayı kullanır (`guvenlik → kodlama`, `eposta → kodlama`); CLI'nin CSP
+özet kodlayıcısı da aynıdır. Katman kuralları (ADR-046) değişmedi; yeni SCC
+ve ters kenar yoktur (ADR-046 K-410 eki).
+
 ## K-149'da temizlenen iki ters kenar
 
 - FIPS 180-4 `sha256_hex`, paket modülünden temel `guvenlik` sahibine taşındı.
@@ -109,6 +119,13 @@ WASM'a; `lsp` lexer/parser/checker/runtime'a doğrudan bağımlı değildir.
 adını `morfoloji::baglama_koku` ve `kok_adaylari` ile seçer (ADR-175).
 Morfoloji yalnız `guvenlik` temeline bağlıdır; yeni SCC yoktur, ters katman
 geçişi yoktur.
+
+## K-406 kenarı
+
+`ayristirici → icerik_turu` (`sozdizimi` → `altyapi`): türlü metin yanıtının
+(`… metnini "<tür>" türünde gönder`) tür literali derlemede kapalı içerik türü
+kaydının metin alt kümesine karşı denetlenir (ADR-163 eki). `icerik_turu`
+bağımlılıksız saf tablodur; yeni SCC ve ters katman geçişi yoktur.
 
 ## Değişiklik protokolü
 

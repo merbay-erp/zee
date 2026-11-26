@@ -6168,6 +6168,35 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
 
 
+## K-405 — Makine uç noktası; ADR-179 (26 Kasım 2026)
+
+- Kaynak: `urun-h` (ZeeMail) ZM-F047 — Outlook POX autodiscover CSRF ve form
+  ayrıştırması yüzünden çalışmıyordu. Merkez 26.11'de güvenlik sınırlarıyla
+  onayladı (core freeze `dogfood-change`).
+- Seçilen: mevcut `herkese açık` politikasının biçimi (K-335 emsali);
+  kimlikli rota yapısal olarak makine ucu olamaz. Ayrı önsöz cümlesi, proje
+  düzeyi muaf yol listesi, her rotada ham gövde ve dilde XML ayrıştırma
+  reddedildi (ADR-179).
+- Güvenlik ekseni: CSRF yalnız ortam kimlik bilgisi varsa anlamlıdır; makine
+  rotası onu hiç görmez (T061 derleme + çerezsiz zarf + Set-Cookie
+  bastırma). Tarayıcının preflight'sız türleri 415 ile dışarıda.
+- AST'de `RotaPolitikasi.kip` tek alan (`Olagan`/`Onbellekli`/`Makine`);
+  önbellek ve makine biçimi birbirini dışlar. K-405 kapandı.
+
+## K-407 — `dil göçür` ileri kayıt toleransı; ADR-181 (26 Kasım 2026)
+
+- `urun-i` (ZeeOS) A/B kök geri dönüşü: yeni dilimin uyguladığı göç kaydı
+  eski dilimin ağacında yok, eski dilim göç biriminde düşüyor. Kullanıcı
+  "ileri şema toleransı" kararını verdi.
+- Seçenekler: (a) bayraksız otomatik tolerans — kaybolan göçü gizler,
+  reddedildi; (b) kayıtları eski dilimde silmek — N+1'e yeniden geçişte
+  şemayı tutarsız bırakır, reddedildi; (c) açık bayrakla yalnız üst sınır
+  üstündeki kayıtları tolere etmek — seçildi.
+- Araya giren uygulanmamış göç bayrakla da reddedilir: eski ağaç yeni şema
+  üzerinde yarım bir göç yürütmemeli. Yeni tanı kodu yok (C026).
+- K-164 kataloğu (F001–F016) dil/tanı sürtünmeleridir; bu CLI göç işletimi
+  sürtünmesi o sınıflardan biriyle örtüşmez, tekrar sayılmaz.
+
 ## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir; ADR-178 (25 Kasım 2026)
 
 - Kaynak: `urun-h` (ZeeMail) güvenlik denetimi, "Yüksek" (23.11, ürün
@@ -6234,6 +6263,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
+## K-413 — Açılışta yayımlanmış DKIM anahtarı denetimi; ADR-174 §9 (26 Kasım 2026)
+
+- Kullanıcı isteği; numara ve karar merkezden. Freeze sınıfı `correctness`
+  (ZeeMail'de ayrı ZM kaydı yok); kanıt ADR-174 ve RFC-0044 B3.
+- İlk merkez kararı uyuşmazlık ve boş `p=` için çıkış 2 idi. ZeeMail geri
+  bildirimiyle değişti: çok kiracılı kurulumda `<s>._domainkey.<müşteri>`
+  müşterinin DNS'indedir, çıkış 2 tek kiracının kaydıyla bütün dış postayı
+  keserdi. Son karar: yalnız o anahtar devre dışı (imza C034
+  `anahtar_dns_uyuşmuyor` / `anahtar_iptal`), `HATA:` satırı, süreç çalışır.
+  Kayıt yok ve DNS hatası `UYARI:`, anahtar etkin. Zorunlu kip için `dkim_dns_denetimi` proje
+  alanı açılmadı (core freeze altında minimal yüzey).
+- `dns` bildirimi yoksa denetim atlanır: dil bildirilmemiş çözücüye sorgu
+  atmaz. Yeni GB açılmadı: denetimin yokluğu güvenlik sınırı değil, sessiz
+  yapılandırma hatasıdır.
+- Eşleme ADR-177'nin `AcikAnahtar` ayrıştırıcısını yeniden kullanır; SPKI ve
+  PKCS#1 `p=` aynı PKCS#1 gösterimine iner.
 ## K-411 — `dkim_imza_girdisi` ve `x509_spki` RC fuzz kapısında; ADR-174, ADR-173 (26 Kasım 2026)
 
 - Kullanıcı isteğiyle (numara merkezden: K-411; K-397 kapalıydı) ADR-174'ün
@@ -6252,6 +6297,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   sertifikalardır, anahtarları silindi.
 - Bu değişiklik compiler/src'ye dokunmaz; RC fuzz tarihçesine satır yazılmadı
   (koşu yok). Sonraki RC adayı yedi hedefin hepsini ister.
+
+## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (26 Kasım 2026)
+
+- Kullanıcı isteği; merkez kararı: yalnız runbook, kayıt biçimi ve
+  `Authentication-Results` ayrıştırıcısı. İmzayı yeniden doğrulayan Zee
+  programı eklenmedi (bağımsız doğrulama ZeeMail `disteslim-deneme`'de);
+  asıl kanıt alıcının kendi başlığıdır.
+- Açık depo sınırı: gerçek alan, seçici, alıcı adresi, IP ve Received
+  zinciri açık depoya girmez; satır `.eml` SHA-256'sıyla özel depoya bağlanır.
+- Yalnız en üstteki `Authentication-Results` sayılır: alttakiler gönderici
+  ya da aradan gelmiş olabilir (RFC 8601 §5).
+- Hizalama PSL'siz yaklaşıktır (aynı alan ya da alt alan); hüküm alıcının
+  `dmarc=` sonucudur.
 
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 
@@ -6332,6 +6390,60 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   iziyle birebir). Yeni `Ozellik` kolları `yorumlayici/metin_kodlama.rs` ve
   `ayristirici/ifade/metin_kodlama.rs` modüllerinde; `sha256 özeti` de oraya
   taşındı (satır bütçeleri). GB-178. K-402 kapandı.
+## K-406 — Türlü metin yanıtı; ADR-163 eki (26 Kasım 2026)
+
+- Kaynak: `urun-h` (ZeeMail) ZM-F048 (ürün `b75db4c`): takvim yayını
+  bellekteki metin olduğundan `text/calendar` verilemiyordu; dosya yanıtı GET
+  rotasında dosya yazmayı gerektirir (T045). Merkez onayı 26.11 09:05.
+- Biçim yanıt cümlesinin kardeşidir (`… metnini "<tür>" türünde gönder`),
+  yeni cümle türü değil: K-403 rota sonu, T044, yetkinlik ve lint olduğu gibi
+  uygulanır. Tür literal (durum kodu gibi review'da exact) ve kapalı kaydın
+  dar metin alt kümesi; HTML/SVG/betik kayıtta zaten yok, ikili türler ve
+  imzalı Apple profili bilinçli dışarıda. Hata S037'ye öneriyle bağlandı.
+- CRLF: niteleyici (`CRLF satır sonlarıyla`, üç kelime + normalleştirme
+  semantiği) ve türe bağlı örtük normalleştirme reddedildi; gövde bayt bayt
+  gider, CR'yi ürün K-402 `kod noktası harfi` ile üretir (en küçük yüzey).
+- Önbellek izinli rotada da `no-store`: belirteçli takvim adresi paylaşılan
+  önbelleğe girmemeli. K-406 kapandı.
+## K-408 — Satırlı base64'ü dosyaya akışla ekleme; ADR-172 eki (26 Kasım 2026)
+
+- Kaynak `urun-h` ZM-F049: ekli giden ileti imzasız gidiyor; gövde tek
+  dosyada kurulamadığından ADR-174 §8 dosyadan `bh=` kullanılamıyor. Görev
+  merkezden (K-396 kalıbının dosya hedefli aynası). Freeze sınıfı
+  `dogfood-change`; K-164 sınıfı "yerleşik yüzey eksik".
+- Ev: ADR-172 eki (yeni ADR değil): biçim, formül ve kodlayıcı A2d
+  sözleşmesi; değişen yalnız hedef. Normatif metin spec/26 (dosya ↔
+  kodlanmış içerik bölümü), çünkü ekleme modeli K-389 `eklemeyi dene`dir.
+- Tavan: kaynak 32 MiB (görev), hedef toplamı 32 MiB (K-395 ekleme hedef
+  tavanı ve ADR-174 §8 gövde özeti tavanıyla aynı). Etkin üst sınır ≈ 23,4
+  MiB ham ek; ZeeMail 25 MB iletideki ~18 MB ek sığar. Hedef tavanını
+  büyütmek reddedildi: 32 MiB üstü gövdenin `bh=`'si zaten alınamaz.
+- Gerçekleme: önek kilit altında bağ izlemeden okunur (K-394), geçici
+  dosyaya önek + 57·256 baytlık parçalarla kodlanmış akış, fsync, rename.
+  `atomik_icerik_yaz` akışlı yazıcıya genellendi (davranış aynı).
+  Kaynak bildirilen boydan kısa/uzun çıkarsa yayımlanmaz.
+- Reddedilen: hedefin Metin olarak birleştirilmesi (C024), QP ve aralıklı
+  dosya hedefi (ürün ihtiyacı yok), eylem içi geri alınabilir ekleme
+  (K-389 çalışma dosyası modeli).
+- Geçici numaralar K-408, GB-181 (GB-178…180 bekleyen PR'larda).
+
+## K-410 — İç base64 yardımcılarının birleştirilmesi; ADR-083 eki (26 Kasım 2026)
+
+- Mustafa'nın "base64 yardımcılarının birleştirilmesine geç" kararı
+  (RFC-0043 Dilim 2 açık maddesi 5). Üç kopya kodlayıcı aynı çıktıyı
+  verdiği için doğrudan `kodlama::base64_kodla`'ya bağlandı.
+- Gizli değer çözücüsü kanonik olmayan dolgu bitlerini kabul ediyordu
+  (`…Zh==` ile `…Zg==` aynı baytlar); merkezin istediği eşdeğerlik testi
+  ikinci bir gevşekliği de buldu: ortada dolgulu birleşik dörtlüler
+  (`Zg==Zg==`). Seçenek "davranışı aynen koru"
+  (çözücü ayrı kalır) ile "katı çözücüye bağla" idi; Mustafa ikincisini
+  seçti. Bu yüzden iş `maintenance` değil, güvenlik sıkılaştırmasıdır
+  (spec/23 ZORUNLU madde, ADR-083 eki, GB-182). Zee'nin ürettiği her
+  değer kanoniktir; ürün verisi etkilenmez.
+- Katman: `guvenlik` temel, `kodlama` altyapıydı → ters kenar. `kodlama`
+  hiçbir iç modüle bağımlı olmadığından `temel`e alındı; ADR-046 kuralları
+  değişmedi, yeni SCC yok. K-408 (`kodlama.rs`/`main.rs` ekleme) ile bölge
+  çakışması yok; birleştirme sırası merkezde. K-410 kapandı.
 
 ## K-414 — Satırlı base64 penceresi toplam ötesi; GB-183 (26 Kasım 2026)
 

@@ -26,4 +26,5 @@ değişiklik öncesi de temizdi; sürtünme çalışma zamanındaydı (XML C013 
 404). Gerçek yanıt ve başlıklar
 `dosya_yaniti_testi.rs::dosya_yaniti_autoconfig_xml_ve_apple_profili_kayitli_turle_gider`
 ile sınanır. Outlook POX Autodiscover POST ister ve CSRF kuralı nedeniyle bu
-kesitte yoktur (ADR-163 eki, açık).
+kesitte yoktur; K-405 (ADR-179) ile ayrı kesitte:
+[outlook-autodiscover](../outlook-autodiscover/README.md).

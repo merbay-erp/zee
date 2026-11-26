@@ -190,6 +190,26 @@ dene` savepoint'e yeni dosya olarak kaydedilir ve geri almada silinir;
 `eklemeyi dene` eylem içinde C013'tür; aynı eylemde PostgreSQL yazımıyla
 birlikte kullanım YASAKTIR.
 
+ZORUNLU (K-408): `<kaynak> dosyasını base64 satırlarıyla <hedef> dosyasına
+eklemeyi dene` kaynak dosyanın RFC 2045 satırlı base64 kodlamasını (spec/12
+§9 A2d biçimi: son satır dışında tam 76 karakter, her satır CRLF ile biter)
+hedefin sonuna ekler ve `Sonuç<TamSayı>` olarak yazılan bayt sayısını verir:
+b kaynak boyuysa e = 4·⌈b/3⌉, T = e + 2·⌈e/76⌉; boş kaynak 0 bayt ekler.
+Hedefe eklenen baytlar aynı kaynağın `bağlantıya aktarmayı dene` çıktısıyla
+bayt bayt aynıdır. Kodlanmış içerik Zee `Metin`i olmaz ve değer zarfına
+sayılmaz; kaynak parçalarla akışla okunur. Ekleme `eklemeyi dene` ile aynı
+kilitli, atomik oku-birleştir-değiştir modelidir (spec/08): var olan hedef
+içeriği korunur ve okuyucu eski ya da yeni bütünü görür. Kaynak en çok
+32 MiB (33 554 432 bayt), hedefin eklemeden sonraki toplamı en çok 32 MiB
+olabilir; tam sınıra ulaşan çağrı kabul edilir, aşan çağrı, eylem içindeki
+çağrı, kaynağı ya da hedefi normal dosya olmayan çağrı ve okuma sırasında
+boyu değişen kaynak hiçbir bayt yayımlamadan C013'tür. Kaynak `dosya-okuma`
+(`veri:` yolunda `veri-okuma`), hedef `dosya-yazma` (`veri:` yolunda
+`veri-yazma`) ister; iki yol da proje dosya sınırından ya da paylaşılan veri
+kökünden ayrı ayrı denetlenir. IO izine `dosyaya_base64_satirlari_ekle`
+olayı yalnız `[kaynak, hedef]` yolları ve yazılan bayt sayısıyla girer;
+içerik ize yazılmaz.
+
 TANIMLI (K-389): `<metin>in sha256 özeti` UTF-8 baytlarının SHA-256'sını 64
 küçük harf onaltılık `Metin` olarak verir (satır sonu dönüşümü yok); saf ve
 yetkinliksizdir, aynı içerikli dosyanın `sha256 özetini almayı dene`

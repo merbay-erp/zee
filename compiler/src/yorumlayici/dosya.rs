@@ -2,6 +2,17 @@
 
 use super::*;
 
+/// Bu modülün değerlendirdiği dosya intrinsic'leri (ifade dağıtıcısı buna bakar).
+pub(super) const INTRINSICLER: &[&str] = &[
+    DOSYA_ATOMIK_TASI,
+    DOSYA_SIL,
+    DOSYALARI_LISTELE,
+    DOSYA_SHA256,
+    DOSYA_ILK_BAYTLAR,
+    WEB_DOSYA_YANITI,
+    DOSYA_BASE64_SATIRLARI_EKLE,
+];
+
 pub(super) fn intrinsic_degerlendir(
     kimlik: &str,
     degerler: &[Deger],
@@ -13,6 +24,9 @@ pub(super) fn intrinsic_degerlendir(
         (DOSYA_ATOMIK_TASI, [Deger::Metin(kaynak), Deger::Metin(hedef)]) => {
             io.dosya_atomik_tasi(kaynak, hedef).map(Deger::TamSayi)
         }
+        (DOSYA_BASE64_SATIRLARI_EKLE, [Deger::Metin(kaynak), Deger::Metin(hedef)]) => io
+            .dosyaya_base64_satirlari_ekle(kaynak, hedef)
+            .map(Deger::TamSayi),
         (DOSYA_SIL, [Deger::Metin(yol)]) => io.dosya_sil(yol).map(Deger::TamSayi),
         (DOSYALARI_LISTELE, [Deger::Metin(dizin)]) => io
             .dosyalari_listele(dizin)

@@ -1,4 +1,4 @@
-//! K-403: rota gövdesini yanıt/yönlendirmede bitiren iç akış nöbetçisi.
+//! K-403: rota gövdesini yanıt/yönlendirmede bitiren iç akış nöbetçisi; K-406 yanıt cümlesi dağıtımı.
 
 use super::*;
 
@@ -48,5 +48,20 @@ impl RotaNobetcisi {
 impl Drop for RotaNobetcisi {
     fn drop(&mut self) {
         ROTA_YURUTULUYOR.with(|r| r.set(self.0));
+    }
+}
+
+/// Yanıt cümlesinin üç biçimini adaptöre dağıtır: K-406 türlü metin (tür
+/// ayrıştırıcıda kapalı kayda karşı denetlendi), sabit durumlu ya da düz 200.
+pub(super) fn yanit_cumlesini_gonder<C: super::GirdiCikti + ?Sized>(
+    cikti: &mut C,
+    tur: Option<&str>,
+    durum: Option<u16>,
+    metin: &str,
+) {
+    match (tur, durum) {
+        (Some(tur), _) => cikti.turlu_yanit_gonder(tur, metin),
+        (None, Some(durum)) => cikti.durum_yaniti_gonder(durum, metin),
+        (None, None) => cikti.yanit_gonder(metin),
     }
 }

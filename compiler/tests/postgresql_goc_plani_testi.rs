@@ -1,6 +1,8 @@
 //! K-228: own isolated PostgreSQL only; status/dry plan, checksum and roles.
 
-use dil::postgresql::{gocleri_planla, gocleri_uygula, GocRaporu};
+use dil::postgresql::{
+    gocleri_planla, gocleri_planla_secenekli, gocleri_uygula, gocleri_uygula_secenekli, GocRaporu,
+};
 use dil::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
 use postgres::{Client, NoTls};
 use sha2::{Digest, Sha256};
@@ -118,7 +120,8 @@ fn izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur() {
         gocleri_uygula(&owner, &proje.0).unwrap(),
         GocRaporu {
             uygulanan: 2,
-            atlanan: 0
+            atlanan: 0,
+            ileri: vec![],
         }
     );
     gozlem
@@ -135,7 +138,8 @@ fn izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur() {
         gocleri_uygula(&owner, &proje.0).unwrap(),
         GocRaporu {
             uygulanan: 0,
-            atlanan: 2
+            atlanan: 2,
+            ileri: vec![],
         }
     );
     assert_eq!(metadata(&mut gozlem), kayitlar);
@@ -191,7 +195,8 @@ fn izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur() {
         gocleri_uygula(&owner, &proje.0).unwrap(),
         GocRaporu {
             uygulanan: 1,
-            atlanan: 2
+            atlanan: 2,
+            ileri: vec![],
         }
     );
     assert_eq!(degerler(&mut gozlem), ["one", "three", "two"]);
@@ -209,9 +214,100 @@ fn izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur() {
     assert_eq!(sol.atlanan + sag.atlanan, 7);
     assert_eq!(degerler(&mut gozlem), ["one", "parallel", "three", "two"]);
     assert_eq!(metadata(&mut gozlem).len(), 4);
+    // K-407: A/B kök geri dönüşü — yeni dilim 0006'yı uygulamış, eski ağaçta yok.
+    gozlem
+        .batch_execute(
+            "INSERT INTO _zee_gocleri (surum, ad, sha256) VALUES (6, '0006_yeni_dilim.sql', 'fff');",
+        )
+        .unwrap();
+    let ileri_kayitlar = metadata(&mut gozlem);
+    assert!(gocleri_planla(&runtime, &proje.0)
+        .unwrap_err()
+        .mesaj
+        .contains("proje ağacında yok"));
+    assert!(gocleri_uygula(&owner, &proje.0).is_err());
+    for rol in [&owner, &runtime] {
+        let plan = gocleri_planla_secenekli(rol, &proje.0, true).unwrap();
+        assert_eq!((plan.uygulanmis, plan.bekleyen), (4, 0));
+        assert_eq!(plan.ileri.iter().map(|a| a.surum).collect::<Vec<_>>(), [6]);
+    }
+    let rapor = gocleri_uygula_secenekli(&owner, &proje.0, true).unwrap();
+    assert_eq!(
+        (rapor.uygulanan, rapor.atlanan, rapor.ileri.len()),
+        (0, 4, 1)
+    );
+    assert_eq!(degerler(&mut gozlem), ["one", "parallel", "three", "two"]);
+    assert_eq!(metadata(&mut gozlem), ileri_kayitlar);
+    // Araya giren uygulanmamış göç ileri kayıtla gizlenemez; SQL yürümez.
+    dosya(
+        &goc,
+        "0005_ara.sql",
+        "INSERT INTO migration_probe VALUES ('ara');",
+    );
+    assert!(gocleri_planla_secenekli(&runtime, &proje.0, true).is_err());
+    assert!(gocleri_uygula_secenekli(&owner, &proje.0, true).is_err());
+    std::fs::remove_file(goc.join("0005_ara.sql")).unwrap();
+    dosya(
+        &goc,
+        "0003_ucuncu.sql",
+        "INSERT INTO migration_probe VALUES ('three'); -- değişti",
+    );
+    assert!(gocleri_uygula_secenekli(&owner, &proje.0, true).is_err());
+    dosya(
+        &goc,
+        "0003_ucuncu.sql",
+        "INSERT INTO migration_probe VALUES ('three');",
+    );
+    assert!(gocleri_planla_secenekli(&owner, &proje.0, true).is_ok());
+    assert_eq!(degerler(&mut gozlem), ["one", "parallel", "three", "two"]);
+    assert_eq!(metadata(&mut gozlem), ileri_kayitlar);
+    gozlem
+        .batch_execute("DELETE FROM _zee_gocleri WHERE surum = 6;")
+        .unwrap();
     gozlem
         .batch_execute("REVOKE SELECT ON _zee_gocleri FROM zee_runtime;")
         .unwrap();
     let ret = gocleri_planla(&runtime, &proje.0).unwrap_err();
     assert!(ret.veri.contains(&("sqlstate".into(), "42501".into())));
+    urun_i_defter_geri_donusu(&owner, &mut gozlem);
+}
+
+/// K-407: `dogfood/urun-i` ZeeOS defter aynasının KOKEN a–d adımları; küme N
+/// 0001'i, küme N+1 0001+0002'yi taşır. Ayna dosyaları yalnız okunur.
+fn urun_i_defter_geri_donusu(owner: &VeritabaniBildirimi, gozlem: &mut Client) {
+    gozlem.batch_execute("DROP TABLE _zee_gocleri;").unwrap();
+    let kok = Path::new(env!("CARGO_MANIFEST_DIR")).join("../dogfood/urun-i/defter-geri-donus");
+    let (n, n1) = (kok.join("n"), kok.join("n1"));
+    let rapor = |uygulanan, atlanan| GocRaporu {
+        uygulanan,
+        atlanan,
+        ileri: vec![],
+    };
+    assert_eq!(gocleri_uygula(owner, &n).unwrap(), rapor(1, 0));
+    assert_eq!(gocleri_uygula(owner, &n1).unwrap(), rapor(1, 1));
+    let kayitlar = metadata(gozlem);
+    assert!(gocleri_uygula(owner, &n)
+        .unwrap_err()
+        .mesaj
+        .contains("proje ağacında yok"));
+    assert!(gocleri_planla(owner, &n)
+        .unwrap_err()
+        .mesaj
+        .contains("proje ağacında yok"));
+    let plan = gocleri_planla_secenekli(owner, &n, true).unwrap();
+    assert_eq!((plan.uygulanmis, plan.bekleyen), (1, 0));
+    assert_eq!(
+        plan.ileri
+            .iter()
+            .map(|a| (a.surum, a.ad.as_str()))
+            .collect::<Vec<_>>(),
+        [(2, "0002_etiket.sql")]
+    );
+    let geri = gocleri_uygula_secenekli(owner, &n, true).unwrap();
+    assert_eq!((geri.uygulanan, geri.atlanan), (0, 1));
+    assert_eq!(geri.ileri, plan.ileri);
+    assert_eq!(metadata(gozlem), kayitlar);
+    // N+1'e yeniden geçiş kayıtları aynen bulur.
+    assert_eq!(gocleri_uygula(owner, &n1).unwrap(), rapor(0, 2));
+    assert_eq!(metadata(gozlem), kayitlar);
 }

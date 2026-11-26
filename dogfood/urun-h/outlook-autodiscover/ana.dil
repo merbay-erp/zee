@@ -1,0 +1,27 @@
+# K-405 (ZM-F047, ADR-179): klasik masaüstü Outlook IMAP/SMTP ayarlarını
+# `POST /autodiscover/autodiscover.xml` ile ister; gövde ~500 baytlık text/xml
+# ve `<EMailAddress>…</EMailAddress>` taşır. Değişiklik öncesi her POST rotası
+# `_csrf` istiyordu ve ham gövde Metin olarak okunamıyordu: Outlook elle
+# kuruluma düşüyordu. Dil XML ayrıştırmaz; ürün adresin varlığını en küçük
+# metin ayrımıyla sınar. Yanıt her alan adı için aynı durağan dosyadır (alan
+# adı sayımı yok) ve adres hiçbir yere yazılmaz (günlük sızıntısı yok).
+
+8080 kapısında sunucu başlat
+
+POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
+    herkese açık makine uç noktası
+    gövde isteğin ham gövdesi olsun
+    parçalar gövdenin "<EMailAddress>" ile parçaları olsun
+    adet parçaların adedi olsun
+    adet 2 den küçükse
+        "Geçersiz autodiscover isteği." yanıtını 400 durumuyla gönder
+    sonuç "yapilandirma/autodiscover.xml" dosyasını "application/xml" türünde "autodiscover.xml" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "Yapılandırma bulunamadı." yanıtını 404 durumuyla gönder
+
+# Thunderbird autoconfig'i değişmez (K-385); CSRF'li form rotaları da aynı.
+GET "/mail/config-v1.1.xml" adresine istek geldiğinde
+    herkese açık
+    sonuç "yapilandirma/autoconfig.xml" dosyasını "application/xml" türünde "config-v1.1.xml" adıyla ek olarak göndermeyi dene olsun
+    sonuç başarısızsa
+        "Yapılandırma bulunamadı." yanıtını 404 durumuyla gönder

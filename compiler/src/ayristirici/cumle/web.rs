@@ -1,6 +1,8 @@
 use super::*;
 
-fn yanit_bicimi_tanisi(satir: usize) -> Tani {
+mod turlu_yanit;
+
+pub(super) fn yanit_bicimi_tanisi(satir: usize) -> Tani {
     Tani::yeni(
         "S037",
         "Yanıt `<değer> yanıtını gönder` ya da `<değer> yanıtını <100..599> durumuyla gönder` biçimindedir."
@@ -68,6 +70,7 @@ impl Ayristirici {
             Ok(Cumle::YanitGonder {
                 deger,
                 durum,
+                tur: None,
                 satir,
             })
         } else {

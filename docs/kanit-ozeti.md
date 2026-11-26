@@ -15,7 +15,7 @@ Kaynak: `regression/v2.tsv`
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 21 |
+| runtime | 22 |
 | security | 32 |
 
 | Tanı | Vaka |
@@ -29,9 +29,9 @@ Kaynak: `regression/v2.tsv`
 | T017 | 1 |
 | T036 | 1 |
 | T054 | 2 |
-| - | 73 |
+| - | 74 |
 
-Toplam 86 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 86/86.
+Toplam 87 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 87/87.
 
 ## Güvenlik bulguları
 
@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 20 | 0 | 0 | 20 |
-| orta | 57 | 16 | 4 | 77 |
-| dusuk | 50 | 30 | 1 | 81 |
+| orta | 58 | 16 | 4 | 78 |
+| dusuk | 53 | 30 | 1 | 84 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 179.
+Toplam bulgu: 183.
 
 ## Spec maddeleri
 
@@ -63,8 +63,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
-| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 27 | 0 | 0 | 27 | 100 |
-| spec/12-web-guvenlik-profili.md | 81 | 0 | 7 | 88 | 92 |
+| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 31 | 0 | 0 | 31 | 100 |
+| spec/12-web-guvenlik-profili.md | 85 | 0 | 8 | 93 | 91 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
 | spec/15-yapilandirilmis-hata-degeri.md | 3 | 0 | 0 | 3 | 100 |
@@ -75,16 +75,16 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/20-ifade-grameri.md | 9 | 0 | 0 | 9 | 100 |
 | spec/21-deterministik-io-izi.md | 6 | 0 | 0 | 6 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
-| spec/23-yetkinlik-ve-outbound-guvenligi.md | 50 | 1 | 2 | 53 | 94 |
+| spec/23-yetkinlik-ve-outbound-guvenligi.md | 51 | 1 | 2 | 54 | 94 |
 | spec/24-kaynak-guvenlik-profili.md | 10 | 0 | 0 | 10 | 100 |
-| spec/25-postgresql-veri-erisimi.md | 11 | 0 | 1 | 12 | 91 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 25 | 0 | 2 | 27 | 92 |
+| spec/25-postgresql-veri-erisimi.md | 12 | 0 | 1 | 13 | 92 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 26 | 0 | 2 | 28 | 92 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| spec/31-dns-ve-posta-kimlik-dogrulama.md | 39 | 0 | 3 | 42 | 92 |
-| **Toplam** | 431 | 6 | 21 | 458 | 94 |
+| spec/31-dns-ve-posta-kimlik-dogrulama.md | 41 | 0 | 3 | 44 | 93 |
+| **Toplam** | 444 | 6 | 22 | 472 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -101,6 +101,7 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | zeedili-com (active) | dogfood/zeedili-com |
 | urun-g (active) | dogfood/urun-g |
 | urun-h (active) | dogfood/urun-h |
+| urun-i (active) | dogfood/urun-i |
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -109,12 +110,13 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 19 | 8 | 0 | 26 | 1 | 27 |
+| urun-h | 22 | 8 | 0 | 29 | 1 | 30 |
+| urun-i | 2 | 0 | 0 | 2 | 0 | 2 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 92.
+Toplam korpus vakası: 97.
 
 ## Deprecation kayıtları
 
@@ -147,16 +149,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 151 |
+| maintenance | 169 |
 | semantic-bugfix | 46 |
-| semantic-change | 79 |
+| semantic-change | 86 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
-| correctness | 44 |
-| dogfood-change | 54 |
-| maintenance | 148 |
-| security | 23 |
+| correctness | 46 |
+| dogfood-change | 58 |
+| maintenance | 166 |
+| security | 24 |
 
-Toplam: 276 compiler değişiklik beyanı, 272 core freeze beyanı.
+Toplam: 301 compiler değişiklik beyanı, 297 core freeze beyanı.

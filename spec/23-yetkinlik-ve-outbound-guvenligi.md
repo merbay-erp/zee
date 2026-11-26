@@ -238,6 +238,15 @@ ZORUNLU: Native düz metin SMTP gönderimi tek mutlak süre bütçesini bağlant
 
 ZORUNLU: Düz metin `ileti göndermeyi dene` ve `… üzerinden ileti göndermeyi dene` ekli iletiyle aynı bütçeyi kullanır: 20 saniyelik tavan ile varsa dış `içinde` ya da web isteği son tarihinin kalanının küçüğü; ortam/sır hazırlığı bu bütçeden düşülür ve çağrıdan sonra son tarih yeniden denetlenir. Süre içinde dolan dış son tarih sonucu değere çeviremez; iptal `yetişmezse` koluna, web'de 504'e gider. Son tarihsiz çağrıda 20 saniyelik tavan aynen kalır; C029 maskesi, teslim belirsizliği ve otomatik tekrar yasağı değişmez (K-371).
 
+## Gizli değer biçimi — K-410
+
+ZORUNLU (K-410): `zee1:` gizli değerinin gövdesi nonce ‖ şifreli veri ‖
+etiket baytlarının RFC 4648 §4 dolgulu base64'üdür ve RFC-0043'ün tek katı
+çözücüsüyle okunur: dolgu zorunludur; boşluk, satır sonu, alfabe dışı
+karakter, ortada ya da fazla dolgu ve kanonik olmayan dolgu bitleri
+`gizli değer base64 biçimi bozuk` ile reddedilir. Aynı baytlara çözülen
+ikinci yazım kabul edilmez; ret iletisi değeri taşımaz.
+
 ## systemd credential gizli değer kaynağı — K-339
 
 TANIMLI: Native CLI ana projenin gizli değer bağlarını (`gizli_anahtar_değişkeni`, `e_posta_bağlantı_değişkeni`, PostgreSQL bağlantı değişkeni ve onun `_TLS_CA_PEM` eki, `http_gizli_değişkenleri`) `CREDENTIALS_DIRECTORY` ayarlıysa aynı adlı systemd credential dosyasından da okur; ad credential kimliğidir. Değişken ayarlı değilse davranış ortamdan okumayla birebir aynıdır. Yetki, izin listesi ve ağ hedefi denetimi kaynaktan bağımsız olarak önce uygulanır.
