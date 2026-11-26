@@ -86,6 +86,12 @@ pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar"
 
 /// K-384/K-396: dosyayı bağlantıya akıtan (dolayısıyla dosyayı da okuyan)
 /// intrinsic mi.
+/// Tanımındaki yetkinliğe ek olarak dosya okuyan intrinsic'ler (derleme
+/// zamanı `dosya-okuma`; `veri:` yolunda `veri-okuma` ile karşılanır).
+pub fn dosya_da_okur(kimlik: &str) -> bool {
+    baglantiya_dosya_aktarir(kimlik) || kimlik == POSTA_DKIM_DOSYA_GOVDE_OZETI
+}
+
 pub fn baglantiya_dosya_aktarir(kimlik: &str) -> bool {
     [
         BAGLANTI_DOSYA_AKTAR,
@@ -122,6 +128,15 @@ pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
 /// K-390: `<x> gövdesinin dkim gövde özeti` — Zee'nin kanonikleştirdiği
 /// gövdenin LF→CRLF baytlarının SHA-256'sı, base64 (`bh=` biçimi); CR → C034.
 pub const POSTA_DKIM_GOVDE_OZETI: &str = "posta.dkim_govde_ozeti";
+/// K-397 Dilim 2 (RFC-0044 B3): `<veri> verisi için <ad> özel anahtarıyla
+/// <a> olarak imzalamayı dene` → `b=` Metin Sonucu (C034); anahtar proje
+/// `dkim_anahtarları` bildiriminden, girdi kâhin önlemiyle denetlenir.
+pub const POSTA_DKIM_IMZALA: &str = "posta.dkim_imzala";
+/// K-397 B3 (ZM-F046): `<yol> dosyasının <baş> baytından <kip> kipinde dkim
+/// gövde özetini almayı dene` — gövdenin simple/relaxed kanonik akışlı `bh=`
+/// özeti (≤ 32 MiB, LF ya da CRLF; LF'siz CR → C034); Metin oluşmaz.
+/// `kriptografi` + dosyayı okuma (`veri:` yolunda `veri-okuma`).
+pub const POSTA_DKIM_DOSYA_GOVDE_OZETI: &str = "posta.dkim_dosya_govde_ozeti";
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -212,6 +227,11 @@ const METIN_VE_IKI_SAYI: &[IntrinsicTuru] = &[
 ];
 const METIN_VE_METIN_LISTESI: &[IntrinsicTuru] =
     &[IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi];
+const METIN_SAYI_METIN: &[IntrinsicTuru] = &[
+    IntrinsicTuru::Metin,
+    IntrinsicTuru::TamSayi,
+    IntrinsicTuru::Metin,
+];
 const UC_METIN: &[IntrinsicTuru] = &[
     IntrinsicTuru::Metin,
     IntrinsicTuru::Metin,
@@ -245,6 +265,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::MetinSozlukSonucu,
         etki: IntrinsicEtkisi::Saf,
         tur_hatasi: "DKIM imzası, veri, açık anahtar ve algoritma Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: POSTA_DKIM_IMZALA,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: UC_METIN,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "DKIM imza girdisi, özel anahtar adı ve algoritma Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: POSTA_DKIM_DOSYA_GOVDE_OZETI,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: METIN_SAYI_METIN,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "DKIM gövde özetinde dosya yolu ve kip Metin, gövde başı TamSayı olmalı.",
     },
     IntrinsicTanimi {
         kimlik: POSTA_DKIM_GOVDE_OZETI,

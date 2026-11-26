@@ -26,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 55);
+    assert_eq!(kimlikler.len(), 57);
     for kimlik in [
         intrinsic::BAGLANTI_SATIR_OKU,
         intrinsic::BAGLANTI_SATIR_YAZ,

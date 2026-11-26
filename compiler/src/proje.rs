@@ -29,6 +29,8 @@
 mod baglanti;
 mod baglanti_tls;
 mod dinleyici;
+mod dkim;
+pub use dkim::DkimAnahtarBildirimi;
 mod dns;
 pub use dns::KamuSonEkiBildirimi;
 mod eposta_ek;
@@ -100,6 +102,8 @@ pub struct ProjeBildirimi {
     pub veri_koku_degiskeni: Option<String>,
     /// K-390 B1b: kamu son ek listesi (PSL) dosyası ve exact SHA-256'sı.
     pub kamu_son_ekleri: Option<KamuSonEkiBildirimi>,
+    /// K-397 B3: giden DKIM imza anahtarları (credential adlarıyla).
+    pub dkim_anahtarlari: Vec<DkimAnahtarBildirimi>,
 }
 
 pub use govde_siniri::{GovdeSiniriAyari, GENIS_GOVDE_UST};
@@ -188,7 +192,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, gövde_aşımı_rotası, geniş_gövde_rotaları, geniş_gövde_sınırı, veritabanı_parametre_sınırı, dns_çözücü, dns_dnssec, veri_kökü, kamu_son_ekleri, kamu_son_ekleri_özeti.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri, oturum_ömrü_saniye, oturum_kayar, dinleyiciler, bağlantı_sınırı, uzak_adres_bağlantı_sınırı, bağlantı_satır_sınırı, bağlantı_boşta_süresi, bağlantı_ömrü, bağlantı_dolu_yanıtı, çok_parçalı_yükleme, e_posta_ek_türleri, gövde_aşımı_rotası, geniş_gövde_rotaları, geniş_gövde_sınırı, veritabanı_parametre_sınırı, dns_çözücü, dns_dnssec, veri_kökü, kamu_son_ekleri, kamu_son_ekleri_özeti, dkim_anahtarları.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -230,6 +234,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let veri_koku_degiskeni =
         veri_koku::alani_al(&mut alanlar, &yetkinlik_yazimlari, yetkinlik_satiri)?;
     let kamu_son_ekleri = dns::kamu_son_eklerini_al(&mut alanlar, dns.is_some())?;
+    let (dkim_anahtarlari, dkim_satiri) = dkim::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -357,7 +362,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         ));
     }
 
-    Ok(ProjeBildirimi {
+    let bildirim = ProjeBildirimi {
         ad,
         surum,
         morfoloji,
@@ -380,7 +385,10 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         dns,
         veri_koku_degiskeni,
         kamu_son_ekleri,
-    })
+        dkim_anahtarlari,
+    };
+    dkim::ad_cakismasini_denetle(&bildirim, dkim_satiri)?;
+    Ok(bildirim)
 }
 
 impl ProjeBildirimi {
@@ -1072,6 +1080,7 @@ fn bilinen_alan(ad: &str) -> bool {
             | "veri_kökü"
             | "kamu_son_ekleri"
             | "kamu_son_ekleri_özeti"
+            | "dkim_anahtarları"
     ) || baglanti::ALANLAR.contains(&ad)
         || govde_siniri::ALANLAR.contains(&ad)
 }

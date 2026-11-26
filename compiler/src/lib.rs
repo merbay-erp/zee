@@ -35,6 +35,9 @@ pub mod bicimleyici;
 pub mod cozumleyici;
 #[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
+pub mod dkim_imza;
+#[doc(hidden)]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod dkim_kripto;
 #[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
