@@ -201,8 +201,8 @@ pub(super) fn degerlendir_async<'a>(
                     (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                         html_kacisla(&m, satir).map(Deger::Metin)
                     }
-                    (Ozellik::Sha256Ozeti, Deger::Metin(m)) => {
-                        Ok(Deger::Metin(crate::guvenlik::sha256_hex(m.as_bytes())))
+                    (oz, deger) if super::metin_kodlama::kapsar(oz) => {
+                        super::metin_kodlama::ozellik(oz.clone(), deger, satir)
                     }
                     (Ozellik::Uzunluk, Deger::Metin(m)) => {
                         Ok(Deger::TamSayi(m.chars().count() as i64))

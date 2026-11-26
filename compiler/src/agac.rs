@@ -560,6 +560,19 @@ pub enum Ozellik {
     /// Metin: UTF-8 baytlarının SHA-256 özeti, 64 küçük harf onaltılık
     /// ("metnin sha256 özeti"; K-389, RFC-0043 Dilim 1).
     Sha256Ozeti,
+    /// Metin: UTF-8 oktet sayısı ("metnin utf8 bayt sayısı"; K-402, RFC-0043 Dilim 2).
+    Utf8BaytSayisi,
+    /// Metin: UTF-8 baytlarının dolgulu RFC 4648 base64'ü ("metnin base64 karşılığı").
+    Base64Karsiligi,
+    /// Metin: tek satır katı base64 çözümü, katı UTF-8 → `Sonuç<Metin>`, C032
+    /// ("kodun base64 çözümünü almayı dene").
+    Base64Cozumu,
+    /// Tek harfli Metin: Unicode skaler değeri ("harfin kod noktası"); tek harf
+    /// değilse C032 çalışma hatası.
+    KodNoktasi,
+    /// TamSayı: skaler değerin tek harfli Metin'i → `Sonuç<Metin>`, C032
+    /// ("sayının kod noktası harfini almayı dene").
+    KodNoktasiHarfi,
 }
 
 #[derive(Debug, Clone)]

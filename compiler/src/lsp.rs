@@ -9,15 +9,15 @@
 use crate::tani::Tani;
 use std::collections::HashMap;
 
+mod aciklamalar;
 mod analiz;
 mod cikti;
 mod esitleme;
 mod json;
-mod kelimeler;
+use aciklamalar::KELIME_ACIKLAMALARI;
 use analiz::AcikBelgeler;
 use cikti::{CiktiSonucu, SinirliJson};
 pub use json::{json_coz, Json, JsonSayisi};
-use kelimeler::KELIME_ACIKLAMALARI;
 
 pub const AZAMI_LSP_BASLIK_BAYTI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
     .lsp()
@@ -35,7 +35,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 163] = [
+const KALIP_KELIMELERI: [&str; 168] = [
     "yaz",
     "olsun",
     "ise",
@@ -158,6 +158,11 @@ const KALIP_KELIMELERI: [&str; 163] = [
     "quoted_printable",
     "çözerek",
     "özeti",
+    "utf8",
+    "karşılığı",
+    "çözümünü",
+    "noktası",
+    "harfini",
     "türünde",
     "adıyla",
     "dinleyicisinde",

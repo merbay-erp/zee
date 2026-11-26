@@ -209,6 +209,7 @@ kalip	gövde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	gövdesi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	gövdesinin	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	harfini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	harfleri	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	hatasını	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	her	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -227,6 +228,7 @@ kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	işlem	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kadar	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kalanı	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	karşılığı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kayıtlarını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kez	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kipinde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -245,6 +247,7 @@ kalip	metni	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	nedeni	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nedeniyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nokta	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	noktası	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	olana	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olarak	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	olduğu	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -276,6 +279,7 @@ kalip	tekrarla	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	test	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	totp	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	türünde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	utf8	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	varsa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ve	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	verisi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -293,6 +297,7 @@ kalip	yönlendir	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	çerezine	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	çözerek	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	çözmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	çözümünü	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	önbelleklenebilir	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	önekli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	özel	aktif	1.0.0-dev	compiler/src/lsp.rs	-

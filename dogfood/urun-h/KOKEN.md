@@ -23,7 +23,10 @@ dilimleridir.
 | `korpus/f004-cr-kacisi-yok.dil` | ürün reproducer'ı (çıplak CR) | S040 |
 | `korpus/f001-yerel-ayarli-buyuk-harf.dil` | ürün reproducer'ı (harf katlama) | `MAİL FROM:<A@B.TEST>` |
 | `korpus/f001-ascii-katlama-elle.dil` | ürünün ASCII metin yardımcısı | `MAIL FROM:<A@B.TEST>` |
-| `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | ürün reproducer'ı ZM-R004 (ürün commit'i `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac`, blob `60e565e7…`) | `1` (Dilim 2 açık) |
+| `korpus/zm-r004-uzunluk-oktet-saymaz.dil` | ürün reproducer'ı ZM-R004 (ürün commit'i `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac`, blob `60e565e7…`; K-402 ikinci satırı ekledi) | `1\|2` (K-402 `utf8 bayt sayısı`) |
+| `korpus/zm-f023-auth-plain.dil` | ürün commit'i `23af030781a40696f803f90709356f94c04631e4`, `motor/kaynak/smtp_gonderim.dil` (blob `9aba5391…`) AUTH PLAIN çözümünün küçültmesi; kullanıcı ve parola yer tutucu | S015; K-402 sonrası `AGF5…` ve 3 parça |
+| `korpus/zm-f023-imap-literal-oktet.dil` | aynı commit, `imap/kaynak/ana.dil` (blob `25cf0e4e…`) literal bayt sayımı; metin ürünün ölçüm örneği | S015; K-402 sonrası `14\|18` |
+| `korpus/zm-f023-rfc2047-emoji.dil` | aynı commit, `motor/kaynak/ileti_olustur.dil` (blob `40aefd2a…`) ve `kodlamalar.dil` (blob `3ee434b5…`) kod noktası/base64 tablosu; konu ürünün örneği | S015; K-402 sonrası `😀 Fatura`, 128512, gidiş-dönüş |
 | `korpus/zm-r005-bellekte-sha256.dil` | ürün reproducer'ı ZM-R005 (aynı commit, blob `f994eaab…`) | S015; K-389 sonrası gerçek SHA-256 |
 | `korpus/zm-f030-yumusak-parametre.dil` | ZeeMail sürtünmesi ZM-F030 (ürün commit `a180e0c3b38384ca1b27c324811db71dc0dbe8ce`, `imap/kaynak/ana.dil` blob `26863c63…`, SHA-256 `f48c444ea345452534b9015d9952b2fb449d3e5738489c886baf52d96b9413cf`; `klasörleri listele` `kalıbı` yerine `deseni`) | A001; K-398 (ADR-175) sonrası `doğru`, `yanlış`, `doğru` |
 | `ek-cikarma/ana.dil` | ürün ek çıkarma kesiti (ZM-F034, ürün commit'i `4f8c67cf6de936d1f17a689598f65cdca2bb4918`) | S015; K-389 sonrası temiz |

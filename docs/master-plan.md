@@ -262,8 +262,10 @@ base64/quoted-printable içerik katı çözülüp no-clobber yeni dosyaya ya da
 atomik eklemeyle (32 MiB hedef tavanı; K-395 öncesi 16 MiB) yazılır; `yol`/`sha256`/`bayt`
 tutamağı RFC-0041 dosya yanıtına bağlanır; `metnin sha256 özeti` bellekte
 özet verir; kodlama hatası C032, IO izi içeriksizdir (`urun-h` ZM-F034/
-ZM-F024). **Açık:** RFC-0043 Dilim 2 (UTF-8 bayt sayısı, metin↔base64/
-onaltılık, kod noktası), DNS ve posta kimlik doğrulama/teslim güvenliği
+ZM-F024). Dilim 2 de **gerçekleşti** (K-402, ADR-167 eki, ZM-F023): saf
+`utf8 bayt sayısı`, `base64 karşılığı`, katı tek satır `base64 çözümünü
+almayı dene`, `kod noktası` ve `kod noktası harfini almayı dene`.
+**Açık:** onaltılık ↔ metin/base64 ve base64url (ürün kanıtı yok), DNS ve posta kimlik doğrulama/teslim güvenliği
 (loopback doğrulayıcı çözücüye MX/TXT/TLSA sorgusu ve DNSSEC durumu,
 sürümlü PSL ile kurumsal alan, gelen SPF/DKIM/DMARC/ARC değerlendirmesi ve
 sahte `Authentication-Results` temizliği, giden DKIM imzası ve anahtar
