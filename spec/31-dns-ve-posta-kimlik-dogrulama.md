@@ -113,4 +113,8 @@ TANIMLI: İlke gövdenin tamamını özetler; `l=` desteklenmez. `l=` taşıyan 
 
 TANIMLI: İmza IO izine `dkim_imzala` olayı olarak argüman `[AD, algoritma, VERİ'nin SHA-256'sı (onaltılık)]` ve sonuç `b=` ya da `tür` ile girer. Replay anahtar gerektirmez.
 
-AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `dil dkim-denetle` komutu, `dkim_imza_girdisi` fuzz hedefi ve gerçek alıcıda `dkim=pass` kanıtı.
+ZORUNLU: Proje `dkim_anahtarları` ile birlikte `dns` yetkinliği ve çözücü bildiriyorsa çalışma zamanı kaynak yürütülmeden her anahtar için `<seçici>._domainkey.<alan>` TXT kaydını sorar. RFC 6376 §3.6.1 anahtar kaydı olarak okunan kayıtlardan biri (`v=` varsa ilk ve `DKIM1`; `k=` varsayılanı `rsa` ve anahtarın algoritmasına uymalı) özel anahtarın açık parçasını `p=` olarak taşımalıdır. Eşleşen kayıt yoksa ve iptal edilmiş (boş `p=`) ya da başka anahtarlı bir kayıt varsa yalnız o anahtar devre dışı kalır: süreç ve öteki anahtarlar çalışır, o anahtarla imza denemesi C034 `anahtar_iptal` ya da `anahtar_dns_uyuşmuyor` ret Sonucu döner. Açılışta stderr'e alanı, seçiciyi, kayıt adını ve nedeni anan `HATA:` satırı yazılır; anahtar baytı yazılmaz.
+
+TANIMLI: Adda DKIM anahtar kaydı yoksa ya da DNS sorgusu geçici hata verirse stderr'e `UYARI:` yazılır ve anahtar etkin kalır. `dns` bildirimi olmayan projede yayımlanmış anahtar denetimi yapılmaz.
+
+AÇIK: `dil dkim-denetle` komutu, `dkim_imza_girdisi` fuzz hedefi ve gerçek alıcıda `dkim=pass` kanıtı.

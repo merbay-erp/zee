@@ -83,8 +83,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| spec/31-dns-ve-posta-kimlik-dogrulama.md | 39 | 0 | 3 | 42 | 92 |
-| **Toplam** | 431 | 6 | 21 | 458 | 94 |
+| spec/31-dns-ve-posta-kimlik-dogrulama.md | 41 | 0 | 3 | 44 | 93 |
+| **Toplam** | 433 | 6 | 21 | 460 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -149,14 +149,14 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 150 |
 | semantic-bugfix | 45 |
-| semantic-change | 79 |
+| semantic-change | 80 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
-| correctness | 44 |
+| correctness | 45 |
 | dogfood-change | 54 |
 | maintenance | 147 |
 | security | 22 |
 
-Toplam: 274 compiler değişiklik beyanı, 270 core freeze beyanı.
+Toplam: 275 compiler değişiklik beyanı, 271 core freeze beyanı.

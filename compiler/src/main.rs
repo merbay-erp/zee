@@ -5723,12 +5723,15 @@ fn dns_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
     Ok(())
 }
 
-/// K-397 B3 (ADR-174): `dkim_anahtarları` yürütmeden önce yüklenir.
+/// K-397 B3 (ADR-174): `dkim_anahtarları` yürütmeden önce yüklenir; K-413
+/// ile `dns` varsa yayımlanmış `p=` eşleşmesi anahtar başına denetlenir.
 fn dkim_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
-    match girdi.proje.as_ref() {
-        Some(proje) => dkim::hazirla(&proje.ana_bildirim().dkim_anahtarlari),
-        None => Ok(()),
-    }
+    let Some(proje) = girdi.proje.as_ref() else {
+        return Ok(());
+    };
+    // K-413: `dns` bildirimi yoksa yayımlanmış anahtar denetimi atlanır.
+    let bildirim = proje.ana_bildirim();
+    dkim::hazirla(&bildirim.dkim_anahtarlari, bildirim.dns.as_ref())
 }
 
 /// K-390 B1b (ADR-177): süreçte tek proje; liste açılışta bir kez okunur,

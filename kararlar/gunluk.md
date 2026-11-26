@@ -6234,6 +6234,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
+## K-413 — Açılışta yayımlanmış DKIM anahtarı denetimi; ADR-174 §9 (26 Kasım 2026)
+
+- Kullanıcı isteği; numara ve karar merkezden. Freeze sınıfı `correctness`
+  (ZeeMail'de ayrı ZM kaydı yok); kanıt ADR-174 ve RFC-0044 B3.
+- İlk merkez kararı uyuşmazlık ve boş `p=` için çıkış 2 idi. ZeeMail geri
+  bildirimiyle değişti: çok kiracılı kurulumda `<s>._domainkey.<müşteri>`
+  müşterinin DNS'indedir, çıkış 2 tek kiracının kaydıyla bütün dış postayı
+  keserdi. Son karar: yalnız o anahtar devre dışı (imza C034
+  `anahtar_dns_uyuşmuyor` / `anahtar_iptal`), `HATA:` satırı, süreç çalışır.
+  Kayıt yok ve DNS hatası `UYARI:`, anahtar etkin. Zorunlu kip için `dkim_dns_denetimi` proje
+  alanı açılmadı (core freeze altında minimal yüzey).
+- `dns` bildirimi yoksa denetim atlanır: dil bildirilmemiş çözücüye sorgu
+  atmaz. Yeni GB açılmadı: denetimin yokluğu güvenlik sınırı değil, sessiz
+  yapılandırma hatasıdır.
+- Eşleme ADR-177'nin `AcikAnahtar` ayrıştırıcısını yeniden kullanır; SPKI ve
+  PKCS#1 `p=` aynı PKCS#1 gösterimine iner.
+
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 
 - Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden

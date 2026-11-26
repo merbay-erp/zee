@@ -2589,6 +2589,21 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-413 — Açılışta yayımlanmış DKIM anahtarı denetimi (ADR-174 §9)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174 açık
+maddesi, RFC-0044 B3 "Açılış denetimi". Freeze sınıfı `correctness`
+(bildirilen ve yayımlanan anahtarın uyuşmaması teslimde sessiz DKIM fail ve
+DMARC reddi). `dkim_anahtarları` + `dns` varsa açılışta her anahtarın
+`<s>._domainkey.<d>` TXT kaydı sorulur; uyuşmazlık ve iptal yalnız o anahtarı
+devre dışı bırakır (imza C034 `anahtar_dns_uyuşmuyor` / `anahtar_iptal`,
+süreç çalışır; ZeeMail çok kiracılı DoS geri bildirimi), kayıt yokluğu ve DNS
+hatası uyarı. Yeni proje alanı, tanı kodu ve kalıp yok.
+Kanıt: `dkim_imza.rs` (anahtar kaydı ayrıştırma ve eşleme birimi),
+`dkim_imza_testi.rs` (gerçek süreç + loopback sahte çözücü: Ed25519 ve RSA
+SPKI `p=` eşleşmesi, uyuşmazlık, iptal, kayıt yok, SERVFAIL; iki anahtarlı
+depoda yalnız uyuşmayanın devre dışı kalması).
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
 **Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
@@ -2648,7 +2663,7 @@ ve gerçek süreçte 400 KB ham CRLF ileti) ve `dkim_kripto` kanonikleştirme
 birimleri.
 
 Açık: `x509_spki` ve `dkim_imza_girdisi` fuzz hedeflerinin RC kapısına
-alınması; açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
+alınması; gerçek internette DANE/MTA-STS
 teslim ve `dkim=pass` kanıtı (insan adımı).
 
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)

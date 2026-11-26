@@ -38,6 +38,23 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **DKIM anahtarı DNS'te yayımlananla açılışta karşılaştırılır (K-413):**
+  `dkim_anahtarları` bildiren ve `dns` yetkinliği olan bir Zee programı
+  başlarken her anahtarın `<seçici>._domainkey.<alan>` TXT kaydını sorar.
+  Yayımlanan açık anahtar özel anahtarınıza uymuyorsa ya da iptal edilmişse
+  (boş `p=`), yalnız o anahtar devre dışı kalır. Açılışta hangi alan ile
+  seçicide sorun olduğu `HATA:` satırıyla yazılır, o anahtarla imza denemesi
+  `anahtar_dns_uyuşmuyor` ya da `anahtar_iptal` hatası döner. Program ve
+  öteki alanların anahtarları çalışmaya devam eder: çok kiracılı bir posta
+  sunucusunda tek bir müşterinin DNS değişikliği bütün hizmeti durdurmaz.
+  Kayıt henüz yoksa ya da DNS o an yanıt vermiyorsa yalnız uyarı yazılır ve
+  anahtar kullanılmaya devam eder.
+
+  **Göç:** Yeni anahtar yayımlarken önce DNS kaydını, sonra `proje.dil`'deki
+  seçiciyi güncelleyin. Ürün kodu bu iki hatayı yakalayıp iletiyi imzasız
+  gönderebilir ve yöneticiyi uyarabilir. `dns` bildirmeyen projeler
+  etkilenmez.
+
 - **Giden posta için DKIM imzası (K-397):** posta sunucusu yazan bir Zee
   programı artık gönderdiği iletiyi kendi alanı adına DKIM ile
   imzalayabiliyor. Alıcı sunucu DMARC denetiminde iletinin gerçekten sizin

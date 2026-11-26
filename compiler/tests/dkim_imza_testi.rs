@@ -755,3 +755,228 @@ değilse\n    hata {sin} hatası olsun\n    veri2 hatanın verisi olsun\n    ver
         vec![beklenen.as_str(), "sınır", "veri_bozuk"]
     );
 }
+
+// ---- K-413: açılışta yayımlanmış DKIM anahtarı (DNS p=) denetimi ----
+
+/// Loopback'te tek yanıtlı sahte UDP çözücü: sorguya `yanitla` ile karşılık.
+fn sahte_cozucu(yanitla: fn(&[u8], &str) -> Vec<u8>, txt: String) -> u16 {
+    let soket = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+    let kapi = soket.local_addr().unwrap().port();
+    std::thread::spawn(move || {
+        let mut tampon = [0u8; 2048];
+        while let Ok((n, kaynak)) = soket.recv_from(&mut tampon) {
+            let _ = soket.send_to(&yanitla(&tampon[..n], &txt), kaynak);
+        }
+    });
+    kapi
+}
+
+/// Sorgunun kimlik ve sorusunu kopyalayan yanıt; `txt` boşsa NOERROR/NODATA.
+fn txt_yaniti(sorgu: &[u8], txt: &str) -> Vec<u8> {
+    let mut i = 12;
+    while sorgu[i] != 0 {
+        i += 1 + usize::from(sorgu[i]);
+    }
+    let soru_sonu = i + 5;
+    let cevap = u16::from(!txt.is_empty());
+    let mut p = sorgu[..2].to_vec();
+    p.extend_from_slice(&0x8180u16.to_be_bytes());
+    p.extend_from_slice(&1u16.to_be_bytes());
+    p.extend_from_slice(&cevap.to_be_bytes());
+    p.extend_from_slice(&[0, 0, 0, 0]);
+    p.extend_from_slice(&sorgu[12..soru_sonu]);
+    if cevap == 1 {
+        let mut veri = Vec::new();
+        for parca in txt.as_bytes().chunks(255) {
+            veri.push(parca.len() as u8);
+            veri.extend_from_slice(parca);
+        }
+        p.extend_from_slice(&[0xC0, 0x0C, 0, 16, 0, 1, 0, 0, 0, 60]);
+        p.extend_from_slice(&(veri.len() as u16).to_be_bytes());
+        p.extend_from_slice(&veri);
+    }
+    p
+}
+
+fn servfail(sorgu: &[u8], _: &str) -> Vec<u8> {
+    let mut p = txt_yaniti(sorgu, "");
+    p[2..4].copy_from_slice(&0x8182u16.to_be_bytes());
+    p
+}
+
+/// `dns` + `kriptografi` projesi; anahtar ortamdan, çözücü sahte. Program
+/// imza dener: başarıda `imzalandı`, retde C034 `tür` yazar.
+fn dns_surec(
+    pem: &str,
+    algoritma: &str,
+    yanitla: fn(&[u8], &str) -> Vec<u8>,
+    txt: String,
+) -> (i32, String, String) {
+    let kapi = sahte_cozucu(yanitla, txt);
+    let dizin = gecici_dizin("dns-denetimi");
+    std::fs::write(
+        dizin.join("proje.dil"),
+        format!(
+            "proje \"dkimdns\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+             yetkinlikler \"dns\", \"kriptografi\" listesi olsun\n\
+             dns_çözücü \"127.0.0.1:{kapi}\" olsun\ndns_dnssec \"bilgi\" olsun\n\
+             dkim_anahtarları \"ornek.test z2026a {algoritma} zee_dkim_dns_testi\" listesi olsun\n"
+        ),
+    )
+    .unwrap();
+    std::fs::write(
+        dizin.join("ana.dil"),
+        format!(
+            "sonuç {} verisi için \"zee_dkim_dns_testi\" özel anahtarıyla \"{algoritma}\" olarak imzalamayı dene olsun\n\
+sonuç başarılıysa\n    \"imzalandı\" yaz\n\
+değilse\n    hata sonucun hatası olsun\n    veri2 hatanın verisi olsun\n    veri2 \"tür\" değeri yaz\n",
+            zee_metni(&girdi(algoritma))
+        ),
+    )
+    .unwrap();
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .arg("çalıştır")
+        .arg(&dizin)
+        .env_remove("CREDENTIALS_DIRECTORY")
+        .env("zee_dkim_dns_testi", pem)
+        .output()
+        .unwrap();
+    let _ = std::fs::remove_dir_all(&dizin);
+    (
+        cikti.status.code().unwrap_or(-1),
+        String::from_utf8_lossy(&cikti.stdout).into_owned(),
+        String::from_utf8_lossy(&cikti.stderr).into_owned(),
+    )
+}
+
+/// PKCS#8 PEM'den `openssl pkey -pubout` SPKI DER'inin base64'ü (DNS'te
+/// yaygın `p=` biçimi).
+fn spki_p(pem: &str) -> String {
+    let dizin = gecici_dizin("spki-p");
+    std::fs::write(dizin.join("k.pem"), pem).unwrap();
+    let cikti = Command::new("openssl")
+        .args(["pkey", "-pubout", "-outform", "DER", "-in"])
+        .arg(dizin.join("k.pem"))
+        .output()
+        .unwrap();
+    let _ = std::fs::remove_dir_all(&dizin);
+    assert!(cikti.status.success());
+    base64(&cikti.stdout)
+}
+
+fn ed_p(pem: &str) -> String {
+    base64(
+        &DkimImzaAnahtari::pemden("ornek.test", "z2026a", DkimAlgoritmasi::Ed25519Sha256, pem)
+            .unwrap()
+            .acik_anahtar(),
+    )
+}
+
+#[test]
+fn acilis_dns_denetimi_anahtari_devre_disi_birakir_sureci_durdurmaz() {
+    let pem = ed25519_pem();
+    let p = ed_p(&pem);
+    let govde: String = pem.lines().filter(|s| !s.starts_with("-----")).collect();
+    let ed = "ed25519-sha256";
+    let (kod, cikti, hata) = dns_surec(&pem, ed, txt_yaniti, format!("v=DKIM1; k=ed25519; p={p}"));
+    assert_eq!((kod, cikti.as_str()), (0, "imzalandı\n"), "{hata}");
+    assert!(!hata.contains("UYARI") && !hata.contains("HATA"), "{hata}");
+
+    let baska = ed_p(&ed25519_pem());
+    for (txt, tur, parca) in [
+        (
+            format!("v=DKIM1; k=ed25519; p={baska}"),
+            "anahtar_dns_uyuşmuyor",
+            "uymuyor",
+        ),
+        (
+            "v=DKIM1; k=ed25519; p=".to_string(),
+            "anahtar_iptal",
+            "iptal",
+        ),
+    ] {
+        let (kod, cikti, hata) = dns_surec(&pem, ed, txt_yaniti, txt);
+        assert_eq!((kod, cikti.trim()), (0, tur), "{hata}");
+        assert!(
+            hata.contains("HATA:") && hata.contains("ornek.test / z2026a"),
+            "{hata}"
+        );
+        assert!(hata.contains(parca), "{hata}");
+        assert!(
+            !hata.contains(&govde[..16]) && !hata.contains(&p[..16]),
+            "tanıda anahtar"
+        );
+    }
+    for (yanitla, parca) in [
+        (txt_yaniti as fn(&[u8], &str) -> Vec<u8>, "TXT kaydı yok"),
+        (servfail, "denetlenemedi"),
+    ] {
+        let (kod, cikti, hata) = dns_surec(&pem, ed, yanitla, String::new());
+        assert_eq!((kod, cikti.as_str()), (0, "imzalandı\n"), "{hata}");
+        assert!(hata.contains("UYARI") && hata.contains(parca), "{hata}");
+    }
+}
+
+#[test]
+fn acilis_dns_denetimi_rsa_spki_p_ile_eslesir() {
+    let pem = rsa_pem(2048);
+    let p = spki_p(&pem);
+    let rsa = "rsa-sha256";
+    for txt in [format!("v=DKIM1; k=rsa; p={p}"), format!("v=DKIM1; p={p}")] {
+        let (kod, cikti, hata) = dns_surec(&pem, rsa, txt_yaniti, txt);
+        assert_eq!((kod, cikti.as_str()), (0, "imzalandı\n"), "{hata}");
+        assert!(!hata.contains("HATA"), "{hata}");
+    }
+    let baska = spki_p(&rsa_pem(2048));
+    let (kod, cikti, hata) = dns_surec(&pem, rsa, txt_yaniti, format!("v=DKIM1; k=rsa; p={baska}"));
+    assert_eq!((kod, cikti.trim()), (0, "anahtar_dns_uyuşmuyor"), "{hata}");
+}
+
+/// İki kiracı: birinin DNS kaydı uymuyor ya da iptal, öteki imzalamaya
+/// devam eder; kaydı olmayan anahtar etkin kalır.
+#[test]
+fn iki_anahtarli_depoda_yalniz_uyusmayan_devre_disi_kalir() {
+    let (pem_a, pem_b) = (ed25519_pem(), ed25519_pem());
+    let yukle = |secici: &str, pem: &str| {
+        DkimImzaAnahtari::pemden("ornek.test", secici, DkimAlgoritmasi::Ed25519Sha256, pem).unwrap()
+    };
+    let p_a = base64(&yukle("a", &pem_a).acik_anahtar());
+    let p_yabanci = base64(&yukle("x", &ed25519_pem()).acik_anahtar());
+    let a = "ed25519-sha256";
+    let veri = |secici: &str| girdi(a).replace("s=z2026a", &format!("s={secici}"));
+    for (b_kaydi, b_sonucu) in [
+        (
+            Some(format!("v=DKIM1; k=ed25519; p={p_yabanci}")),
+            Err("anahtar_dns_uyuşmuyor"),
+        ),
+        (
+            Some("v=DKIM1; k=ed25519; p=".to_string()),
+            Err("anahtar_iptal"),
+        ),
+        (None, Ok(())),
+    ] {
+        let mut depo = DkimAnahtarDeposu::default();
+        depo.ekle("kiraci_a", yukle("a", &pem_a));
+        depo.ekle("kiraci_b", yukle("b", &pem_b));
+        let tanilar = depo.yayimlananlarla_denetle(|ad| match ad {
+            "a._domainkey.ornek.test" => {
+                Ok(vec![format!("v=DKIM1; k=ed25519; p={p_a}").into_bytes()])
+            }
+            "b._domainkey.ornek.test" => Ok(b_kaydi
+                .clone()
+                .map(String::into_bytes)
+                .into_iter()
+                .collect()),
+            _ => Err("beklenmeyen ad".into()),
+        });
+        assert_eq!(tanilar.len(), 1, "{tanilar:?}");
+        assert!(tanilar[0].contains("ornek.test / b"), "{tanilar:?}");
+        let depo = Some(Arc::new(depo));
+        assert_eq!(imzala(depo.clone(), &veri("a"), "kiraci_a", a).len(), 88);
+        let b = imzala(depo, &veri("b"), "kiraci_b", a);
+        match b_sonucu {
+            Ok(()) => assert_eq!(b.len(), 88, "{b}"),
+            Err(tur) => assert_eq!(b, format!("C034 {tur}")),
+        }
+    }
+}
