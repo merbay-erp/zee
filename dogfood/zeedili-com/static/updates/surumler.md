@@ -103,6 +103,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 ### Site
 
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
+- **zeedili.com 26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-397 giden posta DKIM imzası ve dosyadan akışlı gövde özeti (RFC-0044) ile K-402 metnin bayt sayısı, base64 ve kod noktası kalıpları (RFC-0043) haberleri eklendi. Dil davranışı değişmedi.
 
 ## 25 Kasım 2026 — Geliştirme güncellemeleri
 
