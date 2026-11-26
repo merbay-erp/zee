@@ -1,14 +1,17 @@
 # K-406 (ZM-F048): gizli bağlantılı İnternet takvimi aboneliği. Takvim
 # bellekte kurulur; GET rotası dosya yazamaz (T045), bu yüzden dosya yanıtı
 # değil türlü metin yanıtı kullanılır. Değişiklik öncesi ürün aynı metni
-# `metin yanıtını gönder` ile text/plain olarak veriyordu.
+# `metin yanıtını gönder` ile text/plain ve LF ile veriyordu. RFC 5545 CRLF
+# satır sonunun CR'si K-402 kod noktası yüzeyinden gelir.
 
 işlem yayın takvimi
     özet Metin olarak al
+    sonu Metin olarak al
     Metin döndürür
-    c "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Ornek//Takvim//TR\nBEGIN:VEVENT\n" olsun
-    c c ile "SUMMARY:" ile özet ile "\n" olsun
-    c c ile "END:VEVENT\nEND:VCALENDAR\n" olsun
+    c "BEGIN:VCALENDAR" ile sonu ile "VERSION:2.0" ile sonu olsun
+    c c ile "PRODID:-//Ornek//Takvim//TR" ile sonu ile "BEGIN:VEVENT" ile sonu olsun
+    c c ile "SUMMARY:" ile özet ile sonu olsun
+    c c ile "END:VEVENT" ile sonu ile "END:VCALENDAR" ile sonu olsun
     c döndür
 
 8080 kapısında sunucu başlat
@@ -20,5 +23,10 @@ GET "/takvim/yayin.ics" adresine istek geldiğinde
         jeton isteğin "k" değeri olsun
     jeton boşsa
         "Takvim bulunamadı." yanıtını 404 durumuyla gönder
-    takvim "Toplantı" ile yayın takvimi olsun
-    takvim metnini "text/calendar" türünde gönder
+    cr_sonucu 13 kod noktası harfini almayı dene olsun
+    cr_sonucu başarılıysa
+        crlf cr_sonucunun değeri ile "\n" olsun
+        takvim "Toplantı" ve crlf ile yayın takvimi olsun
+        takvim metnini "text/calendar" türünde gönder
+    değilse
+        "Takvim geçici olarak alınamıyor." yanıtını 503 durumuyla gönder

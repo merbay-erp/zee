@@ -29,6 +29,6 @@ Gerçek yanıt, başlıklar ve gövde baytları
 ile sınanır.
 
 RFC 5545 CRLF satır sonu için yeni sözdizimi açılmadı: gövde bayt bayt
-gider ve CR'yi ürün K-402 yüzeyiyle (`13'ün kod noktası harfini almayı
-dene`) üretir; kesit K-402'ye bağımlı kalmasın diye LF kullanır (ürün
-sürtünmesi ZM-F004, ADR-163 eki §4).
+gider ve kesit CR'yi K-402 yüzeyiyle (`13 kod noktası harfini almayı dene`)
+üretip her içerik satırını CRLF ile bitirir (ürün sürtünmesi ZM-F004,
+ADR-163 eki §4).

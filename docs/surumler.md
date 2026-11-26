@@ -26,7 +26,8 @@ Bu kayıt yeni sürüm etiketi değildir.
   betik, PDF/görsel gibi ikili türler) derlemede S037'dir. Yanıt dosya
   yanıtıyla aynı güvenlik başlıklarını taşır (`nosniff`, `no-store`, sandbox
   CSP), indirme eki değildir ve gövdeyi değiştirmez: RFC 5545'in istediği
-  CRLF satır sonlarını metnin kendisi taşımalıdır. Cümle `yanıtını gönder`
+  CRLF satır sonlarını metnin kendisi taşımalıdır — CR karakterini
+  `cr 13 kod noktası harfini almayı dene olsun` (K-402) ile üretin. Cümle `yanıtını gönder`
   gibi rotayı bitirir. Var olan programlar etkilenmez; göç gerekmez.
 
 ### Güvenlik

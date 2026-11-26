@@ -179,7 +179,7 @@ GET "/takvim/yayin.ics" adresine istek geldiğinde
 - ZORUNLU (K-406): Gövde UTF-8 baytlarıyla olduğu gibi gider; CR, LF ve CRLF
   dönüştürülmez, satır sonu eklenmez ya da normalleştirilmez. RFC 5545/4180
   CRLF satır sonlarını ürün kurar; CR karakteri kaçışla yazılamadığından
-  K-402 `13'ün kod noktası harfini almayı dene` yüzeyiyle ya da istek/dosya
+  K-402 `13 kod noktası harfini almayı dene` yüzeyiyle ya da istek/dosya
   verisinden gelir. Gövde K-372 yanıt yazım bütçesine ve spec/24 metin
   sınırına tabidir.
 - TANIMLI (K-406): Cümle öteki yanıt cümleleri gibi yalnız rota gövdesinde

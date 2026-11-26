@@ -641,6 +641,14 @@ GET "/xml" adresine istek geldiğinde
 GET "/csv" adresine istek geldiğinde
     herkese açık
     "ad;soyad" metnini "text/csv" türünde gönder
+
+GET "/takvim/crlf.ics" adresine istek geldiğinde
+    herkese açık
+    cr_sonucu 13 kod noktası harfini almayı dene olsun
+    cr_sonucu başarılıysa
+        crlf cr_sonucunun değeri ile "\n" olsun
+        takvim "BEGIN:VCALENDAR" ile crlf ile "END:VCALENDAR" ile crlf olsun
+        takvim metnini "text/calendar" türünde gönder
 "#;
 
 #[test]
@@ -701,6 +709,11 @@ fn turlu_metin_yaniti_kayitli_tur_guvenlik_basliklari_ve_ham_crlf_govdeyle_gider
     ortak(&basliklar);
     assert_eq!(baslik(&basliklar, "Content-Type"), ["application/xml"]);
     assert_eq!(govde, xml.as_bytes());
+
+    // K-402 kod noktası yüzeyiyle kurulan RFC 5545 CRLF satır sonları.
+    let (basliklar, govde) = istek(kapi, "GET", "/takvim/crlf.ics");
+    ortak(&basliklar);
+    assert_eq!(govde, b"BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
 
     let (basliklar, govde) = istek(kapi, "GET", "/csv");
     ortak(&basliklar);

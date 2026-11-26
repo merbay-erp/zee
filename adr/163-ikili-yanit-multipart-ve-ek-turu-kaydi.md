@@ -251,10 +251,10 @@ bu ekte ölçülmedi; insan ölçümü açıktır.
    dönüştürülmez. Seçenekler: (a) `CRLF satır sonlarıyla` niteleyicisi — üç
    yeni kalıp kelimesi ve normalleştirme semantiği (çıplak CR/LF ne olur?);
    (b) türe göre örtük CRLF normalleştirmesi — kaynakta görünmeyen dönüşüm,
-   ürünün kurduğu baytı değiştirir; (c) K-402 (RFC-0043 Dilim 2) `13'ün kod
+   ürünün kurduğu baytı değiştirir; (c) K-402 (RFC-0043 Dilim 2) `13 kod
    noktası harfini almayı dene` ile CR'yi ürün üretir. (c) en küçük yüzeydir
-   ve K-402 bunu açıkça amaçlar; seçildi. K-402 birleşmeden önce de istek ve
-   dosya verisinden gelen CR olduğu gibi geçer.
+   ve K-402 bunu açıkça amaçlar; seçildi. İstek ve dosya verisinden gelen CR
+   de olduğu gibi geçer.
 5. Cümle K-403 kesin yanıtıdır, eylem içinde T044'tür; IO izi
    `turlu_yanit_gonder` (tür, gövde) olayı, şema ve hermetik adaptör aynı
    kapalı kümeyi uygular. Desteklemeyen adaptörün varsayılanı türü düşürüp
