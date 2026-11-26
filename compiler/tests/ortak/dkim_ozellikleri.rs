@@ -6,7 +6,7 @@
 //!    bölündüğünden bağımsızdır.
 //! 2. CR içermeyen girdide LF ile CRLF satır sonu aynı özeti verir.
 //! 3. İmza kâhini denetimi kabul ettiği girdide tutarlıdır: CR yok, sınır
-//!    içinde, sonu boş `b=`, `d=`/`s=` küçük harfli ve boş değil; kanonik
+//!    içinde, son etiket boş `b=` (adla `=` arasında FWS olabilir), `d=`/`s=` küçük harfli ve boş değil; kanonik
 //!    bayt dönüşümü de başarılıdır.
 use dil::dkim_kripto::{self, GovdeKipi, KanonikGovdeOzetleyici};
 
@@ -44,7 +44,21 @@ pub fn denetle(baytlar: &[u8]) {
     if let Ok(metin) = std::str::from_utf8(govde) {
         if let Ok(etiketler) = dil::dkim_imza::imza_girdisini_denetle(metin) {
             assert!(!metin.contains('\r') && metin.len() <= dil::dkim_imza::AZAMI_IMZA_GIRDISI);
-            assert!(metin.trim_end_matches([' ', '\t']).ends_with("b="));
+            // RFC 6376 §3.2: `tag-spec = [FWS] tag-name [FWS] "=" [FWS]
+            // tag-value [FWS]`; son etiket boş `b`, adla `=` arasında FWS
+            // (`b\t=`, katlanmış `b\n\t=`) geçerlidir. K-417 RC fuzz bulgusu
+            // 26.11.2026: önceki `ends_with("b=")` bu biçimi yanlış reddediyordu.
+            let son = metin
+                .rsplit(';')
+                .next()
+                .unwrap_or_default()
+                .replace('\n', "");
+            let (ad, deger) = son.split_once('=').expect("son etiket `=` taşımalı");
+            assert_eq!(ad.trim_matches([' ', '\t']), "b", "son etiket `b` olmalı");
+            assert!(
+                deger.trim_matches([' ', '\t']).is_empty(),
+                "`b=` boş olmalı"
+            );
             for ad in [&etiketler.alan, &etiketler.secici] {
                 assert!(!ad.is_empty() && *ad == ad.to_ascii_lowercase());
             }

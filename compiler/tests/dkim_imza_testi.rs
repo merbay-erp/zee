@@ -759,6 +759,41 @@ değilse\n    hata {sin} hatası olsun\n    veri2 hatanın verisi olsun\n    ver
     );
 }
 
+/// K-417 RC fuzz bulgusu (26.11.2026, `b3b9d752`, GitHub `fuzz-rc`): son etiket
+/// `b\t=` gibi adla `=` arasında FWS taşıyınca RFC 6376 §3.2'ye göre
+/// geçerlidir; ürün denetimi kabul eder, ortak kâhin de panik yapmamalı.
+#[test]
+fn kahin_son_b_etiketinde_fws_kabul_eder() {
+    let kok = Path::new(env!("CARGO_MANIFEST_DIR")).join("fuzz/corpus/dkim_imza_girdisi");
+    // K-417: run 45838195765 crash girdisinin (430 bayt) elle küçültülmüş
+    // biçimi; eski `ends_with("b=")` kâhini bunda panik yapıyordu.
+    let bulgu = std::fs::read(kok.join("son-b-fws.txt")).unwrap();
+    let bulgu_metni = std::str::from_utf8(&bulgu[1..]).unwrap();
+    assert!(dil::dkim_imza::imza_girdisini_denetle(bulgu_metni).is_ok());
+    assert!(!bulgu_metni.trim_end_matches([' ', '\t']).ends_with("b="));
+    dkim_ozellikleri::denetle(&bulgu);
+    let tohum = std::fs::read(kok.join("gecerli-girdi.txt")).unwrap();
+    let metin = std::str::from_utf8(&tohum[1..]).unwrap();
+    let govde = metin.strip_suffix("b=").expect("tohum `b=` ile biter");
+    for son in ["b\t=", "b \t= ", "b\n\t="] {
+        let girdi = format!("{govde}{son}");
+        assert!(
+            dil::dkim_imza::imza_girdisini_denetle(&girdi).is_ok(),
+            "{son:?} kabul edilmeli"
+        );
+        let mut baytlar = vec![tohum[0]];
+        baytlar.extend_from_slice(girdi.as_bytes());
+        dkim_ozellikleri::denetle(&baytlar);
+    }
+    for son in ["bx=", "b=x"] {
+        let girdi = format!("{govde}{son}");
+        assert!(
+            dil::dkim_imza::imza_girdisini_denetle(&girdi).is_err(),
+            "{son:?}"
+        );
+    }
+}
+
 /// `dkim_imza_girdisi` fuzz korpusu stable'da aynı özellik denetiminden
 /// geçer; her tohum deterministik xorshift ile 2000 kez bozulur (bayt
 /// değiştirme, kesme, CR/LF ekleme).

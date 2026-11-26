@@ -52,8 +52,9 @@ uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
   UTF-8 ise `dkim_imza::imza_girdisini_denetle`'den geçirir. Özellikler ortak
   `compiler/tests/ortak/dkim_ozellikleri.rs` dosyasındadır.
 - `compiler/fuzz/corpus/dkim_imza_girdisi/`: geçerli ve katlanmış/tırnaklı imza
-  girdisi, RFC 6376 §3.4.5 CRLF gövdesi, relaxed boşluklu LF gövde, çıplak CR
-  ve boş tohumları (`.gitattributes` ile ikili).
+  girdisi, RFC 6376 §3.4.5 CRLF gövdesi, relaxed boşluklu LF gövde, çıplak CR,
+  boş ve son etiketi FWS'li `b\t=` (K-417 RC bulgusunun küçültülmüş hâli)
+  tohumları (`.gitattributes` ile ikili).
   `compiler/tests/dkim_imza_testi.rs` korpusu ve tohum başına 2.000
   deterministik bozulmuş girdiyi her ana testte yeniden oynatır.
 - `compiler/fuzz/fuzz_targets/x509_spki.rs`: ham baytları
