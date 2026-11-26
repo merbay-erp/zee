@@ -1,8 +1,9 @@
 # K-389 (RFC-0043) — ürün H reproducer ZM-R004 (ZM-F023): `uzunluğu` harf
 # (Unicode skaler değer) sayar, UTF-8 oktet saymaz. SMTP satır sınırı
-# (RFC 5321 §4.5.3.1), IMAP literal {n} ve RFC822.SIZE oktettir. Bugün 1
-# (TANIMLI, spec/04); UTF-8 bayt sayısı RFC-0043 Dilim 2'dir ve bu vaka o
-# dilimde 2 veren kalıpla birlikte güncellenir. Ürün testinin küçültmesi.
+# (RFC 5321 §4.5.3.1), IMAP literal {n} ve RFC822.SIZE oktettir. `uzunluğu`
+# 1 kalır (TANIMLI, spec/04); K-402 (RFC-0043 Dilim 2) `utf8 bayt sayısı`
+# ile 2 verir. Ürün testinin küçültmesi.
 
 harf "ğ" olsun
 harfin uzunluğu yaz
+harfin utf8 bayt sayısı yaz

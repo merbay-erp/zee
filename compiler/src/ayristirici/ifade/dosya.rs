@@ -2,6 +2,8 @@
 
 use super::*;
 
+mod metin_kodlama;
+
 pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     let n = tokenlar.len();
     let kelime = |i: usize| -> Option<&str> {
@@ -109,12 +111,8 @@ fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
         }
     };
     let n = tokenlar.len();
-    // X in sha256 özeti — bellekteki metnin özeti (saf Ozellik).
-    if n == 3 && kelime(1) == Some("sha256") && kelime(2) == Some("özeti") {
-        return Ok(Some(Ifade::Ozellik {
-            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
-            ozellik: Ozellik::Sha256Ozeti,
-        }));
+    if let Some(ifade) = metin_kodlama::kalip(tokenlar)? {
+        return Ok(Some(ifade));
     }
     let aralik = n >= 9
         && kelime(1) == Some("dosyasının")

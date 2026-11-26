@@ -177,6 +177,11 @@ fn ifade_denetle_ic(
                     Ozellik::HataNedeni => "nedeni",
                     Ozellik::HataVerisi => "verisi",
                     Ozellik::Sha256Ozeti => "özeti",
+                    Ozellik::Utf8BaytSayisi => "sayısı",
+                    Ozellik::Base64Karsiligi => "karşılığı",
+                    Ozellik::Base64Cozumu => "çözümünü",
+                    Ozellik::KodNoktasi => "noktası",
+                    Ozellik::KodNoktasiHarfi => "harfini",
                 };
                 let yapi = baglam.yapi(yapi_kimligi).ok_or_else(|| {
                     ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
@@ -199,8 +204,12 @@ fn ifade_denetle_ic(
                 .onerili("Önce listeye öğe ekle.".into())),
                 (Ozellik::Ilk, Tur::Liste(e)) | (Ozellik::Son, Tur::Liste(e)) => Ok(e.ture()),
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
-                (Ozellik::HtmlGuvenli, Tur::Metin) | (Ozellik::Sha256Ozeti, Tur::Metin) => {
+                (Ozellik::HtmlGuvenli | Ozellik::Sha256Ozeti | Ozellik::Base64Karsiligi, Tur::Metin) => {
                     Ok(Tur::Metin)
+                }
+                (Ozellik::Utf8BaytSayisi | Ozellik::KodNoktasi, Tur::Metin) => Ok(Tur::TamSayi),
+                (Ozellik::Base64Cozumu, Tur::Metin) | (Ozellik::KodNoktasiHarfi, Tur::TamSayi) => {
+                    Ok(Tur::Sonuc(VeriTuru::Metin))
                 }
                 (Ozellik::Kirpilmis, Tur::Metin) => Ok(Tur::Metin),
                 (Ozellik::Siralanmis, Tur::Liste(oge))
