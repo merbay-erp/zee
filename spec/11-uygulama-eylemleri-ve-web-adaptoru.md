@@ -244,6 +244,24 @@ yazma hatasında session/cookie/yanıt birlikte geri alınır. TCP'nin yazılmı
 kısmı fiziksel olarak geri alınamaz; bağlantı kapatılır ve eksik
 `Content-Length` başarı sayılmaz.
 
+ZORUNLU (K-403): Rota gövdesi koşarken `yanıtını gönder` (sabit durumlu
+biçimi dahil) ya da `yönlendir` yanıt taslağını başarıyla belirlediği anda
+rota gövdesi SONLANIR: aynı bloktaki, çevreleyen `ise`/`göre`/döngü/
+`içinde` bloklarındaki ve çağrı yığınındaki işlemlerin sonraki cümleleri
+koşmak YASAKTIR. Bu olağan bitiştir; yanıt, çerez ve oturum taslağı başarı
+yolundaki gibi commit edilir, tanı ya da IO izi olayı üretilmez. Böylece
+`yetkili değilse` → `"/giris" adresine yönlendir` biçimindeki koruma
+fail-closed çalışır; korumadan sonraki iş (çerez/oturum/veritabanı
+mutation'ı, eylem, çıktı, giden istek) koşmaz. Yanıttan önce oluşan tanı,
+reddedilen yönlendirme (C022) ve yanıtsız rota bu maddeden önceki gibi
+işlenir. Rota dışında (üst düzey program, `test` bloğu) yanıt cümlesi akışı
+bitirmez. Dosya yanıtı (`… ek olarak göndermeyi dene`) bir `Sonuç`
+ifadesidir ve rotayı bitirmez; çağıran başarı/başarısızlık dalını kendisi
+seçer, başarıdan sonraki yanıt cümlesi rotayı bitirir ama yanıtı değiştirmez. İç uygulama
+`Ç004` nöbetçisini kullanır; nöbetçi rota yürütücüsü dışına sızmaz.
+`dil denetle --lint` rota gövdesinde kesin yanıttan sonraki ulaşılamaz
+cümleyi önerili S047 ile gösterir.
+
 K-324/ADR-157 uyarınca rota yürütmesi bir tanıyla biterse istek
 taslağı geri alınmak ve worker sonraki bağımsız isteği kabul etmek ZORUNDADIR;
 rota hatası süreci SONLANDIRAMAZ. İstemciye tanı kodu, mesajı, satırı ya da

@@ -80,7 +80,7 @@ HEAD "/ek" adresine istek geldiğinde
 
 GET "/iki" adresine istek geldiğinde
     herkese açık
-    "önce metin" yanıtını gönder
+    ilk "belge.bin" dosyasını "text/plain" türünde "ilk.txt" adıyla ek olarak göndermeyi dene olsun
     sonuç "belge.bin" dosyasını "application/pdf" türünde "a.pdf" adıyla ek olarak göndermeyi dene olsun
     sonuç başarısızsa
         hata sonucun hatası olsun
@@ -228,14 +228,19 @@ fn dosya_yaniti_ikili_govdeyi_kayitli_tur_ve_ek_basligiyla_akitir() {
     assert!(!basliklar.contains("sha256-"), "{basliklar}");
     assert_eq!(govde, b"<script>alert(1)</script>");
 
-    // İlk yanıt kazanır: önce metin yanıtı belirlendiyse dosya yanıtı
-    // başarısız Sonuç'tur, metin yanıtı değişmez.
+    // İlk yanıt kazanır: önce bir dosya yanıtı belirlendiyse ikinci dosya
+    // yanıtı başarısız Sonuç'tur, ilk yanıt değişmez (K-403: metin yanıtı
+    // rotayı bitirdiğinden durum ardışık iki dosya yanıtıyla kurulur).
     let (basliklar, govde) = istek(kapi, "GET", "/iki");
     assert_eq!(
         baslik(&basliklar, "Content-Type"),
         ["text/plain; charset=utf-8"]
     );
-    assert_eq!(govde, "önce metin".as_bytes());
+    assert_eq!(
+        baslik(&basliklar, "Content-Disposition"),
+        ["attachment; filename=\"ilk.txt\"; filename*=UTF-8''ilk.txt"]
+    );
+    assert_eq!(govde, icerik);
 }
 
 #[test]
@@ -413,14 +418,22 @@ fn hermetik_adaptor_ayni_tur_ad_kuralini_uygular_ve_iz_oynatilir() {
     assert!(io.sunucu_yanitlari[1].1.starts_with("C013 \"text/html\""));
     assert!(io.sunucu_yanitlari[2].1.contains("denetim karakteri"));
     assert!(io.sunucu_yanitlari[3].1.contains("bulunamadı"));
-    assert_eq!(io.sunucu_yanitlari[4].1, "önce metin");
+    // K-403: metin yanıtı rotayı bitirdiğinden "zaten belirlendi" Sonuç'u
+    // ardışık iki dosya yanıtıyla sınanır; ilki kalır.
+    assert_eq!(io.sunucu_yanitlari[4].1, "%PDF-1.4");
     assert_eq!(
         io.dosya_yanitlari,
-        [(
-            "application/pdf".to_string(),
-            "attachment; filename=\"Fatura Ekim.pdf\"; filename*=UTF-8''Fatura%20Ekim.pdf"
-                .to_string()
-        )]
+        [
+            (
+                "application/pdf".to_string(),
+                "attachment; filename=\"Fatura Ekim.pdf\"; filename*=UTF-8''Fatura%20Ekim.pdf"
+                    .to_string()
+            ),
+            (
+                "text/plain; charset=utf-8".to_string(),
+                "attachment; filename=\"ilk.txt\"; filename*=UTF-8''ilk.txt".to_string()
+            )
+        ]
     );
     assert_eq!(io.cikti, ["bu isteğin yanıtı zaten belirlendi"]);
 

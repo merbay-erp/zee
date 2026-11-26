@@ -61,17 +61,47 @@ fn ithal_ayni_satirli_tanim_ana_kaynak_uyarisi_olamaz() {
 }
 
 #[test]
-fn rota_dal_yaniti_kontrol_edilir_yanit_sonlandirma_sayilmaz() {
+fn rota_dal_yaniti_kontrol_edilir_yanit_rotayi_bitirir() {
     let kismi =
         "GET \"/\" adresine istek geldiğinde\n    doğru ise\n        \"evet\" yanıtını gönder\n";
     // Muhafazakâr yapısal kontrol bütün dalları ister; sabit koşul kanıtını
     // yanıt denetimine taşıdığı iddia edilmez.
     assert!(uyar(kismi).iter().any(|t| t.kod == "S048"));
+    // K-403: rota gövdesinde yanıt rotayı bitirir; sonrası S047'dir.
     let tam =
-        "GET \"/\" adresine istek geldiğinde\n    \"evet\" yanıtını gönder\n    \"çalışır\" yaz\n";
-    assert!(!uyar(tam)
-        .iter()
-        .any(|t| matches!(t.kod.as_str(), "S047" | "S048")));
+        "GET \"/\" adresine istek geldiğinde\n    \"evet\" yanıtını gönder\n    \"çalışmaz\" yaz\n";
+    let uyarilar = uyar(tam);
+    let s047: Vec<_> = uyarilar.iter().filter(|t| t.kod == "S047").collect();
+    assert_eq!(s047.len(), 1, "{uyarilar:?}");
+    assert_eq!(s047[0].satir, 3);
+    assert!(s047[0].mesaj.contains("rotayı bitirir"));
+    assert!(s047[0]
+        .oneri
+        .as_deref()
+        .is_some_and(|o| o.contains("önceye taşı")));
+    assert!(!uyarilar.iter().any(|t| t.kod == "S048"));
+}
+
+#[test]
+fn rotada_her_dali_yonlendiren_kosuldan_sonrasi_erisilemezdir() {
+    let kaynak = "GET \"/\" adresine istek geldiğinde\n    istekte \"a\" varsa\n        \"/a\" adresine yönlendir\n    değilse\n        \"yok\" yanıtını 404 durumuyla gönder\n    \"çalışmaz\" yaz\n";
+    let s047: Vec<_> = uyar(kaynak)
+        .into_iter()
+        .filter(|t| t.kod == "S047")
+        .collect();
+    assert_eq!(s047.len(), 1);
+    assert_eq!(s047[0].satir, 6);
+    // Koruma kalıbı (tek dallı yönlendirme) sonrası erişilebilirdir: uyarı yok.
+    let koruma = "GET \"/\" adresine istek geldiğinde\n    yetkili yanlış olsun\n    yetkili değilse\n        \"/giris\" adresine yönlendir\n    \"gizli\" yanıtını gönder\n";
+    assert!(!uyar(koruma).iter().any(|t| t.kod == "S047"));
+}
+
+#[test]
+fn islem_ve_ust_duzeyde_yanit_kesin_son_sayilmaz() {
+    // Rota dışında yanıt akışı bitirmez (üst düzey/test); işlem rota dışından
+    // da çağrılabildiği için lint tahmin yürütmez.
+    let kaynak = "işlem reddet\n    değer döndürmez\n    \"yok\" yanıtını 403 durumuyla gönder\n    \"sonra\" yaz\n\n\"üst\" yanıtını gönder\n\"sürer\" yaz\nreddet\n";
+    assert!(!uyar(kaynak).iter().any(|t| t.kod == "S047"));
 }
 
 #[test]

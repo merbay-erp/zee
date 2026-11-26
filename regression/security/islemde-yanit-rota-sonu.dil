@@ -1,0 +1,15 @@
+# web-istegi: GET /hassas
+# K-403: çağrılan işlemdeki yanıt da rotayı bitirir; çağrıdan sonraki iş koşmaz (500 değil 403).
+
+8080 kapısında sunucu başlat
+
+işlem reddet
+    değer döndürmez
+    "yetki yok" yanıtını 403 durumuyla gönder
+
+GET "/hassas" adresine istek geldiğinde
+    reddet
+    girdi "hassas" olsun
+    sayı girdinin sayısı olsun
+    sayıyı yaz
+    "hassas veri" yanıtını gönder
