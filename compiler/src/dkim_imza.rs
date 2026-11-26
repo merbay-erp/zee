@@ -367,16 +367,74 @@ impl DkimImzaAnahtari {
 /// credential adıyla anılır.
 #[derive(Debug, Default)]
 pub struct DkimAnahtarDeposu {
-    anahtarlar: Vec<(String, DkimImzaAnahtari)>,
+    anahtarlar: Vec<DepoKaydi>,
+}
+
+#[derive(Debug)]
+struct DepoKaydi {
+    credential: String,
+    anahtar: DkimImzaAnahtari,
+    /// K-413: açılış DNS denetiminde devre dışı bırakıldıysa nedeni.
+    devre_disi: Option<DkimHatasi>,
 }
 
 impl DkimAnahtarDeposu {
     pub fn ekle(&mut self, credential: &str, anahtar: DkimImzaAnahtari) {
-        self.anahtarlar.push((credential.into(), anahtar));
+        self.anahtarlar.push(DepoKaydi {
+            credential: credential.into(),
+            anahtar,
+            devre_disi: None,
+        });
     }
 
     pub fn bos_mu(&self) -> bool {
         self.anahtarlar.is_empty()
+    }
+
+    /// K-413 (ADR-174 §9): her anahtarın `<s>._domainkey.<d>` TXT kaydını
+    /// `txt_sorgula` ile alır ve yayımlanan `p=` ile karşılaştırır. Uyuşmayan
+    /// ya da iptal edilmiş anahtar yalnız kendisi için devre dışı kalır;
+    /// kayıt yokluğu ve sorgu hatası anahtarı etkin bırakır. Dönüş, açılışta
+    /// yazılacak tanı satırlarıdır (anahtar baytı yok).
+    pub fn yayimlananlarla_denetle(
+        &mut self,
+        mut txt_sorgula: impl FnMut(&str) -> Result<Vec<Vec<u8>>, String>,
+    ) -> Vec<String> {
+        let mut tanilar = Vec::new();
+        for kayit in &mut self.anahtarlar {
+            let (alan, secici) = (&kayit.anahtar.alan, &kayit.anahtar.secici);
+            let kimlik = format!("DKIM anahtarı ({alan} / {secici})");
+            let ad = format!("{secici}._domainkey.{alan}");
+            let txt = match txt_sorgula(&ad) {
+                Ok(txt) => txt,
+                Err(neden) => {
+                    tanilar.push(format!(
+                        "UYARI: {kimlik} DNS'te denetlenemedi ({neden}); anahtar etkin."
+                    ));
+                    continue;
+                }
+            };
+            let (neden, aciklama) = match dns_kaydini_denetle(&kayit.anahtar, &txt) {
+                DnsEslesmesi::Eslesti => continue,
+                DnsEslesmesi::KayitYok => {
+                    tanilar.push(format!(
+                        "UYARI: {kimlik} için `{ad}` TXT kaydı yok; anahtar etkin, alıcılar imzayı doğrulayamaz."
+                    ));
+                    continue;
+                }
+                DnsEslesmesi::Iptal => (DkimHatasi::AnahtarIptal, "anahtar iptal edilmiş (boş p=)"),
+                DnsEslesmesi::Uyusmuyor => (
+                    DkimHatasi::AnahtarDnsUyusmuyor,
+                    "yayımlanan açık anahtar (p=) özel anahtara uymuyor",
+                ),
+            };
+            kayit.devre_disi = Some(neden);
+            tanilar.push(format!(
+                "HATA: {kimlik}: `{ad}` kaydında {aciklama}; bu anahtarla imza atılmaz (C034 `{}`).",
+                neden.turu()
+            ));
+        }
+        tanilar
     }
 
     /// Girdiyi yeniden denetler (savunma derinliği), bildirimle eşler ve
@@ -388,11 +446,15 @@ impl DkimAnahtarDeposu {
         veri: &str,
     ) -> Result<String, DkimHatasi> {
         let istenen = DkimAlgoritmasi::ayristir(algoritma)?;
-        let (_, anahtar) = self
+        let kayit = self
             .anahtarlar
             .iter()
-            .find(|(ad, _)| ad == credential)
+            .find(|kayit| kayit.credential == credential)
             .ok_or(DkimHatasi::AnahtarBilinmiyor)?;
+        if let Some(neden) = kayit.devre_disi {
+            return Err(neden);
+        }
+        let anahtar = &kayit.anahtar;
         let etiketler = imza_girdisini_denetle(veri)?;
         if istenen != anahtar.algoritma
             || etiketler.algoritma != anahtar.algoritma
@@ -403,6 +465,70 @@ impl DkimAnahtarDeposu {
         }
         let baytlar = kanonik_baytlar(veri)?;
         Ok(base64_kodla(&anahtar.imzala_bayt(&baytlar)?))
+    }
+}
+
+/// K-413 (ADR-174 eki): `<s>._domainkey.<d>` TXT kayıtlarının özel
+/// anahtarla açılış eşleşmesi.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DnsEslesmesi {
+    /// Bir DKIM anahtar kaydının `p=`'si özel anahtarın açık parçasıdır.
+    Eslesti,
+    /// Adda DKIM anahtar kaydı yok (uyarı; süreç başlar).
+    KayitYok,
+    /// Anahtar iptal edilmiş (boş `p=`, RFC 6376 §3.6.1).
+    Iptal,
+    /// DKIM kayıtları var ama hiçbiri bu anahtar değil.
+    Uyusmuyor,
+}
+
+/// RFC 6376 §3.6.1 anahtar kaydı: `v=` varsa ilk etiket ve `DKIM1`, `k=`
+/// varsayılanı `rsa`, `p=` zorunlu. Anahtar kaydı değilse `None`.
+fn anahtar_kaydi(txt: &[u8]) -> Option<(String, String)> {
+    let metin = std::str::from_utf8(txt).ok()?;
+    let (mut k, mut p) = ("rsa".to_string(), None);
+    for (sira, parca) in metin.split(';').enumerate() {
+        let parca = parca.trim_matches([' ', '\t', '\r', '\n']);
+        if parca.is_empty() {
+            continue;
+        }
+        let (ad, deger) = parca.split_once('=')?;
+        let (ad, deger) = (ad.trim(), deger.trim());
+        match ad {
+            "v" if sira != 0 || deger != "DKIM1" => return None,
+            "k" => k = deger.to_ascii_lowercase(),
+            "p" => p = Some(deger.to_string()),
+            _ => {}
+        }
+    }
+    Some((k, p?))
+}
+
+/// TXT kayıtlarını anahtarla karşılaştırır. Eşleşen kayıt varsa `Eslesti`;
+/// yoksa iptal edilmiş kayıt `Iptal`, başka DKIM kaydı `Uyusmuyor`.
+pub fn dns_kaydini_denetle(anahtar: &DkimImzaAnahtari, txt: &[Vec<u8>]) -> DnsEslesmesi {
+    use crate::dkim_kripto::AcikAnahtar;
+    let beklenen = AcikAnahtar::ayristir(anahtar.algoritma, &anahtar.acik_anahtar()).ok();
+    let tur = match anahtar.algoritma {
+        DkimAlgoritmasi::RsaSha256 => "rsa",
+        DkimAlgoritmasi::Ed25519Sha256 => "ed25519",
+    };
+    let (mut iptal, mut dkim_var) = (false, false);
+    for (k, p) in txt.iter().filter_map(|kayit| anahtar_kaydi(kayit)) {
+        dkim_var = true;
+        if p.chars().all(|c| c.is_ascii_whitespace()) {
+            iptal = true;
+            continue;
+        }
+        let yayimlanan = AcikAnahtar::base64ten(anahtar.algoritma, &p).ok();
+        if k == tur && yayimlanan.is_some() && yayimlanan == beklenen {
+            return DnsEslesmesi::Eslesti;
+        }
+    }
+    match (iptal, dkim_var) {
+        (true, _) => DnsEslesmesi::Iptal,
+        (false, true) => DnsEslesmesi::Uyusmuyor,
+        (false, false) => DnsEslesmesi::KayitYok,
     }
 }
 
@@ -544,5 +670,72 @@ mod testler {
             let hata = yukle(DkimAlgoritmasi::Ed25519Sha256, &bozuk).unwrap_err();
             assert!(!hata.contains(&govde[..16]));
         }
+    }
+
+    #[test]
+    fn dns_kaydi_eslesme_iptal_uyusmazlik_ve_yokluk() {
+        let rng = SystemRandom::new();
+        let pem = |pkcs8: &[u8]| format!("{PEM_BASI}\n{}\n{PEM_SONU}", base64_kodla(pkcs8));
+        let yukle = |pkcs8: &[u8]| {
+            DkimImzaAnahtari::pemden(
+                "ornek.test",
+                "s",
+                DkimAlgoritmasi::Ed25519Sha256,
+                &pem(pkcs8),
+            )
+            .unwrap()
+        };
+        let anahtar = yukle(Ed25519KeyPair::generate_pkcs8(&rng).unwrap().as_ref());
+        let baska = yukle(Ed25519KeyPair::generate_pkcs8(&rng).unwrap().as_ref());
+        let p = base64_kodla(&anahtar.acik_anahtar());
+        let kayit = |m: String| m.into_bytes();
+        let denetle = |kayitlar: Vec<String>| {
+            dns_kaydini_denetle(
+                &anahtar,
+                &kayitlar.into_iter().map(kayit).collect::<Vec<_>>(),
+            )
+        };
+        use DnsEslesmesi::*;
+        assert_eq!(denetle(vec![format!("v=DKIM1; k=ed25519; p={p}")]), Eslesti);
+        // Katlanmış p=, sonda ';', başka kayıtlarla birlikte.
+        let katli = format!("{} {}", &p[..10], &p[10..]);
+        assert_eq!(
+            denetle(vec![
+                "v=spf1 -all".into(),
+                format!("v=DKIM1;k=ed25519;p={katli};")
+            ]),
+            Eslesti
+        );
+        assert_eq!(denetle(vec!["v=DKIM1; k=ed25519; p=".into()]), Iptal);
+        let baska_p = base64_kodla(&baska.acik_anahtar());
+        assert_eq!(
+            denetle(vec![format!("v=DKIM1; k=ed25519; p={baska_p}")]),
+            Uyusmuyor
+        );
+        // k= varsayılanı rsa: Ed25519 anahtarı eşleşmez.
+        assert_eq!(denetle(vec![format!("v=DKIM1; p={p}")]), Uyusmuyor);
+        assert_eq!(
+            denetle(vec![format!("v=DKIM1; k=ed25519; p=%%%")]),
+            Uyusmuyor
+        );
+        // v= ilk değil ya da DKIM1 değil: anahtar kaydı sayılmaz.
+        assert_eq!(
+            denetle(vec![format!("k=ed25519; v=DKIM1; p={p}")]),
+            KayitYok
+        );
+        assert_eq!(
+            denetle(vec![format!("v=DKIM2; k=ed25519; p={p}")]),
+            KayitYok
+        );
+        assert_eq!(denetle(vec!["v=spf1 -all".into()]), KayitYok);
+        assert_eq!(denetle(vec![]), KayitYok);
+        // Eşleşen kayıt iptal kaydından önce gelir.
+        assert_eq!(
+            denetle(vec![
+                "v=DKIM1; k=ed25519; p=".into(),
+                format!("v=DKIM1; k=ed25519; p={p}")
+            ]),
+            Eslesti
+        );
     }
 }

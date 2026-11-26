@@ -63,6 +63,9 @@ pub enum DkimHatasi {
     AnahtarBilinmiyor,
     /// K-397 imza: girdinin `d=`/`s=`/`a=` değeri bildirilmiş anahtara uymuyor.
     AnahtarUyusmuyor,
+    /// K-413 imza: DNS'te yayımlanan `p=` özel anahtara uymadığı için anahtar
+    /// açılışta devre dışı bırakıldı.
+    AnahtarDnsUyusmuyor,
     /// K-397 imza: imza girdisi kâhin önlemini geçmedi (sabit neden).
     GirdiGecersiz(&'static str),
 }
@@ -81,6 +84,7 @@ impl DkimHatasi {
             Self::VeriBozuk => "veri_bozuk",
             Self::AnahtarBilinmiyor => "anahtar_bilinmiyor",
             Self::AnahtarUyusmuyor => "anahtar_uyuşmuyor",
+            Self::AnahtarDnsUyusmuyor => "anahtar_dns_uyuşmuyor",
             Self::GirdiGecersiz(_) => "geçersiz",
         }
     }
@@ -107,6 +111,9 @@ impl DkimHatasi {
             Self::AnahtarUyusmuyor => {
                 "DKIM imza girdisinin d=/s=/a= değeri bildirilmiş anahtara uymuyor"
             }
+            Self::AnahtarDnsUyusmuyor => {
+                "DKIM özel anahtarı DNS'te yayımlanan açık anahtara (p=) uymuyor; anahtar açılışta devre dışı bırakıldı"
+            }
             Self::GirdiGecersiz(neden) => neden,
         }
     }
@@ -124,6 +131,7 @@ impl DkimHatasi {
             Self::VeriBozuk,
             Self::AnahtarBilinmiyor,
             Self::AnahtarUyusmuyor,
+            Self::AnahtarDnsUyusmuyor,
             Self::GirdiGecersiz("DKIM imza girdisi geçersiz"),
         ]
         .into_iter()

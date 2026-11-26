@@ -243,7 +243,8 @@ değişmeziyle bağlanma ikinci ad çözümü yapmaz. Giden DKIM imzası da
 **gerçekleşti** (K-397 Dilim 2, [ADR-174](../adr/174-dkim-imza-ilkeli.md)):
 `dkim_anahtarları` credential anahtarı ve imza kâhini önlemiyle
 `imzalamayı dene`. **Açık:** gerçek internette DANE/MTA-STS teslim ve
-`dkim=pass` kanıtı; açılışta DNS `p=` eşleme denetimi. V1 sözü değildir.
+`dkim=pass` kanıtı. Açılışta yayımlanmış DKIM anahtarı denetimi K-413 ile
+gerçekleşti. V1 sözü değildir.
 
 Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 ([ADR-170](../adr/170-paylasilan-veri-koku.md),
