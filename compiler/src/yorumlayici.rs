@@ -22,6 +22,7 @@ mod kendine_ekleme;
 mod kimlik_iletisim;
 mod kodlanmis_dosya;
 mod metin;
+mod metin_kodlama;
 mod paylasilan_io;
 mod posta;
 mod rota_sonu;

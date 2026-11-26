@@ -215,10 +215,53 @@ küçük harf onaltılık `Metin` olarak verir (satır sonu dönüşümü yok); 
 yetkinliksizdir, aynı içerikli dosyanın `sha256 özetini almayı dene`
 sonucuna eşittir. Metin dışı nesne derlemede tür hatasıdır.
 
-AÇIK (K-389): UTF-8 bayt sayısı, metin↔base64/onaltılık, kod noktası ve
-base64url RFC-0043 Dilim 2'dir. Çağrılar arası yarım base64 dörtlüsü
-saklanmaz; akışlı eklemede her çağrı tam dörtlülerden, QP'de tam satırlardan
-oluşmalıdır.
+AÇIK (K-389): Çağrılar arası yarım base64 dörtlüsü saklanmaz; akışlı
+eklemede her çağrı tam dörtlülerden, QP'de tam satırlardan oluşmalıdır.
+
+## Bellekteki metin ↔ bayt — K-402
+
+Normatif kaynak: RFC-0043 Dilim 2, ADR-167 eki (K-402).
+
+TANIMLI (K-402): `<metin>in utf8 bayt sayısı` metnin UTF-8 kodlamasındaki
+oktet sayısını `TamSayı` olarak verir (`"ç"` 2, `"😀"` 4, `""` 0);
+`uzunluğu` harf (Unicode skaler değer) saymayı sürdürür. SMTP/IMAP oktet
+sınırları bu değerle denetlenir.
+
+ZORUNLU (K-402): `<metin>in base64 karşılığı` metnin UTF-8 baytlarını
+RFC 4648 §4 standart alfabesiyle, dolgu (`=`) her zaman yazılarak, satır
+kırmadan kodlar ve toplamdır. Çıktı spec/24 metin sınırını aşacaksa
+ayırmadan önce C024 çalışma hatası olur.
+
+ZORUNLU (K-402): `<kod>un base64 çözümünü almayı dene` tek satır protokol
+alanını (AUTH PLAIN, IMAP AUTHENTICATE) katı çözer ve `Sonuç<Metin>` verir.
+Dolgu zorunludur; alfabe dışı karakter (CR, LF, boşluk, sekme dahil),
+ortada ya da fazla dolgu, 4'e bölünmeyen uzunluk ve kanonik olmayan dolgu
+bitleri C032 başarısız Sonuç'tur (`tür`: `alfabe`, `dolgu`, `uzunluk`;
+`konum` girdi içi bayt konumu). Çözülen çıktı 1 MiB'ı aşamaz ve ayırmadan
+önce denetlenir (`boyut_aşımı`). Çözülen baytlar katı UTF-8 olmalıdır;
+geçersiz dizi `U+FFFD` ile onarılmaz, C032 `tür: utf8` ve ilk geçersiz
+baytın konumunu verir. NUL ve BOM geçerli UTF-8'dir, olduğu gibi çözülür.
+Hata mesajı ve verisi girdiyi ya da çözülmüş içeriği taşımaz.
+
+TANIMLI (K-402): `<harf>in kod noktası` tek bir Unicode skaler değerden
+oluşan `Metin`in sayısal değerini `TamSayı` olarak verir. Boş ya da çok
+harfli metin programcı hatasıdır ve C032 çalışma hatası olur (`harfleri`
+ile ayrılmış öğede oluşmaz).
+
+ZORUNLU (K-402): `<sayı>nın kod noktası harfini almayı dene` 0–1 114 111
+aralığında ve vekil aralığı (55 296–57 343) dışındaki değer için tek harfli
+`Metin` başarısı, diğer her değer için C032 `tür: kod_noktası` başarısız
+Sonuç verir. NUL (0) ve CR (13) gibi kaçışla yazılamayan karakterler bu
+yolla üretilir.
+
+ZORUNLU (K-402): Bu bölümün ve `sha256 özeti`nin dönüşümleri saftır:
+yetkinlik istemez, IO izine olay yazmaz, replay'de aynı girdiye aynı
+çıktıyı verir. Metin (kod noktası harfinde TamSayı) dışı nesne derlemede
+tür hatasıdır.
+
+AÇIK (K-402): Onaltılık ↔ metin/base64 dönüşümü ve `base64url` ürün kanıtı
+olmadığından açılmadı (DKIM anahtar/özet biçimleri K-390 host yüzeyindedir);
+ikili veri Zee'ye ham bayt olarak girmez, dosya tutamağıyla taşınır.
 
 ## Açık sınır
 

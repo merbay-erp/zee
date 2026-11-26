@@ -88,6 +88,25 @@ pub fn base64_mime_coz(girdi: &str, azami: usize) -> Result<Vec<u8>, KodlamaHata
     base64_dortlulerini_coz(girdi.as_bytes(), cikti_boyu)
 }
 
+/// K-402 (RFC-0043 Dilim 2): tek satır protokol alanı base64'ü (AUTH PLAIN,
+/// IMAP AUTHENTICATE). MIME çözümüyle aynı katı kurallar, ek olarak gömülü
+/// CR/LF/boşluk/sekme de alfabe dışıdır (RFC 4648 §3.3).
+pub fn base64_coz(girdi: &str, azami: usize) -> Result<Vec<u8>, KodlamaHatasi> {
+    if let Some(konum) = girdi.bytes().position(mime_boslugu_mu) {
+        return Err(KodlamaHatasi::yeni(
+            "alfabe",
+            Some(konum),
+            "tek satır base64 boşluk ya da satır sonu içeremez",
+        ));
+    }
+    base64_mime_coz(girdi, azami)
+}
+
+/// K-402: base64 kodlamanın çıktı boyu (ayırmadan önce bütçe denetimi için).
+pub fn base64_boyu(girdi_bayti: usize) -> usize {
+    girdi_bayti.div_ceil(3).saturating_mul(4)
+}
+
 fn mime_boslugu_mu(bayt: u8) -> bool {
     matches!(bayt, b'\r' | b'\n' | b' ' | b'\t')
 }
@@ -460,6 +479,22 @@ mod testler {
                 assert_eq!(parca, &tum[bas..son], "konum={konum} adet={adet}");
             }
         }
+    }
+
+    #[test]
+    fn tek_satir_base64_gomulu_boslugu_reddeder() {
+        for (duz, kod) in RFC4648 {
+            assert_eq!(base64_coz(kod, 64).unwrap(), duz.as_bytes());
+            assert_eq!(base64_boyu(duz.len()), kod.len());
+        }
+        for (girdi, konum) in [("Zm9v\r\n", 4), ("Zm 9v", 2), ("\tZm9v", 0), ("Zg==\n", 4)] {
+            let hata = base64_coz(girdi, 64).unwrap_err();
+            assert_eq!((hata.tur, hata.konum), ("alfabe", Some(konum)), "{girdi:?}");
+        }
+        assert_eq!(base64_coz("Zg", 64).unwrap_err().tur, "uzunluk");
+        assert_eq!(base64_coz("Zh==", 64).unwrap_err().tur, "dolgu");
+        let kod = base64_kodla(&[0u8; 1025]);
+        assert_eq!(base64_coz(&kod, 1024).unwrap_err().tur, "boyut_aşımı");
     }
 
     #[test]

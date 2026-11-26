@@ -1,0 +1,22 @@
+# K-402 (RFC-0043 Dilim 2) — ürün H ZM-F023: SMTP/IMAP AUTH PLAIN (RFC 4616)
+# `\0kullanıcı\0parola` alanı. Ürün (commit 23af030, `motor/kaynak/
+# smtp_gonderim.dil` `base64 metnini çöz`, blob 9aba539) base64'ü U+0000–04FF
+# kod tablosuyla saf Zee'de çözüyor; tablo dışı harfli kullanıcı adı ya da
+# parola U+FFFD'ye dönüp giriş başarısız oluyor. Değişiklik öncesi S015.
+# Küçültmede NUL kod noktasından üretilir, UTF-8 baytları kodlanır, katı
+# çözülüp ayrılır; kullanıcı ve parola yer tutucudur.
+nul 0 kod noktası harfini almayı dene olsun
+nul başarılıysa
+    ayraç nulün değeri olsun
+    öğeler boş liste olsun
+    öğelere "" ekle
+    öğelere "ayşe" ekle
+    öğelere "örnek-parola" ekle
+    alan öğelerin ayraç ile birleşmişi olsun
+    kod alanın base64 karşılığı olsun
+    kod yaz
+    çözüm kodun base64 çözümünü almayı dene olsun
+    çözüm başarılıysa
+        düz çözümün değeri olsun
+        parçalar düzün ayraç ile parçaları olsun
+        parçaların adedi yaz
