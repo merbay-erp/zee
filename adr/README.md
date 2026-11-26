@@ -171,13 +171,14 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-164 | [Satır içi betik CSP özeti yalnız kaynak değişmezinden](164-satir-ici-betik-csp-ozeti.md) | **kabul** (K-379/GB-153) |
 | ADR-165 | [Adlı dinleyici bağlantı yüzeyi ve bağlantı scheduler'ı](165-ag-dinleyici-baglanti-yuzeyi.md) | **kabul** (K-381/GB-157, GB-158; A2c eki K-384/GB-159; birim bütçesi eki K-388/GB-162) |
 | ADR-166 | [Liste sıra erişimi: dar sıra eki tokeni ve ödünç alan O(1) okuma](166-liste-sira-erisimi.md) | **kabul** (K-386, RFC-0029) |
-| ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1; K-395 eki 32 MiB hedef tavanı/GB-167; K-401 eki özet/dosya yanıtı 32 MiB, izsiz taşıma/GB-169) |
+| ADR-167 | [Dosya ↔ kodlanmış içerik ve bellekte SHA-256](167-dosya-kodlanmis-icerik-ve-bellek-ozeti.md) | **kabul** (K-389/GB-163; RFC-0043 Dilim 1; K-395 eki 32 MiB hedef tavanı/GB-167; K-401 eki özet/dosya yanıtı 32 MiB, izsiz taşıma/GB-169; K-402 eki Dilim 2 bellekteki metin ↔ bayt/GB-178) |
 | ADR-168 | [İstek boyut sınırları: multipart metin alanı, gövde aşımı rotası, rota bazlı gövde ve SQL parametre tavanı](168-istek-boyut-sinirlari-ve-govde-asimi.md) | **kabul** (K-391/GB-164, GB-165; Dilim 1 ve 2 uygulandı) |
 | ADR-169 | [DNS stub çözücü, loopback AD biti ve kendi tel biçimi sınırı](169-dns-stub-cozucu-ve-tel-bicimi-siniri.md) | **kabul** (K-390/GB-166) |
 | ADR-170 | [Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki ve ayrı okuma/yazma yetkinliği](170-paylasilan-veri-koku.md) | **kabul** (K-394/GB-168; RFC-0045) |
 | ADR-171 | [C024 heap zarfı düşen değerin payını iade eder](171-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-170; ADR-033 iade-yok ilkesini değiştirir) |
 | ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d) |
 | ADR-173 | [Giden TCP, `ağ_hedefleri` `tcp://` politikası ve istemci STARTTLS](173-giden-tcp-ve-istemci-starttls.md) | **kabul** (K-397 Dilim 1, RFC-0044 B4a) |
+| ADR-174 | [DKIM imza ilkeli ve `dkim_anahtarları` bildirimi](174-dkim-imza-ilkeli.md) | **kabul** (K-397 Dilim 2/GB-177; RFC-0044 B3) |
 | ADR-175 | [Parametre bağlama adı sözlük köküne bağlanır (profil değişmeden)](175-parametre-baglama-adi-sozluk-koku.md) | **kabul** (K-398; ZM-F030, K-164/F006) |
 | ADR-176 | [Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu](176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md) | **kabul** (K-400/GB-173) |
 | ADR-177 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-174; RFC-0044 B1b, B2b) |

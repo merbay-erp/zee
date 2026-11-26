@@ -22,6 +22,7 @@ mod kendine_ekleme;
 mod kimlik_iletisim;
 mod kodlanmis_dosya;
 mod metin;
+mod metin_kodlama;
 mod paylasilan_io;
 mod posta;
 mod rota_sonu;
@@ -618,6 +619,27 @@ pub trait GirdiCikti {
     /// K-390 B1b: proje `kamu_son_ekleri` listesine göre RFC 7489 kurumsal alanı.
     fn kurumsal_alan(&mut self, _ad: &str) -> Result<String, String> {
         Err("proje `kamu_son_ekleri` bildirmiyor".into())
+    }
+    /// K-397 B3: proje `dkim_anahtarları` anahtarıyla imza girdisini imzalar
+    /// → `b=`. Hata DKIM C034 `tür` değeridir (anahtar baytı taşımaz).
+    /// K-397 B3 (ZM-F046): dosyanın `bas` baytından başlayan gövdesinin `kip`
+    /// (simple/relaxed) kanonik akışlı `bh=` özeti. Hata metni: tam
+    /// `veri_bozuk` (LF'siz CR), `sınır: …` (32 MiB), `aralık: …` (baş/kip).
+    fn dosya_dkim_govde_ozeti(
+        &mut self,
+        _yol: &str,
+        _bas: i64,
+        _kip: &str,
+    ) -> Result<String, String> {
+        Err("IO adaptörü DKIM dosya gövde özetini desteklemiyor".into())
+    }
+    fn dkim_imzala(
+        &mut self,
+        _anahtar: &str,
+        _algoritma: &str,
+        _veri: &str,
+    ) -> Result<String, String> {
+        Err("anahtar_bilinmiyor".into())
     }
 }
 

@@ -55,6 +55,70 @@ Bu kayıt yeni sürüm etiketi değildir.
   ifadesidir, rotayı bitirmez; rota dışındaki (`test` bloğu, üst düzey)
   yanıt cümleleri de eskisi gibi akışı sürdürür.
 
+### Eklenenler
+
+- **Giden posta için DKIM imzası (K-397):** posta sunucusu yazan bir Zee
+  programı artık gönderdiği iletiyi kendi alanı adına DKIM ile
+  imzalayabiliyor. Alıcı sunucu DMARC denetiminde iletinin gerçekten sizin
+  alanınızdan geldiğini görür; böylece iletiler istenmeyene düşmez ve alan
+  `p=reject` politikasına geçebilir. Özel anahtar kaynak kodda ya da
+  `proje.dil`'de durmaz; `proje.dil` yalnız anahtarın credential adını yazar:
+  `dkim_anahtarları "ornek.test z2026a ed25519-sha256 zeemail_dkim_anahtari"
+  listesi olsun` (`kriptografi` yetkinliği). Program başlarken anahtarı
+  systemd credential dizininden (yoksa ortamdan) bir kez okur. RSA 2048–4096
+  bit ya da Ed25519 PKCS#8 PEM olmayan anahtarla süreç hiç başlamaz.
+  Kanonikleştirdiğiniz başlık bloğunu `veri verisi için
+  "zeemail_dkim_anahtari" özel anahtarıyla "ed25519-sha256" olarak
+  imzalamayı dene` ile imzalarsınız; sonuç `b=` değeridir.
+
+  Anahtarın başkası adına imza atmasını önlemek için dil, imzalanacak bloğu
+  önce denetler:
+  - Son alan boş `b=` ile biten DKIM-Signature olmalı.
+  - Bu alandaki `d=`, `s=` ve `a=` değerleri bildirilen anahtarla aynı
+    olmalı.
+  - `h=` `from` içermeli.
+  - From adresi `d=` alanında ya da alt alanında olmalı.
+
+  Uymayan blok imzalanmaz, C034 `geçersiz` döner.
+
+  Büyük iletiler için yeni bir kalıp da geldi:
+  `blok dosyasının gövde_başı baytından "relaxed" kipinde dkim gövde
+  özetini almayı dene`. Gövde özetini (`bh=`) doğrudan dosyadan, akışla,
+  32 MiB'a kadar hesaplar. Başlıklarıyla birlikte saklanan ham iletide
+  gövdenin başladığı baytı verirsiniz; `simple` ve `relaxed` gövde
+  kanonikleştirmesi dilin içinde yapılır, satır sonu LF ya da CRLF
+  olabilir. Önceki `gövdesinin dkim gövde özeti` Metin ilkesi 256 KiB üstü
+  gövdede çalışmıyordu. Bu yüzden ekli iletiler imzalanamıyor, 400 KB'lık
+  meşru imzalı gelen ileti de doğrulanamayıp İstenmeyen'e düşüyordu.
+
+  **Göç:** Yok; yeni yüzey. `dil dene` anahtar yüklemez, imza C034
+  `anahtar_bilinmiyor` döner. Büyük gövdede Metin ilkesi yerine dosya
+  ilkesini kullanın.
+
+- **Metnin bayt sayısı, base64 ve kod noktası (K-402, RFC-0043 Dilim 2):**
+  bellekteki metin için beş yeni kalıp eklendi. Hepsi yetkinlik istemez:
+
+  ```text
+  oktet satırın utf8 bayt sayısı olsun                 # "ç" → 2, "😀" → 4
+  kod alanın base64 karşılığı olsun                    # dolgulu RFC 4648 base64
+  düz kodun base64 çözümünü almayı dene olsun          # Sonuç<Metin>
+  sayı harfin kod noktası olsun                        # "A" → 65
+  nul 0 kod noktası harfini almayı dene olsun          # Sonuç<Metin>
+  ```
+
+  `uzunluğu` harf saymayı sürdürür; SMTP/IMAP gibi oktet sınırları artık
+  `utf8 bayt sayısı` ile doğru denetlenir. base64 çözümü tek satırlık
+  protokol alanı içindir ve katıdır: dolgu zorunludur; boşluk, satır sonu
+  ve alfabe dışı karakter reddedilir; çıktı en çok 1 MiB ve geçerli UTF-8
+  olmalıdır. Bozuk girdi C032 verir (`tür` ve `konum`); hata mesajı
+  girdiyi (ör. parolayı) taşımaz. `kod noktası harfi` NUL ve CR gibi kaçışla
+  yazılamayan karakterleri de üretir. Tek harf
+  olmayan metnin `kod noktası` çalışma hatasıdır. Onaltılık dönüşüm ve
+  base64url bu sürümde yoktur.
+
+  **Göç:** Gerekmez. Elle yazılmış base64 döngüleri bu kalıplarla
+  değiştirilebilir.
+
 ### Site
 
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.

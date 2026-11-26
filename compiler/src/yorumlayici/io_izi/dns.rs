@@ -14,6 +14,17 @@ pub(super) const ISLEM: &str = "dns_sorgula";
 /// K-390 B1b: `[ad]` → metin sonucu (kamu son ek listesi izde yok; aynı
 /// kurumsal alan replay'de izden gelir).
 pub(super) const KURUMSAL_ALAN: &str = "kurumsal_alan";
+/// K-397 B3: `[anahtar adı, algoritma, girdi SHA-256]` → `b=` ya da C034
+/// `tür`. İzde imza girdisinin kendisi ve anahtar yoktur; replay anahtarsız
+/// aynı imzayı izden verir.
+pub(super) const DKIM_IMZALA: &str = "dkim_imzala";
+/// K-397 B3 eki: `[yol, baş, kip]` → `bh=` ya da hata metni (içerik izde yok).
+pub(super) const DOSYA_GOVDE_OZETI: &str = "dosya_dkim_govde_ozeti";
+
+pub(super) fn dkim_argumanlari(anahtar: &str, algoritma: &str, veri: &str) -> Vec<String> {
+    let ozet = crate::guvenlik::sha256_hex(veri.as_bytes());
+    vec![anahtar.into(), algoritma.into(), ozet]
+}
 
 pub(super) fn argumanlar(ad: &str, tur: KayitTuru) -> Vec<String> {
     vec![ad.into(), tur.yazimi().into()]
@@ -154,6 +165,8 @@ pub(super) fn sema_ya_da_bilinmeyen(olay: &super::IzOlay) -> Result<(), String> 
         semayi_denetle(&olay.argumanlar, &olay.sonuc)
     } else if olay.islem == KURUMSAL_ALAN {
         super::metin_sonuc_semasi(olay, 1)
+    } else if olay.islem == DOSYA_GOVDE_OZETI || olay.islem == DKIM_IMZALA {
+        super::metin_sonuc_semasi(olay, 3)
     } else {
         Err(format!("bilinmeyen işlem: {}", olay.islem))
     }

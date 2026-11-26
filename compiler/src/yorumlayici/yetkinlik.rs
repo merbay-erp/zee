@@ -3,11 +3,11 @@ mod dosya;
 mod http;
 mod kimlik_iletisim;
 mod kurulum;
+mod posta;
 mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
-use crate::dns_teli::{DnsHataTuru, DnsHatasi, DnsSonucu, KayitTuru};
 use crate::tani::Tani;
 use crate::web_guvenligi::WebReddi;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
@@ -238,13 +238,5 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn an_ms(&mut self) -> i64 {
         self.ic.an_ms()
     }
-    fn dns_sorgula(&mut self, ad: &str, tur: KayitTuru, ms: i64) -> DnsSonucu {
-        self.gerektir(Yetkinlik::Dns)
-            .map_err(|m| DnsHatasi::yeni(DnsHataTuru::Ag, m))?;
-        self.ic.dns_sorgula(ad, tur, ms)
-    }
-    fn kurumsal_alan(&mut self, ad: &str) -> Result<String, String> {
-        self.gerektir(Yetkinlik::Dns)?;
-        self.ic.kurumsal_alan(ad)
-    }
+    posta::yontemler!();
 }

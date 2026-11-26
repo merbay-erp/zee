@@ -2589,9 +2589,9 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
-## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173)
+## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
-**Durum: Dilim 1 KAPALI (B4a); Dilim 2 (B3 DKIM imza ilkeli, ADR-174) AÇIK.**
+**Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
 Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) `zeemail/disteslim` hizmeti;
 ZeeOS'ta 25 kapısına çıkış yalnız bu hizmete açıktır, teslim motoru (SMTP
 istemci durum makinesi, MX sırası, yeniden deneme, MTA-STS/DANE/TLS-RPT
@@ -2621,10 +2621,35 @@ zincir + SPKI openssl eşliği, yanlış SNI/kendinden imzalı/süresi dolmuş,
 kök yokken bilinmeyen yayıncı, joker yerel adrese soket açmaz, düz bağlantıda
 parça/aktarım/süreli okuma).
 
-Açık: Dilim 2 (DKIM imza ilkeli, `kriptografi`, credential anahtar,
-K-390 B2 doğrulayıcısıyla tek kripto yüzeyi); `x509_spki` fuzz hedefinin RC
-kapısına alınması; gerçek internette DANE/MTA-STS teslim kanıtı (insan adımı);
-ürün reproducer'ı ve provenance (ZeeMail'den bekleniyor).
+Dilim 2: `dkim_anahtarları "<alan> <seçici> <algoritma> <credential>"`
+bildirimi (`kriptografi`, en çok 16, başka gizli adla çakışma P015);
+anahtar açılışta K-339 ile okunur (PKCS#8 PEM, RSA 2048–4096 ya da Ed25519,
+hata çıkış 2, tanı yalnız alan+seçici). `VERİ verisi için AD özel
+anahtarıyla A olarak imzalamayı dene` → `b=`; imza kâhini önlemi (son alan
+boş `b=`'li DKIM-Signature, `v=1`, `bh=`, `h=from`, `l=` yok, tek From ve
+`d=` hizası, `i=`, `d=`/`s=`/`a=` bildirimle birebir) yorumlayıcıda ve
+adaptörde. Tek kripto yüzeyi `ring` (`dkim_kripto` + `dkim_imza`); IO izi
+`dkim_imzala` (ad, algoritma, girdi SHA-256'sı). ZM-F042 (ZeeMail 850d86b),
+GB-177.
+ZM-F046 (merkez kararı B): `YOL dosyasının BAŞ baytından KİP kipinde dkim
+gövde özetini almayı dene` (akışlı simple/relaxed gövde kanonikleştirmesi
+host'ta, LF/CRLF, 32 MiB, `veri:`/dosya yol kuralları; ZeeMail d6705f1,
+gözlem cb047c5: 256 KiB üstü gövde).
+
+Dilim 2 kanıtı: `dkim_imza.rs` (5 birim: etiketler, kâhin girdileri, tırnak/
+yorumlu From, Ed25519 depo eşlemesi, bozuk PEM), `dkim_imza_testi.rs`
+(8: Ed25519 imzası K-390 doğrulayıcısı ve openssl ile, RSA 2048/4096
+openssl ile, 1024/4608 bit ret, kâhin C034, yetkinlik, IO izinde anahtar/girdi
+yok + anahtarsız replay, proje bildirimi P015, gerçek süreç açılış yüklemesi
+ve çıkış 2, credential dizini tercihi ve ortam çakışması; gövde özetinde
+RFC 6376 kipleri, boş gövde, sondaki boş satırlar, WSP sıkıştırma, LF/CRLF
+ve Metin ilkesi eşdeğerliği, baş ofseti, kip/CR/32 MiB reddi, yetkinlik, iz
+ve gerçek süreçte 400 KB ham CRLF ileti) ve `dkim_kripto` kanonikleştirme
+birimleri.
+
+Açık: `x509_spki` ve `dkim_imza_girdisi` fuzz hedeflerinin RC kapısına
+alınması; açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
+teslim ve `dkim=pass` kanıtı (insan adımı).
 
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
 
@@ -2897,7 +2922,7 @@ hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
 ZM-F048 (ürün `b75db4c`); merkez onayı 26.11.2026 09:05, küçük yüzey.
-Freeze sınıfı `dogfood-change` (semantic-change). GB-177.
+Freeze sınıfı `dogfood-change` (semantic-change). GB-179.
 
 Sürtünme: takvim yayını (`GET /takvim/yayin.ics?k=<belirteç>`) bellekte
 kurulan iCalendar metnidir; bellekteki metin yanıtı yalnız `text/html` /
@@ -3127,6 +3152,32 @@ Açık: (A2c K-384'te kapandı)
 binlerce boşta oturumun RSS ölçümü, bağlantı içindeki senkron DB/dosya
 çağrıları (Katman C).
 
+## K-402 — RFC-0043 Dilim 2: bellekteki metin ↔ bayt (ADR-167 eki)
+
+**Durum:** kapalı (25 Kasım 2026). Kaynak `urun-h` ZeeMail sürtünmesi
+**ZM-F023** (ürün commit'i `23af030`): ürün bayt sayımı, kod noktası ↔
+harf ve base64'ü saf Zee'de U+0000–04FF kod tablosuyla yapıyor; tablo
+dışındaki harf IMAP literal `{n}` sayımında 1 bayt sayılıyor (oturum kayar),
+RFC 2047 konusu ve AUTH PLAIN parolası U+FFFD'ye, giden emojili konu `?`'e
+dönüyor (taklit konu denetimi kör). Reproducer'lar `zm-r004`,
+`zm-f023-imap-literal-oktet`, `zm-f023-rfc2047-emoji`, `zm-f023-auth-plain`
+(değişiklik öncesi S015). Freeze sınıfı `dogfood-change`; yeni tür, grammar
+kuralı, yetkinlik ya da tanı kodu yok.
+
+Karar (ADR-167 K-402 eki, spec/26 §Bellekteki metin ↔ bayt): beş saf
+özellik — `utf8 bayt sayısı`, `base64 karşılığı`, `base64 çözümünü almayı
+dene` (tek satır, katı RFC 4648, CR/LF/boşluk alfabe dışı, ≤ 1 MiB, katı
+UTF-8), `kod noktası` (tek harf dışı C032 çalışma hatası), `kod noktası
+harfini almayı dene` (vekil/aralık dışı C032 `kod_noktası`). RFC-0043 kabul;
+Dilim 1 ve 2 uygulandı. GB-178.
+
+Kanıt: `compiler/tests/metin_kodlama_testi.rs` (10 vaka),
+`compiler/src/kodlama.rs::tek_satir_base64_gomulu_boslugu_reddeder`;
+dogfood `zm-r004-uzunluk-oktet-saymaz` (`1|2`) ve üç `zm-f023-*` vakası.
+
+Açık: onaltılık ↔ metin/base64 ve `base64url` (ürün kaydı yok; DKIM K-390
+host yüzeyinde); SMTP/CLI/gizli değer iç base64 yardımcılarının tek
+uygulamada birleştirilmesi (bakım); `kodlama` fuzz hedefi.
 ## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040

@@ -6,7 +6,7 @@
   RFC-0040 katman C, RFC-0036, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-096 (ekli e-posta), ADR-159 (imza okuma), ADR-160 (rota önbelleği),
   spec/11, spec/26, spec/23, GB-154, GB-155, GB-156; ek: K-385 (ZM-F033),
-  GB-160; ek: K-406 (ZM-F048), GB-177
+  GB-160; ek: K-406 (ZM-F048), GB-179
 
 ## Bağlam
 
@@ -260,7 +260,7 @@ bu ekte ölçülmedi; insan ölçümü açıktır.
    kapalı kümeyi uygular. Desteklemeyen adaptörün varsayılanı türü düşürüp
    `text/html` koklamasına açılmaz: fail-closed 500 durum yanıtı.
 
-**Güvenlik değerlendirmesi (GB-177).** Risk: kullanıcı verisi taşıyan
+**Güvenlik değerlendirmesi (GB-179).** Risk: kullanıcı verisi taşıyan
 bellek metninin tarayıcıda belge/betik olarak yorumlanması (XSS), tür
 başlığına enjeksiyon, gizli belirteçli adresin paylaşılan önbelleğe girmesi.
 Tür derlemede kapalı kümeden literaldir, çalışma zamanı başlık değerini

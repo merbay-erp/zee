@@ -60,6 +60,9 @@ pub struct ToplayanIo {
     pub dns_sorgulari: Vec<(String, crate::dns_teli::KayitTuru, i64)>,
     /// K-390 B1b: `kurumsal alanı` için kamu son ek listesi (yoksa hata).
     pub kamu_son_ekleri: Option<std::sync::Arc<crate::kamu_son_ekleri::KamuSonEkleri>>,
+    /// K-397 B3: `imzalamayı dene` için DKIM anahtarları (yoksa `anahtar_bilinmiyor`).
+    #[cfg(not(target_arch = "wasm32"))]
+    pub dkim_anahtarlari: Option<std::sync::Arc<crate::dkim_imza::DkimAnahtarDeposu>>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     /// Eylem başı dosya tabloları (K-389: ikili tablo da geri alınır).
@@ -141,6 +144,8 @@ impl ToplayanIo {
             dns_bolgesi: HashMap::new(),
             dns_sorgulari: Vec::new(),
             kamu_son_ekleri: None,
+            #[cfg(not(target_arch = "wasm32"))]
+            dkim_anahtarlari: None,
             baglanti: Default::default(),
             an_son_degeri: 0,
             cikti: Vec::new(),
@@ -870,5 +875,44 @@ impl GirdiCikti for ToplayanIo {
             .as_ref()
             .map(|liste| liste.kurumsal_alan(ad))
             .ok_or_else(|| "proje `kamu_son_ekleri` bildirmiyor".into())
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    fn dosya_dkim_govde_ozeti(&mut self, yol: &str, bas: i64, kip: &str) -> Result<String, String> {
+        let kip = crate::dkim_kripto::GovdeKipi::ayristir(kip)
+            .ok_or_else(|| "aralık: gövde kipi simple ya da relaxed olmalı".to_string())?;
+        let baytlar = match self.ikili_dosyalar.get(yol) {
+            Some(baytlar) => baytlar.as_slice(),
+            None => self
+                .dosyalar
+                .get(yol)
+                .map(String::as_bytes)
+                .ok_or_else(|| format!("\"{yol}\" dosyası bulunamadı"))?,
+        };
+        let mut govde = usize::try_from(bas)
+            .ok()
+            .and_then(|bas| baytlar.get(bas..))
+            .ok_or_else(|| {
+                format!(
+                    "aralık: gövde başı {bas} dosya boyunun ({}) dışında",
+                    baytlar.len()
+                )
+            })?;
+        crate::dkim_kripto::govde_ozetini_akit(&mut govde, kip, yol)
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    fn dkim_imzala(
+        &mut self,
+        anahtar: &str,
+        algoritma: &str,
+        veri: &str,
+    ) -> Result<String, String> {
+        let depo = self
+            .dkim_anahtarlari
+            .as_ref()
+            .ok_or_else(|| "anahtar_bilinmiyor".to_string())?;
+        depo.imzala(anahtar, algoritma, veri)
+            .map_err(|hata| hata.turu().to_string())
     }
 }

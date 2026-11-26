@@ -116,6 +116,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/http_istek.rs", 180),
         ("src/yorumlayici/yetkinlik/web.rs", 60),
         ("src/yorumlayici/yetkinlik/kimlik_iletisim.rs", 90),
+        ("src/yorumlayici/yetkinlik/posta.rs", 60),
         ("src/eposta.rs", 500),
         ("src/gorsel.rs", 180),
         ("src/guvenlik/totp.rs", 240),

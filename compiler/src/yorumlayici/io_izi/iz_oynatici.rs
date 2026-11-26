@@ -181,6 +181,23 @@ impl GirdiCikti for IzYenidenOynatici {
         self.metin_sonuc(dns::KURUMSAL_ALAN, sonuc)
     }
 
+    fn dosya_dkim_govde_ozeti(&mut self, yol: &str, bas: i64, kip: &str) -> Result<String, String> {
+        let argumanlar = vec![yol.into(), bas.to_string(), kip.into()];
+        let sonuc = self.siradaki(dns::DOSYA_GOVDE_OZETI, argumanlar);
+        self.metin_sonuc(dns::DOSYA_GOVDE_OZETI, sonuc)
+    }
+
+    fn dkim_imzala(
+        &mut self,
+        anahtar: &str,
+        algoritma: &str,
+        veri: &str,
+    ) -> Result<String, String> {
+        let argumanlar = dns::dkim_argumanlari(anahtar, algoritma, veri);
+        let sonuc = self.siradaki(dns::DKIM_IMZALA, argumanlar);
+        self.metin_sonuc(dns::DKIM_IMZALA, sonuc)
+    }
+
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         let sonuc = self.siradaki("sunucu_kur", vec![kapi.to_string()]);
         self.birim_sonuc("sunucu_kur", sonuc)

@@ -232,6 +232,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             dns: None,
             veri_koku_degiskeni: None,
             kamu_son_ekleri: None,
+            dkim_anahtarlari: Vec::new(),
         }
     );
 }

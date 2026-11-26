@@ -153,3 +153,10 @@ Uygulama günü iki sürtünme ortaya çıktı:
 - Risk: ayrıştırıcı tutarlılığı Zee kodunun sorumluluğundadır. Host tek
   başlık ayrıştırıcısını B2a'da verecektir; GB-174 bu riskin açık
   kaydıdır.
+
+## Ek — K-397 (25 Kasım 2026)
+
+Büyük gövdede `bh=` için gövde kanonikleştirmesi (simple/relaxed) dosyadan
+akışlı ilkelle host'a alındı; başlık kanonikleştirmesi Zee'de kalır. Bu
+kararın dar istisnası ve gerekçesi [ADR-174 §8](174-dkim-imza-ilkeli.md)'dedir.
+Metin ilkesi `gövdesinin dkim gövde özeti` değişmedi.
