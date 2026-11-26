@@ -26,7 +26,17 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 56);
+    assert_eq!(kimlikler.len(), 57);
+    // K-408: dosyadan dosyaya satırlı base64 ekleme; hedef yazma, kaynak okuma.
+    let satirli = intrinsic::tanim(intrinsic::DOSYA_BASE64_SATIRLARI_EKLE).expect("K-408 kaydı");
+    assert_eq!(satirli.yetkinlik, Yetkinlik::DosyaYazma);
+    assert_eq!(satirli.etki, IntrinsicEtkisi::DisYazma);
+    assert!(intrinsic::dosya_da_okur(
+        intrinsic::DOSYA_BASE64_SATIRLARI_EKLE
+    ));
+    assert!(!intrinsic::baglanti_islemi_mi(
+        intrinsic::DOSYA_BASE64_SATIRLARI_EKLE
+    ));
     for kimlik in [
         intrinsic::BAGLANTI_SATIR_OKU,
         intrinsic::BAGLANTI_SATIR_YAZ,

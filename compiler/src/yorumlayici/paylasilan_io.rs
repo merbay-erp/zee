@@ -44,6 +44,11 @@ impl GirdiCikti for PaylasilanIo<'_> {
     ) -> Result<(String, u64), String> {
         self.ic.borrow_mut().dosyaya_bayt_yaz(yol, baytlar, ekleme)
     }
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        self.ic
+            .borrow_mut()
+            .dosyaya_base64_satirlari_ekle(kaynak, hedef)
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.borrow_mut().simdi()
     }

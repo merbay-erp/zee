@@ -283,6 +283,10 @@ pub const BASE64_SATIR_KARAKTERI: u64 = 76;
 /// Tam bir satırı dolduran ham bayt sayısı (57 · 4 / 3 = 76).
 pub const BASE64_SATIR_HAM_BAYTI: u64 = 57;
 const BASE64_SATIR_TOPLAMI: u64 = BASE64_SATIR_KARAKTERI + 2;
+/// K-408 (ADR-172 eki): `… base64 satırlarıyla … dosyasına eklemeyi dene`
+/// kaynak dosya tavanı ve hedefin toplam tavanı (bayt); K-395 çözerek ekleme,
+/// K-396 bağlantı aktarımı ve K-401 dosya özeti tavanlarıyla aynı 32 MiB.
+pub const BASE64_SATIRLARI_TAVANI: u64 = 32 * 1024 * 1024;
 
 /// `b` ham baytın satırlı base64 çıktısının bayt uzunluğu:
 /// e = 4·⌈b/3⌉, toplam = e + 2·⌈e/76⌉ (spec/23 §K-396 normatif formülü).

@@ -176,7 +176,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-169 | [DNS stub çözücü, loopback AD biti ve kendi tel biçimi sınırı](169-dns-stub-cozucu-ve-tel-bicimi-siniri.md) | **kabul** (K-390/GB-166) |
 | ADR-170 | [Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki ve ayrı okuma/yazma yetkinliği](170-paylasilan-veri-koku.md) | **kabul** (K-394/GB-168; RFC-0045) |
 | ADR-171 | [C024 heap zarfı düşen değerin payını iade eder](171-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-170; ADR-033 iade-yok ilkesini değiştirir) |
-| ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d) |
+| ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d; ek K-408/GB-181 dosya hedefli ayna) |
 | ADR-173 | [Giden TCP, `ağ_hedefleri` `tcp://` politikası ve istemci STARTTLS](173-giden-tcp-ve-istemci-starttls.md) | **kabul** (K-397 Dilim 1, RFC-0044 B4a) |
 | ADR-174 | [DKIM imza ilkeli ve `dkim_anahtarları` bildirimi](174-dkim-imza-ilkeli.md) | **kabul** (K-397 Dilim 2/GB-177; RFC-0044 B3) |
 | ADR-175 | [Parametre bağlama adı sözlük köküne bağlanır (profil değişmeden)](175-parametre-baglama-adi-sozluk-koku.md) | **kabul** (K-398; ZM-F030, K-164/F006) |

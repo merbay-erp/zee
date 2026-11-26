@@ -2918,6 +2918,35 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-408 — Satırlı base64'ü dosyaya akışla ekleme (ADR-172 eki, ZM-F049)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F049: giden iletiler DKIM ile imzalanıyor (K-397 Dilim 2) ama ekli
+iletinin gövdesi hiçbir yerde bütün olarak durmuyordu; ek parçaları yalnız
+SMTP'ye akarken (`bağlantıya aktarmayı dene`) oluşuyordu. ADR-174 §8 dosyadan
+`bh=` alınamadığından ekli dış ileti imzasız gidiyordu. Freeze sınıfı
+`dogfood-change`; yeni tür, anahtar kelime, kalıp kelimesi, koşul grameri ya
+da tanı kodu yok; bir intrinsic ve bir IO izi olayı.
+
+Karar (ADR-172 eki, RFC-0039 A2d eki, spec/26): `<kaynak> dosyasını base64
+satırlarıyla <hedef> dosyasına eklemeyi dene` → `Sonuç<TamSayı>` (T = e +
+2·⌈e/76⌉). K-396 kodlayıcısı; çıktı bağlantı çıktısıyla bayt bayt aynı.
+Akışlı (Metin yok, zarf yok); spec/08 kilitli atomik ekleme (önek korunur,
+geçici dosya + fsync + rename). Kaynak 32 MiB, hedef toplamı 32 MiB; aşım,
+eylem, normal dosya olmayan yol ve okuma sırasında boyu değişen kaynak hiç
+bayt yayımlamadan C013. Kaynak `dosya-okuma`/`veri-okuma`, hedef
+`dosya-yazma`/`veri-yazma`. İz yalnız yol ve bayt sayısı. Katman kenarı
+`kalici_dosya → kodlama`. GB-181 (geçici numara; merkez kesinleştirir).
+
+Kanıt: `compiler/tests/base64_satirlari_ekle_testi.rs` (8 vaka),
+`compiler/tests/ag_baglantisi_surec_testi.rs`
+`base64_satirlari_dosyaya_ekleme_baglanti_aktarimiyla_bayt_bayt_ayni`,
+`kalici_dosya::cozulmus` birim testi; dogfood `zm-f049-ekli-govde-dosyada`;
+K-167 iki API satırı.
+
+Açık: quoted-printable ve aralıklı dosya hedefi bilinçli dışarıda; ZeeMail
+uçtan uca (ekli ileti imzası ve alıcı doğrulaması) ürün tarafında.
+
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 
 **Durum: KAPALI (25 Kasım 2026), belge kararı.** Kaynak: ZeeMail (`urun-h`)

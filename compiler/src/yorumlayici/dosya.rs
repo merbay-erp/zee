@@ -13,6 +13,9 @@ pub(super) fn intrinsic_degerlendir(
         (DOSYA_ATOMIK_TASI, [Deger::Metin(kaynak), Deger::Metin(hedef)]) => {
             io.dosya_atomik_tasi(kaynak, hedef).map(Deger::TamSayi)
         }
+        (DOSYA_BASE64_SATIRLARI_EKLE, [Deger::Metin(kaynak), Deger::Metin(hedef)]) => io
+            .dosyaya_base64_satirlari_ekle(kaynak, hedef)
+            .map(Deger::TamSayi),
         (DOSYA_SIL, [Deger::Metin(yol)]) => io.dosya_sil(yol).map(Deger::TamSayi),
         (DOSYALARI_LISTELE, [Deger::Metin(dizin)]) => io
             .dosyalari_listele(dizin)
