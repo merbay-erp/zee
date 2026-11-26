@@ -15,6 +15,7 @@
 //! Komutlar Türkçedir: çalıştır, denetle, sürüm.
 
 use dil::http_istegi::{baslik_sonunu_bul, govde_metni, HttpIstekBasligi};
+use dil::kodlama::base64_kodla;
 use dil::yetkinlik::AgHedefi;
 use std::process::ExitCode;
 
@@ -3039,29 +3040,6 @@ fn html_guvenlik_basliklari(
     );
     basliklar = basliklar.replacen(eski, &yeni, 1);
     basliklar
-}
-
-fn base64_kodla(girdi: &[u8]) -> String {
-    const ALFABE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let mut sonuc = String::with_capacity(girdi.len().div_ceil(3) * 4);
-    for parca in girdi.chunks(3) {
-        let a = parca[0];
-        let b = parca.get(1).copied().unwrap_or(0);
-        let c = parca.get(2).copied().unwrap_or(0);
-        sonuc.push(ALFABE[(a >> 2) as usize] as char);
-        sonuc.push(ALFABE[(((a & 0x03) << 4) | (b >> 4)) as usize] as char);
-        sonuc.push(if parca.len() > 1 {
-            ALFABE[(((b & 0x0f) << 2) | (c >> 6)) as usize] as char
-        } else {
-            '='
-        });
-        sonuc.push(if parca.len() > 2 {
-            ALFABE[(c & 0x3f) as usize] as char
-        } else {
-            '='
-        });
-    }
-    sonuc
 }
 
 fn tek_http_basligi<'a>(istek: &'a HttpIstekBasligi<'a>, ad: &str) -> Option<&'a str> {

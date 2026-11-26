@@ -43,7 +43,7 @@ pub fn sifrele(anahtar: &[u8; 32], nonce: &[u8; NONCE_BAYT], duz: &str) -> Resul
     let mut baytlar = Vec::with_capacity(NONCE_BAYT + sifreli.len());
     baytlar.extend_from_slice(nonce);
     baytlar.extend_from_slice(&sifreli);
-    Ok(format!("{ONEK}{}", base64_yaz(&baytlar)))
+    Ok(format!("{ONEK}{}", crate::kodlama::base64_kodla(&baytlar)))
 }
 
 /// `zee1:` metnini çözer; önek, uzunluk, base64 ya da etiket hatasında Err.
@@ -51,7 +51,10 @@ pub fn coz(anahtar: &[u8; 32], metin: &str) -> Result<String, String> {
     let govde = metin
         .strip_prefix(ONEK)
         .ok_or_else(|| "gizli değer `zee1:` biçiminde değil".to_string())?;
-    let baytlar = base64_oku(govde).ok_or_else(|| "gizli değer base64 biçimi bozuk".to_string())?;
+    // K-410: tek katı çözücü (RFC 4648; dolgu zorunlu, kanonik bitler, boşluk
+    // yok). Çıktı girdiden kısadır; ayrı tavan gerekmez.
+    let baytlar = crate::kodlama::base64_coz(govde, govde.len())
+        .map_err(|_| "gizli değer base64 biçimi bozuk".to_string())?;
     if baytlar.len() < NONCE_BAYT + 16 {
         return Err("gizli değer çok kısa".into());
     }
@@ -69,61 +72,6 @@ pub fn coz(anahtar: &[u8; 32], metin: &str) -> Result<String, String> {
 /// Şifreli metin mi (önek denetimi; çözmeden).
 pub fn sifreli_mi(metin: &str) -> bool {
     metin.starts_with(ONEK)
-}
-
-const ALFABE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-fn base64_yaz(baytlar: &[u8]) -> String {
-    let mut cikti = String::with_capacity(baytlar.len().div_ceil(3) * 4);
-    for parca in baytlar.chunks(3) {
-        let b = [
-            parca[0],
-            *parca.get(1).unwrap_or(&0),
-            *parca.get(2).unwrap_or(&0),
-        ];
-        let n = (u32::from(b[0]) << 16) | (u32::from(b[1]) << 8) | u32::from(b[2]);
-        cikti.push(ALFABE[(n >> 18) as usize & 63] as char);
-        cikti.push(ALFABE[(n >> 12) as usize & 63] as char);
-        cikti.push(if parca.len() > 1 {
-            ALFABE[(n >> 6) as usize & 63] as char
-        } else {
-            '='
-        });
-        cikti.push(if parca.len() > 2 {
-            ALFABE[n as usize & 63] as char
-        } else {
-            '='
-        });
-    }
-    cikti
-}
-
-fn base64_oku(metin: &str) -> Option<Vec<u8>> {
-    let baytlar = metin.as_bytes();
-    if !baytlar.len().is_multiple_of(4) {
-        return None;
-    }
-    let deger = |c: u8| ALFABE.iter().position(|&a| a == c).map(|p| p as u32);
-    let mut cikti = Vec::with_capacity(baytlar.len() / 4 * 3);
-    for parca in baytlar.chunks(4) {
-        let dolgu = parca.iter().rev().take_while(|&&c| c == b'=').count();
-        if dolgu > 2 || parca[..4 - dolgu].contains(&b'=') {
-            return None;
-        }
-        let mut n = 0u32;
-        for &c in &parca[..4 - dolgu] {
-            n = (n << 6) | deger(c)?;
-        }
-        n <<= 6 * dolgu as u32;
-        cikti.push((n >> 16) as u8);
-        if dolgu < 2 {
-            cikti.push((n >> 8) as u8);
-        }
-        if dolgu < 1 {
-            cikti.push(n as u8);
-        }
-    }
-    Some(cikti)
 }
 
 #[cfg(test)]
@@ -154,11 +102,33 @@ mod testler {
     }
 
     #[test]
-    fn base64_dongusu() {
+    fn base64_dongusu_ve_kanonik_olmayan_kodlama_reddi() {
+        let anahtar = [7u8; 32];
+        let nonce = [9u8; NONCE_BAYT];
         for n in 0..12 {
-            let v: Vec<u8> = (0..n).map(|i| (i as u8).wrapping_mul(37)).collect();
-            assert_eq!(base64_oku(&base64_yaz(&v)).unwrap(), v);
+            let duz: String = (0..n).map(|i| char::from(b'a' + i)).collect();
+            assert_eq!(
+                coz(&anahtar, &sifrele(&anahtar, &nonce, &duz).unwrap()).unwrap(),
+                duz
+            );
         }
-        assert!(base64_oku("abc").is_none());
+        // K-410: aynı baytlara çözülen kanonik olmayan dolgu bitli biçim artık
+        // reddedilir (Zee yalnız kanonik biçim üretir).
+        let sifreli = sifrele(&anahtar, &nonce, "a").unwrap();
+        let govde = sifreli.strip_prefix(ONEK).unwrap();
+        assert!(govde.ends_with('='), "{govde}");
+        let son = govde.trim_end_matches('=');
+        let dolgu = govde.len() - son.len();
+        let (bas, kuyruk) = son.split_at(son.len() - 1);
+        const A: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let deger = A.iter().position(|&c| c == kuyruk.as_bytes()[0]).unwrap();
+        let bozuk = format!("{ONEK}{bas}{}{}", A[deger | 1] as char, "=".repeat(dolgu));
+        assert_ne!(bozuk, sifreli);
+        assert_eq!(
+            coz(&anahtar, &bozuk).unwrap_err(),
+            "gizli değer base64 biçimi bozuk"
+        );
+        assert!(coz(&anahtar, "zee1:abc").is_err());
+        assert!(coz(&anahtar, &format!("{sifreli}\n")).is_err());
     }
 }

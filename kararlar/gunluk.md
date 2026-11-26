@@ -6313,3 +6313,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   iziyle birebir). Yeni `Ozellik` kolları `yorumlayici/metin_kodlama.rs` ve
   `ayristirici/ifade/metin_kodlama.rs` modüllerinde; `sha256 özeti` de oraya
   taşındı (satır bütçeleri). GB-178. K-402 kapandı.
+
+## K-410 — İç base64 yardımcılarının birleştirilmesi; ADR-083 eki (26 Kasım 2026)
+
+- Mustafa'nın "base64 yardımcılarının birleştirilmesine geç" kararı
+  (RFC-0043 Dilim 2 açık maddesi 5). Üç kopya kodlayıcı aynı çıktıyı
+  verdiği için doğrudan `kodlama::base64_kodla`'ya bağlandı.
+- Gizli değer çözücüsü kanonik olmayan dolgu bitlerini kabul ediyordu
+  (`…Zh==` ile `…Zg==` aynı baytlar). Seçenek "davranışı aynen koru"
+  (çözücü ayrı kalır) ile "katı çözücüye bağla" idi; Mustafa ikincisini
+  seçti. Bu yüzden iş `maintenance` değil, güvenlik sıkılaştırmasıdır
+  (spec/23 ZORUNLU madde, ADR-083 eki, GB-179). Zee'nin ürettiği her
+  değer kanoniktir; ürün verisi etkilenmez.
+- Katman: `guvenlik` temel, `kodlama` altyapıydı → ters kenar. `kodlama`
+  hiçbir iç modüle bağımlı olmadığından `temel`e alındı; ADR-046 kuralları
+  değişmedi, yeni SCC yok. K-408 (`kodlama.rs`/`main.rs` ekleme) ile bölge
+  çakışması yok; birleştirme sırası merkezde. K-410 kapandı.

@@ -100,3 +100,17 @@ değiştirilmedi. Yeni sürümle 0.10.1 üretimli eski sentetik `zee1:`
 şifreli metin bayt bayt eşit üretilir ve çözülür; yanlış anahtar/bozulma
 reddi aynı testte korunur. SBOM/provenance ve iki-clone/offline kabulü
 yeni exact graph'tan üretilir.
+
+## Ek — K-410: `zee1:` gövdesi tek katı base64 çözücüyle (26 Kasım 2026)
+
+Gizli değerin kendi base64 kodlayıcı/çözücüsü kaldırıldı; `zee1:` gövdesi
+RFC-0043'ün tek iç uygulamasıyla (`compiler/src/kodlama.rs`) yazılır ve
+okunur (spec/23 §Gizli değer biçimi). Kodlama çıktısı bayt bayt aynıdır.
+Çözmede bir sıkılaştırma vardır: eski çözücü kanonik olmayan dolgu bitli
+biçimi (aynı baytlara çözülen ikinci yazım, ör. `…Zh==`) kabul ediyordu;
+artık `gizli değer base64 biçimi bozuk` ile reddedilir. Zee yalnız kanonik
+biçim ürettiğinden ürettiği her değer eskisi gibi çözülür; reddedilen yalnız
+elle değiştirilmiş biçimdir. Gerekçe: bir şifreli değerin tek yazımı olur
+(karşılaştırma/önbellek anahtarı olarak kullanılan değerde iki yazım
+yoktur) ve SMTP/gizli değer/protokol alanları aynı katı kuralları paylaşır
+(GB-179).

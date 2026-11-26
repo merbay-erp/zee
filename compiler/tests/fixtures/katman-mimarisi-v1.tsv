@@ -22,10 +22,10 @@ dns_istemcisi	altyapi	dns_teli	Loopback DNS stub istemcisi: rastgele kimlik/kap�
 dkim_imza	altyapi	dkim_kripto,kodlama	DKIM imza ilkeli: imza girdisi kâhin denetimi (DKIM-Signature etiketleri, From hizası), PKCS#8 PEM anahtar yükleme (RSA 2048–4096, Ed25519), ring imzası ve anahtar deposu (K-397 B3)
 dkim_kripto	altyapi	kodlama	DKIM imza doğrulama ilkeli: algoritma adı, SPKI/PKCS#1 ve Ed25519 açık anahtarı, 1024–4096 bit sınırı, ring doğrulaması, LF→CRLF kanonik bayt (K-390 B2b)
 dns_teli	altyapi	-	Sınırlı DNS tel biçimi: sorgu kurma, fail-closed yanıt ayrıştırma, CNAME zinciri ve çözüm (K-390, unsafe yok)
-eposta	altyapi	icerik_turu,kaynak_sinirlari,zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
+eposta	altyapi	icerik_turu,kaynak_sinirlari,kodlama,zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
 gorsel	adapter	-	Gorsel kucultme ve yeniden kodlama image crate (K-210)
-guvenlik	temel	-	Kriptografik ve sabit zamanli ilkeller
+guvenlik	temel	kodlama	Kriptografik ve sabit zamanli ilkeller
 hir	semantik	agac,kimlik,semantic_model,tani	Bagli ve turlenmis ara temsil
 http_istegi	altyapi	-	Byte tabanli HTTP istek framingi
 icerik_turu	altyapi	-	Web dosya yaniti ve SMTP eki ortak kapali icerik turu kaydi ve RFC 6266 ad kodlamasi
@@ -35,7 +35,7 @@ kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
 kamu_son_ekleri	altyapi	-	Public Suffix List ayrıştırıcısı ve RFC 7489 kurumsal alanı; veri derleyiciye gömülü değil (K-390 B1b)
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
-kodlama	altyapi	-	Kati MIME base64 quoted-printable ve UTF-8 cozumu; konumlu kodlama hatasi (K-389)
+kodlama	temel	-	Kati base64 (tek satir/MIME), quoted-printable ve UTF-8 kodlama/cozumu; konumlu kodlama hatasi; tek ic base64 uygulamasi (K-389, K-410)
 lib	adapter	agac,ayristirici,cozumleyici,faz,tani,yorumlayici	Dis derleme ve yurutme cephesi
 lsp	adapter	agac,ayristirici,bicimleyici,faz,hir,kaynak_sinirlari,kimlik,lib,morfoloji,paket,proje,sozcukleyici,surum,tani	Editor protokolu ve semantic sorgular
 morfoloji	sozdizimi	guvenlik	Surumlu Turkce ek profili

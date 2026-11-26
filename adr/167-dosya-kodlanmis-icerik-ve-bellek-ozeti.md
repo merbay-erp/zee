@@ -165,10 +165,9 @@ Karar (spec/26 §Bellekteki metin ↔ bayt):
   (3) `kod noktası` tek harf dışında **çalışma hatası** (C032): `harfleri`
   öğesinde oluşmaz, programcı hatasıdır; ters yön `Sonuç`tur. (4)
   `base64url` ve (onaltılık) açılmadı: ürün kaydı yok, DKIM K-390 host
-  yüzeyinde. (5) İç base64 yardımcıları: yeni yüzey tek iç çözücüyü
-  (`kodlama.rs`) kullanır; SMTP/CLI/gizli değer yardımcılarının
-  birleştirilmesi davranış değiştirmeyen bakım işidir, bu dilime
-  katılmadı (açık). (6) Yeni tanı kodu yok: C032 `tür` kümesine
+  yüzeyinde. (5) İç base64 yardımcıları (K-410 ile birleştirildi): yeni yüzey tek iç çözücüyü
+  (`kodlama.rs`) kullanır; SMTP/CLI/gizli değer yardımcıları bu dilime
+  katılmadı, K-410 ile ayrıca birleştirildi (ADR-083 eki). (6) Yeni tanı kodu yok: C032 `tür` kümesine
   `kod_noktası` eklendi.
 - **Tek satır katılığı.** MIME çözümünden farklı olarak CR/LF/boşluk/sekme
   de alfabe dışıdır (RFC 4648 §3.3): protokol alanında gömülü satır sonu

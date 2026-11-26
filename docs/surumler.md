@@ -12,6 +12,16 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
+- **Gizli değer biçimi tek katı base64 çözücüyle okunuyor (K-410):**
+  derleyicideki dört ayrı base64 kodlayıcı/çözücü tek uygulamada
+  birleştirildi. Şifreli `zee1:` değerlerin, e-posta başlık/gövde/AUTH
+  kodlamasının ve CSP betik özetinin çıktısı değişmedi. `zee1:` değeri
+  çözülürken aynı baytlara çözülen kanonik olmayan ikinci yazım artık
+  `gizli değer base64 biçimi bozuk` ile reddedilir.
+
+  **Göç:** Gerekmez. Zee'nin ürettiği şifreli değerler her zaman kanoniktir;
+  yalnız elle değiştirilmiş bir `zee1:` değeri yeniden şifrelenmelidir.
+
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
   rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya
   devam ediyordu. Bu yüzden şu tür bir koruma güvenli değildi:

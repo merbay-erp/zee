@@ -119,7 +119,7 @@ harf sayının kod noktası harfini almayı dene olsun      # Sonuç<Metin>
 | 2 | Çözme çıktısı 1 MiB (Dilim 1 ile aynı), ayırmadan önce. Kodlama toplamdır; girdisi spec/24 metin sınırına bağlıdır, çıktı boyu önceden hesaplanır (C024). |
 | 3 | `harfin kod noktası` boş/çok harfli metinde **çalışma hatası** (C032; `harfleri` öğesinde oluşmaz). Ters yön `Sonuç`: negatif, `> 0x10FFFF` ve vekil aralığı `kod_noktası`. |
 | 4 | `base64url` açılmadı: ürün kaydı yok (DKIM/SMTP istemez). WebAuthn/JWT ihtiyacı ürün kaydıyla gelirse ayrı ek. |
-| 5 | Yeni yüzey tek iç katı çözücüyü (`compiler/src/kodlama.rs`) kullanır, yeni crate yok. SMTP/CLI/gizli değer iç yardımcılarının birleştirilmesi davranış değiştirmeyen bakımdır; bu dilime katılmadı (açık). |
+| 5 | Yeni yüzey tek iç katı çözücüyü (`compiler/src/kodlama.rs`) kullanır, yeni crate yok. SMTP/CLI/gizli değer iç yardımcıları **K-410 ile birleştirildi** (26 Kasım 2026): kodlama çıktısı aynı; gizli değer çözümü kanonik olmayan dolgu bitlerini artık reddeder (ADR-083 eki, GB-179). |
 | 6 | Yeni tanı kodu yok: C032 `tür` kümesine `kod_noktası` eklendi. |
 | — | Onaltılık ↔ metin/base64 (§1, §2 son madde, §4 `onaltılıktan`) **açık**: K-390 DKIM anahtar ve özet biçimlerini host yüzeyinde (`gövdesinin dkim gövde özeti`) karşıladı; ürünün bugünkü kodunda başka çarpan yok. |
 
