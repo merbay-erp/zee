@@ -2657,7 +2657,31 @@ diferansiyel (`compiler/tests/ortak/x509_ozellikleri.rs`); korpus openssl
 üretimi RSA/Ed25519 sertifikaları ve bozuk DER tohumları; stable replay
 `giden_baglanti_testi.rs` (tohum başına 3.000 bozulmuş girdi, gerçek
 sertifikada openssl `-pubkey` eşliği). RC kapısı yedi hedefli.
-Açık: ilk yedi hedefli RC koşusu ve tarihçe satırı.
+İlk yedi hedefli RC koşusu `b3b9d752`te yapıldı, `dkim_imza_girdisi` kâhin
+hatasıyla kaldı (K-417).
+
+## K-417 — RC fuzz bulgusu: `dkim_imza_girdisi` kâhininde FWS'li son `b=`
+
+**Durum: KAPALI (26 Kasım 2026); yeni master'da sekiz hedefli RC koşusu
+AÇIK.** Kaynak: `b3b9d752` üzerinde ilk yedi hedefli RC kampanyası
+(K-411). GitHub `fuzz-rc` koşusu 45838195765'te `dkim_imza_girdisi`
+57 saniyede `tests/ortak/dkim_ozellikleri.rs:47` iddiasında panik verdi:
+kâhin girdinin `b=` ile bitmesini istiyordu, fuzzer `…; b\t=` üretti.
+RFC 6376 §3.2 `tag-spec = [FWS] tag-name [FWS] "=" …` uyarınca adla `=`
+arasında FWS geçerlidir ve `imza_girdisini_denetle` bunu doğru kabul eder;
+hata ürün kodunda değil kâhindedir. compiler/src değişmedi, güvenlik
+bulgusu değildir (GB yok).
+
+Düzeltme: kâhin son `;` sonrası etiketin adının `b`, değerinin boş
+olmasını (LF katlaması ve WSP atılarak) denetler. 430 baytlık crash girdisi
+(SHA-256 `9d3cf17d…69cb8bc`) elle 91 bayta küçültülüp
+`compiler/fuzz/corpus/dkim_imza_girdisi/son-b-fws.txt` tohumu olarak
+eklendi. Kanıt: `dkim_imza_testi.rs::kahin_son_b_etiketinde_fws_kabul_eder`
+(tohum, `b\t=`/`b \t= `/`b\n\t=` kabul, `bx=`/`b=x` ret, eski iddianın
+tohumda kırıldığı) ve korpus replay. RC tarihçesine `b3b9d752` için yerel
+ve GitHub satırları kırmızı `dkim` satırıyla birlikte yazıldı. RC kapısı
+exact SHA'da bütün hedefleri ister (`scripts/guvenlik-kapisi.sh`; K-412 ile sekiz);
+yalnız `dkim_imza_girdisi`'nin yeniden koşusu yetmez.
 
 ## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (RFC-0044 B3 kabul 2)
 

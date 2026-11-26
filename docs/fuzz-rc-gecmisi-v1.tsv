@@ -20,3 +20,17 @@ a57290f7a1c1fad07cda3f266b2a221f09aa6404	2026-10-16	macOS-arm64	macOS-26.6.2	App
 a57290f7a1c1fad07cda3f266b2a221f09aa6404	2026-10-16	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	morfoloji	1800	1801	7638426	0	0	address	gecti
 a57290f7a1c1fad07cda3f266b2a221f09aa6404	2026-10-16	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	http_istegi	1800	1801	10696127	0	0	address	gecti
 a57290f7a1c1fad07cda3f266b2a221f09aa6404	2026-10-16	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	wasm_abi	1800	1801	8190086	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	lexer_parser	1800	1913	234535	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	morfoloji	1800	1913	196785	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	http_istegi	1800	2133	517282	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	dns_yaniti	1800	2128	439143	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	dkim_imza_girdisi	1800	154	464199	1	0	address	kaldi
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	x509_spki	1800	1801	9448973	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	macOS-arm64	macOS-26.6.2	Apple M4 Pro	25769803776	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	wasm_abi	1800	1801	7605983	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	lexer_parser	3600	3601	3739040	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	morfoloji	3600	3601	23324173	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	http_istegi	3600	3601	12720848	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	dns_yaniti	3600	3601	340616853	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	dkim_imza_girdisi	3600	57	853157	1	0	address	kaldi
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	x509_spki	3600	3601	2724067266	0	0	address	gecti
+b3b9d752c417b2f4db63cfdfb4cf5d65a448408c	2026-11-26	linux-x64-github	Ubuntu-26.04.1	-	-	rustc 1.100.0-nightly (908501772 2026-08-30)	0.13.2	wasm_abi	3600	3601	6770355	0	0	address	gecti

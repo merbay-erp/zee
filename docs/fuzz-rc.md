@@ -61,6 +61,30 @@ hedefin her biri 1.801 saniye AddressSanitizer altında çalıştı. Toplam
 Miri testleri 3/3 geçti. Donanım ve araç zincirinin exact kaydı tarihçe
 dosyasındadır; bu taban farklı bir commit'in RC kanıtı yerine kullanılamaz.
 
+## İlk yedi hedefli kampanya (26 Kasım 2026, K-417)
+
+`b3b9d752c417b2f4db63cfdfb4cf5d65a448408c` üzerinde iki koşu yapıldı:
+yerel kanonik üretici (`scripts/rc-kampanyasi.py`, macOS arm64, hedef başına
+1.800 sn) ve GitHub `fuzz-rc` koşusu 45838195765 (ubuntu-26.04, hedef başına
+3.600 sn). Altı hedef ve iki Miri grubu iki ortamda da yeşil. `dkim_imza_girdisi`
+iki ortamda da **kaldı**. Neden kâhin hatası, ürün kodu değil (K-417):
+`tests/ortak/dkim_ozellikleri.rs` girdinin `b=` ile bitmesini istiyordu.
+RFC 6376 §3.2 adla `=` arasında FWS'ye izin verir (`b\t=`) ve
+`imza_girdisini_denetle` bunu doğru kabul eder.
+
+- GitHub crash: 430 bayt, 57. saniye, SHA-256
+  `9d3cf17d25536afd3e48b1614beba2e70fb5d302b72f0b29037cae7d269cb8bc`.
+- Yerel crash: 382 bayt, SHA-256
+  `d45d9358b405c11d0ae9554d05f0163c41a9e800413409dae411ca6f9c6e14a6`.
+- Yerel `dkim` satırındaki süre süreç süresidir; libFuzzer crash'te final
+  süre basmaz.
+
+Kırmızı satırlar tarihçede olduğu gibi kalır. GitHub satırlarında CPU modeli
+ve RAM `-` yazılıdır; koşu günlüğü bunları kaydetmez. RC kapısı exact SHA'da
+bütün hedefleri ister (`scripts/guvenlik-kapisi.sh`), bu yüzden bu commit
+RC adayı olamaz. K-417 ve K-412 birleşince yeni master'da sekiz hedef birlikte yeniden
+koşulur.
+
 ## K-265 explicit dış RC kanıtı
 
 [Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.
