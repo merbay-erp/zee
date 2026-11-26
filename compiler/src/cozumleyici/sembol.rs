@@ -13,6 +13,7 @@ pub(super) struct SembolTablosu {
     siradaki: usize,
     kayitlar: HashMap<String, SembolKaydi>,
     yeni_adlar: Vec<(usize, String)>,
+    k398: eski_yazim::EskiParametreYazimi,
 }
 
 impl SembolTablosu {
@@ -22,6 +23,7 @@ impl SembolTablosu {
             siradaki: 0,
             kayitlar: HashMap::new(),
             yeni_adlar: Vec::new(),
+            k398: Default::default(),
         }
     }
 
@@ -47,39 +49,6 @@ impl SembolTablosu {
         self.siradaki += 1;
         self.kayitlar.insert(ad, SembolKaydi { kimlik, tur });
         kimlik
-    }
-}
-
-/// Ham alan yazımını ("adı", "yaşı") yapı tanımındaki yalın ada çözer.
-pub(super) fn alan_cozumle(yapi: &Yapi, ham: &str, satir: usize) -> Result<String, Tani> {
-    if yapi.alanlar.iter().any(|(a, _)| a == ham) {
-        return Ok(ham.to_string());
-    }
-    let adaylar = crate::morfoloji::kok_adaylari(ham);
-    let eslesenler: Vec<&String> = yapi
-        .alanlar
-        .iter()
-        .map(|(a, _)| a)
-        .filter(|a| adaylar.iter().any(|aday| aday == *a))
-        .collect();
-    match eslesenler.len() {
-        1 => Ok(eslesenler[0].clone()),
-        _ => Err(Tani::yeni(
-            "T028",
-            format!(
-                "\"{}\" yapısında \"{}\" diye bir alan yok. Alanlar: {}.",
-                yapi.ad,
-                ham,
-                yapi.alanlar
-                    .iter()
-                    .map(|(a, _)| a.as_str())
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
-            satir,
-            1,
-            1,
-        )),
     }
 }
 
@@ -171,7 +140,8 @@ pub(super) fn sembol_cozumle(
         satir,
         sutun,
         uzunluk,
-    )?;
+    )
+    .or_else(|hata| ortam.eski_yazimla_coz(ham, hata))?;
     let kimlik = ortam
         .kimlik(&ad)
         .ok_or_else(|| ic_tutarlilik_hatasi("Çözülmüş adın sembol kaydı bulunamadı", satir))?;
@@ -195,6 +165,10 @@ pub fn ad_cozumle(
         uzunluk,
     )
 }
+
+mod alan;
+mod eski_yazim;
+pub(super) use self::alan::alan_cozumle;
 
 #[cfg(test)]
 mod testler;

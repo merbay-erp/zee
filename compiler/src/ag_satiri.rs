@@ -11,6 +11,9 @@
 //! normalleştirilmez, bloğun kalanı sonlandırıcıya kadar tüketilip atılır
 //! (smuggling sınıfı). IMAP literal'i tam `n` bayttır.
 
+/// K-397: istemci TLS'inde DANE özeti için SPKI çıkarımı.
+pub mod x509;
+
 /// Bağlantı başına giden tamponun üst sınırı (geri basınç eşiği).
 pub const GIDEN_TAMPON_BAYTI: usize = 64 * 1024;
 /// Tek okuma çağrısının çekebileceği en çok bayt; gelen tampon bu kadar
@@ -88,6 +91,13 @@ pub const OKUMA_KAPALI: &str =
     "önceki blok yarıda kaldığı için okuma yönü kapandı; bağlantıyı kapat";
 /// Bildirilen literal/aktarım `bağlantı_blok_sınırı`nı aşıyor (bayt tüketilmez).
 pub const BLOK_SINIRI_ASILDI: &str = "blok bağlantı_blok_sınırını aşıyor; hiçbir bayt okunmadı";
+/// K-396: satırlı base64 aktarımının kaynak dosya tavanı (bayt). K-395'in
+/// 32 MiB çözerek yazma hedef tavanıyla hizalıdır; `bağlantı_blok_sınırı`
+/// daha büyük olsa da kaynak bunu aşamaz (kodlanmış çıktı ≈ 1,37 kat).
+pub const BASE64_KAYNAK_TAVANI: u64 = 32 * 1024 * 1024;
+/// Kaynak dosya [`BASE64_KAYNAK_TAVANI`]'nı aşıyor (bayt yazılmaz).
+pub const BASE64_KAYNAK_TAVANI_ASILDI: &str =
+    "kaynak dosya 32 MiB base64 aktarım tavanını aşıyor; hiçbir bayt yazılmadı";
 /// Bellekteki bayt okuması satır sınırını aşıyor (bayt tüketilmez).
 pub const BAYT_OKUMA_SINIRI: &str =
     "bellekteki bayt okuması bağlantı_satır_sınırını aşamaz; büyük literal'i dosyaya al";
@@ -298,6 +308,34 @@ pub const TLS_KIMLIGI_YOK: &str =
     "TLS kimliği bildirilmedi (tls_sertifika_değişkeni / tls_anahtar_değişkeni)";
 /// TLS bağlantısında ikinci yükseltme.
 pub const ZATEN_TLS: &str = "bağlantı zaten TLS";
+
+/// K-397 (ADR-173): süreç başına aynı anda açık en çok giden bağlantı.
+pub const AZAMI_GIDEN_BAGLANTI: usize = 16;
+/// K-397: giden bağlanma süresinin üst sınırı (Zee son tarihi daha kısaysa o).
+pub const GIDEN_BAGLANMA_MS: i64 = 30_000;
+/// K-397: istemci TLS'inde kabul edilen en uzun sertifika zinciri.
+pub const AZAMI_TLS_ZINCIRI: usize = 10;
+/// K-397: `220` sonrası ara bellekte düz metin (CVE-2011-1575 sınıfı).
+pub const STARTTLS_YANIT_ENJEKSIYONU: &str =
+    "STARTTLS yanıtından sonra şifresiz veri geldi; yükseltme yapılmadı, bağlantı kapatıldı";
+
+/// K-397: istemci TLS'inin SNI'ı ve PKIX ad denetimi için sunucu adı: ASCII
+/// DNS adı (IP değil, sonda nokta yok, etiket 1–63, toplam ≤ 253).
+pub fn tls_sunucu_adi_gecerli(ad: &str) -> bool {
+    !ad.is_empty()
+        && ad.len() <= 253
+        && ad.parse::<std::net::IpAddr>().is_err()
+        && ad.contains('.')
+        && ad.split('.').all(|etiket| {
+            !etiket.is_empty()
+                && etiket.len() <= 63
+                && !etiket.starts_with('-')
+                && !etiket.ends_with('-')
+                && etiket
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b == b'-')
+        })
+}
 
 /// Okunan satırın sınıflandırılmış reddi; Zee'ye C030 `tür` olarak çıkar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

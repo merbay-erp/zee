@@ -150,6 +150,7 @@ aktif	C030	calisma.ag_baglantisi	Ağ bağlantısı işlemi başarısız ya da ba
 aktif	C031	calisma.sira_disi	Listede o sırada öğe yok (sıra 1 ile adet aralığı dışında)
 aktif	C032	calisma.kodlanmis_icerik	Kodlanmış içerik çözülemedi
 aktif	C033	calisma.dns_sorgusu_gecici	DNS sorgusu geçici olarak başarısız (RFC-0044 B1)
+aktif	C034	calisma.posta_kimlik_ilkeli	Posta kimlik doğrulama ilkeli girdiyi reddetti ya da kamu son ek listesi yok (RFC-0044 B1b/B2b)
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik
@@ -178,6 +179,7 @@ aktif	Ç000	ic.program_sonlandirma_nobetcisi	`programı bitir` iç nöbetçisi; 
 aktif	Ç001	ic.son_tarih_iptal_nobetcisi	Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz
 aktif	Ç002	ic.giris_orani_reddi_nobetcisi	Web isteğinde parola özeti giriş oran reddi nöbetçisi; istek döngüsü 429/503 sabit yanıtına çevirir, kullanıcıya sızmaz
 aktif	Ç003	ic.oturum_deposu_reddi_nobetcisi	Web isteğinde oturum deposu yeni kaydı reddetti (kapasite, depo IO, kilit); istek döngüsü sabit 503 yanıtına çevirir, kullanıcıya sızmaz
+aktif	Ç004	ic.rota_sonu_nobetcisi	Rota yanıtı belirlendi iç nöbetçisi (K-403): rota gövdesindeki `yanıtını gönder`/`yönlendir` sonrası gövdeyi bitirir; yalnız rota yürütücüsü yakalar ve olağan bitiş sayar, kullanıcıya sızmaz
 aktif	A012	ad.lint_okunmayan_ad	Lint: ad tanımlanıyor ama okunmuyor
 aktif	S047	soz.lint_erisilemeyen_kod	Lint: erişilemeyen cümle veya sabit koşul dalı
 aktif	S048	soz.lint_eksik_rota_yaniti	Lint: rotanın yanıt üretmeyen yolu olabilir

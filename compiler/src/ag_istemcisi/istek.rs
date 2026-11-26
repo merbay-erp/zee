@@ -8,7 +8,7 @@ fn denetle(
     govde: &str,
     sure: i64,
     politika: &YetkinlikPolitikasi,
-) -> Result<(), String> {
+) -> Result<bool, String> {
     if !url.starts_with("https://") || !matches!(yontem, "GET" | "POST") {
         return Err("HTTP isteği HTTPS ve GET/POST ister".into());
     }
@@ -19,8 +19,8 @@ fn denetle(
     {
         return Err("HTTP istek süre veya boyut sınırı aşıldı".into());
     }
-    politika
-        .ag_istegini_denetle(url)
+    let (_, yalniz_public) = politika
+        .ag_istegini_ayrintili_denetle(url)
         .map_err(|_| "HTTP hedefi izinli değil")?;
     let mut gorulen = BTreeSet::new();
     let mut toplam = 0usize;
@@ -49,7 +49,7 @@ fn denetle(
             return Err("HTTP başlıkları geçersiz veya çerçeveleme alanı yasak".into());
         }
     }
-    Ok(())
+    Ok(yalniz_public)
 }
 
 pub fn istek(
@@ -60,7 +60,7 @@ pub fn istek(
     sure: i64,
     politika: &YetkinlikPolitikasi,
 ) -> Result<(i64, String), String> {
-    denetle(url, yontem, basliklar, govde, sure, politika)?;
+    let yalniz_public = denetle(url, yontem, basliklar, govde, sure, politika)?;
     let _izin =
         crate::kaynak_sinirlari::baglanti_izni_al().map_err(|_| "HTTP bağlantı bütçesi dolu")?;
     let sure = Duration::from_millis(sure as u64);
@@ -78,6 +78,7 @@ pub fn istek(
         PolitikaliCozucu {
             ic: DefaultResolver::default(),
             politika: politika.clone(),
+            yalniz_public,
         },
     );
     ajanla(&agent, url, yontem, basliklar, govde)
@@ -156,6 +157,7 @@ mod tests {
             PolitikaliCozucu {
                 ic: DefaultResolver::default(),
                 politika: p.clone(),
+                yalniz_public: false,
             },
         )
     }

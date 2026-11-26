@@ -175,7 +175,7 @@ Karar (spec/26 §Bellekteki metin ↔ bayt):
   komut kaçırma (smuggling) yüzeyidir. Çözülen baytlar katı UTF-8'dir;
   ikili veri dosya tutamağıyla taşınır (tür modeli C + D).
 - **Gizlilik.** Hata mesajı ve `Hata` verisi girdiyi ya da çözülmüş
-  içeriği taşımaz (AUTH PLAIN parolası); GB-170.
+  içeriği taşımaz (AUTH PLAIN parolası); GB-178.
 
 ## Değerlendirilen seçenekler
 

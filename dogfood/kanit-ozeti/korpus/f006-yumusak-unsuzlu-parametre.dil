@@ -1,5 +1,6 @@
-# K-164/F006 sürtünmesi: `başlığı Metin olarak al` parametresi "başlığ" kökünü
-# bağlar; gövdede sert kök `başlık` A001 verir (ünsüz yumuşaması geri alınmaz).
+# K-164/F006 sürtünmesi: `başlığı Metin olarak al` parametresi K-398 öncesi
+# "başlığ" kökünü bağlıyor, gövdedeki sert kök `başlık` A001 veriyordu. K-398
+# (ADR-175) ile parametre sözlük köküne (`başlık`) bağlanır.
 
 işlem başlık satırı yap
     başlığı Metin olarak al

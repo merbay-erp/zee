@@ -146,6 +146,9 @@ GET "/durum" adresine istek geldiğinde
 Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
 localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
 eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
+K-400/ADR-176 bu sınırı üretim sözleşmesine çevirdi: deneysel kip yalnız
+loopback Host'una yanıt verir (DNS rebinding'e karşı 421), systemd soket devri
+almaz; internete açık tek yol `--web-proxy` worker/proxy profilidir (spec/12 §5a).
 K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
 kapattı (RFC-0017, spec/12). K-137/ADR-034 kalıcı ortak oturum/rate-limit
 deposunu, güvenilir proxy istemci kimliğini ve tek-worker/N süreç modelini
@@ -185,10 +188,13 @@ TLS'i: implicit TLS dinleyicileri ve STARTTLS (enjeksiyon reddi, TLS
 ve IMAP literal'i belleğe alınmadan `0600` geçici dosyaya akar (yalnız
 birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
 yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
-süreli okuma vardır. K-388 ile bağlantı görevinin çalışma bütçesi her
+süreli okuma vardır. A2d (K-396, ADR-172) ile dosya RFC 2045 base64
+satırları olarak (T = e + 2·⌈e/76⌉) ve kodlanmış çıktı aralığıyla belleğe
+alınmadan bağlantıya akar (IMAP `BODY[n]`, `BODY[n]<o.n>`; kaynak en çok 32 MiB). K-388 ile bağlantı görevinin çalışma bütçesi her
 protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
 dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
-zarfı aynen geçerlidir. Bağlantılar arası uyandırma ve diğer katmanlar
+zarfı aynen geçerlidir. K-393 (ADR-171) ile zarf düşen değerin payını iade
+eder; C024 artık iş miktarını değil canlı saklanan değerleri sınırlar. Bağlantılar arası uyandırma ve diğer katmanlar
 açıktır.
 
 Standart takvim/kişi istemcileri için CalDAV/CardDAV yüzeyi (WebDAV
@@ -219,6 +225,20 @@ sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
 (`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
 hermetik adaptörde bu bütçeler açıktır. V1 sözü değildir.
+
+Giden teslimin ağ tarafı **gerçekleşti**: K-397
+([ADR-173](../adr/173-giden-tcp-ve-istemci-starttls.md),
+[RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
+B4a) ile `"<ana>:<kapı>" adresine bağlanmayı dene` `ağ_hedefleri`
+`tcp://` tam hedefine ya da yalnız 25 kapısında `tcp://*:25` jokerine (yalnız
+public IP, tek çözümleme, denetlenen IP'ye sabitleme) giden TCP açar; A2/A2c
+bağlantı kalıpları bu bağlantıda çalışır. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemci STARTTLS'idir; PKIX sonucu açık
+alan, SPKI/sertifika özetleri DANE için. MTA-STS ilkesi `https://mta-sts.*`
+ile mevcut HTTP istemcisinden. MX → IP yolu K-390 B1a çözücüsüdür; IP
+değişmeziyle bağlanma ikinci ad çözümü yapmaz. **Açık:** B3 DKIM imza ilkeli (ADR-174,
+K-397 Dilim 2); gerçek
+internette DANE/MTA-STS teslim kanıtı. V1 sözü değildir.
 
 Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 ([ADR-170](../adr/170-paylasilan-veri-koku.md),
@@ -255,8 +275,13 @@ core freeze altında ayrı `dogfood-change` ile açılır, V1 sözü değildir.
 `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene` → kayıt başına
 satırlı Sonuç, geçici hata C033; üretimde yeni crate olmadan kendi sınırlı
 tel biçimi ayrıştırıcısı (hickory-proto yalnız kâhin, `dns_yaniti` fuzz
-hedefi RC kapısında), önbelleksiz stub, IO izi. **Açık:** PSL ve B2 gelen
-doğrulama (K-390 ikinci dilimi), B3, B4.
+hedefi RC kapısında), önbelleksiz stub, IO izi. **Gerçekleşen: B1b + B2b
+(K-390 ikinci dilimi, ADR-177)** — exact SHA-256'lı `kamu_son_ekleri` dosyası
+ve `<ad> alanının kurumsal alanı`; DKIM doğrulama ilkeli (rsa-sha256 1024–4096,
+ed25519-sha256; rsa-sha1 reddi; C034) rustls'in kilitli `ring`'iyle,
+kanonikleştirme Zee'de (veri LF'si imza girdisinde CRLF; `dkim gövde özeti`
+aynı kuralla `bh=`). **Açık:** B2a başlık ayrıştırıcısı ve A-R, B2c SPF, B2d DMARC, B2e ARC, B3,
+B4.
 
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.

@@ -43,6 +43,11 @@ unicode-normalization = "0.1.25"
 ureq = { version = "=3.4.0", default-features = false, features = ["rustls"] }
 # K-381 A2b: sunucu TLS'i; ureq'in kilitli aynı rustls/ring yığını, yeni crate yok.
 rustls = { version = "=0.23.46", default-features = false, features = ["ring", "std", "tls12"] }
+# K-397 (ADR-173): giden istemci TLS kökleri; ureq'in kilitli aynı sürümü, yeni crate yok.
+webpki-roots = "=1.0.10"
+# K-390 B2b (ADR-177): DKIM rsa-sha256/ed25519-sha256 doğrulaması; rustls'in
+# kilitli aynı ring'i, yeni crate yok.
+ring = "=0.17.14"
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"

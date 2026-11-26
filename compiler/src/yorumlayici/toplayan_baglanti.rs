@@ -5,11 +5,13 @@
 //! K-384: blok okuma gerçek reaktörle aynı `BlokOkuyucu`yu kullanır; dosya
 //! yerine bellekte tutulur (`bloklar`, `dosyalar`), yol deterministiktir.
 
-use super::{BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, YeniBaglanti};
+use super::{BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, TlsIstemciKaydi, YeniBaglanti};
 use crate::ag_satiri::{
     akis_butcesi_ms, bayt_metni, giden_parca, giden_satir, BaglantiAyari, BlokOkuyucu, SatirOkuyucu,
 };
+use crate::yetkinlik::YetkinlikPolitikasi;
 use std::collections::{HashMap, VecDeque};
+use std::net::{IpAddr, SocketAddr};
 
 /// Bir betiklenmiş istemci bağlantısı.
 #[derive(Debug, Clone)]
@@ -36,6 +38,23 @@ pub struct SahteBaglanti {
     okuma_kapali: bool,
     /// Bekleyen işlemin süresi (susan istemcinin sanal saat artışı).
     bekleme_ms: Option<i64>,
+    /// K-397: giden bağlantının karşı sunucusu (dinleyiciden gelmedi).
+    pub giden_mi: bool,
+    /// K-397: istemci STARTTLS'te verilecek kayıt; `None` → TLS yok.
+    /// `sunucu_adi` sertifikanın adıdır: istenen addan farklıysa PKIX
+    /// `ad_uyuşmuyor` olur.
+    pub tls_kaydi: Option<TlsIstemciKaydi>,
+}
+
+/// K-396: hermetik taraf aynı saf pencereyle (`kodlama`) üretir.
+fn base64_penceresi(icerik: &[u8], aralik: Option<(u64, u64)>) -> Vec<u8> {
+    let (konum, adet) = aralik.unwrap_or((0, u64::MAX));
+    let p = crate::kodlama::base64_satir_penceresi(icerik.len() as u64, konum, adet);
+    let mut cikti = Vec::new();
+    crate::kodlama::base64_satirlari_kodla(&icerik[p.ham_baslangic as usize..], &mut cikti);
+    cikti.drain(..p.atla as usize);
+    cikti.truncate(p.uzunluk as usize);
+    cikti
 }
 
 impl SahteBaglanti {
@@ -55,7 +74,16 @@ impl SahteBaglanti {
             blok: None,
             okuma_kapali: false,
             bekleme_ms: None,
+            giden_mi: false,
+            tls_kaydi: None,
         }
+    }
+
+    /// K-397: giden bağlantının betiklenmiş karşı sunucusu (ör. SMTP MX).
+    pub fn giden_sunucu(satirlar: &[&str]) -> Self {
+        let mut sunucu = Self::satirlarla("", "", satirlar);
+        sunucu.giden_mi = true;
+        sunucu
     }
 
     /// Her satırı CRLF ile tek parça olarak gönderen istemci.
@@ -95,6 +123,16 @@ pub struct ToplayanBaglanti {
     /// aktarılacak dosyalar; yol → bayt).
     pub dosyalar: HashMap<String, Vec<u8>>,
     kapanis_bildirildi: bool,
+    /// K-397: giden hedef politikası (`None` → giden bağlantı yok).
+    pub giden_politikasi: Option<YetkinlikPolitikasi>,
+    /// K-397: sahte çözücü (ad → adresler); IP hedefi çözücüye gitmez.
+    pub giden_cozucu: HashMap<String, Vec<IpAddr>>,
+    /// K-397: sırayla bağlanılan betiklenmiş sunucular.
+    pub giden_sunuculari: VecDeque<SahteBaglanti>,
+    /// K-397: her başarılı bağlanmanın açıldığı denetlenmiş adres.
+    pub giden_adresleri: Vec<SocketAddr>,
+    /// K-397: her ad için çözücü çağrı sayısı (tek çözümleme kanıtı).
+    pub cozucu_cagrilari: Vec<String>,
 }
 
 impl ToplayanBaglanti {
@@ -110,8 +148,53 @@ impl ToplayanBaglanti {
     fn acik_sayisi(&self, uzak: Option<&str>) -> usize {
         self.baglantilar
             .iter()
-            .filter(|b| !b.kapandi && uzak.is_none_or(|u| b.uzak_adres == u))
+            .filter(|b| !b.kapandi && !b.giden_mi && uzak.is_none_or(|u| b.uzak_adres == u))
             .count()
+    }
+
+    /// K-397: gerçek host'la aynı saf politika (`giden_tcp_hedefini_coz`).
+    fn giden_baglan(&mut self, adres: &str) -> BaglantiSonucu {
+        let Some(politika) = self.giden_politikasi.clone() else {
+            return BaglantiSonucu::hata("hedef_yasak", "hermetik adaptörde giden politika yok");
+        };
+        let acik = self
+            .baglantilar
+            .iter()
+            .filter(|b| b.giden_mi && !b.kapandi)
+            .count();
+        if acik >= crate::ag_satiri::AZAMI_GIDEN_BAGLANTI {
+            return BaglantiSonucu::hata("sınır", "süreç başına giden bağlantı sınırı dolu");
+        }
+        let cozucu = &self.giden_cozucu;
+        let cagrilar = &mut self.cozucu_cagrilari;
+        let hedef = politika.giden_tcp_hedefini_coz(adres, |ad, kapi| {
+            cagrilar.push(ad.to_string());
+            cozucu
+                .get(ad)
+                .map(|ipler| ipler.iter().map(|ip| SocketAddr::new(*ip, kapi)).collect())
+                .ok_or_else(|| std::io::ErrorKind::NotFound.into())
+        });
+        let hedef = match hedef {
+            Ok(hedef) => hedef,
+            Err(hata) => return BaglantiSonucu::hata(hata.tur, hata.mesaj),
+        };
+        let Some(mut sunucu) = self.giden_sunuculari.pop_front() else {
+            return BaglantiSonucu::hata("bağlanamadı", "uzak sunucu bağlantıyı reddetti");
+        };
+        sunucu.giden_mi = true;
+        sunucu.uzak_adres = hedef.ip().to_string();
+        sunucu.okuyucu = Some(SatirOkuyucu::yeni(self.ayar.satir_siniri));
+        let kimlik = self.baglantilar.len() as u64 + 1;
+        self.baglantilar.push(sunucu);
+        self.giden_adresleri.push(hedef);
+        BaglantiSonucu::Giden(YeniBaglanti {
+            kimlik,
+            dinleyici: String::new(),
+            uzak_adres: hedef.ip().to_string(),
+            uzak_kapi: hedef.port(),
+            yerel_kapi: 50000 + kimlik as u16,
+            tls: false,
+        })
     }
 
     /// Dönen ikinci değer: sanal saatin ilerletileceği mutlak an; üçüncü:
@@ -169,6 +252,9 @@ impl ToplayanBaglanti {
     }
 
     pub(super) fn islem(&mut self, kimlik: u64, islem: &BaglantiIslemi) -> BaglantiSonucu {
+        if let BaglantiIslemi::GidenBaglan(adres, _) = islem {
+            return self.giden_baglan(adres);
+        }
         let ayar = self.ayar.clone();
         let kapaniyor = self.kapanis_bildirildi;
         let blok_sirasi = self.dosyalar.len();
@@ -208,28 +294,55 @@ impl ToplayanBaglanti {
             BaglantiIslemi::ParcaYaz(metin) => {
                 b.yaz(metin, giden_parca(metin, ayar.satir_siniri), false)
             }
-            BaglantiIslemi::DosyaAktar(yol) => match self.dosyalar.get(yol) {
-                None => BaglantiSonucu::hata("dosya", format!("\"{yol}\" dosyası yok")),
-                Some(icerik) if icerik.len() as u64 > ayar.blok_siniri => {
-                    BaglantiSonucu::hata("boyut_aşımı", crate::ag_satiri::BLOK_SINIRI_ASILDI)
-                }
-                Some(icerik) => {
-                    b.ham_giden.extend_from_slice(icerik);
-                    BaglantiSonucu::Tamam(icerik.len() as i64)
-                }
-            },
+            BaglantiIslemi::DosyaAktar(_) | BaglantiIslemi::Base64Aktar { .. } => {
+                dosya_aktar(b, &self.dosyalar, islem, &ayar)
+            }
             BaglantiIslemi::Kapat => {
                 b.kapandi = true;
                 b.blok = None;
                 BaglantiSonucu::Tamam(0)
             }
             BaglantiIslemi::TlsBaslat => b.tls_baslat(ayar.tls.is_some()),
+            BaglantiIslemi::TlsIstemci(ad) => b.tls_istemci(ad),
             BaglantiIslemi::Engelle(_) => {
                 b.teslim_et();
                 BaglantiSonucu::Tamam(0)
             }
+            BaglantiIslemi::GidenBaglan(..) => BaglantiSonucu::hata("geçersiz", "iç hata"),
         }
     }
+}
+
+/// K-384/K-396: hermetik dosyadan bağlantıya aktarım (ham ya da satırlı base64).
+fn dosya_aktar(
+    b: &mut SahteBaglanti,
+    dosyalar: &HashMap<String, Vec<u8>>,
+    islem: &BaglantiIslemi,
+    ayar: &BaglantiAyari,
+) -> BaglantiSonucu {
+    let (yol, aralik) = match islem {
+        BaglantiIslemi::DosyaAktar(yol) => (yol, None),
+        BaglantiIslemi::Base64Aktar { yol, aralik } => (yol, Some(*aralik)),
+        _ => return BaglantiSonucu::hata("geçersiz", "iç hata"),
+    };
+    let Some(icerik) = dosyalar.get(yol) else {
+        return BaglantiSonucu::hata("dosya", format!("\"{yol}\" dosyası yok"));
+    };
+    if icerik.len() as u64 > ayar.blok_siniri {
+        return BaglantiSonucu::hata("boyut_aşımı", crate::ag_satiri::BLOK_SINIRI_ASILDI);
+    }
+    let parca = match aralik {
+        None => icerik.clone(),
+        Some(_) if icerik.len() as u64 > crate::ag_satiri::BASE64_KAYNAK_TAVANI => {
+            return BaglantiSonucu::hata(
+                "boyut_aşımı",
+                crate::ag_satiri::BASE64_KAYNAK_TAVANI_ASILDI,
+            )
+        }
+        Some(aralik) => base64_penceresi(icerik, aralik),
+    };
+    b.ham_giden.extend_from_slice(&parca);
+    BaglantiSonucu::Tamam(parca.len() as i64)
 }
 
 impl SahteBaglanti {
@@ -348,6 +461,35 @@ impl SahteBaglanti {
             }
             Err(neden) => BaglantiSonucu::hata("yazılamadı", neden),
         }
+    }
+
+    /// K-397: hermetik istemci STARTTLS; gerçek reaktörle aynı sıra (ad →
+    /// tampon → kayıt).
+    fn tls_istemci(&mut self, ad: &str) -> BaglantiSonucu {
+        if self.tls {
+            return BaglantiSonucu::hata("tls", crate::ag_satiri::ZATEN_TLS);
+        }
+        if !crate::ag_satiri::tls_sunucu_adi_gecerli(ad) {
+            return BaglantiSonucu::hata("geçersiz", "TLS sunucu adı ASCII DNS adı olmalı");
+        }
+        if self.okuyucu.as_ref().is_some_and(|o| o.tamponlu_bayt() > 0) {
+            self.kapandi = true;
+            return BaglantiSonucu::hata("tls", crate::ag_satiri::STARTTLS_YANIT_ENJEKSIYONU);
+        }
+        let Some(mut kayit) = self.tls_kaydi.clone() else {
+            self.kapandi = true;
+            return BaglantiSonucu::hata(
+                "tls",
+                "TLS el sıkışması başarısız ya da süresinde bitmedi",
+            );
+        };
+        if kayit.dogrulandi && !kayit.sunucu_adi.eq_ignore_ascii_case(ad) {
+            kayit.dogrulandi = false;
+            kayit.dogrulama_hatasi = "ad_uyuşmuyor".into();
+        }
+        kayit.sunucu_adi = ad.to_ascii_lowercase();
+        self.tls = true;
+        BaglantiSonucu::TlsIstemci(Box::new(kayit))
     }
 
     fn tls_baslat(&mut self, tls_var: bool) -> BaglantiSonucu {

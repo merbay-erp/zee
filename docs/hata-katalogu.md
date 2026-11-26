@@ -61,7 +61,7 @@ kalır (ADR-025).
 | S044 | Yapılandırılmış hata biçimi/kodu geçersiz | `"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür`; neden önce, veri sonra yazılır |
 | S045 | Kaynak metni ya da token akışı güvenli profil sınırını aştı | Kaynağı sorumluluğu açık daha küçük birimlere böl |
 | S046 | Görünüm bloğu satırı biçimi geçersiz | Satır `etiket ad değer …`, `"sabit"`, `metin ifade` ya da `ham ifade` olmalı; öznitelikler çift, çocuklar öğe altında (K-212) |
-| S047 | Lint: erişilemeyen cümle veya sabit koşul dalı | Kesin `döndür`/`programı bitir` sonrasını ya da literal yanlış dalı gözden geçir; uygun dala taşı veya kaldır. `yanıtını gönder` bloğu sonlandırmaz. Yalnız isteğe bağlı uyarıdır |
+| S047 | Lint: erişilemeyen cümle veya sabit koşul dalı | Kesin `döndür`/`programı bitir` sonrasını ya da literal yanlış dalı gözden geçir; uygun dala taşı veya kaldır. Rota gövdesinde `yanıtını gönder`/`yönlendir` rotayı bitirir (K-403): sonrası ulaşılamaz, yanıttan sonra yapılacak işi yanıttan önceye taşı. Yalnız isteğe bağlı uyarıdır |
 | S048 | Lint: rotanın yanıt üretmeyen yolu olabilir | Her dala yanıt veya yönlendirme ekle. Örnek: `değilse` altında `"Geçersiz istek" yanıtını 400 durumuyla gönder`. Belirsiz çağrı etkisinde tahmin yapılmaz; yalnız isteğe bağlı uyarıdır |
 | S049 | Sıra eki noktası RFC-0029 kalıbına oturmuyor | Kalıp `<liste>nin <sıra>. öğesi` ya da `… öğesini almayı dene`; sıra tek ad ya da TamSayı sabitidir, hesaplanan sırayı önce bir ada ver: `konum sıra ile 1 in toplamı olsun` (K-386). Bitişik olmayan, `öğe…` öncesi olmayan ya da `3.14` gibi nokta S001 kalır |
 
@@ -70,7 +70,7 @@ kalır (ADR-025).
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
 | A001 | Ad bu kapsamda tanımlı değil | Önce `<ad> <değer> olsun`; tanı tanımlı adları listeler. K-384: işlemde örtük `bağlantı` Sözlüğü görünmez (alanı parametre olarak geçir); adı yerleşik `yaz` ile biten işlemi cümle olarak çağırınca tanı çakışan işlemi anar — işleme başka ad ver |
-| A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır |
+| A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır. K-398: parametre gövdede sözlük köküyle (`başlık … olsun`) yeniden atandıktan sonra K-398 öncesi yumuşamış yazımla (`başlığ`) başvurmak da A002'dir; parametre için sözlük kökünü yaz, ayrı yerele başka ad ver |
 | A003 | `her X için` gezilecek listeyi bulamadı | Kapsamda `Xlar`/`Xler` adlı liste olmalı (örtük çoğul, K-013) |
 | A004 | **ayrılmış** — eski ad çözümleme yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | A005 | Aynı adla ikinci işlem tanımı | İşlem adları benzersizdir |
@@ -87,7 +87,7 @@ kalır (ADR-025).
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
 | T001 | Karşılaştırma tür uyuşmazlığı | Büyüklük sayılar arasında; eşitlik aynı türler arasında |
-| T002 | Değerin türü değiştirilmeye çalışıldı | Tür sonradan değişmez; yeni ad kullan |
+| T002 | Değerin türü değiştirilmeye çalışıldı | Tür sonradan değişmez; yeni ad kullan. K-398: `başlığı al` parametresi `başlık` adıyla bağlanır; gövdedeki `başlık … olsun` artık parametreye atamadır, öneri bunu söyler — yerel değere başka ad ver |
 | T003 | Tekrar adedi TamSayı değil | `10 kez tekrarla` |
 | T004 | Aralık uçları TamSayı değil | `1 den 100 e kadar` |
 | T005 | ise/döngü/olmalı koşul istiyor | Koşul kalıbı kullan (K-010) |
@@ -179,16 +179,17 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin/bağlantı durumunu denetle; write'ı otomatik tekrarlama. Web adaptörü isteği 503 ile kapatıp worker'ı yaşatır; CLI tanıyı yayar |
 | C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle. Rotadaki ret yalnız o isteği 500 ile bitirir; oturum deposunun yeni kaydı reddetmesi (kapasite, depo IO, kilit) ise C022 değil 503 `web güvenlik durumu güvenle kaydedilemedi` yanıtıdır (spec/12, K-370). İstemcinin yanıt yazımı sırasında kopması C022 değildir: stderr'e tek satır yazılır, worker yaşar (K-327) |
 | C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
-| C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl; döngüde metin biriktirirken parçaları listeye ekleyip sonda `parçaların "" ile birleşmişi` kullan. Web rotasında aşım yalnız o isteği 503 ile bitirir |
+| C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Zarf canlı saklanan değerleri sayar; düşen değerin payı iade edilir (K-393). Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl; canlı tuttuğun liste/sözlük birikimini küçült; döngüde metin biriktirirken parçaları listeye ekleyip sonda `parçaların "" ile birleşmişi` kullan. Web rotasında aşım yalnız o isteği 503 ile bitirir |
 | C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt. `db.response_frame_limit` için yanıtı küçült; geçersiz transaction’ı temizleyip yeni bir işlem başlat |
 | C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Exact hedefi, `sslmode`, pinned CA ortam değişkenini, havuz kapasitesini ve değişmez migration geçmişini doğrula |
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
 | C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş kovası aşımı C028 değil 429/503 yanıtıdır (spec/12 §5, K-365); "gizli değeri okunamadı" nedeninde systemd credential dosyasını/dizinini spec/23 §K-339'a göre düzelt |
 | C029 | E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir | `e_posta_bağlantı_değişkeni`, exact `ağ_hedefleri`, alıcı ve ekli iletide readonly dosya/başlık sınırlarını denetle; başarısız `dene` sonucu teslim edilmedi garantisi değildir, otomatik tekrar yapma |
-| C030 | Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında | Okuma/yazma ret Sonuç'unda Hata verisinin `tür` değerine bak: `kapandı`, `zaman_aşımı`, `satır_uzun`, `satır_sonu` (çıplak CR/LF), `kodlama`, `kapanıyor` (SIGTERM), `yazılamadı`, `tls` (STARTTLS reddi: aynı pakette gelen düz metin — bağlantı kapanır —, zaten TLS, kimlik yok, el sıkışma başarısız); K-384 blok/bayt/aktarım: `boyut_aşımı` (`bağlantı_blok_sınırı` ya da bellekte satır sınırı; nokta bloğu sonlandırıcıya kadar tüketilir, literal hiç okunmaz), `geçersiz` (negatif bayt sayısı, 1 sn'den kısa okuma süresi), `dosya` (blok dosyası açılamadı/yazılamadı, aktarılacak dosya yok, normal değil ya da dosya sınırı dışında). Zaman aşımı bağlantıyı kapatmaz; yarıda kalan blok okuma yönünü kapatır (sonraki okumalar `kapandı`). Protokolün uygun yanıtını yaz. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantıyı kapatır. Kayıtsız dinleyici, ikinci blok, web sunucusuyla birlikte kullanım ve blok dışı kullanım yürütmeyi durdurur (K-381) |
+| C030 | Ağ bağlantısı işlemi başarısız ya da bağlantı kalıbı bağlamı dışında | Okuma/yazma ret Sonuç'unda Hata verisinin `tür` değerine bak: `kapandı`, `zaman_aşımı`, `satır_uzun`, `satır_sonu` (çıplak CR/LF), `kodlama`, `kapanıyor` (SIGTERM), `yazılamadı`, `tls` (STARTTLS reddi: aynı pakette gelen düz metin — bağlantı kapanır —, zaten TLS, kimlik yok, el sıkışma başarısız); K-384 blok/bayt/aktarım: `boyut_aşımı` (`bağlantı_blok_sınırı` ya da bellekte satır sınırı; nokta bloğu sonlandırıcıya kadar tüketilir, literal hiç okunmaz; base64 aktarımında ayrıca 32 MiB kaynak dosya tavanı, bayt yazılmaz), `geçersiz` (negatif bayt sayısı, 1 sn'den kısa okuma süresi), `dosya` (blok dosyası açılamadı/yazılamadı, aktarılacak dosya yok, normal değil ya da dosya sınırı dışında); K-396 satırlı base64 aktarımı (`… dosyasını base64 satırlarıyla bağlantıya aktarmayı dene`, aralıklı `… satırlarının K baytından N baytını …`) aynı türleri kullanır, negatif konum/bayt sayısı `geçersiz`, kodlanmış çıktının sonunu aşan konum hata değil 0 bayttır. Zaman aşımı bağlantıyı kapatmaz; yarıda kalan blok okuma yönünü kapatır (sonraki okumalar `kapandı`). Protokolün uygun yanıtını yaz. `bağlantıya … satırını yaz` cümlesinin hatası yalnız o bağlantıyı kapatır. Kayıtsız dinleyici, ikinci blok, web sunucusuyla birlikte kullanım ve blok dışı kullanım yürütmeyi durdurur (K-381). K-397 giden bağlantı (`adresine bağlanmayı dene`, ADR-173): `hedef_yasak` (`ağ` kapalı, hedef `ağ_hedefleri` `tcp://` listesinde değil, joker 25 dışında ya da çözülen IP'lerden biri public değil/IPv4-mapped — hiç bağlantı açılmaz), `çözülemedi`, `bağlanamadı`, `zaman_aşımı` (bağlanma en çok 30 sn), `zaten_bağlı` (görevin açık giden bağlantısı var; önce `bağlantıyı kapat`), `sınır` (süreçte 16 giden bağlantı), `geçersiz` (`<ana>:<kapı>` biçimi değil; dinleyici görevinde giden bağlantı; TLS istemcisinde sunucu adı ASCII DNS adı değil). İstemci TLS'inde `tls` ayrıca STARTTLS yanıtından sonra gelen şifresiz veriyi (bağlantı kapanır) ve el sıkışma hatasını kapsar; sertifika doğrulama hatası ret değildir, başarı sözlüğünde `doğrulandı=hayır` + `doğrulama_hatası` olarak döner |
 | C031 | Listede o sırada öğe yok (sıra 1 ile adet aralığı dışında) | Sırayı `listenin adedi` ile sınırla ya da olmayabilecek öğe için `listenin sıra. öğesini almayı dene` kullan; ret Sonuç'unda Hata kodu `SIRA_DISI` (K-386) |
 | C032 | Kodlanmış içerik çözülemedi | `Hata` verisinin `tür` değerine bak (K-389, RFC-0043 Dilim 1): `alfabe` (base64 alfabesi dışında ya da QP'de yazdırılabilir ASCII dışı karakter), `dolgu` (ortada/fazla dolgu, kanonik olmayan dolgu bitleri), `uzunluk` (4'e bölünmeyen base64 — dolgu zorunlu), `kaçış` (QP `=` ardından iki onaltılık hane yok), `satır_sonu` (QP'de çıplak CR/LF), `utf8` (aralıklı metin okumada geçersiz UTF-8 ya da bölünen çok baytlı dizi; ikili içerik için `base64 okumayı dene`), `boyut_aşımı` (çağrı başına çözülen çıktı 1 MiB'ı aşıyor; parçalara bölüp `eklemeyi dene` kullan). `konum` ilk hatalı baytın girdi (utf8'de dosya) içi konumudur; mesaj girdiyi taşımaz. Hedef dosyaya dokunulmamıştır. K-402 (Dilim 2): `base64 çözümünü almayı dene` tek satır alanında CR/LF/boşluk/sekmeyi de `alfabe` sayar, çözülen baytlar geçersiz UTF-8 ise `utf8` ve girdi içi konum; `kod noktası harfini almayı dene` aralık dışı ya da vekil değerde `kod_noktası`; `harfin kod noktası` boş ya da çok harfli metinde yakalanamaz çalışma hatasıdır (metni `harfleri` ile ayır) |
 | C033 | DNS sorgusu geçici olarak başarısız (RFC-0044 B1) | Hata verisinin `tür` değerine bak: `zaman_aşımı` (5 sn ya da son tarihin kalanı), `sunucu_hatası` (SERVFAIL — DNSSEC doğrulaması başarısız yanıt dahil —, FORMERR, NOTIMP), `ret` (REFUSED), `ağ` (yerel çözücüye ulaşılamadı ya da `dns_çözücü` bildirilmedi), `boyut_aşımı` (64 kayıt, 4 KiB TXT/TLSA, 8 CNAME), `bütçe`, `geçersiz_ad` (ASCII harf/rakam/`-`/`_`, etiket 1–63, ≤ 253 oktet; paket gönderilmez), `bozuk_yanıt`. Geçici hata "kayıt yok" değildir: posta akışında `451 4.4.3` gibi yeniden dene yanıtı ver. Kayıt yok/alan yok başarılı boş listedir (K-390) |
+| C034 | Posta kimlik doğrulama ilkeli girdiyi reddetti ya da kamu son ek listesi yok (RFC-0044 B1b/B2b) | DKIM doğrulama ret `Sonuç`unda Hata verisinin `tür` değerine bak: `algoritma_reddedildi` (`rsa-sha1`, RFC 8301), `algoritma_bilinmiyor` (yalnız `rsa-sha256`, `ed25519-sha256`), `anahtar_iptal` (boş `p=`), `anahtar_bozuk` (SPKI/PKCS#1 DER ya da 32 baytlık Ed25519 değil), `anahtar_kısa` (< 1024 bit), `anahtar_uzun` (> 4096 bit), `imza_bozuk` (`b=` base64 değil ya da boyu anahtara uymuyor), `veri_bozuk` (veride CR: satır sonunu `\n` yaz, imza girdisinde CRLF olur). Bunlar DKIM `permerror`dır; imzanın tutmaması ret değil, başarı sözlüğünde `doğrulandı=yanlış` (DKIM `fail`) olarak döner. `kurumsal alanı` proje `kamu_son_ekleri` bildirmeden kullanılırsa yürütme C034 ile durur: listeyi `dns` bildirimiyle birlikte ekle. `dkim gövde özeti` CR içeren gövdede yürütmeyi C034 ile durdurur: kanonik gövdede satır sonunu `\n` yaz (K-390) |
 
 ## D — Doğrulama
 
@@ -232,6 +233,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | Ç001 | Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz |
 | Ç002 | Web isteğinde parola özeti giriş oran reddi nöbetçisi; istek döngüsü 429/503 sabit yanıtına çevirir, kullanıcıya sızmaz |
 | Ç003 | Web isteğinde oturum deposu yeni kaydı reddetti (kapasite, depo IO, kilit); istek döngüsü sabit 503 yanıtına çevirir, kullanıcıya sızmaz |
+| Ç004 | Rota yanıtı belirlendi iç nöbetçisi (K-403): rota gövdesindeki `yanıtını gönder`/`yönlendir` sonrası gövdeyi bitirir; yalnız rota yürütücüsü yakalar ve olağan bitiş sayar, kullanıcıya sızmaz |
 
 > S032, A004 ve C014 bilinçli mezar taşlarıdır; ayrılmış kodlar başka anlamda
 > kullanılamaz. Yeni tanılar ilgili ailedeki sıradaki boş numarayı alır.
@@ -274,6 +276,26 @@ tek başına bildirimi, loopback dışı/adlı/0 kapılı çözücü ve bilinmey
 "zorunlu"` iken çözücü kök bölgeyi AD=1 ile yanıtlamazsa süreç kaynak
 yürütülmeden `dns_dnssec zorunlu:` iletisiyle çıkış 2 verir. DNS sorgu
 hataları C033 kodlu `Sonuç`tur. [Karar](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md).
+
+K-400: deneysel web (`--deneysel-web`) yeni tanı kodu üretmez. Loopback
+dışı Host taşıyan istek ham 421 `Misdirected Request` yanıtıdır (gövde üretim
+bayraklarını önerir, rota çalışmaz), eksik/yinelenen Host 400, loopback dışı
+eş 403'tür; ilk Host reddinde süreç başına bir kez, Host değerini yazmayan
+`UYARI: deneysel web localhost dışı Host…` operatör satırı düşer. systemd soket
+devri (`LISTEN_FDS`/`LISTEN_PID`) ile açılan deneysel süreç kaynak yürütülmeden
+`--deneysel-web systemd soket devri almaz` iletisiyle çıkış 2 verir. Çözüm:
+yayın için `dil çalıştır --web-proxy https://<alan> --web-worker-port <kapı>
+[--web-isci-sayisi N --web-systemd-soketi]`; yerelde tarayıcıyı
+`http://localhost:<kapı>` ya da `http://127.0.0.1:<kapı>` ile açın.
+[Karar](../adr/176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md).
+
+K-390 B1b: `kamu_son_ekleri` ve `kamu_son_ekleri_özeti` yalnız `dns`
+bildirimiyle ve birlikte geçerlidir; göreli olmayan ya da `..` içeren yol ve 64
+küçük harf onaltılık olmayan özet P015'tir (yeni proje tanı kodu yok). Dosya
+okunamaz, SHA-256'sı bildirilen özetle tutmaz ya da ayrıştırılamazsa süreç
+kaynak yürütülmeden `kamu_son_ekleri "…":` iletisiyle çıkış 2 verir. DKIM
+doğrulama ve kurumsal alan hataları C034'tür.
+[Karar](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
 
 K-376: `dinleyiciler` bildirim hataları P018'dir. Çalışma zamanındaki adlı
 dinleyici devri ihlalleri (eksik/fazla ad, başka PID, yanlış adres, V6ONLY

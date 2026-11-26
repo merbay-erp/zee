@@ -4,7 +4,8 @@ use std::net::{IpAddr, Ipv6Addr};
 
 use super::{AgHedefi, AgSemasi};
 
-pub(super) fn ayristir(yazim: &str) -> Result<(AgHedefi, &str), String> {
+/// K-397: `joker_serbest` yalnız bildirimde; istek adresi `*` taşıyamaz.
+pub(super) fn ayristir(yazim: &str, joker_serbest: bool) -> Result<(AgHedefi, &str), String> {
     if yazim.is_empty() || yazim.chars().any(char::is_control) || yazim.contains(['\\', '#']) {
         return Err("ağ adresi boş, denetim karakterli, ters bölülü veya parçalı olamaz".into());
     }
@@ -17,8 +18,9 @@ pub(super) fn ayristir(yazim: &str) -> Result<(AgHedefi, &str), String> {
             "http" => AgSemasi::Http,
             "smtps" => AgSemasi::Smtps,
             "smtp" => AgSemasi::Smtp,
+            "tcp" => AgSemasi::Tcp,
             _ => return Err(
-                "yalnız https://, açık izinli http://, smtps:// ve smtp:// şemaları desteklenir"
+                "yalnız https://, açık izinli http://, smtps://, smtp:// ve tcp:// şemaları desteklenir"
                     .into(),
             ),
         };
@@ -26,6 +28,9 @@ pub(super) fn ayristir(yazim: &str) -> Result<(AgHedefi, &str), String> {
     let (yetki, kuyruk) = kalan.split_at(kuyruk_yeri);
     if yetki.is_empty() || yetki.contains('@') {
         return Err("ağ adresi boş host veya kullanıcı bilgisi taşıyamaz".into());
+    }
+    if let Some(hedef) = super::giden::joker(sema, yetki, joker_serbest)? {
+        return Ok((hedef, kuyruk));
     }
     let (konak, kapi) = konak_ve_kapi(yetki, sema.varsayilan_kapi())?;
     Ok((AgHedefi { sema, konak, kapi }, kuyruk))

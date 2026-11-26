@@ -296,6 +296,56 @@ fn qp_satiri_coz(
     Ok(())
 }
 
+/// K-396 (RFC-0039 A2d, ADR-172): RFC 2045 §6.8 satır düzeni — her satır en
+/// çok 76 karakter ve ardından CRLF; son satır da CRLF ile biter.
+pub const BASE64_SATIR_KARAKTERI: u64 = 76;
+/// Tam bir satırı dolduran ham bayt sayısı (57 · 4 / 3 = 76).
+pub const BASE64_SATIR_HAM_BAYTI: u64 = 57;
+const BASE64_SATIR_TOPLAMI: u64 = BASE64_SATIR_KARAKTERI + 2;
+
+/// `b` ham baytın satırlı base64 çıktısının bayt uzunluğu:
+/// e = 4·⌈b/3⌉, toplam = e + 2·⌈e/76⌉ (spec/23 §K-396 normatif formülü).
+pub fn base64_satirli_uzunluk(b: u64) -> u64 {
+    let e = 4 * b.div_ceil(3);
+    e + 2 * e.div_ceil(BASE64_SATIR_KARAKTERI)
+}
+
+/// Kodlanmış çıktı üzerindeki `[konum, konum+adet)` penceresinin ham dosya
+/// karşılığı. Pencere çıktı sonunda kırpılır; `konum ≥ toplam` boş pencere.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Base64Penceresi {
+    /// Okumaya başlanacak ham bayt (satır başına hizalı, 57'nin katı).
+    pub ham_baslangic: u64,
+    /// O satırdan üretilen çıktının atlanacak ilk baytları (< 78).
+    pub atla: u64,
+    /// Yazılacak çıktı baytı: min(adet, max(0, toplam − konum)).
+    pub uzunluk: u64,
+}
+
+/// `b` ham baytlık dosyanın satırlı base64 çıktısında `konum`dan başlayan en
+/// çok `adet` baytlık pencere.
+pub fn base64_satir_penceresi(b: u64, konum: u64, adet: u64) -> Base64Penceresi {
+    let toplam = base64_satirli_uzunluk(b);
+    let bas = konum.min(toplam);
+    let satir = bas / BASE64_SATIR_TOPLAMI;
+    Base64Penceresi {
+        ham_baslangic: satir * BASE64_SATIR_HAM_BAYTI,
+        atla: bas - satir * BASE64_SATIR_TOPLAMI,
+        uzunluk: adet.min(toplam - bas),
+    }
+}
+
+/// Satır başına hizalı ham parçayı satırlı base64'e kodlar: her 57 bayt bir
+/// 76 karakterlik satır, kalan kısa parça dolgulu son satır; her satır CRLF.
+/// Ardışık çağrılar, yalnız sonuncusu 57'nin katı olmayan parçalarla
+/// yapıldığında tüm dosyanın kodlamasını bayt bayt verir.
+pub fn base64_satirlari_kodla(ham: &[u8], cikti: &mut Vec<u8>) {
+    for satir in ham.chunks(BASE64_SATIR_HAM_BAYTI as usize) {
+        cikti.extend_from_slice(base64_kodla(satir).as_bytes());
+        cikti.extend_from_slice(b"\r\n");
+    }
+}
+
 /// Katı UTF-8 çözümü; `taban` hata konumuna eklenir (dosya içi mutlak konum).
 pub fn utf8_coz(baytlar: Vec<u8>, taban: u64) -> Result<String, KodlamaHatasi> {
     String::from_utf8(baytlar).map_err(|hata| {
@@ -361,6 +411,70 @@ mod testler {
         let kod = base64_kodla(&[7u8; 300]);
         assert_eq!(base64_mime_coz(&kod, 300).unwrap().len(), 300);
         assert_eq!(base64_mime_coz(&kod, 299).unwrap_err().tur, "boyut_aşımı");
+    }
+
+    /// K-396: bağımsız başvuru — tek parça kodla, 76'lık satırlara böl.
+    fn basvuru_satirli(ham: &[u8]) -> Vec<u8> {
+        let kod = base64_kodla(ham);
+        let mut cikti = Vec::new();
+        for satir in kod.as_bytes().chunks(76) {
+            cikti.extend_from_slice(satir);
+            cikti.extend_from_slice(b"\r\n");
+        }
+        cikti
+    }
+
+    #[test]
+    fn satirli_base64_basvuruyla_ve_formulle_birebir() {
+        for b in [
+            0usize, 1, 2, 3, 56, 57, 58, 113, 114, 115, 171, 1000, 70_000,
+        ] {
+            let ham: Vec<u8> = (0..b).map(|i| (i * 31 + 7) as u8).collect();
+            let beklenen = basvuru_satirli(&ham);
+            let mut parcali = Vec::new();
+            // 57'nin katı parçalar + kısa son parça tek parçayla aynı çıktı.
+            for parca in ham.chunks(57 * 3) {
+                base64_satirlari_kodla(parca, &mut parcali);
+            }
+            assert_eq!(parcali, beklenen, "b={b}");
+            assert_eq!(base64_satirli_uzunluk(b as u64), beklenen.len() as u64);
+        }
+        assert_eq!(base64_satirli_uzunluk(0), 0);
+        assert_eq!(base64_satirli_uzunluk(1), 6);
+        assert_eq!(base64_satirli_uzunluk(57), 78);
+        assert_eq!(base64_satirli_uzunluk(58), 84);
+        assert_eq!(base64_satirli_uzunluk(16 * 1024 * 1024), 22_958_300);
+    }
+
+    #[test]
+    fn satirli_base64_penceresi_her_kenarda_dilimle_esit() {
+        let ham: Vec<u8> = (0..200u32).map(|i| (i * 13) as u8).collect();
+        let tum = basvuru_satirli(&ham);
+        let toplam = tum.len() as u64;
+        for konum in [
+            0,
+            1,
+            75,
+            76,
+            77,
+            78,
+            79,
+            155,
+            156,
+            toplam - 1,
+            toplam,
+            toplam + 9,
+        ] {
+            for adet in [0, 1, 2, 77, 78, 79, 1024, u64::MAX] {
+                let p = base64_satir_penceresi(ham.len() as u64, konum, adet);
+                let mut cikti = Vec::new();
+                base64_satirlari_kodla(&ham[p.ham_baslangic as usize..], &mut cikti);
+                let parca = &cikti[p.atla as usize..][..p.uzunluk as usize];
+                let bas = konum.min(toplam) as usize;
+                let son = konum.saturating_add(adet).min(toplam) as usize;
+                assert_eq!(parca, &tum[bas..son], "konum={konum} adet={adet}");
+            }
+        }
     }
 
     #[test]

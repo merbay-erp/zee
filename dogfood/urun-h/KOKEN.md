@@ -17,6 +17,7 @@ dilimleridir.
 |---|---|---|
 | `korpus/f009-dinleyici-yok.dil` | ürün reproducer'ı (dinleyici) | S036; K-381 sonrası temiz derlenir |
 | `korpus/zm-r006-mx-sorgusu-yok.dil` | ZeeMail korpusu ZM-R006 (ürün commit `7f7b1fe48035ccff1fe4c78810b19e00234ca8ac`, SHA-256 `b645c2230562c1cd37e4eae221b916ad75a69f801946038753036e5a50f97d08`; alan adı anonim) | S015; K-390 (RFC-0044 B1a) sonrası temiz derlenir |
+| `korpus/zm-f043-dkim-dogrulama-yok.dil` | ZeeMail sürtünmesi ZM-F043 (ZM-F024/F025'e bağlı; ürün commit'i `1fe6a524dcf910aea3b26f2e2c68485d2fdeead1`, `zeemail/docs/dogfood/surtunmeler.md` SHA-256 `17fc1cad8a9db447a389bcc739bfeec4d54a4890cc528087d139f53c2c5a986c` blob `98e22df1…` satır 44/45/63; ürün yeniden üretimi `zm-f043-yeniden-uretim.dil` SHA-256 `169b9bafd51d5a373c1659eb6cbcaa8458b7da8a2a1701b03803296db753a65b`; alan adı anonim) | S015; K-390 (RFC-0044 B1b/B2b) sonrası temiz derlenir |
 | `korpus/f004-cr-kacisi-yok.dil` | ürün reproducer'ı (çıplak CR) | S040 |
 | `korpus/f001-yerel-ayarli-buyuk-harf.dil` | ürün reproducer'ı (harf katlama) | `MAİL FROM:<A@B.TEST>` |
 | `korpus/f001-ascii-katlama-elle.dil` | ürünün ASCII metin yardımcısı | `MAIL FROM:<A@B.TEST>` |
@@ -25,8 +26,10 @@ dilimleridir.
 | `korpus/zm-f023-imap-literal-oktet.dil` | aynı commit, `imap/kaynak/ana.dil` (blob `25cf0e4e…`) literal bayt sayımı; metin ürünün ölçüm örneği | S015; K-402 sonrası `14\|18` |
 | `korpus/zm-f023-rfc2047-emoji.dil` | aynı commit, `motor/kaynak/ileti_olustur.dil` (blob `40aefd2a…`) ve `kodlamalar.dil` (blob `3ee434b5…`) kod noktası/base64 tablosu; konu ürünün örneği | S015; K-402 sonrası `😀 Fatura`, 128512, gidiş-dönüş |
 | `korpus/zm-r005-bellekte-sha256.dil` | ürün reproducer'ı ZM-R005 (aynı commit, blob `f994eaab…`) | S015; K-389 sonrası gerçek SHA-256 |
+| `korpus/zm-f030-yumusak-parametre.dil` | ZeeMail sürtünmesi ZM-F030 (ürün commit `a180e0c3b38384ca1b27c324811db71dc0dbe8ce`, `imap/kaynak/ana.dil` blob `26863c63…`, SHA-256 `f48c444ea345452534b9015d9952b2fb449d3e5738489c886baf52d96b9413cf`; `klasörleri listele` `kalıbı` yerine `deseni`) | A001; K-398 (ADR-175) sonrası `doğru`, `yanlış`, `doğru` |
 | `ek-cikarma/ana.dil` | ürün ek çıkarma kesiti (ZM-F034, ürün commit'i `4f8c67cf6de936d1f17a689598f65cdca2bb4918`) | S015; K-389 sonrası temiz |
 | `paylasilan-depo/alici/ana.dil`, `paylasilan-depo/web/ana.dil` | ürün paylaşılan ek deposu kesiti (ZM-F038, ürün commit'i `35df031accc4d010ed1ca3db1f2c479df40f2916`) | P001; K-394 sonrası temiz |
+| `imap-govde-base64/ana.dil` | ürün IMAP FETCH gövde akışı kesiti (ZM-F040, ürün commit'leri `171f6b2a8dc5fcbb2f42c4f769f94a8ced968eca`, `c455cc8d1780ade481adc44752700bf6c9fdef8c`) | S015; K-396 sonrası temiz |
 
 Reproducer'lar ürün kodundan hermetik küçültmedir; sunucu adı, alan adı,
 adres, yerel yol ve ürünün geri kalan kaynağı taşınmaz (ADR-087). Etkilenen

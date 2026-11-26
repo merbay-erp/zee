@@ -33,6 +33,8 @@ pub(super) fn blok_denetle(
                     uzunluk,
                 } => {
                     let satir = *satir;
+                    // K-398: `belirtec … olsun` eski yazımla parametreye atamadır.
+                    let tam_yazimla_atama = ortam.eski_yazimi_hedefe_cevir(ad);
                     if baglam.gezilen_koleksiyonlar.contains(ad) {
                         return Err(gezilen_koleksiyonu_degistirme_tanisi(ad, satir));
                     }
@@ -68,14 +70,22 @@ pub(super) fn blok_denetle(
                                 *sutun,
                                 *uzunluk,
                             )
-                            .onerili(format!(
-                                "Bir değerin türü sonradan değişemez. Farklı türde bir değer \
+                            .onerili(ortam.parametre_tur_onerisi(ad, &eski.adi()).unwrap_or_else(
+                                || {
+                                    format!(
+                                        "Bir değerin türü sonradan değişemez. Farklı türde bir değer \
                              gerekiyorsa yeni bir ad kullan; ya da \"{}\" değerine yine {} türünde \
                              bir değer ver.",
-                                ad,
-                                eski.adi()
+                                        ad,
+                                        eski.adi()
+                                    )
+                                },
                             )));
                         }
+                    }
+                    // Sağ taraf eski değeri okuyabilir; işaret atamadan sonra konur.
+                    if tam_yazimla_atama {
+                        ortam.parametre_kokle_atandi(ad);
                     }
                     let kimlik = ortam.insert(ad.clone(), tur);
                     let kaynak_araligi =

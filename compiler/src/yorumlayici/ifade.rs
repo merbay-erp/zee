@@ -64,12 +64,7 @@ pub(super) fn degerlendir_async<'a>(
                         let metin = metne_sinirli(metin, satir)?;
                         super::baglanti::satir_yaz(io, metin, satir).await
                     }
-                    crate::intrinsic::BAGLANTI_NOKTA_BLOGU
-                    | crate::intrinsic::BAGLANTI_BAYT_BLOGU
-                    | crate::intrinsic::BAGLANTI_BAYT_OKU
-                    | crate::intrinsic::BAGLANTI_SATIR_OKU_SURELI
-                    | crate::intrinsic::BAGLANTI_PARCA_YAZ
-                    | crate::intrinsic::BAGLANTI_DOSYA_AKTAR => {
+                    a2c if super::baglanti::a2c_mi(a2c) => {
                         super::baglanti::a2c_yurut(kimlik, &degerler, io, satir).await
                     }
                     WEB_OTURUMLARINI_LISTELE | WEB_OTURUMUNU_IPTAL_ET => {

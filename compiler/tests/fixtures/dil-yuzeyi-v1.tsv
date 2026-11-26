@@ -1,6 +1,8 @@
 # zee-dil-yuzeyi-1
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
+api	ag.baglanti_base64_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BASE64_AKTAR: &str = "ag.baglanti_base64_aktar";
+api	ag.baglanti_base64_aralik_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BASE64_ARALIK_AKTAR: &str = "ag.baglanti_base64_aralik_aktar";
 api	ag.baglanti_bayt_blogu	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BAYT_BLOGU: &str = "ag.baglanti_bayt_blogu";
 api	ag.baglanti_bayt_oku	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_BAYT_OKU: &str = "ag.baglanti_bayt_oku";
 api	ag.baglanti_dosya_aktar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_DOSYA_AKTAR: &str = "ag.baglanti_dosya_aktar";
@@ -10,6 +12,8 @@ api	ag.baglanti_satir_oku	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BA
 api	ag.baglanti_satir_oku_sureli	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_OKU_SURELI: &str = "ag.baglanti_satir_oku_sureli";
 api	ag.baglanti_satir_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_SATIR_YAZ: &str = "ag.baglanti_satir_yaz";
 api	ag.baglanti_tls_baslat	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_TLS_BASLAT: &str = "ag.baglanti_tls_baslat";
+api	ag.baglanti_tls_istemci	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const BAGLANTI_TLS_ISTEMCI: &str = "ag.baglanti_tls_istemci";
+api	ag.giden_baglan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const GIDEN_BAGLAN: &str = "ag.giden_baglan";
 api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
 api	dosya.aralik_base64	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_BASE64: &str = "dosya.aralik_base64";
 api	dosya.aralik_metin	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_METIN: &str = "dosya.aralik_metin";
@@ -44,6 +48,9 @@ api	io-izi.istemci_adresi	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"is
 api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"parola_ozeti_uret"
 api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
 api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
+api	posta.dkim_dogrula	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
+api	posta.dkim_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_GOVDE_OZETI: &str = "posta.dkim_govde_ozeti";
+api	posta.kurumsal_alan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_KURUMSAL_ALAN: &str = "posta.kurumsal_alan";
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
 api	web.dosya_yaniti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
@@ -147,6 +154,7 @@ kalip	adıyla	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	aktarmayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	al	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	alanı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	alanının	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	almayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	anahtarı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	anahtarıyla	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -159,6 +167,7 @@ kalip	base64	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bayt	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	baytı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	baytından	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	bağlanmayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıda	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıdan	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	bağlantıya	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -179,8 +188,10 @@ kalip	değilse	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	değişmişi	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	dinleyicisinde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	diye	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	dkim	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	dosyaya	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	doğru	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	doğrulamayı	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	doğrulanıyorsa	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	döndür	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ekle	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -191,6 +202,8 @@ kalip	göndermeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	göre	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	görselini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	görünüm	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	gövde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	gövdesinin	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	harfini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	harfleri	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -199,9 +212,11 @@ kalip	her	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	herkese	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ile	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ileti	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	imzasını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	iptal	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	istemci	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	istemcisi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	isteğini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	içermeli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -215,6 +230,7 @@ kalip	kodlu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kodu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kullan	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kullanıcısını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	kurumsal	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	kuruşlusu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	küçültmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -226,6 +242,7 @@ kalip	nedeniyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nokta	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	noktası	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	olana	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	olarak	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	olduğu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olmalı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olmamalı	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -241,6 +258,8 @@ kalip	quoted_printable	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	satırlarının	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	satırlarıyla	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	satırını	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -321,6 +340,8 @@ kosul	tekse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
+profil	ag-hedefi-joker-v1	aktif	1.0.0-dev	compiler/src/yetkinlik/giden.rs	(AgSemasi::Tcp, "*:25") => Ok(Some(AgHedefi {
+profil	ag-hedefi-tcp-v1	aktif	1.0.0-dev	compiler/src/yetkinlik/origin.rs	"tcp" => AgSemasi::Tcp,
 profil	baglanti-ayarlari-v1	aktif	1.0.0-dev	compiler/src/proje/baglanti.rs	"bağlantı_sınırı",
 profil	cli-ag-izni	aktif	1.0.0-dev	compiler/src/cli/ag_izni.rs	pub(crate) const IZIN_BAYRAGI: &str = "--izin";
 profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
@@ -361,6 +382,7 @@ profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
 profil	http-service-run	aktif	0.8.0-dev	scripts/http-service.py	--run
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
 profil	jetbrains-zee-local-posix	aktif	0.8.0-dev	editors/jetbrains/template.json	"id": "zee-local-posix"
+profil	kamu-son-ekleri-v1	aktif	1.0.0-dev	compiler/src/proje.rs	| "kamu_son_ekleri"
 profil	kaynak-kapsami-karar-profili	aktif	0.8.0-dev	compiler/src/test_kapsami.rs	"source-decision-outcomes-1"
 profil	kaynak-kapsami-semasi	aktif	0.8.0-dev	compiler/src/test_kapsami.rs	"zee-source-coverage-1"
 profil	managed-owned-module-scaffold-posix-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	Managed scaffold pilot

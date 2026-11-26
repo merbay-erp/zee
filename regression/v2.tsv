@@ -79,3 +79,9 @@ tek-dosya-ag-izni	K-387	fc4251783ae31d2b1e3c5fe9b6097ff111723c5a	6e18e3c7519d93a
 baglanti-idle-butce-yenileme	K-388	6285c578f5d44696ee189da0779ecef7bd8f2044	bd2d95c82163c80c86155fcbb7612f9fea8e3b59	0.8.0-dev	runtime	baglanti	-	-	0	A1 OK bitti	regression/runtime/baglanti-idle-butce-yenileme.dil
 cagrilmayan-cikarimli-islem	K-392	9709e84dbf0abd6ef18791b12eee705bf3a5137f	-	0.8.0-dev	hir	run	-	-	0	1	regression/hir/cagrilmayan-cikarimli-islem.dil
 buyuk-dosya-izsiz-tasima	K-401	8a398dfd13ff7f6d45a05495d6eb490f7ec0d1f7	-	0.8.0-dev	runtime	native-buyuk-dosya-tasima	-	-	0	taşındı	regression/runtime/buyuk-dosya-izsiz-tasima.dil
+heap-zarfi-cerceve-iadesi	K-393	4d9fc56b89455ba5f756ff52beca4c2d0925edb7	4a264d706a268f4c113b949a30c801df77fafc7d	0.8.0-dev	runtime	run	-	-	0	1000	regression/runtime/heap-zarfi-cerceve-iadesi.dil
+heap-zarfi-uzerine-yazma-iadesi	K-393	4d9fc56b89455ba5f756ff52beca4c2d0925edb7	4a264d706a268f4c113b949a30c801df77fafc7d	0.8.0-dev	runtime	run	-	-	0	1000\n1024	regression/runtime/heap-zarfi-uzerine-yazma-iadesi.dil
+parametre-sozluk-koku	K-398	8386fa7fcea439b3780548e175bd29da0cde5ea5	-	0.8.0-dev	checker	run	-	-	0	ab	regression/checker/parametre-sozluk-koku.dil
+parametre-eski-yazim-belirsiz	K-398	8386fa7fcea439b3780548e175bd29da0cde5ea5	-	0.8.0-dev	checker	compile	A002	7:5:6	1	-	regression/checker/parametre-eski-yazim-belirsiz.dil
+yonlendirme-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-dev	security	web	-	-	0	200 → /giris	regression/security/yonlendirme-rota-sonu.dil
+islemde-yanit-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-dev	security	web	-	-	0	403 yetki yok	regression/security/islemde-yanit-rota-sonu.dil

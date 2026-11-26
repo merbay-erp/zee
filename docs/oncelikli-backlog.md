@@ -2557,9 +2557,79 @@ geçiştiriyor. Freeze sonrası RFC adayı (spec/04 K-045 sınırı).
 K-179/F001, K-355/F007). Açık kaynaklı döngü biçimi ya da `zee-tr-2`
 çoğul türetimi freeze sonrası RFC adayıdır.
 
+## K-398 — Parametre bağlama adı sözlük köküne bağlanır (ZM-F030, ADR-175)
+
+**Durum: KAPALI (25 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-h`
+(ZeeMail) sürtünmesi ZM-F030, iki kez bildirildi (23 ve 24 Kasım; ürün commit
+`a180e0c`, `imap/kaynak/ana.dil` `kalıbı` yerine `deseni`); aynı sınıf
+`kanit-ozeti` K-164/F006 olarak korpustaydı. Kullanıcı onayı 25 Kasım 07:55,
+önerilen düşük riskli yol: profil çıktısı değil bağlama adı seçimi değişir.
+Freeze sınıfı `dogfood-change`.
+
+**Karar ([ADR-175](../adr/175-parametre-baglama-adi-sozluk-koku.md),
+[spec/03](../spec/03-adlar-ve-kapsam.md)).** `kalıbı al` → `kalıp`,
+`belirteci` → `belirteç`, `eşiği` → `eşik`, `adedi` → `adet`, `içeriği` →
+`içerik`, `ucu` → `uç`, `metni` → `metin`: `morfoloji::baglama_koku`
+sözlüksüz kurallarla kökü türetir, ayrıştırıcı onu yalnız yazımın `zee-tr-1`
+aday kümesindeyse seçer. Profil, aday kümesi ve uyumluluk kaydı değişmez.
+Eski yumuşamış yazım (`kalıb`, `kalıb … olsun`) yalnız parametre için aynı
+sembole çözülür; sözlük köküne farklı türde atama önerili T002, kökle yeniden
+atanmış parametreye eski yazımla başvuru A002.
+
+Ölçüm: ZM-F030'un yedi adı ve 50 benzer adın aday kümesi; 1 773 dosyalık
+korpusun (depo + 21 yerel proje + ZeeMail) 19 450 parametre satırının 752'si
+(53 ad) yeni köke bağlanır; eski/yeni `dil denetle` farkı yalnız F006 (A001 → başarı).
+
+Kanıt: `parametre_baglama_adi_testi.rs` (yedi olumlu/olumsuz vaka, profil
+parmak izi), regression `checker/parametre-sozluk-koku` ve
+`checker/parametre-eski-yazim-belirsiz`, dogfood `zm-f030-yumusak-parametre`
+(urun-h) ve F006 beklentisi (kanit-ozeti).
+
+Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü düşmesi
+(`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
+(`ip_adresini`); sözlük ya da `zee-tr-2` ister.
+
+## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173)
+
+**Durum: Dilim 1 KAPALI (B4a); Dilim 2 (B3 DKIM imza ilkeli, ADR-174) AÇIK.**
+Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) `zeemail/disteslim` hizmeti;
+ZeeOS'ta 25 kapısına çıkış yalnız bu hizmete açıktır, teslim motoru (SMTP
+istemci durum makinesi, MX sırası, yeniden deneme, MTA-STS/DANE/TLS-RPT
+kararı, DSN) Zee'dedir. Freeze sınıfı `dogfood-change`; gramer değişmedi,
+iki contextual Sonuç kalıbı eklendi.
+
+Dilim 1: `ağ_hedefleri` `tcp://<konak>:<kapı>` tam hedefi ve yalnız 25
+kapısında `tcp://*:25` jokeri (yalnız public IP), `https://mta-sts.*` (443,
+sabit `/.well-known/mta-sts.txt`, public IP). `"<ana>:<kapı>" adresine
+bağlanmayı dene` tek çözümleme + fail-closed IP denetimi + denetlenen adrese
+sabitleme; başarılı bağlantı görevin bağlantısıdır ve A2/A2c kalıpları onun
+üzerinde çalışır (artık `ağ` ile de derlenir). Görev başına tek giden
+bağlantı, süreçte 16, bağlanma ≤ 30 sn. `bağlantıda TLS istemcisi
+başlatmayı dene "<ad>" ile` rustls istemcisi; PKIX sonucu `doğrulandı` /
+`doğrulama_hatası` ile açık, SPKI/sertifika/zincir SHA-256'ları DANE için.
+GB-172.
+
+Kanıt: `yetkinlik/giden.rs` (7 birim: joker biçimi, SSRF aralıkları
+`yerel-ağ` açıkken, kapı, tek çözümleme, karışık yanıt, mta-sts jokeri),
+`ag_satiri/x509.rs` (3 birim: SPKI, bozuk/kesik/kanonik olmayan DER,
+5000 rastgele çevirme), `giden_baglanti_testi.rs` (11 hermetik: SMTP
+oturumu, açık doğrulama hatası ve yanlış SNI, SSRF, yeniden bağlama,
+görev/dinleyici kuralı, yanıt enjeksiyonu, geçersiz SNI, T054, politika
+sarmalayıcısı, IO izi replay'i, eşzamanlı görevler),
+`giden_baglanti_surec_testi.rs` (5 gerçek süreç: rustls sunucusuna geçerli
+zincir + SPKI openssl eşliği, yanlış SNI/kendinden imzalı/süresi dolmuş,
+kök yokken bilinmeyen yayıncı, joker yerel adrese soket açmaz, düz bağlantıda
+parça/aktarım/süreli okuma).
+
+Açık: Dilim 2 (DKIM imza ilkeli, `kriptografi`, credential anahtar,
+K-390 B2 doğrulayıcısıyla tek kripto yüzeyi); `x509_spki` fuzz hedefinin RC
+kapısına alınması; gerçek internette DANE/MTA-STS teslim kanıtı (insan adımı);
+ürün reproducer'ı ve provenance (ZeeMail'den bekleniyor).
+
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
 
-**Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2 sürüyor.** Kaynak:
+**Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2b KAPALI (25 Kasım
+2026); B2a/B2c/B2d/B2e açık.** Kaynak:
 etkin dogfood ürünü `urun-h` (ZeeMail) güvenlik kapsamı (oltalama/BEC/MITM)
 ve korpus ZM-R006/ZM-R007 (ürün commit `7f7b1fe`). Merkez kararı 23 Kasım
 2026 "Sırayla aç". Freeze sınıfı `dogfood-change`; iki PR: B1 (DNS) ve B2
@@ -2588,8 +2658,35 @@ kayıt, zaman aşımı, `zorunlu` açılış sınaması), dogfood
 Açık (B1): Zee yüzeyinde NXDOMAIN/NODATA ayrımı ve CNAME kanonik adı (B4);
 `dil dene` statik bölge dosyası; gerçek unbound entegrasyon koşusu; PTR;
 U-label; `dns_yaniti` 30–60 dk RC kampanyası sonraki RC adayında.
-Sıradaki: B1b PSL veri dosyası (ZM-F025) + B2a A-R temizliği + B2b DKIM +
-B2c SPF + B2d DMARC (ZM-R007).
+**B1b + B2b kararı ([ADR-177](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md),
+[spec/31 §2–§3](../spec/31-dns-ve-posta-kimlik-dogrulama.md)).** Merkez kararı
+(b) dogfood-minimal. PSL derleyiciye gömülü değil: `kamu_son_ekleri` +
+`kamu_son_ekleri_özeti` (yalnız `dns` ile, P015), açılışta exact SHA-256,
+aksi çıkış 2. `<ad> alanının kurumsal alanı` → Metin (geçersiz ad / kamu
+son eki → ""), IO izi `kurumsal_alan`. DKIM doğrulama ilkeli
+`<b> dkim imzasını <veri> verisi için <p> anahtarıyla <a> olarak doğrulamayı
+dene` → `doğrulandı`/`algoritma`/`anahtar_biti`; rsa-sha256 (1024–4096,
+SPKI/PKCS#1) ve ed25519-sha256 ring ile (rustls'in kilitli aynı sürümü, yeni
+crate yok); rsa-sha1, kısa/uzun/iptal/bozuk anahtar, bozuk imza ve veride CR
+yeni C034 `tür`. Kanonikleştirme Zee'de; Zee'de `\r` olmadığından veri LF'si
+imza girdisinde CRLF; `<x> gövdesinin dkim gövde özeti` aynı kuralla CRLF'li
+kanonik gövdenin SHA-256'sını `bh=` biçiminde (base64) verir (merkez kararı). Tek kripto yüzeyi `dkim_kripto` (K-397
+imza tarafı aynı modüle). GB-174.
+
+Kanıt: `kamu_son_ekleri.rs` (publicsuffix.org vektörleri, geçersiz ad, bozuk
+kural, 20 000 rastgele ad), `dkim_kripto.rs` (algoritma, DER, LF→CRLF,
+ed25519-dalek diferansiyel, 20 000 bozulmuş SPKI), `posta_kimligi_testi.rs`
+(openssl 4.1 RSA 1024/2048/4096 SPKI+PKCS#1 ve Ed25519 vektörleri, 1023/4104
+bit, rsa-sha1, C034 türleri, RFC 6376 gövde özeti vektörleri, kurumsal alan, yetkinlik, IO izi replay,
+P015, gerçek süreçte özet uyuşmazlığı çıkış 2), dogfood
+`zm-f043-dkim-dogrulama-yok` (K-390 B2b öncesi S015). Ürün kanıtı: ZeeMail
+`uctan-uca-dkim.sh` 11/11 (dil dalı `df41636`; RSA-2048/1024 ve Ed25519
+imzası Gelen'e; bozuk bh=/b=, iptal p=, olmayan seçici, rsa-sha1, imzasız
+taklit 550 5.7.1; DMARC p=reject).
+
+Açık (bu PR'da kapanmıyor, K-390 sonrası): `dil dene` PSL
+yüklemesi, `psl`/DKIM anahtarı fuzz hedefleri, IDN kuralları, DMARCbis.
+Sıradaki: B2a başlık ayrıştırıcısı + A-R temizliği, B2c SPF, B2d DMARC.
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)
 
 **Durum: KAPALI.** Kaynak: K-180 dört ürün kanıtı (kanıt özeti K-164/F010,
@@ -2796,6 +2893,83 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
+
+**Durum: KAPALI (25 Kasım 2026), belge kararı.** Kaynak: ZeeMail (`urun-h`)
+dış güvenlik incelemesi, "Orta" bulgu: parola sıfırlama/değişimi sonrası
+uygulama kullanıcının öteki oturumlarını geçersizleyebilmeli, geçerli oturumu
+korumalı ya da döndürmeli. zee-cekirdek filosunun yönetim panelleri de
+yararlanır.
+
+Karar: core freeze altında yeni ilke eklenmez, çünkü K-188 yüzeyi
+(`web oturumlarını listelemeyi dene`, `web oturumunu iptal etmeyi dene`,
+`oturumun "kimlik"` özeti) ve `oturuma al` döndürmesi gereksinimi tek istek
+transaction'ında karşılıyor. Desen spec/12 §2'de TANIMLI madde, kullanım ve
+bilinçli sınır `docs/web-production-profili.md`'de. Bilinçli sınır: değişim
+isteğiyle yarışan, eski parolayla tamamlanan eşzamanlı giriş listeye
+girmeyebilir; uygulama PostgreSQL satır kilidi ve koşullu güncellemeyle
+daraltır. İstek başına denetlenen oturum kuşağı ilkesi ancak yeni ürün kanıtıyla
+ayrı K-işi olur. GB-175.
+
+Kanıt: `compiler/tests/web_testi.rs`
+`parola_degisiminde_oteki_oturumlar_mevcut_yuzeyle_kapatilir`.
+
+## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir (ADR-178)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) dış
+güvenlik incelemesi; bulgu 23.11.2026'da "Yüksek", 25.11'de yinelendi.
+Freeze sınıfı `security` (semantic-bugfix). GB-176.
+
+Hata: rota gövdesinde `yönlendir`/`yanıtını gönder` akışı bitirmiyordu;
+`yetkili değilse` → yönlendirme koruması fail-open çalışıyor, korumadan
+sonraki mutation/eylem/çıktı koşuyordu. Karar (ADR-178): yanıt taslağını
+belirleyen yanıt/yönlendirme rota gövdesini bitirir (işlem, döngü, iç blok
+dahil; Ç004 iç nöbetçisi, Ç000 emsali). Rota dışı ve dosya yanıtı değişmez.
+Lint: rota içinde kesin yanıttan sonraki cümle önerili S047.
+
+Ölçüm: 1 199 tekil yerel `.dil` (filo, zee-cekirdek, ZeeMail, dogfood)
+içinde 6 895 yanıt cümlesinin 37'sinden sonra kod koşuyordu; görünür yanıt
+hiçbirinde değişmez. 1 267 hedefte eski/yeni `dil denetle --lint --json`
+farkı 0 (yeni tanı ya da S047 yok).
+
+Kanıt: `compiler/tests/rota_sonu_testi.rs` (3 vaka), `compiler/tests/lint_testi.rs`
+(rota S047, koruma kalıbında uyarı yok, işlemde tahmin yok); regression
+`yonlendirme-rota-sonu`, `islemde-yanit-rota-sonu` (`web`; önce 500).
+
+## K-400 — Web üretim sözleşmesi: deneysel web yalnız localhost (ADR-176)
+
+**Durum: KAPALI.** Kaynak: bağımsız inceleme ve merkez backlog'u ("deneysel
+web yalnız localhost" üretim sözleşmesi olmalı); kullanıcı onayı 25.11.2026.
+Freeze sınıfı `security` (semantic-change, kanıt ADR-176).
+
+İnceleme: `--deneysel-web` sabit `127.0.0.1`'e bağlanıyordu, adres seçen
+yüzey yoktu; native listener, işçi grubu ve systemd devri yalnız proxy
+kipindeydi. Açık bulgu (GB-173): deneysel kip `Host`'u denetlemiyordu (DNS
+rebinding, public Host'lu tünel arkasında sessiz yayın) ve systemd soket
+devrini yok sayıyordu. Filo süreç denetimi (salt okuma): üretimdeki hiçbir
+Zee web süreci `--deneysel-web` kullanmıyor; hepsi `--web-proxy` ile.
+
+Düzeltme: deneysel kipte tek Host ve loopback adı (localhost, *.localhost,
+127.0.0.0/8, [::1]; kapı serbest), aksi 421 + üretim bayrağı önerisi ve tek
+seferlik Host'suz operatör uyarısı; loopback dışı eş iki kipte 403;
+bildirimsiz projede `LISTEN_FDS`/`LISTEN_PID` ile deneysel kip çıkış 2.
+`X-Forwarded-*` reddedilmez (resmî sitenin yerel ön kapısı gönderir), kimlik
+de sayılmaz. spec/12 §5a altı normatif madde (biri AÇIK: Host'u loopback
+yazan yerel proxy ayırt edilemez). Yeni CLI bayrağı, tanı kodu, grammar ya da
+API yok.
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| Host `localhost:<kapı>`, `127.0.0.1`, `x.localhost`, `[::1]` | 200 | 200 |
+| Host `rebind.example` (DNS rebinding) / tünelin public adı | 200, rota çalışır | 421, rota çalışmaz |
+| Host yok ya da iki Host | 200 | 400 |
+| `LISTEN_FDS`/`LISTEN_PID` + `--deneysel-web` | devir yok sayılır | çıkış 2, üretim önerisi |
+| `X-Forwarded-For` + Host `127.0.0.1` | 200, kimlik soket IP | aynı |
+
+Kanıt: `compiler/src/main.rs` (Host ayrıştırma olumlu/olumsuz, istek düzeyi
+400/421, bayrak birleşimleri), `compiler/tests/web_cok_surec_testi.rs`
+(gerçek soket 421 gövdesi/başlıkları, tek uyarı, systemd devri çıkış 2).
+
 ## K-392 — Çağrılmayan çıkarımlı işlem gövdesi C000 iç hatası vermez
 
 **Durum: KAPALI.** Kaynak: K-380 incelemesinde bulunan açık hata. Freeze
@@ -2946,7 +3120,7 @@ Karar (ADR-167 K-402 eki, spec/26 §Bellekteki metin ↔ bayt): beş saf
 dene` (tek satır, katı RFC 4648, CR/LF/boşluk alfabe dışı, ≤ 1 MiB, katı
 UTF-8), `kod noktası` (tek harf dışı C032 çalışma hatası), `kod noktası
 harfini almayı dene` (vekil/aralık dışı C032 `kod_noktası`). RFC-0043 kabul;
-Dilim 1 ve 2 uygulandı. GB-170.
+Dilim 1 ve 2 uygulandı. GB-178.
 
 Kanıt: `compiler/tests/metin_kodlama_testi.rs` (10 vaka),
 `compiler/src/kodlama.rs::tek_satir_base64_gomulu_boslugu_reddeder`;
@@ -2955,6 +3129,38 @@ dogfood `zm-r004-uzunluk-oktet-saymaz` (`1|2`) ve üç `zm-f023-*` vakası.
 Açık: onaltılık ↔ metin/base64 ve `base64url` (ürün kaydı yok; DKIM K-390
 host yüzeyinde); SMTP/CLI/gizli değer iç base64 yardımcılarının tek
 uygulamada birleştirilmesi (bakım); `kodlama` fuzz hedefi.
+## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040
+(IMAP istemcileri veri kökündeki ekleri `BODY[n]` ile alamıyor; 57 baytlık
+`base64 okumayı dene` döngüsü 16 MB ekte 29,6 sn sürüp C024 ile kesiliyor).
+Freeze sınıfı `dogfood-change`; yeni tür, anahtar kelime, koşul grameri ya da
+tanı kodu yok; iki kalıp kelimesi (`satırlarıyla`, `satırlarının`) ve iki
+intrinsic.
+
+Karar (RFC-0039 A2d, ADR-172): `<yol> dosyasını base64 satırlarıyla
+bağlantıya aktarmayı dene` ve `<yol> dosyasının base64 satırlarının <konum>
+baytından <adet> baytını bağlantıya aktarmayı dene` → `Sonuç<TamSayı>`.
+RFC 2045 satırları (76 + CRLF, son satır dahil); T = e + 2·⌈e/76⌉,
+e = 4·⌈b/3⌉ normatif (spec/12 §9). Aralık kodlanmış akış üzerinde, sonda
+kırpılır, negatif `geçersiz`. Akışlı (Metin yok, zarf yok), A2c geri basınç
+ve süre bütçesi; kaynak yol `dosya-okuma`/`veri-okuma` merkezî denetimi.
+Kaynak dosya tavanı 32 MiB (K-395 yazma tavanıyla hizalı; merkez kararı
+25 Kasım, ZeeMail 25 MB iletide ~18 MB ek): tam 32 MiB geçer, +1 bayt hiç
+bayt yazılmadan `boyut_aşımı`. RFC-0039'a bağlandı (güvenlik sınırı bağlantı akışı), saf kodlayıcı
+RFC-0043 Dilim 1 `kodlama` modülünde. GB-171.
+
+Kanıt: `compiler/tests/ag_blok_testi.rs` (5 yeni vaka: bağımsız başvuru
+kodlayıcıyla 0/1/2/3/57/58/114/1000/70000 bayt ve formül, 12 aralık kenarı,
+negatif/yok/blok sınırı, T034 ve iz replay), `compiler/tests/ag_baglantisi_surec_testi.rs`
+(5 yeni vaka: 32 MiB tavan geçer/+1 bayt reddi, 16 MiB + 5 baytlık ikili ek gerçek TCP'de bayt bayt ve
+0,87 sn, aralık, kaçış ve yokluk, yetkinlik yok T054, `veri:` kökü ve
+`veri:../` reddi, kopan karşı taraf `yazılamadı`), `kodlama::testler`
+(satır kodlayıcı ve pencere her kenarda dilim eşitliği); dogfood
+`urun-h-imap-govde-base64`; K-167 iki kalıp ve iki API satırı.
+
+Açık: ham dosya baytlarının kısmi aktarımı (`BODY[]<o.n>` ham); RFC-0043
+Dilim 2 ile iç base64 yardımcılarının birleşmesi.
 
 ## K-401 — Dosya özeti/dosya yanıtı 32 MiB ve izsiz atomik taşıma (ADR-167 eki)
 
@@ -4187,3 +4393,35 @@ görünmeyebiliyordu. Okuyucu artık geçici hata alınca klasörün
 `…kilitsiz_takili_ya_da_kendi_kilidinde_pencere_sinirli_hata_verir`,
 regression `degistirme-penceresi-izsiz-okuma`
 (`native-dosya-okuma-izsiz-penceresi`, Windows), Windows yük A/B döngüsü.
+
+## K-393 — C024 heap zarfı düşen değerin payını iade eder (ADR-171)
+
+**Durum: KAPALI.** Kaynak: bağımsız Rust/Go karşılaştırması v2 (B4) ve
+ZM-F035/RFC-0043 seçenek (b). Freeze sınıfı `correctness`
+(semantic-bugfix). spec/24 zarfı "iade edilmeyen tahsis zarfı" olarak
+TANIMLIYOR, sayaç yalnız düşüyordu; canlı RSS ~15 MB iken kümülatif tahsis
+"~67 MB" C024 veriyordu.
+
+| Senaryo | Önce | Sonra |
+|---|---|---|
+| 700 öğelik listeyi işleme 5.000 kez vermek | C024 | `700` |
+| 1.000 öğelik kabarcık sıralama (1.000 tur) | C024 | çalışır |
+| ~1 MiB listeyle 200 çağrı / 200 üzerine yazma / 200 kapsam | C024 | çalışır |
+| 1 KiB metni sözlük/yapı alanına 100.000 kez yazmak, ekle+sil | C024 | çalışır |
+| canlı biriktirme (~1 MiB × 200) | C024 | C024 |
+| iade yollarıyla karışık canlı biriktirme, dönen değer birikimi | C024 | C024 |
+| web rotası 64 MiB aşımı | 503 | 503 |
+
+Düzeltme: üzerine yazma, kapsam sonu, işlem çerçevesi, gezme kopyası, görev
+ortamı klonları, koleksiyon öğesi değişimi ve `sil` düşen değerin ölçüsünü
+iade eder. Güvenlik değişmezi ölçü ≤ tüketim: `ekle`/yeni sözlük anahtarı ve
+`x x ile y olsun` gerçek kapasite artışını tüketir, gezme geri yazımı ve iç
+adlar da tüketir; kalan zarf 64 MiB'ı aşamaz (GB-170).
+
+Kanıt: `kaynak_sinirlari_testi::atilan_degerin_zarf_payi_iade_edilir`,
+`iade_canli_birikimi_zarftan_kacirmaz`; `baglanti_butce_yenileme_testi`
+canlı birikimle yeniden yazıldı; regression `runtime/heap-zarfi-cerceve-iadesi`,
+`runtime/heap-zarfi-uzerine-yazma-iadesi`; spec/24, ADR-171, ADR-033/165
+ekleri, soak 1800 sn.
+
+Açık: birimler arası yaşayan değer yeni zarfa yeniden sayılmaz (K-381).

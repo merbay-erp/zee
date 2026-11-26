@@ -1,0 +1,13 @@
+# web-istegi: GET /hassas
+# K-403: yetki korumasındaki yönlendirme rotayı bitirir; korumadan sonraki iş koşmaz (500 değil 303).
+
+8080 kapısında sunucu başlat
+
+GET "/hassas" adresine istek geldiğinde
+    yetkili yanlış olsun
+    yetkili değilse
+        "/giris" adresine yönlendir
+    girdi "hassas" olsun
+    sayı girdinin sayısı olsun
+    sayıyı yaz
+    "hassas veri" yanıtını gönder

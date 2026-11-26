@@ -277,6 +277,11 @@ metin görmesi — RFC-0039 MIME alt RFC'si, tek başına yetmez. Öneri (a);
 spec/24 normatif değişikliği olduğu için ayrı correctness K-işi (merkezde
 ZM-F035) ve aynı committe spec/24 + K-173 soak koşusu.
 
+**K-393 sonucu (24 Kasım 2026):** seçenek (b) de ayrı correctness işi olarak
+uygulandı (ADR-171, GB-170): birim içinde düşen değerin payı zarfa iade
+edilir, iade tüketimdeki ölçüyü aşamaz. Canlı gövdeyi tek birimde Zee metni
+olarak tutmak 64 MiB'ı aşarsa yine C024'tür; aralıklı okuma ihtiyacı sürer.
+
 **K-388 sonucu (24 Kasım 2026):** kaynak incelemesi "bağlantı görevi tek
 bütçe taşır" ifadesini düzeltti: K-381'den beri **başarılı** satır/blok
 okuması bütçeyi yeniliyordu. Eksik olan başarısız dönüşlerdi; K-388 ile

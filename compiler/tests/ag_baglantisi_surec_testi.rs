@@ -104,6 +104,16 @@ impl Sunucu {
 
 impl Sunucu {
     fn baslat(ayarlar: &str, kaynak: &str, bildirim: Option<&std::path::Path>) -> Self {
+        Self::baslat_ortamla(ayarlar, kaynak, bildirim, "")
+    }
+
+    /// K-396: `ek_ortam` kabuk önekine eklenir (ör. `veri_kökü` değişkeni).
+    fn baslat_ortamla(
+        ayarlar: &str,
+        kaynak: &str,
+        bildirim: Option<&std::path::Path>,
+        ek_ortam: &str,
+    ) -> Self {
         use std::os::unix::process::CommandExt;
         let dinleyici = TcpListener::bind("127.0.0.1:0").expect("dinleyici");
         let adres = dinleyici.local_addr().unwrap();
@@ -118,7 +128,7 @@ impl Sunucu {
         let mut komut = Command::new("/bin/sh");
         komut
             .arg("-c")
-            .arg(format!("{ortam} exec \"$0\" \"$@\""))
+            .arg(format!("{ek_ortam} {ortam} exec \"$0\" \"$@\""))
             .arg(env!("CARGO_BIN_EXE_dil"))
             .arg("çalıştır")
             .arg(&proje.0)
@@ -739,4 +749,259 @@ fn sureli_okuma_zaman_asiminda_oturum_surer_yarim_satir_korunur() {
     sunucu.sigterm();
     let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
     assert_eq!(kod, Some(0), "{stderr}");
+}
+
+/// K-396 (RFC-0039 A2d, ZM-F040): IMAP `BODY[n]` için satırlı base64 akışı,
+/// kodlanmış çıktı üzerinde aralık (`BODY[n]<o.n>`), kaçış ve yokluk.
+const BASE64_SUNUCUSU: &str = r#"# K-396 test: satırlı base64 aktarımı.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    komut başarılıysa
+        kodlu "ekler/ek.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+        bağlantıya ")" satırını yaz
+        kodlu başarılıysa
+            bağlantıya "A1 OK " ile kodlunun değeri satırını yaz
+        parça "ekler/ek.bin" dosyasının base64 satırlarının 77 baytından 1024 baytını bağlantıya aktarmayı dene olsun
+        bağlantıya ")" satırını yaz
+        parça başarılıysa
+            bağlantıya "A2 OK " ile parçanın değeri satırını yaz
+        uç "ekler/ek.bin" dosyasının base64 satırlarının 999999999 baytından 10 baytını bağlantıya aktarmayı dene olsun
+        uç başarılıysa
+            bağlantıya "A3 OK " ile ucun değeri satırını yaz
+        kaçış "../dis.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+        kaçış başarısızsa
+            hata kaçışın hatası olsun
+            veri hatanın verisi olsun
+            bağlantıya "A4 NO " ile verinin "tür" değeri satırını yaz
+        eksik "ekler/eksik.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+        eksik başarısızsa
+            hata eksiğin hatası olsun
+            veri hatanın verisi olsun
+            bağlantıya "A5 NO " ile verinin "tür" değeri satırını yaz
+    bağlantıyı kapat
+"#;
+
+/// Kütüphaneden bağımsız başvuru: bit tamponlu kodlama, 76'da bir CRLF.
+fn basvuru_base64_satirli(veri: &[u8]) -> Vec<u8> {
+    const A: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let (mut kod, mut tampon, mut bit) = (Vec::with_capacity(veri.len() / 3 * 4 + 4), 0u32, 0u32);
+    for &b in veri {
+        tampon = ((tampon << 8) | u32::from(b)) & 0xffff;
+        bit += 8;
+        while bit >= 6 {
+            bit -= 6;
+            kod.push(A[((tampon >> bit) & 63) as usize]);
+        }
+    }
+    if bit > 0 {
+        kod.push(A[((tampon << (6 - bit)) & 63) as usize]);
+    }
+    while kod.len() % 4 != 0 {
+        kod.push(b'=');
+    }
+    let mut cikti = Vec::with_capacity(kod.len() + kod.len() / 38 + 2);
+    for satir in kod.chunks(76) {
+        cikti.extend_from_slice(satir);
+        cikti.extend_from_slice(b"\r\n");
+    }
+    cikti
+}
+
+fn ikili_ek(boy: usize) -> Vec<u8> {
+    (0..boy as u64)
+        .map(|i| (i.wrapping_mul(2_654_435_761) >> 13) as u8)
+        .collect()
+}
+
+#[test]
+fn base64_satirli_aktarim_16_mib_bayt_kesin_aralikli_ve_kacissizdir() {
+    let ayarlar = "yetkinlikler \"ağ-dinleyici\", \"dosya-okuma\" listesi olsun\nbağlantı_boşta_süresi 20 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, BASE64_SUNUCUSU, None);
+    // ZM-F040 ölçeği: 16 MiB + 5 bayt (son satır kısa, dolgulu).
+    let ek = ikili_ek(16 * 1024 * 1024 + 5);
+    std::fs::create_dir_all(sunucu.kok().join("ekler")).unwrap();
+    std::fs::write(sunucu.kok().join("ekler/ek.bin"), &ek).unwrap();
+    let beklenen = basvuru_base64_satirli(&ek);
+    let e = 4 * ek.len().div_ceil(3);
+    assert_eq!(beklenen.len(), e + 2 * e.div_ceil(76));
+    let mut a = sunucu.baglan();
+    let baslangic = Instant::now();
+    a.gonder(b"A1 FETCH 1 BODY[2]\r\n");
+    assert!(a.bayt(beklenen.len()) == beklenen, "kodlanmış çıktı farklı");
+    let sure = baslangic.elapsed();
+    assert_eq!(a.satir(), ")");
+    assert_eq!(a.satir(), format!("A1 OK {}", beklenen.len()));
+    // Aralık satır ortasından başlar (77 = birinci satırın LF'si).
+    assert_eq!(a.bayt(1024), &beklenen[77..77 + 1024]);
+    assert_eq!(a.satir(), ")");
+    assert_eq!(a.satir(), "A2 OK 1024");
+    assert_eq!(a.satir(), "A3 OK 0");
+    assert_eq!(a.satir(), "A4 NO dosya");
+    assert_eq!(a.satir(), "A5 NO dosya");
+    assert!(a.kapandi_mi());
+    // ZM-F040 geçici çözümü (57 baytlık okuma döngüsü) 29,6 sn sürüyordu.
+    assert!(sure < Duration::from_secs(20), "16 MiB aktarım {sure:?}");
+    eprintln!("K-396 16 MiB satırlı base64 aktarımı: {sure:?}");
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}
+
+/// K-396: kaynak dosya tavanı 32 MiB (K-395 yazma tavanıyla hizalı);
+/// `bağlantı_blok_sınırı` 1 GiB olsa da tavanı aşan dosyadan bayt çıkmaz.
+const BASE64_TAVAN: &str = r#"# K-396 test: 32 MiB kaynak tavanı.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    komut başarılıysa
+        tam "ekler/tavan.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+        bağlantıya ")" satırını yaz
+        tam başarılıysa
+            bağlantıya "B1 OK " ile tamın değeri satırını yaz
+        son "ekler/tavan.bin" dosyasının base64 satırlarının 45916494 baytından 100 baytını bağlantıya aktarmayı dene olsun
+        bağlantıya ")" satırını yaz
+        son başarılıysa
+            bağlantıya "B2 OK " ile sonun değeri satırını yaz
+        fazla "ekler/fazla.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+        fazla başarısızsa
+            hata fazlanın hatası olsun
+            veri hatanın verisi olsun
+            bağlantıya "B3 NO " ile verinin "tür" değeri satırını yaz
+        dilim "ekler/fazla.bin" dosyasının base64 satırlarının 0 baytından 10 baytını bağlantıya aktarmayı dene olsun
+        dilim başarısızsa
+            hata dilimin hatası olsun
+            veri hatanın verisi olsun
+            bağlantıya "B4 NO " ile verinin "tür" değeri satırını yaz
+    bağlantıyı kapat
+"#;
+
+#[test]
+fn base64_aktarim_kaynak_tavani_32_mib_gecer_bir_bayt_fazlasi_reddedilir() {
+    let ayarlar = "yetkinlikler \"ağ-dinleyici\", \"dosya-okuma\" listesi olsun\nbağlantı_boşta_süresi 20 olsun\nbağlantı_blok_sınırı 1073741824 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, BASE64_TAVAN, None);
+    const TAVAN: usize = 32 * 1024 * 1024;
+    let ek = ikili_ek(TAVAN + 1);
+    std::fs::create_dir_all(sunucu.kok().join("ekler")).unwrap();
+    std::fs::write(sunucu.kok().join("ekler/tavan.bin"), &ek[..TAVAN]).unwrap();
+    std::fs::write(sunucu.kok().join("ekler/fazla.bin"), &ek).unwrap();
+    let beklenen = basvuru_base64_satirli(&ek[..TAVAN]);
+    // e = 4·⌈b/3⌉ = 44 739 244; toplam = e + 2·⌈e/76⌉ = 45 916 594.
+    assert_eq!(beklenen.len(), 45_916_594);
+    let mut a = sunucu.baglan();
+    a.gonder(b"B1 FETCH 1 BODY[2]\r\n");
+    assert!(a.bayt(beklenen.len()) == beklenen, "tavandaki dosya farklı");
+    assert_eq!(a.satir(), ")");
+    assert_eq!(a.satir(), format!("B1 OK {}", beklenen.len()));
+    // Aralıklı biçim tavandaki dosyanın son 100 baytına konumlanır.
+    assert_eq!(a.bayt(100), &beklenen[beklenen.len() - 100..]);
+    assert_eq!(a.satir(), ")");
+    assert_eq!(a.satir(), "B2 OK 100");
+    assert_eq!(a.satir(), "B3 NO boyut_aşımı");
+    assert_eq!(a.satir(), "B4 NO boyut_aşımı");
+    assert!(a.kapandi_mi());
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}
+
+#[test]
+fn base64_aktarim_dosya_okuma_yetkinligi_olmadan_denetimden_gecmez() {
+    let dinleyici = TcpListener::bind("127.0.0.1:0").unwrap();
+    let proje = Proje::yeni(dinleyici.local_addr().unwrap(), "", BASE64_SUNUCUSU);
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["denetle"])
+        .arg(&proje.0)
+        .output()
+        .unwrap();
+    let stderr = String::from_utf8_lossy(&cikti.stderr);
+    assert!(!cikti.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("T054") && stderr.contains("dosya-okuma"),
+        "{stderr}"
+    );
+}
+
+const BASE64_KOPAN: &str = r#"# K-396 test: karşı taraf akış ortasında kapatır.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    kodlu "ekler/ek.bin" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+    kodlu başarısızsa
+        hata kodlunun hatası olsun
+        veri hatanın verisi olsun
+        "sonuc.txt" dosyasına verinin "tür" değeri yaz
+    bağlantıyı kapat
+"#;
+
+#[test]
+fn base64_aktarimda_kopan_karsi_taraf_yazilamadi_sonucudur() {
+    let ayarlar = "yetkinlikler \"ağ-dinleyici\", \"dosya-okuma\", \"dosya-yazma\" listesi olsun\nbağlantı_boşta_süresi 20 olsun\n";
+    let mut sunucu = Sunucu::baslat(ayarlar, BASE64_KOPAN, None);
+    std::fs::create_dir_all(sunucu.kok().join("ekler")).unwrap();
+    std::fs::write(
+        sunucu.kok().join("ekler/ek.bin"),
+        ikili_ek(16 * 1024 * 1024),
+    )
+    .unwrap();
+    let mut a = sunucu.baglan();
+    a.gonder(b"A1 FETCH 1 BODY[2]\r\n");
+    assert_eq!(a.bayt(4096).len(), 4096);
+    drop(a);
+    let sonuc = sunucu.kok().join("sonuc.txt");
+    assert!(
+        bekle_ki(|| std::fs::read_to_string(&sonuc).is_ok_and(|m| m.contains("yazılamadı"))),
+        "{:?}",
+        std::fs::read_to_string(&sonuc)
+    );
+    // Sunucu ayakta: sonraki bağlantı yeniden aktarıma başlar.
+    let mut b = sunucu.baglan();
+    b.gonder(b"A2 FETCH 1 BODY[2]\r\n");
+    assert_eq!(b.bayt(76), &basvuru_base64_satirli(&ikili_ek(57))[..76]);
+    drop(b);
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+}
+
+const BASE64_VERI: &str = r#"# K-396 test: paylaşılan veri kökünden aktarım.
+"smtp_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    kodlu "veri:ekler/t1-ab12" dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun
+    kodlu başarılıysa
+        bağlantıya "A1 OK " ile kodlunun değeri satırını yaz
+    kaçış "veri:../sir.txt" dosyasının base64 satırlarının 0 baytından 10 baytını bağlantıya aktarmayı dene olsun
+    kaçış başarısızsa
+        hata kaçışın hatası olsun
+        veri hatanın verisi olsun
+        bağlantıya "A2 NO " ile verinin "tür" değeri satırını yaz
+    bağlantıyı kapat
+"#;
+
+#[test]
+fn base64_aktarim_veri_kokunden_okur_kok_disina_cikmaz() {
+    use std::os::unix::fs::PermissionsExt;
+    let taban = std::env::temp_dir().canonicalize().unwrap().join(format!(
+        "zee-k396-{}-{}",
+        std::process::id(),
+        SIRA.fetch_add(1, Ordering::Relaxed)
+    ));
+    std::fs::create_dir_all(taban.join("depo/ekler")).unwrap();
+    std::fs::write(taban.join("sir.txt"), b"kok disi sir").unwrap();
+    for (klasor, kip) in [("", 0o700), ("depo", 0o755), ("depo/ekler", 0o770)] {
+        std::fs::set_permissions(taban.join(klasor), std::fs::Permissions::from_mode(kip)).unwrap();
+    }
+    let ek = ikili_ek(1000);
+    std::fs::write(taban.join("depo/ekler/t1-ab12"), &ek).unwrap();
+    let ayarlar = "yetkinlikler \"ağ-dinleyici\", \"veri-okuma\" listesi olsun\nveri_kökü \"ZEE_K396_DEPO\" olsun\nbağlantı_boşta_süresi 20 olsun\n";
+    let ortam = format!("ZEE_K396_DEPO='{}'", taban.join("depo").display());
+    let mut sunucu = Sunucu::baslat_ortamla(ayarlar, BASE64_VERI, None, &ortam);
+    let mut a = sunucu.baglan();
+    a.gonder(b"A1 FETCH 1 BODY[2]\r\n");
+    let beklenen = basvuru_base64_satirli(&ek);
+    assert_eq!(a.bayt(beklenen.len()), beklenen);
+    assert_eq!(a.satir(), format!("A1 OK {}", beklenen.len()));
+    assert_eq!(a.satir(), "A2 NO dosya");
+    assert!(a.kapandi_mi());
+    sunucu.sigterm();
+    let (kod, stderr) = sunucu.bitir(Duration::from_secs(30));
+    assert_eq!(kod, Some(0), "{stderr}");
+    let _ = std::fs::remove_dir_all(&taban);
 }

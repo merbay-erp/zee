@@ -103,6 +103,13 @@ Güncel graph ayrıca şu sınırları makinece gösterir: `ayristirici` semanti
 runtime'a; `cozumleyici` runtime/LSP'ye; `yorumlayici` lexer/parser/checker/LSP/
 WASM'a; `lsp` lexer/parser/checker/runtime'a doğrudan bağımlı değildir.
 
+## K-398 kenarı
+
+`ayristirici → morfoloji` (ikisi de `sozdizimi`): parametre satırı bağlama
+adını `morfoloji::baglama_koku` ve `kok_adaylari` ile seçer (ADR-175).
+Morfoloji yalnız `guvenlik` temeline bağlıdır; yeni SCC yoktur, ters katman
+geçişi yoktur.
+
 ## Değişiklik protokolü
 
 ```bash

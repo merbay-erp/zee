@@ -412,6 +412,10 @@ fn kayar_oturum_iki_worker_restart_ve_cikista_dogru_davranir() {
 }
 
 fn ham_ip_istegi(kapi: u16, basliklar: &str, yol: &str) -> String {
+    ham_istek_hostla(kapi, "panel.example", basliklar, yol)
+}
+
+fn ham_istek_hostla(kapi: u16, host: &str, basliklar: &str, yol: &str) -> String {
     let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
     let son = Instant::now() + Duration::from_secs(10);
     let mut stream = loop {
@@ -426,10 +430,8 @@ fn ham_ip_istegi(kapi: u16, basliklar: &str, yol: &str) -> String {
         .unwrap();
     stream
         .write_all(
-            format!(
-                "GET {yol} HTTP/1.1\r\nHost: panel.example\r\n{basliklar}Connection: close\r\n\r\n"
-            )
-            .as_bytes(),
+            format!("GET {yol} HTTP/1.1\r\nHost: {host}\r\n{basliklar}Connection: close\r\n\r\n")
+                .as_bytes(),
         )
         .unwrap();
     let mut response = String::new();
@@ -494,10 +496,111 @@ fn istemci_adresi_proxy_ve_socketten_gelir_xff_ve_form_alanindan_gelmez() {
             .stderr(Stdio::null());
         komut
     }));
-    let response = ham_ip_istegi(direct_kapi, "X-Forwarded-For: 192.0.2.99\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n", "/ip");
+    // K-400: deneysel web yalnız loopback Host'u kabul eder; yönlendirme
+    // başlıkları reddedilmez ama kimlik olmaz (yerel ön kapı akışı).
+    let response = ham_istek_hostla(direct_kapi, "127.0.0.1", "X-Forwarded-For: 192.0.2.99\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n", "/ip");
     assert_eq!(durum(&response), 200, "{response}");
     assert_eq!(response.split_once("\r\n\r\n").unwrap().1, "127.0.0.1");
     drop(direct);
+}
+
+/// K-400 (spec/12 §5a): deneysel web gerçek soket üzerinde yalnız loopback
+/// Host'una yanıt verir; DNS rebinding / public tünel Host'u 421 + üretim
+/// önerisi alır, operatör uyarısı süreç başına bir kez ve Host'suz yazılır.
+#[test]
+fn deneysel_web_loopback_disi_host_u_421_ile_reddeder_yerel_hostu_kabul_eder() {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let kaynak = gecici.0.join("yerel.dil");
+    std::fs::write(
+        &kaynak,
+        format!("{kapi} kapısında sunucu başlat\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"),
+    )
+    .unwrap();
+    let gunluk = gecici.0.join("stderr.txt");
+    let sunucu = Sunucu(kopma::dinleyene_dek_baslat(|| {
+        let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+        komut
+            .args(["çalıştır", "--deneysel-web", kaynak.to_str().unwrap()])
+            .env_remove("LISTEN_FDS")
+            .env_remove("LISTEN_PID")
+            .stderr(std::fs::File::create(&gunluk).unwrap());
+        komut
+    }));
+    for host in [
+        "127.0.0.1",
+        &format!("localhost:{kapi}"),
+        "uygulama.localhost",
+        "[::1]",
+    ] {
+        let yanit = ham_istek_hostla(kapi, host, "", "/");
+        assert_eq!(durum(&yanit), 200, "{host}: {yanit}");
+        assert!(yanit.ends_with("tamam"), "{host}: {yanit}");
+        assert!(
+            yanit.contains("Content-Security-Policy: default-src 'self'"),
+            "{yanit}"
+        );
+        assert!(yanit.contains("X-Content-Type-Options: nosniff"), "{yanit}");
+        assert!(!yanit.contains("Strict-Transport-Security"), "{yanit}");
+    }
+    for host in [
+        &format!("rebind.example:{kapi}") as &str,
+        "panel.example",
+        "0.0.0.0",
+        "192.0.2.10",
+    ] {
+        let yanit = ham_istek_hostla(kapi, host, "", "/");
+        assert_eq!(durum(&yanit), 421, "{host}: {yanit}");
+        assert!(
+            yanit.starts_with("HTTP/1.1 421 Misdirected Request\r\n"),
+            "{yanit}"
+        );
+        let govde = yanit.split_once("\r\n\r\n").unwrap().1;
+        assert!(govde.contains("--web-proxy https://"), "{govde}");
+        assert!(!govde.contains("tamam"), "rota çalışmamalı: {govde}");
+        assert!(yanit.contains("Cache-Control: no-store"), "{yanit}");
+    }
+    drop(sunucu);
+    let stderr = std::fs::read_to_string(&gunluk).unwrap();
+    let uyarilar = stderr.matches("localhost dışı Host").count();
+    assert_eq!(uyarilar, 1, "uyarı süreç başına bir kez: {stderr}");
+    assert!(
+        stderr.contains("--web-isci-sayisi N --web-systemd-soketi"),
+        "{stderr}"
+    );
+    assert!(
+        !stderr.contains("rebind.example") && !stderr.contains("panel.example"),
+        "{stderr}"
+    );
+}
+
+/// K-400: systemd soket devri üretim yoludur; deneysel web onu almaz ve
+/// kaynak yürütülmeden çıkış 2 ile üretim bayraklarını önerir.
+#[test]
+fn deneysel_web_systemd_soket_devrini_cikis_2_ile_reddeder() {
+    let gecici = GeciciKlasor::yeni();
+    let kaynak = gecici.0.join("ana.dil");
+    std::fs::write(&kaynak, "\"yürüdü\" yaz\n").unwrap();
+    for (ad, deger) in [("LISTEN_FDS", "1"), ("LISTEN_PID", "1")] {
+        let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args(["çalıştır", "--deneysel-web", kaynak.to_str().unwrap()])
+            .env_remove("LISTEN_FDS")
+            .env_remove("LISTEN_PID")
+            .env(ad, deger)
+            .output()
+            .unwrap();
+        assert_eq!(cikti.status.code(), Some(2), "{ad}");
+        let stderr = String::from_utf8_lossy(&cikti.stderr);
+        assert!(
+            stderr.contains("--deneysel-web systemd soket devri almaz"),
+            "{stderr}"
+        );
+        assert!(
+            stderr.contains("--web-proxy https://<alan> --web-worker-port"),
+            "{stderr}"
+        );
+        assert!(!String::from_utf8_lossy(&cikti.stdout).contains("yürüdü"));
+    }
 }
 
 #[test]

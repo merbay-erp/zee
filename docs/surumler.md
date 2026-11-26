@@ -5,10 +5,36 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## 25 Kasım 2026 — Geliştirme güncellemeleri
+## 26 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
+  rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya
+  devam ediyordu. Bu yüzden şu tür bir koruma güvenli değildi:
+
+  ```text
+  yetkili değilse
+      "/giris" adresine yönlendir
+  kaydı sil
+  ```
+
+  Ziyaretçi giriş sayfasına yönlendiriliyor ama `kaydı sil` yine de
+  çalışıyordu. Artık yanıtı belirleyen ilk `yanıtını gönder`/`yönlendir`
+  rotayı orada bitirir (çağrılan işlemin, döngünün ya da iç bloğun içinden
+  gönderilse de). Ziyaretçinin gördüğü yanıt değişmez; değişen, yanıttan
+  sonraki çerez/oturum/veritabanı işlemlerinin, eylemlerin ve çıktının artık
+  koşmamasıdır. `dil denetle --lint` rota içinde yanıttan sonra kalan
+  ulaşılamaz satırı S047 uyarısıyla gösterir.
+
+  **Göç:** Çoğu program için bir şey yapmanız gerekmez. Yanıttan sonra
+  bilerek bir iş yapıyorsanız (ör. günlük satırı), o satırı yanıttan önceye
+  taşıyın. Dosya yanıtı (`… ek olarak göndermeyi dene`) bir `Sonuç`
+  ifadesidir, rotayı bitirmez; rota dışındaki (`test` bloğu, üst düzey)
+  yanıt cümleleri de eskisi gibi akışı sürdürür.
 
 ### Eklenenler
 
@@ -36,6 +62,101 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez. Elle yazılmış base64 döngüleri bu kalıplarla
   değiştirilebilir.
 
+### Site
+
+- **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
+
+## 25 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
+  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
+  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
+  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
+  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
+  tek istek içinde güvenle yapar. Desen ve sınırları
+  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
+  maddesinde ve testte. Davranış değişmedi.
+
+  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
+  ekleyin.
+
+- **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
+  (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
+  dinliyordu, ama gelen isteğin `Host` başlığına bakmıyordu. Bu yüzden
+  ziyaret edilen kötü niyetli bir site kendi alan adını 127.0.0.1'e çözdürüp
+  (DNS rebinding) yerel prototipinizin sayfalarını okuyabiliyor, public adı
+  koruyan bir tünel/proxy de deneysel sunucuyu sessizce internete
+  açabiliyordu. Artık deneysel kip yalnız `localhost`, `*.localhost`,
+  `127.x.x.x` ve `[::1]` Host'larını kabul eder; başka Host **421** alır ve
+  yanıt üretim bayraklarını önerir. systemd soket devriyle başlatılan
+  deneysel süreç çıkış 2 ile durur. Spec/12 §5a geliştirme ile üretim
+  kipinin ne garanti ettiğini ve neyin hiçbir zaman izinli olmadığını
+  normatif olarak yazar.
+
+  **Göç:** Tarayıcıda `http://localhost:<kapı>` ya da
+  `http://127.0.0.1:<kapı>` kullanan yerel akış ve Host'u `127.0.0.1:<kapı>`
+  yapan yerel ön kapılar (resmî sitenin `yerel-baslat.sh` önizlemesi dahil)
+  değişmeden çalışır. Deneysel sunucuyu başka bir adla ya da tünelle
+  açıyorsanız üretim yoluna geçin: `dil çalıştır --web-proxy https://<alan>
+  --web-worker-port <kapı>` (çok süreç için `--web-isci-sayisi N
+  --web-systemd-soketi`). Filo denetimi: üretimdeki hiçbir Zee web süreci
+  `--deneysel-web` kullanmıyor.
+
+### Eklenenler
+
+- **Kurumsal alan ve DKIM imza doğrulaması (K-390):** posta sunucusu yazan
+  Zee programı artık gelen iletinin DMARC hizalaması için gönderen alanın
+  kurumsal alanını hesaplayabilir ve DKIM imzasını doğrulayabilir.
+  - Kamu son ek listesi (Public Suffix List) derleyiciye gömülü değildir;
+    projeye dosya olarak konur ve tam özetiyle bildirilir:
+    `kamu_son_ekleri "veri/public_suffix_list.dat" olsun` ve
+    `kamu_son_ekleri_özeti "<sha256>" olsun`. Bu iki alan yalnız `dns`
+    bildirimiyle birlikte geçerlidir. Dosyanın özeti tutmazsa süreç hiç
+    başlamaz.
+  - `kök "posta.ornek.co.uk" alanının kurumsal alanı olsun` →
+    `ornek.co.uk`. Geçersiz bir ad ya da kamu son ekinin kendisi boş Metin
+    verir.
+  - `sonuç b dkim imzasını veri verisi için p anahtarıyla a olarak
+    doğrulamayı dene olsun` (`kriptografi` yetkinliği): `rsa-sha256`
+    (1024–4096 bit) ve `ed25519-sha256` desteklenir. Başarıda `doğrulandı`,
+    `algoritma` ve `anahtar_biti` döner; imza tutmazsa `doğrulandı`
+    `yanlış` olur.
+  - `rsa-sha1`, kısa ya da uzun anahtar, boş (iptal edilmiş) anahtar ve
+    bozuk imza yeni **C034** hatasıyla (`tür`) reddedilir.
+  - Kanonikleştirme Zee kodunda yapılır; veride satır sonunu `\n` ile
+    yazın, imza girdisinde CRLF olur.
+  - `bh gövde gövdesinin dkim gövde özeti olsun`: kanonik gövdenin
+    `bh=` biçimindeki özeti (base64 SHA-256). Satır sonu yine `\n` ile
+    yazılır, özet CRLF üzerinde alınır.
+  - Derleyici yeni bir dış kitaplık almadı; doğrulama zaten kullanılan TLS
+    kitaplığının kriptografisiyle yapılır.
+
+  **Göç:** Gerekmez; bu alanları ve kalıpları kullanmayan projeler
+  değişmez.
+- **Dosyayı bağlantıya base64 satırlarıyla akıtma (K-396):** bağlantı
+  bloğunda bir dosya, e-posta eklerinin standart biçimi olan base64
+  satırları olarak (76 karakter + satır sonu) belleğe alınmadan
+  gönderilebilir:
+  `n yol dosyasını base64 satırlarıyla bağlantıya aktarmayı dene olsun`.
+  Kodlanmış çıktının bir parçası da gönderilebilir (IMAP kısmi getirme):
+  `n yol dosyasının base64 satırlarının 0 baytından 1024 baytını bağlantıya aktarmayı dene olsun`.
+  Sonuç yazılan bayt sayısıdır; tam çıktının boyu `b` baytlık dosya için
+  e = 4·⌈b/3⌉ olmak üzere e + 2·⌈e/76⌉'dır, böylece boyu dosyayı açmadan
+  önceden hesaplayabilirsiniz. Yol için `dosya-okuma` (ya da `veri:` yolu
+  için `veri-okuma`) yetkinliği gerekir. Kaynak dosya en çok 32 MiB
+  olabilir (çözerek yazma tavanıyla aynı); daha büyük dosya hiç bayt
+  gönderilmeden `boyut_aşımı` ile döner. 16 MB'lık ek artık bir saniyenin
+  altında gider; önceki 57 baytlık okuma döngüsü yavaştı ve bellek
+  sınırına takılıyordu.
+
+  **Göç:** gerekmez; yeni kalıptır. Elle base64 satırı üreten döngüleri bu
+  kalıpla değiştirebilirsiniz.
+
 ### Değişenler
 
 - **Dosya özeti ve dosya indirme yanıtı artık 32 MiB'a kadar (K-401):**
@@ -49,6 +170,27 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez.
 
+- **Parametre adı sözlük köküne bağlanır (K-398):** `kalıbı al`,
+  `belirteci Metin olarak al`, `eşiği al`, `adedi al`, `içeriği al`,
+  `ucu al`, `metni al` gibi ekli parametreler artık sözlük kökü adıyla
+  bağlanır: gövdede `kalıp`, `belirteç`, `eşik`, `adet`, `içerik`, `uç`,
+  `metin` doğrudan yazılabilir; tanılar ve editör de bu adı gösterir. Önceden
+  ünsüz yumuşaması ve ünlü düşmesi geri çevrilmiyordu (`kalıb`, `metn`) ve
+  sözlük kökü "tanımlı değil" (A001) veriyordu. `zee-tr-1` morfoloji profili
+  ve uyumluluk kaydı değişmedi; yalnız parametre adının hangi adaydan
+  seçildiği değişti. Tek heceli `adı`, `kodu`, `ağı`, `-lı` sıfatları
+  (`gizli`) ve `filmi`, `formu` gibi adlar eskisi gibi bağlanır.
+
+  **Göç:** Gerekmez. Yumuşamış gövdeyi çıplak yazan mevcut kod (`belirtec`,
+  `yoğunluğ`, `kalıb … olsun`) aynı parametreye çözülmeye devam eder; yerel
+  103 proje ve 1 670 dosyada `dil denetle` çıktısı değişmedi. İki yeni tanı
+  durumu yalnız eskiden ayrı bir yerel açan koda dokunur: gövdede sözlük
+  köküne (`başlık … olsun`) farklı türde değer **T002** verir (öneri adın
+  parametre olduğunu söyler); parametre sözlük köküyle yeniden atandıktan
+  sonra eski yazımla (`başlığ`) başvuru **A002** verir. İkisinde de yerel
+  değere başka ad verin. Açık sınır: `kaybı`, `kaydı`, `şekli`, `ismi`,
+  `vakti` ve `ip_adresini` gibi adlar eski bağlamayı korur (ADR-175).
+
 ### Düzeltilenler
 
 - **16 MiB'tan büyük dosya taşınabiliyor (K-401):** eylem dışındaki
@@ -57,6 +199,11 @@ Bu kayıt yeni sürüm etiketi değildir.
   yerine taşınamıyordu. Artık eylem dışında içerik okunmaz ve boyut sınırı
   yoktur; var olan hedefi ezmeme ve proje kökü kuralları aynıdır. Eylem
   içindeki taşıma geri alma için içeriği tuttuğundan 16 MiB sınırı kalır.
+
+### Site
+
+- **zeedili.com 25 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-394 projeler arasında paylaşılan veri kökü (`veri_kökü`, `veri:` öneki, `veri-okuma`/`veri-yazma`; RFC-0045), K-395/K-401 çözerek yazılan ek, dosya özeti ve dosya indirme için 32 MiB sınırı ve K-393 atılan değerlerin C024 bellek zarfına payını iade etmesi haberleri eklendi. Dil davranışı değişmedi.
+- **zeedili.com 25 Kasım akşam haberleri:** ana sayfa Gelişmeler bölümüne K-397 giden bağlantı ve istemci STARTTLS (RFC-0044), K-396 dosyanın bağlantıya base64 satırlarıyla akıtılması (RFC-0039), K-398 parametre adının sözlük köküne bağlanması (ADR-175) ve K-400 deneysel web'in yalnız localhost'a yanıt vermesi haberleri eklendi. Dil davranışı değişmedi.
 
 ## 24 Kasım 2026 — Geliştirme güncellemeleri
 
@@ -89,6 +236,28 @@ Bu kayıt yeni sürüm etiketi değildir.
   servislerin tümü zaten proje kipinde çalıştığı için etkilenmedi.
 
 ### Eklenenler
+
+- **Başka sunuculara giden bağlantı ve istemci STARTTLS (K-397):** posta
+  teslim hizmeti gibi programlar artık önceden bilinmeyen bir sunucuya
+  bağlanabilir: `sonuç "mx1.alici.ornek:25" adresine bağlanmayı dene olsun`.
+  Başarılı bağlantı, gelen bağlantılardaki satır okuma/yazma, süreli okuma,
+  parça yazma ve dosya aktarma kalıplarıyla kullanılır.
+  `bağlantıda TLS istemcisi başlatmayı dene "mx1.alici.ornek" ile` STARTTLS
+  yapar ve sertifikanın doğrulanıp doğrulanmadığını (`doğrulandı`,
+  `doğrulama_hatası`), TLS sürümünü ve DANE için sertifika/SPKI SHA-256
+  özetlerini açıkça verir; doğrulama hatası sessizce yutulmaz. Hedefler
+  `proje.dil` `ağ_hedefleri` ile sınırlıdır: tam hedef `tcp://mx.ornek:25`
+  (kapı zorunlu) ya da yalnız 25 kapısında `tcp://*:25` (yalnız public
+  internet adresleri; yerel, özel, CGNAT, link-local, multicast, ayrılmış ve
+  IPv4-mapped adresler reddedilir, ad tek kez çözülür ve bağlantı denetlenen
+  adrese açılır). MTA-STS ilkesi için `https://mta-sts.*` yalnız
+  `/.well-known/mta-sts.txt` yolunu açar. Görev başına bir giden bağlantı,
+  süreç başına 16, bağlanma en çok 30 sn. Yeni tanı kodu yok; retler C030
+  `tür` değerleridir (`hedef_yasak`, `çözülemedi`, `bağlanamadı`,
+  `zaman_aşımı`, `zaten_bağlı`, `sınır`, `geçersiz`).
+
+  **Göç:** Gerekmez; mevcut programlar ve `ağ_hedefleri` değişmeden çalışır.
+  Bağlantı kalıpları artık `ağ-dinleyici` yerine `ağ` ile de derlenir.
 
 - **DNS sorgusu: MX, TXT, TLSA ve adres kayıtları (K-390):** Zee programı
   artık aynı makinedeki doğrulayıcı DNS çözücüsüne (ör. unbound) sorgu
@@ -271,6 +440,19 @@ Bu kayıt yeni sürüm etiketi değildir.
   ve kabul/ret davranışı değişmedi.
 
 ### Düzeltilenler
+
+- **Atılan değerler artık 64 MiB bellek zarfını doldurmuyor (K-393):**
+  C024 (“heap sınırını aşıyor”) canlı bellek yerine o ana kadar yapılan
+  bütün tahsisleri sayıyordu. Bir listeyi bir işleme binlerce kez vermek,
+  aynı değişkenin üzerine döngüde yazmak ya da 1.000 öğelik kabarcık
+  sıralama, programın gerçekte ~15 MB kullandığı anda “yaklaşık 67 MB” diyerek
+  duruyordu. Artık değer düşünce payı geri verilir: üzerine yazılan değişken,
+  sözlük değeri ya da yapı alanı, blok sonunda düşen ad, işlem bitince
+  parametre ve yerel adlar, `her … için` kopyası ve `sil` ile çıkan öğe.
+  Sınır aynıdır: **canlı** tuttuğunuz değerler (büyüyen liste, sözlük, dönen
+  değeri saklamak) 64 MiB'ı aşınca C024 yine çalışmayı ya da yalnız o web
+  isteğini (503) durdurur. Göç: gerekmez; eskiden C024'e takılan programlar
+  değişmeden çalışır.
 
 - **Uzun bağlantı oturumları artık bellek sınırına yürümüyor (K-388):** adlı
   dinleyici bağlantısında (K-381) çalışma bütçesi yalnız başarılı okumada
