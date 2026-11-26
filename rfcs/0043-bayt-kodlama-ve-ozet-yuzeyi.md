@@ -133,6 +133,10 @@ alfabe dışıdır (RFC 4648 §3.3; satır sonu kaçırma yüzeyi). Reproducer'l
 Ürün önceliği: oktet sayısı ve kod noktası bloklayıcı, base64 kodla/çöz
 veri kaybı; onaltılık ve base64url ihtiyacı yok.
 
+`kodlama` fuzz hedefi (uygulama sırası madde 2) K-412 ile eklendi ve RC fuzz
+kapısının sekizinci hedefidir; sözleşme kâhini ilk koşuda K-396'nın satırlı
+pencere hatasını buldu (K-414, GB-183).
+
 ## Motivasyon
 
 ### Ürün sürtünmesi

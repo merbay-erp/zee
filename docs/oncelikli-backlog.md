@@ -2589,6 +2589,23 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-412 — `kodlama` fuzz hedefi RC kapısında (RFC-0043, ADR-167)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; RFC-0043
+Dilim 1 uygulama sırası madde 2 ve Dilim 1/2 açık kalemi. RC fuzz
+kapısının sekizinci hedefi (merkez kararı: ZeeMail'de ağdan gelen
+MIME/QP/AUTH girdisinin çözücüleri). Yeni bağımlılık yok; kâhin sözleşme
+değişmezleridir (`compiler/tests/ortak/kodlama_kahini.rs`): tek satır/MIME/
+satırlı gidiş-dönüş, katı çözücüde tek kanonik yazım, tavan, QP büyümemesi,
+`utf8_coz` ↔ std, satırlı pencere ↔ dilim. Stable replay
+`compiler/tests/kodlama_fuzz_testi.rs` (9 tohum + 1.200 üretilmiş girdi).
+compiler/src değişmedi.
+
+İlk bulgu: satırlı pencere değişmezi K-396 hatasını yakaladı (b ≡ 55, 56
+mod 57, K ≥ T) → ayrı iş K-414 (GB-183); K-412 dalı K-414'ün üstündedir.
+RC kampanyası (30–60 dk ASan, nightly) bu işte koşulmadı; sonraki RC
+adayında sekiz hedefle koşulur.
+
 ## K-415 — `dil dkim-denetle` işletim komutu (aday)
 
 **Durum: BEKLİYOR — aday; gerçek ürün ihtiyacı yok.** Kaynak: ADR-174 açık
@@ -2645,7 +2662,7 @@ hatasıyla kaldı (K-417).
 
 ## K-417 — RC fuzz bulgusu: `dkim_imza_girdisi` kâhininde FWS'li son `b=`
 
-**Durum: KAPALI (26 Kasım 2026); yeni master'da yedi hedefli RC koşusu
+**Durum: KAPALI (26 Kasım 2026); yeni master'da sekiz hedefli RC koşusu
 AÇIK.** Kaynak: `b3b9d752` üzerinde ilk yedi hedefli RC kampanyası
 (K-411). GitHub `fuzz-rc` koşusu 45838195765'te `dkim_imza_girdisi`
 57 saniyede `tests/ortak/dkim_ozellikleri.rs:47` iddiasında panik verdi:
@@ -2663,7 +2680,7 @@ eklendi. Kanıt: `dkim_imza_testi.rs::kahin_son_b_etiketinde_fws_kabul_eder`
 (tohum, `b\t=`/`b \t= `/`b\n\t=` kabul, `bx=`/`b=x` ret, eski iddianın
 tohumda kırıldığı) ve korpus replay. RC tarihçesine `b3b9d752` için yerel
 ve GitHub satırları kırmızı `dkim` satırıyla birlikte yazıldı. RC kapısı
-exact SHA'da yedi hedefin hepsini ister (`scripts/guvenlik-kapisi.sh`);
+exact SHA'da bütün hedefleri ister (`scripts/guvenlik-kapisi.sh`; K-412 ile sekiz);
 yalnız `dkim_imza_girdisi`'nin yeniden koşusu yetmez.
 
 ## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (RFC-0044 B3 kabul 2)

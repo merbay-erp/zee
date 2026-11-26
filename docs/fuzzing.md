@@ -13,7 +13,11 @@ her paketin bağımsız `hickory-proto` kâhininde de aynı okunmasını arar.
 yapmamasını, parça sınırından ve LF/CRLF seçiminden bağımsız kalmasını ve imza
 kâhini denetiminin kabul ettiği girdide tutarlı olmasını arar. `x509_spki`
 (K-411/ADR-173) TLS uç sertifikasından SPKI çıkaran sınırlı DER yürüyücüsünün
-ayrı yazılmış referans DER okuyucusuyla aynı sonucu vermesini arar. `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
+ayrı yazılmış referans DER okuyucusuyla aynı sonucu vermesini arar. `kodlama`
+(K-412, RFC-0043) katı base64 (tek satır/MIME/satırlı), quoted-printable ve
+UTF-8 çözücülerinin panik yapmamasını, tavanı aşmamasını, kodlayıcının tek
+kanonik yazımı dışında girdi kabul etmemesini ve satırlı pencerenin bütün
+çıktının dilimine eşit olmasını arar (ilk bulgusu K-414). `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
 uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 
 ## Kalıcı katmanlar
@@ -68,6 +72,18 @@ uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
   `compiler/tests/giden_baglanti_testi.rs` korpusu ve tohum başına 3.000
   bozulmuş girdiyi yeniden oynatır, gerçek sertifikalarda SPKI'yi openssl'in
   çıkardığı açık anahtarla karşılaştırır.
+- `compiler/fuzz/fuzz_targets/kodlama.rs`: ham baytları ortak
+  `compiler/tests/ortak/kodlama_kahini.rs` sözleşme kâhininden geçirir (yeni
+  bağımlılık yok): her bayt dizisinin tek satır, MIME ve satırlı base64
+  gidiş-dönüşü; katı tek satır/MIME çözücünün kabul ettiği metnin
+  kodlayıcının kanonik yazımı olması; tavan ve QP büyümemesi; `utf8_coz` ile
+  standart kitaplığın kabul/ret ve konum eşitliği; satırlı pencere ↔ dilim.
+- `compiler/fuzz/corpus/kodlama/`: kanonik/kanonik olmayan/ortada dolgulu
+  base64, CRLF satırlı MIME, yumuşak satırlı ve bozuk kaçışlı QP, aşırı uzun
+  ve vekil UTF-8, RFC 2047 emoji konusu ve K-414'ü tetikleyen 55 baytlık
+  pencere tohumu (`.gitattributes` ile ikili; CRLF korunur).
+  `compiler/tests/kodlama_fuzz_testi.rs` korpusu ve 1.200 deterministik
+  üretilmiş girdiyi her ana testte oynatır.
 - `compiler/fuzz/fuzz_targets/wasm_abi.rs`: kayıtlı girdinin yanında null,
   iç/kayıt dışı pointer, yanlış/taşkın uzunluk, keyfî UTF-8, kaynak/soru kipi
   ve yanlış+çift bırakma sıralarını yürütür; her canlı sonuç kaydının uzunluk
@@ -108,6 +124,8 @@ cargo +nightly-2026-08-31 fuzz run dkim_imza_girdisi fuzz/corpus/dkim_imza_girdi
   -max_len=65536 -timeout=5
 cargo +nightly-2026-08-31 fuzz run x509_spki fuzz/corpus/x509_spki -- \
   -max_len=65537 -timeout=5
+cargo +nightly-2026-08-31 fuzz run kodlama fuzz/corpus/kodlama -- \
+  -max_len=65536 -timeout=5
 cargo +nightly-2026-08-31 fuzz run wasm_abi fuzz/corpus/wasm_abi -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=4097 -timeout=5
 ```
