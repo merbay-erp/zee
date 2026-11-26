@@ -6460,3 +6460,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   okunmaz ve bayt yazılmaz; panik yalnız debug ve hermetik yolda. Merkez
   tabanıyla `orta` (DoS sınıfı, bellek/veri sızıntısı yok). Merkez kararıyla
   K-412'den ayrı iş. K-414 kapandı.
+
+## K-412 — `kodlama` fuzz hedefi RC kapısında (26 Kasım 2026)
+
+- Mustafa'nın "kodlama fuzz hedefine geç" kararı; merkez RC kapsamına
+  almayı istedi (ağdan gelen MIME/QP/AUTH girdisi). Workflow/RC betikleri
+  #124 (K-411, yedi hedef) birleştikten sonra sekizinci hedef olarak.
+- Kâhin için dış kitaplık (`base64` crate) düşünüldü, alınmadı: tedarik
+  zinciri değişirdi ve RFC 4648'in "tek kanonik yazım" sözü kendi başına
+  güçlü bir diferansiyel değişmezdir (kodla ∘ çöz = kimlik, katı çözücü
+  yalnız kodlayıcının çıktısını kabul eder).
+- Pencere değişmezi ilk üretilmiş girdilerde düştü → K-414 (ayrı iş,
+  GB-183). Düzeltme olmadan kâhin geçmediği için K-412 K-414'ün üstündedir
+  ve ondan sonra birleşir.
+- Korpusun CRLF baytları anlamlıdır (MIME/QP); `* text=auto eol=lf`
+  normalleştirmesi tohumları bozacağından `.gitattributes`'ta ikili.
+  Nightly RC kampanyası bu işte koşulmadı. K-412 kapandı.

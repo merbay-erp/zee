@@ -34,6 +34,9 @@ jobs:
           - hedef: x509_spki
             korpus: x509_spki
             azami_girdi: 65537
+          - hedef: kodlama
+            korpus: kodlama
+            azami_girdi: 65536
           - hedef: wasm_abi
             korpus: wasm_abi
             azami_girdi: 4097
