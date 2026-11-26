@@ -21,6 +21,7 @@ mod kaynak;
 mod kendine_ekleme;
 mod kimlik_iletisim;
 mod kodlanmis_dosya;
+mod makine_istegi;
 mod metin;
 mod paylasilan_io;
 mod posta;
@@ -65,6 +66,7 @@ pub use crate::web_guvenligi::OturumAyari;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
+    RotaKipi,
 };
 use crate::dns_teli::{DnsSonucu, KayitTuru};
 use crate::intrinsic::{

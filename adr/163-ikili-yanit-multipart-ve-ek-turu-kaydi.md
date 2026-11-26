@@ -196,7 +196,10 @@ iOS Safari profil kurulum akışını başlatmıyordu. İçerik sır taşımaz.
    `Origin` ZORUNLUDUR; Outlook ikisini de göndermez → 403. Aynı engel
    RFC-0040 #5(c) CalDAV/CardDAV için doğrulanmıştır; dar CSRF muafiyeti o
    işte tek model olarak karara bağlanır. Ürün bugün yalnız `autodiscover`
-   kaydını DNS/vekil katmanında karşılayabilir.
+   kaydını DNS/vekil katmanında karşılayabilir. **Güncelleme (K-405,
+   ADR-179):** kimliksiz yarısı `herkese açık makine uç noktası` ile kapandı
+   (CSRF/Origin yok, çerez okunmaz, Set-Cookie yok, XML/JSON ≤ 8 KiB);
+   kimlikli DAV muafiyeti açık kalır.
 
 **Güvenlik değerlendirmesi (GB-160).** XML sunucuda ayrıştırılmaz: XXE/DTD
 riski Zee tarafında yoktur. Tarayıcıda `attachment` belge oluşturmaz;

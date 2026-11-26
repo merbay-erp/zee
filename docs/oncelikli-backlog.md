@@ -2893,6 +2893,27 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-405 — Makine uç noktası: CSRF'siz, kimliksiz POST rotası (ADR-179)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-h`
+(ZeeMail) sürtünmesi ZM-F047; klasik masaüstü Outlook
+`POST /autodiscover/autodiscover.xml` gönderir, her POST `_csrf` istediği ve
+ham gövde okunamadığı için elle kuruluma düşüyordu. Merkez onayı 26.11
+(güvenlik sınırlarıyla). Freeze sınıfı `dogfood-change`. RFC-0046 (tehdit
+modeli), ADR-179, GB-179.
+
+Karar: `herkese açık makine uç noktası` politika biçimi (S050), yalnız POST
+ve sabit öneksiz yol (T060), rota ve geçişli çağrılarda oturum/çerez/CSRF
+yüzeyi derlemede yasak (T061), `isteğin ham gövdesi` yalnız bu rotada
+(T062). Adaptör Origin/CSRF aramaz, Cookie okumaz, Set-Cookie yazmaz;
+XML/JSON dışı 415, 8 KiB üstü 413. Oran sınırı rotanın kendi kovasında.
+
+Kanıt: `compiler/tests/web_testi.rs` (iki vaka), `compiler/tests/web_cok_surec_testi.rs`
+`makine_uc_noktasi_origin_csrf_cerezsiz_calisir_413_415_verir`,
+`compiler/src/cli/makine_ucu.rs` birim testi; dogfood `urun-h-outlook-autodiscover`.
+Açık: kullanıcıya göre üretilen `application/xml` metin yanıtı, kimlikli DAV
+muafiyeti (RFC-0040 #5(c)), harfe duyarsız yol.
+
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 
 **Durum: KAPALI (25 Kasım 2026), belge kararı.** Kaynak: ZeeMail (`urun-h`)
@@ -3302,7 +3323,7 @@ dogfood `urun-h-istemci-yapilandirma` (`dogfood/urun-h/istemci-yapilandirma/`).
 
 Açık: (1) Outlook POX Autodiscover POST ister; `_csrf` ve `--web-proxy`
 `Origin` kuralı 403 verir — dar CSRF muafiyeti RFC-0040 #5(c) ile tek model,
-ayrı iş. (2) HTML standardı yanıt CSP'sindeki `sandbox`'ı gezinme
+ayrı iş (kimliksiz yarısı K-405/ADR-179 ile KAPANDI). (2) HTML standardı yanıt CSP'sindeki `sandbox`'ı gezinme
 bayraklarına katıp `allow-downloads` olmadan `attachment` indirmesini
 engelleyebilir; Chromium/WebKit bugün uygulamıyor. Bütün dosya yanıtlarını
 etkileyen `sandbox allow-downloads` önerisi ayrı iştir. (3) iOS cihazda

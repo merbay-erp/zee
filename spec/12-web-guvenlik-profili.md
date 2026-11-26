@@ -17,7 +17,8 @@ oturum gerekli
 ```
 
 `herkese açık`, CSRF denetimini kapatmaz; yalnız kullanıcı oturumu
-aranmayacağını açıklar. Politika eksikliği T049'dur. Politika ilk ve tek
+aranmayacağını açıklar. Tek istisna kimliksiz makine ucudur
+(`herkese açık makine uç noktası`, K-405 bölümü). Politika eksikliği T049'dur. Politika ilk ve tek
 politika cümlesi değilse T050'dir.
 
 Politikadan hemen sonra sıfır veya daha çok zorunlu alan bildirilebilir:
@@ -503,6 +504,18 @@ YASAK: Önbelleklenebilir politika GET ve HEAD dışındaki rotada T056 ile redd
 ZORUNLU: Çalışma zamanı önbelleklenebilir rotaya boş `oturum` ve `çerezler` sözlükleri verir. Yanıt yalnız şu koşulların hepsi sağlanınca `Cache-Control: public, max-age=0, s-maxage=N` taşır: istek yöntemi GET ya da HEAD, rota gövdeyle 200 yanıtı gönderdi, yanıt hiçbir `Set-Cookie` başlığı taşımıyor ve istek sırasında oturum yüzeyine dokunulmadı. Diğer her durumda (hata/durum yanıtı, yönlendirme, kayar oturum yenilemesi dahil herhangi bir Set-Cookie) yanıt `no-store` kalır. Diğer güvenlik başlıkları değişmez; `max-age=0` tarayıcı önbelleğini kapalı tutar, ömür yalnız paylaşılan önbelleğe verilir.
 
 AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek temizleme sözü verilmez. Sorgu dizgisi önbellek anahtarının parçasıdır ve ön kapı tarafından korunmalıdır. Normatif gerekçe: RFC-0037, ADR-160.
+
+## K-405 — Makine uç noktası
+
+TANIMLI: Rota önsözünün politika cümlesi `herkese açık makine uç noktası` biçiminde yazılabilir. Cümle erişim bakımından `herkese açık`tır ve ilk ve tek politika cümlesi kuralına (T050) uyar. `makine uç noktası` ile biten başka her yazım (oturumlu, yetkili, önbelleklenebilir ya da tek başına) S050'dir. `isteğin ham gövdesi` ifadesi yalnız bu rotanın kendi gövdesinde okunur ve isteğin gövdesini `Metin` olarak verir.
+
+YASAK: Makine uç noktası POST dışı rotada, önekli yolda ya da sabit metin olmayan yolda T060 ile reddedilir. Rota gövdesi `oturum` ya da `çerezler` sözlüğünü okuyamaz; gövde ya da gövdenin (geçişli olarak) çağırdığı işlemler `csrf belirteci`, çerez yazma/silme, `oturuma al`, `oturumu kapat` ve web oturumu listeleme/iptal ifadelerini kullanamaz (T061, ilk dokunuşun satırı). `isteğin ham gövdesi` sıradan rotada, işlem/eylem gövdesinde ya da üst düzeyde T062'dir.
+
+ZORUNLU: Makine uç noktasına giden istek CSRF ve `Origin` denetiminden geçmez; Host, `Forwarded` ve HTTPS proxy denetimi aynen uygulanır. İstek `Cookie` başlığı okunmaz, oturum anonim başlar, kayar yenileme yapılmaz ve yanıt hiçbir koşulda `Set-Cookie` taşımaz; rotaya boş `oturum` ve `çerezler` sözlükleri verilir. Uç nokta oran sınırı rotanın kendi `POST <yol>` kovasında uygulanır.
+
+ZORUNLU: Makine isteğinin tek `Content-Type` başlığı `text/xml`, `application/xml` ya da `application/json` medya türü taşımalı, `charset` parametresi varsa `utf-8` olmalıdır; başlık yoksa ya da tür başkaysa yanıt 415'tir. Gövde 8 KiB (8192 bayt) ile sınırlıdır; aşım gövde okunmadan 413, geçersiz UTF-8 400'dür. Gövde form olarak ayrıştırılmaz: `istek` sözlüğü yalnız `yol`, `yöntem` ve sorgu alanlarını taşır. CSP ve diğer güvenlik başlıkları (`Cache-Control: no-store` dahil) değişmez.
+
+AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle işler. E-posta adresinin günlüğe yazılmaması ve yanıtın alan adına göre değişmemesi (sayım) ürünün sorumluluğundadır. Türlü metin yanıtı, büyük/küçük harfe duyarsız yol, PUT/PATCH ve CORS başlıkları bu sözleşmenin parçası değildir. Normatif gerekçe ve tehdit modeli: RFC-0046, ADR-179.
 
 ## K-379 — Satır içi betik CSP özeti
 

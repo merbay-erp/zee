@@ -1,5 +1,6 @@
 //! Bir web isteğinin rota seçimi ve transaction sınırı içindeki yürütmesi.
 
+use super::istek_siniri::eksik_zorunlu_alan;
 use super::*;
 
 /// Bir isteği taze kaynak zarfında çalıştırır. `Some`, rota içindeki
@@ -13,12 +14,20 @@ pub(super) fn web_istegini_calistir(
 ) -> Result<Option<i64>, Tani> {
     calistirma_butcesini_yenile();
     gorev_ortami_butcesini_tuket(ortam, 0, 1)?;
-    if let Err((durum, mesaj)) = istek_sinirlarini_denetle(ham) {
+    let (ham, ham_govde) = match makine_istegi::ayir(program.program(), ham) {
+        Ok(Some((zarf, govde))) => (std::borrow::Cow::Owned(zarf), Some(govde)),
+        Ok(None) => (std::borrow::Cow::Borrowed(ham), None),
+        Err((durum, mesaj)) => {
+            io.durum_yaniti_gonder(durum, mesaj);
+            return Ok(None);
+        }
+    };
+    if let Err((durum, mesaj)) = istek_sinirlarini_denetle(&ham) {
         io.durum_yaniti_gonder(durum, mesaj);
         return Ok(None);
     }
 
-    let (gelen_yontem, yol, veriler, cerezler) = match istek_parcala_cerezli(ham) {
+    let (gelen_yontem, yol, veriler, cerezler) = match istek_parcala_cerezli(&ham) {
         Ok(istek) => istek,
         Err((durum, mesaj)) => {
             io.durum_yaniti_gonder(durum, mesaj);
@@ -32,25 +41,9 @@ pub(super) fn web_istegini_calistir(
             return Ok(None);
         }
     };
-    let istek_sozlugu = Deger::Sozluk(
-        veriler
-            .iter()
-            .cloned()
-            .map(|(ad, deger)| (ad, Deger::Metin(deger)))
-            .collect(),
-    );
-    let cerez_sozlugu = Deger::Sozluk(
-        cerezler
-            .into_iter()
-            .map(|(ad, deger)| (ad, Deger::Metin(deger)))
-            .collect(),
-    );
-    let oturum_sozlugu = Deger::Sozluk(
-        oturum_bilgileri
-            .into_iter()
-            .map(|(ad, deger)| (ad, Deger::Metin(deger)))
-            .collect(),
-    );
+    let istek_sozlugu = metin_sozlugu(veriler.iter().cloned());
+    let cerez_sozlugu = metin_sozlugu(cerezler);
+    let oturum_sozlugu = metin_sozlugu(oturum_bilgileri);
     let mut eslesti = false;
     let mut yol_eslesti = false;
 
@@ -80,19 +73,17 @@ pub(super) fn web_istegini_calistir(
             continue;
         }
 
-        let (erisim, onbellek_saniye) = match govde.first() {
-            Some(Cumle::RotaPolitikasi {
-                erisim,
-                onbellek_saniye,
-                ..
-            }) => (erisim.clone(), *onbellek_saniye),
-            _ => (RotaErisimi::HerkeseAcik, None),
+        let (erisim, kip) = match govde.first() {
+            Some(Cumle::RotaPolitikasi { erisim, kip, .. }) => (erisim.clone(), *kip),
+            _ => (RotaErisimi::HerkeseAcik, RotaKipi::Olagan),
         };
+        let makine = kip == RotaKipi::Makine;
         let csrf = veriler
             .iter()
             .find(|(ad, _)| ad == "_csrf")
             .map(|(_, deger)| deger.as_str());
-        if let Err(red) = io.rota_guvenligini_denetle(&erisim, csrf, !beklenen.guvenli()) {
+        if let Err(red) = io.rota_guvenligini_denetle(&erisim, csrf, !beklenen.guvenli() && !makine)
+        {
             io.durum_yaniti_gonder(red.durum, red.mesaj);
             eslesti = true;
             break;
@@ -103,15 +94,17 @@ pub(super) fn web_istegini_calistir(
             break;
         }
 
-        // K-335: önbelleklenebilir rota oturum/çerez görmez; T057'nin statik
-        // kapısını aşan bir yol olsa bile paylaşılan yanıt kimliğe bağlanamaz.
-        let (cerez_sozlugu, oturum_sozlugu) = match onbellek_saniye {
-            Some(saniye) => {
-                io.yanit_onbellegine_izin_ver(saniye);
-                (Deger::Sozluk(Vec::new()), Deger::Sozluk(Vec::new()))
-            }
-            None => (cerez_sozlugu.clone(), oturum_sozlugu.clone()),
+        // K-335/K-405: önbelleklenebilir ve makine rotası oturum/çerez görmez;
+        // T057/T061 statik kapısını aşan bir yol olsa bile yanıt kimliğe bağlanamaz.
+        if let RotaKipi::Onbellekli(saniye) = kip {
+            io.yanit_onbellegine_izin_ver(saniye);
+        }
+        let (cerez_sozlugu, oturum_sozlugu) = if kip != RotaKipi::Olagan {
+            (Deger::Sozluk(Vec::new()), Deger::Sozluk(Vec::new()))
+        } else {
+            (cerez_sozlugu.clone(), oturum_sozlugu.clone())
         };
+        makine_istegi::ortama_ekle(&mut rota_ortami, makine, &ham_govde, *satir)?;
         ortama_yazma_butcesini_tuket(&rota_ortami, "istek", &istek_sozlugu, *satir)?;
         rota_ortami.insert("istek".into(), istek_sozlugu.clone());
         ortama_yazma_butcesini_tuket(&rota_ortami, "çerezler", &cerez_sozlugu, *satir)?;
@@ -164,15 +157,11 @@ pub fn istek_hatasi_yaniti(kod: &str) -> Option<(u16, &'static str)> {
     })
 }
 
-fn eksik_zorunlu_alan<'a>(govde: &'a [Cumle], veriler: &[(String, String)]) -> Option<&'a str> {
-    govde.iter().find_map(|cumle| match cumle {
-        Cumle::RotaAlaniGerekli { ad, .. }
-            if !veriler
-                .iter()
-                .any(|(gelen, deger)| gelen == ad && !deger.trim().is_empty()) =>
-        {
-            Some(ad.as_str())
-        }
-        _ => None,
-    })
+fn metin_sozlugu(ciftler: impl IntoIterator<Item = (String, String)>) -> Deger {
+    Deger::Sozluk(
+        ciftler
+            .into_iter()
+            .map(|(ad, deger)| (ad, Deger::Metin(deger)))
+            .collect(),
+    )
 }

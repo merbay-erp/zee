@@ -6168,6 +6168,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   işçisi DoS profili, ürün ihtiyacı yok). K-395 kapandı.
 
 
+## K-405 — Makine uç noktası; ADR-179 (26 Kasım 2026)
+
+- Kaynak: `urun-h` (ZeeMail) ZM-F047 — Outlook POX autodiscover CSRF ve form
+  ayrıştırması yüzünden çalışmıyordu. Merkez 26.11'de güvenlik sınırlarıyla
+  onayladı (core freeze `dogfood-change`).
+- Seçilen: mevcut `herkese açık` politikasının biçimi (K-335 emsali);
+  kimlikli rota yapısal olarak makine ucu olamaz. Ayrı önsöz cümlesi, proje
+  düzeyi muaf yol listesi, her rotada ham gövde ve dilde XML ayrıştırma
+  reddedildi (ADR-179).
+- Güvenlik ekseni: CSRF yalnız ortam kimlik bilgisi varsa anlamlıdır; makine
+  rotası onu hiç görmez (T061 derleme + çerezsiz zarf + Set-Cookie
+  bastırma). Tarayıcının preflight'sız türleri 415 ile dışarıda.
+- AST'de `RotaPolitikasi.kip` tek alan (`Olagan`/`Onbellekli`/`Makine`);
+  önbellek ve makine biçimi birbirini dışlar. K-405 kapandı.
+
 ## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir; ADR-178 (25 Kasım 2026)
 
 - Kaynak: `urun-h` (ZeeMail) güvenlik denetimi, "Yüksek" (23.11, ürün

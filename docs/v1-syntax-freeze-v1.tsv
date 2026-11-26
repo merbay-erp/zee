@@ -5,7 +5,7 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	54c35c7a03047e5c4bbafada73659cdead0303fce2a9e85a723e7387b4ef54e0
+dondurulmus_sha256	5901a0086deda65942074b4c3390b203d2cb17d971a04fccbac7932ebc9601f2
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
@@ -35,3 +35,4 @@ dondurulmus_sha256	54c35c7a03047e5c4bbafada73659cdead0303fce2a9e85a723e7387b4ef5
 # K-396/ADR-172/RFC-0039 A2d: urun-h (ZM-F040) IMAP BODY[n] ve kısmi getirme için dosyanın RFC 2045 satırlı base64 aktarımı; iki contextual Sonuç kalıbı (`<yol> dosyasını base64 satırlarıyla bağlantıya aktarmayı dene`, `<yol> dosyasının base64 satırlarının <K> baytından <N> baytını bağlantıya aktarmayı dene`; yeni kalıp kelimeleri `satırlarıyla`, `satırlarının`) pencere SONRASI eklendi. Yeni anahtar kelime, koşul grameri, AST/değer türü ya da tanı kodu yok.
 # K-397/ADR-173/RFC-0044 B4a: urun-h (ZeeMail giden teslim, zeemail/disteslim) için iki contextual Sonuç kalıbı: giden TCP `"<ana>:<kapı>" adresine bağlanmayı dene` ve istemci STARTTLS `bağlantıda TLS istemcisi başlatmayı dene "<ad>" ile`; yeni kalıp kelimeleri `bağlanmayı`, `istemcisi` pencere SONRASI eklendi. Bağlantının öteki kalıpları değişmedi (artık `ağ` ile de derlenir). Hedef politikası grammar değil proje bildirimidir (`ağ_hedefleri` `tcp://` ve iki joker); yeni anahtar kelime, değer türü ve koşul grameri yoktur.
 # K-390/ADR-177/RFC-0044 B1b+B2b: ZeeMail (urun-h, ZM-F025 ve B2 sürtünmesi) DMARC hizalaması ve DKIM doğrulaması için iki özellik kalıbı (`<ad> alanının kurumsal alanı`, `<x> gövdesinin dkim gövde özeti`) ve tek contextual Sonuç kalıbı `<b> dkim imzasını <veri> verisi için <p> anahtarıyla <a> olarak doğrulamayı dene` pencere SONRASI eklendi (yeni kalıp kelimeleri `alanının`, `kurumsal`, `gövdesinin`, `gövde`, `dkim`, `imzasını`, `olarak`, `doğrulamayı`). Yeni değer türü, kaçış dizisi, koşul ve komut yoktur; kamu son ek listesi grammar değil proje bildirimidir (`kamu_son_ekleri`, P015).
+# K-405/ADR-179/RFC-0046: ZeeMail (urun-h, ZM-F047) klasik Outlook POX autodiscover için mevcut `herkese açık` politikasının tek contextual biçimi (`herkese açık makine uç noktası`) ve yalnız o rotada okunan sıfır argümanlı ifade (`isteğin ham gövdesi`) pencere SONRASI eklendi (yeni kalıp kelimeleri `makine`, `gövdesi`). Yeni değer türü, koşul ve komut yoktur; yeni tanılar S050/T060/T061/T062.
