@@ -56,3 +56,10 @@ bench = false
 
 [patch.crates-io]
 postgres-protocol = { path = "../third_party/postgres-protocol" }
+
+[[bin]]
+name = "kodlama"
+path = "fuzz_targets/kodlama.rs"
+test = false
+doc = false
+bench = false
