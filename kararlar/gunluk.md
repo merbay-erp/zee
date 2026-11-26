@@ -6268,6 +6268,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Bu değişiklik compiler/src'ye dokunmaz; RC fuzz tarihçesine satır yazılmadı
   (koşu yok). Sonraki RC adayı yedi hedefin hepsini ister.
 
+## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (26 Kasım 2026)
+
+- Kullanıcı isteği; merkez kararı: yalnız runbook, kayıt biçimi ve
+  `Authentication-Results` ayrıştırıcısı. İmzayı yeniden doğrulayan Zee
+  programı eklenmedi (bağımsız doğrulama ZeeMail `disteslim-deneme`'de);
+  asıl kanıt alıcının kendi başlığıdır.
+- Açık depo sınırı: gerçek alan, seçici, alıcı adresi, IP ve Received
+  zinciri açık depoya girmez; satır `.eml` SHA-256'sıyla özel depoya bağlanır.
+- Yalnız en üstteki `Authentication-Results` sayılır: alttakiler gönderici
+  ya da aradan gelmiş olabilir (RFC 8601 §5).
+- Hizalama PSL'siz yaklaşıktır (aynı alan ya da alt alan); hüküm alıcının
+  `dmarc=` sonucudur.
+
 ## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
 
 - Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden

@@ -72,6 +72,7 @@ jobs:
         run: |
           python3 scripts/tests/kaynak-ci-esleme-test.py
           python3 scripts/tests/build-kimligi-test.py
+          python3 -I scripts/tests/dkim-alici-kaniti-test.py
       - name: Faza özgü test matrisi
         working-directory: compiler
         shell: bash
