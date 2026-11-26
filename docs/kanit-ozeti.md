@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 20 | 0 | 0 | 20 |
-| orta | 56 | 16 | 3 | 75 |
+| orta | 56 | 16 | 4 | 76 |
 | dusuk | 49 | 30 | 1 | 80 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 176.
+Toplam bulgu: 177.
 
 ## Spec maddeleri
 
@@ -83,8 +83,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| spec/31-dns-ve-posta-kimlik-dogrulama.md | 30 | 0 | 2 | 32 | 93 |
-| **Toplam** | 416 | 6 | 19 | 441 | 94 |
+| spec/31-dns-ve-posta-kimlik-dogrulama.md | 39 | 0 | 3 | 42 | 92 |
+| **Toplam** | 425 | 6 | 20 | 451 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -109,12 +109,12 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
-| urun-h | 17 | 5 | 0 | 21 | 1 | 22 |
+| urun-h | 19 | 5 | 0 | 23 | 1 | 24 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
 | zee-cekirdek | 16 | 1 | 5 | 22 | 0 | 22 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 87.
+Toplam korpus vakası: 89.
 
 ## Deprecation kayıtları
 
@@ -147,16 +147,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 143 |
+| maintenance | 147 |
 | semantic-bugfix | 45 |
-| semantic-change | 77 |
+| semantic-change | 78 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
 | correctness | 44 |
-| dogfood-change | 52 |
-| maintenance | 140 |
+| dogfood-change | 53 |
+| maintenance | 144 |
 | security | 22 |
 
-Toplam: 265 compiler değişiklik beyanı, 261 core freeze beyanı.
+Toplam: 270 compiler değişiklik beyanı, 266 core freeze beyanı.

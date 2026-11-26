@@ -38,6 +38,8 @@ mod ag_izni;
 mod ag_tls;
 #[path = "cli/registry.rs"]
 mod dil_registry;
+#[path = "cli/dkim.rs"]
+mod dkim;
 #[path = "cli/systemd_bildirim.rs"]
 mod systemd_bildirim;
 mod web_cok_parcali;
@@ -807,7 +809,7 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
         eprintln!(
             "UYARI: IO izi program girdisi, dosya/ağ içeriği ve belirteç taşıyabilir; özel artefakt olarak sakla."
         );
-        if let Err(hata) = dns_hazirla(&girdi) {
+        if let Err(hata) = dns_hazirla(&girdi).and_then(|()| dkim_hazirla(&girdi)) {
             eprintln!("{hata}");
             return ExitCode::from(2);
         }
@@ -5548,6 +5550,38 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .map(|liste| liste.kurumsal_alan(ad))
             .ok_or_else(|| "proje `kamu_son_ekleri` bildirmiyor".into())
     }
+    fn dosya_dkim_govde_ozeti(&mut self, yol: &str, bas: i64, kip: &str) -> Result<String, String> {
+        use std::io::{Seek, SeekFrom};
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::dosya_icin(yol, false))?;
+        let kip = dil::dkim_kripto::GovdeKipi::ayristir(kip)
+            .ok_or_else(|| "aralık: gövde kipi simple ya da relaxed olmalı".to_string())?;
+        let mut dosya = self.okuma_icin_ac(yol)?;
+        let boy = dosya
+            .metadata()
+            .map_err(|hata| format!("\"{yol}\" dosyası okunamadı: {}", hata.kind()))?
+            .len();
+        let bas = u64::try_from(bas)
+            .ok()
+            .filter(|bas| *bas <= boy)
+            .ok_or_else(|| format!("aralık: gövde başı {bas} dosya boyunun ({boy}) dışında"))?;
+        dosya
+            .seek(SeekFrom::Start(bas))
+            .map_err(|hata| format!("\"{yol}\" dosyası okunamadı: {}", hata.kind()))?;
+        dil::dkim_kripto::govde_ozetini_akit(&mut dosya, kip, yol)
+    }
+    fn dkim_imzala(
+        &mut self,
+        anahtar: &str,
+        algoritma: &str,
+        veri: &str,
+    ) -> Result<String, String> {
+        let depo = dkim::DKIM_ANAHTARLARI
+            .get()
+            .ok_or_else(|| "anahtar_bilinmiyor".to_string())?;
+        depo.imzala(anahtar, algoritma, veri)
+            .map_err(|hata| hata.turu().to_string())
+    }
 
     fn dns_sorgula(
         &mut self,
@@ -5664,6 +5698,10 @@ fn calistir_gercek_io_ile(
         eprintln!("{hata}");
         return ExitCode::from(2);
     }
+    if let Err(hata) = dkim_hazirla(girdi) {
+        eprintln!("{hata}");
+        return ExitCode::from(2);
+    }
     let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
     taban.metrik = metrik;
     let guvenilir_betikler = taban.guvenilir_betikler.clone();
@@ -5683,6 +5721,14 @@ fn dns_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
             .map_err(|hata| format!("dns_dnssec zorunlu: {hata}"))?;
     }
     Ok(())
+}
+
+/// K-397 B3 (ADR-174): `dkim_anahtarları` yürütmeden önce yüklenir.
+fn dkim_hazirla(girdi: &KaynakGirdisi) -> Result<(), String> {
+    match girdi.proje.as_ref() {
+        Some(proje) => dkim::hazirla(&proje.ana_bildirim().dkim_anahtarlari),
+        None => Ok(()),
+    }
 }
 
 /// K-390 B1b (ADR-177): süreçte tek proje; liste açılışta bir kez okunur,

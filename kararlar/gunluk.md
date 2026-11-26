@@ -6234,6 +6234,34 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yazıma uygulanır. Sessiz anlam değişimi olabilecek tek durum (kökle
   yeniden atanmış parametreye eski yazım) A002 yapıldı.
 
+## K-397 Dilim 2 — DKIM imza ilkeli; RFC-0044 B3, ADR-174 (25 Kasım 2026)
+
+- Kaynak ZM-F042 (ZeeMail `850d86b`, `zm-f042-yeniden-uretim.dil`): giden
+  ileti imzasız çıkıyordu. K-390 B2 birleştikten sonra merkez "Dilim 2'ye
+  başla" dedi (master 9481db7); numaralar ADR-174 ve GB-177.
+- Kalıp K-390 ile anlaşılan son biçimdir ve doğrulama kalıbının aynasıdır:
+  `VERİ verisi için AD özel anahtarıyla A olarak imzalamayı dene`. Ürün
+  reproducer'ındaki ilk taslak biçim (`… için "<ad>" anahtarıyla rsa-sha256
+  imzasını almayı dene`) ve `\r\n` sabiti aynada güncellendi.
+- Kanonikleştirme host'a alınmadı (ürünün doğrulayıcısıyla tek kod). İmza
+  kâhini önlemi girdi yapısı üzerinden kuruldu. Ek olarak `l=` yasağı,
+  `i=` hizası, tek From ve tekil etiket istendi.
+- Anahtar Zee'de credential adıyla anılır. Bildirim dışı ad
+  `anahtar_bilinmiyor`, başka bir gizli değerle aynı ad P015 olur: imza
+  kâhini TLS anahtarı üzerinde çalışmamalı.
+- `zeroize` crate'i eklenmedi (tedarik yüzeyi). Tamponlar `fill(0)` ve
+  `black_box` ile en iyi çabayla sıfırlanır; GB-177'te açık risk olarak
+  kayıtlı.
+- Merkez eki (aynı gün, ZM-F046): K-390 B2 ürün sonucunda 256 KiB üstü
+  gövdenin `bh=`'si Metin ilkesiyle hesaplanamadı. İlk tarif "kanonik LF
+  dosya" idi; ZeeMail'in gelen blok dosyası ham CRLF ve başlıklı olduğundan
+  merkez B'yi seçti: `YOL dosyasının BAŞ baytından KİP kipinde dkim gövde
+  özetini almayı dene`. Gövde kanonikleştirmesi (simple/relaxed) host'ta,
+  başlık Zee'de (ADR-177 istisnası, ADR-174 §8). LF ve CRLF kabul, LF'siz
+  CR ret; dosya dış veri olduğundan ret Sonucu, duruş değil.
+- Anahtarlar test anında üretilir (Ed25519 ring, RSA openssl); depoda özel
+  anahtar yoktur.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a, ADR-173 (24 Kasım 2026)
 
 - Kaynak `urun-h` (ZeeMail) giden teslim hizmeti `zeemail/disteslim`;

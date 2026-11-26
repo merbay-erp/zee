@@ -1,0 +1,19 @@
+# ZM-F042 — RFC-0044 B3 reproducer'ının anonim aynası (ürün H ZeeMail commit
+# 850d86b, zm-f042-yeniden-uretim.dil SHA-256 2ab1b572…). Giden ileti DKIM
+# imzasız çıkıyordu: ürünün `dkim` birimi kanonik başlıkları ve `b=` boş
+# DKIM-Signature şablonunu üretir, imza ilkeli yoktu (K-397 Dilim 2 öncesi
+# S004/S015). ADR-174 ile imza `kriptografi` altında atılır; anahtar proje
+# `dkim_anahtarları` bildiriminden credential adıyla gelir. Ürün yeniden
+# üretimindeki `\r\n` Zee'de `\n` yazılır (CRLF imza girdisinde kurulur).
+# Hermetik koşuda anahtar yüklenmediği için sonuç C034 `anahtar_bilinmiyor`dur.
+
+test "DKIM imzası"
+    kanonik "from:Ayşe <ayse@ornek.test>\nsubject:Deneme\ndkim-signature:v=1; a=rsa-sha256; d=ornek.test; s=zm1; c=relaxed/relaxed; h=from:subject; bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=" olsun
+    imza kanonik verisi için "zeemail_dkim_anahtari" özel anahtarıyla "rsa-sha256" olarak imzalamayı dene olsun
+    imza başarılıysa
+        b imzanın değeri olsun
+        b "" e eşit olmamalı
+    değilse
+        hata imzanın hatası olsun
+        kod hatanın kodu olsun
+        kod "C034" e eşit olmalı

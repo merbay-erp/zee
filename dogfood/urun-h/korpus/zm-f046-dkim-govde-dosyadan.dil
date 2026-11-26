@@ -1,0 +1,21 @@
+# ZM-F046 — RFC-0044 B3 dosyadan DKIM gövde özeti reproducer'ının anonim
+# aynası (ürün H ZeeMail commit d6705f1, zm-f046-yeniden-uretim.dil SHA-256
+# 2a885948…; gözlem cb047c5). K-384 blok dosyası başlıklar dahil ham CRLF
+# iletiyi tutar; 256 KiB üstü gövde `X gövdesinin dkim gövde özeti` Metin
+# ilkesine sığmadığından 400 KB ekli geçerli imzalı ileti `belirsiz` kalıp
+# İstenmeyen'e düşüyordu, giden ekli ileti imzalanamıyordu. K-397 Dilim 2
+# öncesi S015 (kalıp yok); ADR-174 §8 ile gövde başı ve c= kipiyle akışlı
+# özet. Hermetik koşuda dosya olmadığından sonuç C034 `dosya`dır.
+
+test "DKIM gövde özeti dosyadan"
+    blok "ileti.eml" olsun
+    gövde_başı 512 olsun
+    kip "relaxed" olsun
+    özet blok dosyasının gövde_başı baytından kip kipinde dkim gövde özetini almayı dene olsun
+    özet başarılıysa
+        bh özetin değeri olsun
+        bh "" e eşit olmamalı
+    değilse
+        hata özetin hatası olsun
+        kod hatanın kodu olsun
+        kod "C034" e eşit olmalı

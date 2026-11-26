@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 158] = [
+const KALIP_KELIMELERI: [&str; 161] = [
     "yaz",
     "olsun",
     "ise",
@@ -191,6 +191,9 @@ const KALIP_KELIMELERI: [&str; 158] = [
     "dkim",
     "imzasını",
     "olarak",
+    "özel",
+    "imzalamayı",
+    "kipinde",
     "doğrulamayı",
 ];
 
@@ -262,8 +265,8 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 87] = [
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
     ("sorgulamayı", "Bildirilmiş loopback çözücüye DNS sorgusu (`dns` yetkinliği, `dns_çözücü`, `dns_dnssec`): MX, TXT, TLSA ya da adres (A + AAAA) → kayıt başına satırlı Metin sözlük listesi Sonucu (`ad`, `ttl`, `doğrulanmış` + türe özgü alanlar). Kayıt/alan yoksa boş liste; geçici hata C033 `tür` verisiyle.\n\n`kayıtlar \"ornek.test\" için MX kayıtlarını sorgulamayı dene olsun`"),
     ("kurumsal", "Alan adının RFC 7489 kurumsal alanı (DMARC hizalaması): proje `kamu_son_ekleri` listesi + bir etiket, küçük harfli; ad geçersizse ya da kamu son ekinin kendisiyse boş Metin. `dns` yetkinliği; liste exact SHA-256 ile açılışta yüklenir.\n\n`kök gönderen_alanı alanının kurumsal alanı olsun`"),
-    ("imzasını", "DKIM imzasını (`b=`) Zee'nin kanonikleştirdiği veri ve `p=` açık anahtarıyla doğrular (`kriptografi`): `rsa-sha256` (1024–4096 bit) ya da `ed25519-sha256`; veride satır sonu `\\n` yazılır, imza girdisinde CRLF olur. Başarı `doğrulandı`/`algoritma`/`anahtar_biti` sözlüğü; `rsa-sha1`, kısa/uzun/iptal anahtar ve bozuk imza C034.\n\n`sonuç b dkim imzasını veri verisi için p anahtarıyla a olarak doğrulamayı dene olsun`"),
-    ("gövdesinin", "DKIM gövde özeti (`bh=`): Zee'nin kanonikleştirdiği gövdenin SHA-256'sı, base64 (`kriptografi`). Satır sonunu `\\n` yaz; özet CRLF baytları üzerinde alınır, gövdede CR varsa yürütme C034 ile durur. Boş simple gövde `\"\\n\"`, boş relaxed gövde `\"\"`dir.\n\n`bh gövde gövdesinin dkim gövde özeti olsun`"),
+    ("imzasını", "DKIM imzasını (`b=`) Zee'nin kanonikleştirdiği veri ve `p=` açık anahtarıyla doğrular (`kriptografi`): `rsa-sha256` (1024–4096 bit) ya da `ed25519-sha256`; veride satır sonu `\\n` yazılır, imza girdisinde CRLF olur. Başarı `doğrulandı`/`algoritma`/`anahtar_biti` sözlüğü; `rsa-sha1`, kısa/uzun/iptal anahtar ve bozuk imza C034. İmzalamak için: `veri verisi için \"<credential>\" özel anahtarıyla \"ed25519-sha256\" olarak imzalamayı dene` (`dkim_anahtarları`; kâhin denetimi, C034).\n\n`sonuç b dkim imzasını veri verisi için p anahtarıyla a olarak doğrulamayı dene olsun`"),
+    ("gövdesinin", "DKIM gövde özeti (`bh=`): Zee'nin kanonikleştirdiği gövdenin SHA-256'sı, base64 (`kriptografi`). Satır sonunu `\\n` yaz; özet CRLF baytları üzerinde alınır, gövdede CR varsa yürütme C034 ile durur. Boş simple gövde `\"\\n\"`, boş relaxed gövde `\"\"`dir. Büyük ya da ham CRLF ileti için dosyadan akışlı: `blok dosyasının <baş> baytından \"relaxed\" kipinde dkim gövde özetini almayı dene` (simple/relaxed, ≤ 32 MiB).\n\n`bh gövde gövdesinin dkim gövde özeti olsun`"),
     ("dinleyicisinde", "Adlı dinleyiciden (proje.dil `dinleyiciler`, systemd soket devri) kabul edilen her bağlantı için bloğu taze ortamda koşar; blok `bağlantı` Sözlüğünü (dinleyici, uzak_adres, uzak_kapı, yerel_kapı) görür. `ağ-dinleyici` yetkinliği ister.\n\n`\"smtp_v4\" dinleyicisinde bağlantı geldiğinde`"),
     ("bağlantıdan", "O anki bağlantıdan CRLF ile biten tek satırı okur → Metin Sonucu; çıplak CR/LF, uzun satır, kodlama, zaman aşımı, kapanma ve kapanış C030 Hata verisinde `tür` ile ayrılır.\n\n`komut bağlantıdan satır okumayı dene olsun`"),
     ("bağlantıda", "STARTTLS: ara bellekte bekleyen düz metin yoksa o anki bağlantıyı TLS'e yükseltir → Metin Sonucu (sürüm ve şifre takımı); aynı pakette gelen komut varsa bağlantı kapanır (`tür=tls`). Önce protokolün hazır satırını yaz.\n\n`sonuç bağlantıda TLS başlatmayı dene olsun`"),

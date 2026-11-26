@@ -1,11 +1,13 @@
 # 31 — DNS sorgusu ve posta kimlik doğrulama
 
 Normatif kaynak: [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
-Aşama B1 (B1a, B1b) ve B2b, [ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
-[ADR-177](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md).
-Durum: §1–§3 **TANIMLI** (K-390). Başlık ayrıştırıcısı, SPF, DMARC politikası,
-ARC ve `Authentication-Results` (B2a/B2c/B2d/B2e) ayrı bölüm olarak eklenir;
-giden DKIM imzası (B3) ve teslim güvenliği (B4) taslaktır.
+Aşama B1 (B1a, B1b), B2b ve B3, [ADR-169](../adr/169-dns-stub-cozucu-ve-tel-bicimi-siniri.md),
+[ADR-177](../adr/177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md),
+[ADR-174](../adr/174-dkim-imza-ilkeli.md).
+Durum: §1–§3 **TANIMLI** (K-390), §4 **TANIMLI** (K-397 Dilim 2). Başlık
+ayrıştırıcısı, SPF, DMARC politikası, ARC ve `Authentication-Results`
+(B2a/B2c/B2d/B2e) ayrı bölüm olarak eklenir; teslim güvenliğinin B4a dışı
+kalanı taslaktır.
 
 ## 1. DNS sorgusu (B1)
 
@@ -82,3 +84,33 @@ TANIMLI: Gövde özetinin C034 duruşu yalnız o işi sonlandırır: bağlantı 
 ZORUNLU: Ürün kodu CR içeren girdiyi (ör. dosyadan okunmuş ileti) kanonikleştirmeden önce reddeder; gövde özeti ve doğrulama ilkeli CR'yi yalnız son savunma olarak yakalar (özette duruş, doğrulamada `veri_bozuk` ret Sonucu).
 
 AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; `psl` ve DKIM anahtarı fuzz hedefleri; IDN kuralları ve DMARCbis ağaç yürüyüşü.
+
+## 4. DKIM imza ilkeli (B3)
+
+ZORUNLU: `dkim_anahtarları` her öğesi `<alan> <seçici> <algoritma> <credential>` olan bir Metin listesidir ve yalnız `kriptografi` yetkinliğiyle geçerlidir. Alan ve seçici küçük harfli DNS adıdır. Algoritma `rsa-sha256` ya da `ed25519-sha256` olur. Credential K-339 güvenli adıdır. En çok 16 öğe yazılır. Aynı alan+seçici ya da aynı credential iki kez, projede başka bir gizli değer için de bildirilmiş credential adı, `rsa-sha1` ve biçimsiz öğe P015'tir.
+
+ZORUNLU: Çalışma zamanı kaynak yürütülmeden her anahtarı K-339 sözleşmesiyle (önce credential dizini, yoksa ortam; ikisinde birden varsa ret) okur. Anahtar tek blok şifresiz PKCS#8 PEM olmalı ve bildirilen algoritmaya uymalıdır; RSA 2048–4096 bittir. Okunamayan, çözülemeyen ya da sınır dışı anahtar süreci çıkış 2 ile durdurur. Tanı alanı, seçiciyi ve sabit nedeni anar.
+
+YASAK: Özel anahtar baytı ya da PEM metni Zee değeri, IO izi, tanı ya da günlük olamaz.
+
+TANIMLI: `VERİ verisi için AD özel anahtarıyla A olarak imzalamayı dene` (`kriptografi`) `Sonuç<Metin>` verir. Başarıda değer imzanın base64 yazımıdır (`b=` değeri, satır kırma yok). AD, `dkim_anahtarları` içindeki credential adıdır. İmza girdisi §3'teki LF→CRLF kuralıyla kurulur. `rsa-sha256` RSASSA-PKCS1-v1_5 ile, `ed25519-sha256` RFC 8463'e göre SHA-256(girdi) üzerinde imzalanır.
+
+ZORUNLU: İmza atılmadan önce VERİ RFC 6376 §3.7 imza girdisi olarak denetlenir (imza kâhini önlemi):
+- En çok 256 KiB, CR yok (`veri_bozuk`), satır sonuyla bitmez.
+- Başlık alanlarından oluşur ve son alan `dkim-signature`'dır.
+- Etiketler tekildir. `v=1` vardır, `bh=` doludur, `h=` `from` içerir, `l=` yoktur, `b=` boştur ve son etikettir.
+- Tam olarak bir `from` alanı vardır ve adresinin alanı `d=` ya da onun alt alanıdır.
+- `i=` varsa onun alanı da `d=` altındadır.
+- `a=` A ile aynıdır.
+
+Bunlardan biri tutmazsa C034 `geçersiz` döner. `d=`, `s=` ya da `a=` AD'nin bildirimine uymazsa C034 `anahtar_uyuşmuyor`, AD bildirilmemişse ya da anahtar yüklenmemişse (ör. `dil dene`) C034 `anahtar_bilinmiyor` döner. `rsa-sha1` ve bilinmeyen algoritma §3'teki `tür` değerleriyle reddedilir.
+
+TANIMLI: `YOL dosyasının BAŞ baytından KİP kipinde dkim gövde özetini almayı dene` (`kriptografi` + dosyayı okuma; `veri:` yolunda `veri-okuma`) `Sonuç<Metin>` verir. Değer, dosyanın BAŞ baytından sonuna kadarki gövdesinin KİP kanonikleştirmesiyle (`simple`: RFC 6376 §3.4.3; `relaxed`: §3.4.4) elde edilen CRLF baytlarının SHA-256'sının base64 yazımıdır. Satır sonu LF ya da CRLF olabilir; ikisi aynı özeti verir. Simple kipte LF'li kanonik gövde için değer `X gövdesinin dkim gövde özeti` ile aynıdır. Dosya akışla okunur, Metin oluşmaz. Gövde kanonikleştirmesi bu ilkede host'tadır; başlık kanonikleştirmesi Zee kodudur.
+
+ZORUNLU: KİP `simple` ya da `relaxed` dışındaysa veya BAŞ negatifse ya da dosya boyunu aşıyorsa C034 `geçersiz` döner. Gövdede LF'siz CR varsa C034 `veri_bozuk`, işlenen gövde 32 MiB'ı aşarsa C034 `sınır`, dosya okunamaz ya da izin dışıysa C034 `dosya` ret Sonucu döner. Sonuç IO izine `dosya_dkim_govde_ozeti` olayı (`[yol, baş, kip]` → metin) olarak girer.
+
+TANIMLI: İlke gövdenin tamamını özetler; `l=` desteklenmez. `l=` taşıyan gelen imzayı ürün kodu reddeder; imza tarafında `l=` yasaktır.
+
+TANIMLI: İmza IO izine `dkim_imzala` olayı olarak argüman `[AD, algoritma, VERİ'nin SHA-256'sı (onaltılık)]` ve sonuç `b=` ya da `tür` ile girer. Replay anahtar gerektirmez.
+
+AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `dil dkim-denetle` komutu, `dkim_imza_girdisi` fuzz hedefi ve gerçek alıcıda `dkim=pass` kanıtı.
