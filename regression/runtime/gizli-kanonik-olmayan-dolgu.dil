@@ -1,0 +1,14 @@
+# K-410: `zee1:` gövdesi tek katı base64 çözücüyle okunur. Hermetik anahtarla
+# şifrelenmiş kanonik değer çözülür; son karakterin kullanılmayan dolgu biti
+# değiştirilmiş ikinci yazımı ("…tls=" → "…tlt=", aynı baytlar) eski
+# çözücüde de çözülüyordu, artık reddedilir.
+
+kanonik "zee1:ZTdmYmQ2NTBkZTJjMWI1ZmE5YTI1YmQ0uJSoy0Q2OcidwSw2ITQ4xBGeoHrjp/fBghW9tls=" olsun
+ikinci "zee1:ZTdmYmQ2NTBkZTJjMWI1ZmE5YTI1YmQ0uJSoy0Q2OcidwSw2ITQ4xBGeoHrjp/fBghW9tlt=" olsun
+birinci kanonik gizli çözmeyi dene olsun
+birinci başarılıysa
+    birincinin değerini yaz
+sonuç ikinci gizli çözmeyi dene olsun
+sonuç başarısızsa
+    hata sonucun hatası olsun
+    hatanın mesajı yaz

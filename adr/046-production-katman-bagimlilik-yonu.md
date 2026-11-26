@@ -141,3 +141,19 @@ yayın yolu birleştirildi, biçim yanıtı eşitleme sahibine taşındı. CLI
 `govde` içindeki birim-test/native-köprü sırası `dene_kopru_komutu`
 yardımcısına ayrıldı. Genel büyüme payı artırılmadı; hata, bütçe ve
 komut dispatch sırası aynı olumlu/olumsuz testlerle korunur.
+
+## K-410 `kodlama` sahibinin temel katmana alınması (26 Kasım 2026)
+
+RFC-0043'ün katı base64/quoted-printable/UTF-8 uygulaması `kodlama`
+(K-389) `altyapi` sahibi olarak kaydedilmişti. K-410 iç base64 kopyalarını
+bu tek uygulamaya bağlayınca temel `guvenlik` (`zee1:` gizli değer biçimi)
+`kodlama`ya bağımlandı; `temel → altyapi` bu kararın yasakladığı yöndür.
+`kodlama` hiçbir iç modüle bağımlı değildir, IO ve yetkinlik taşımaz,
+yalnız bayt ↔ metin dönüşümü yapar; bu, `guvenlik` ve `zaman` ile aynı
+"bağımlılıksız ilkel" sınıfıdır. Bu yüzden sahip `temel`e alındı; katman
+sırası ve izinli yönler değişmedi. Eklenen kenarlar `guvenlik → kodlama`
+(temel → temel) ve `eposta → kodlama` (altyapı → temel); yeni SCC yok.
+Kanıt: `compiler/tests/fixtures/katman-mimarisi-v1.tsv`,
+`katman_mimarisi_testi`, `bagimlilik_cevrimi_testi`,
+[docs/katman-mimarisi.md](../docs/katman-mimarisi.md).
+

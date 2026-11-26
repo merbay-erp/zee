@@ -2991,6 +2991,29 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-410 — İç base64 yardımcılarının tek katı uygulamada birleştirilmesi (ADR-083 eki)
+
+**Durum:** kapalı (26 Kasım 2026). RFC-0043 Dilim 2'nin açık bakım
+kalemi; Mustafa kararı. Derleyicide dört kopya base64 vardı: `kodlama.rs`
+(RFC-0043), `eposta.rs::base64` (RFC 2047, MIME, AUTH PLAIN),
+`main.rs::base64_kodla` (CSP betik özeti) ve `guvenlik/gizli.rs`
+`base64_yaz`/`base64_oku` (`zee1:` gizli değer). Üç kopya kaldırıldı;
+hepsi `kodlama::base64_kodla` ve `kodlama::base64_coz` kullanır.
+
+Kodlama çıktısı bayt bayt aynıdır. Tek davranış farkı (Mustafa kararı,
+güvenlik sıkılaştırması): gizli değer çözümü kanonik olmayan dolgu bitli
+ikinci yazımı ve ortada dolgulu birleşik dörtlüleri artık reddeder (spec/23 §Gizli değer biçimi, ADR-083 eki,
+GB-182). `kodlama` bağımlılıksız ilkel olarak `temel` katmana alındı
+(`guvenlik → kodlama`, `eposta → kodlama`; katman fixture'ı ve
+`docs/katman-mimarisi.md`). Yeni Zee yüzeyi, tanı ya da bağımlılık yok.
+
+Kanıt: eşdeğerlik testleri (eski üç kodlayıcı test içinde referans, 0–300
+bayt bayt bayt eşit: `k410_*` `eposta`, `main.rs`, `gizli`);
+regresyon `gizli-kanonik-olmayan-dolgu` (`…tls=` çözülür, `…tlt=` ret);
+`guvenlik::gizli::testler::base64_dongusu_ve_kanonik_olmayan_kodlama_reddi`
+(gidiş-dönüş, kanonik olmayan yazım, satır sonu ve kısa gövde reddi);
+mevcut `eposta` RFC 2047/MIME/AUTH testleri ve `main.rs` RFC 4648
+vektörleri ortak kodlayıcıyla geçer; `katman_mimarisi_testi`.
 ## K-408 — Satırlı base64'ü dosyaya akışla ekleme (ADR-172 eki, ZM-F049)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
@@ -3318,8 +3341,8 @@ Kanıt: `compiler/tests/metin_kodlama_testi.rs` (10 vaka),
 dogfood `zm-r004-uzunluk-oktet-saymaz` (`1|2`) ve üç `zm-f023-*` vakası.
 
 Açık: onaltılık ↔ metin/base64 ve `base64url` (ürün kaydı yok; DKIM K-390
-host yüzeyinde); SMTP/CLI/gizli değer iç base64 yardımcılarının tek
-uygulamada birleştirilmesi (bakım); `kodlama` fuzz hedefi.
+host yüzeyinde); `kodlama` fuzz hedefi. (İç base64 yardımcılarının
+birleştirilmesi K-410 ile kapandı.)
 ## K-396 — Bağlantıya satırlı base64 aktarımı ve kodlanmış aralık (RFC-0039 A2d, ADR-172)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` sürtünmesi ZM-F040

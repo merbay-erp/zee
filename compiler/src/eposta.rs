@@ -8,6 +8,9 @@ use std::io::{self, BufRead, BufReader, Read, Write};
 use std::net::{IpAddr, SocketAddr, TcpStream, ToSocketAddrs};
 use std::time::{Duration, Instant};
 
+/// RFC 4648 dolgulu base64 tek iç uygulamadan (K-410, RFC-0043).
+pub(super) use crate::kodlama::base64_kodla as base64;
+
 /// `smtps://kullanici:parola@sunucu:465?from=info@alan&name=Ad` biçimindeki
 /// bağlantı URL'sinden çözülen gönderim ayarı. Sır kaynakta değil ortam
 /// değişkenindedir.
@@ -119,32 +122,6 @@ pub fn adres_gecerli(adres: &str) -> bool {
         return false;
     };
     !yerel.is_empty() && alan.contains('.') && !alan.starts_with('.') && !alan.ends_with('.')
-}
-
-fn base64(baytlar: &[u8]) -> String {
-    const ALFABE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let mut cikti = String::with_capacity(baytlar.len().div_ceil(3) * 4);
-    for parca in baytlar.chunks(3) {
-        let b = [
-            parca[0],
-            *parca.get(1).unwrap_or(&0),
-            *parca.get(2).unwrap_or(&0),
-        ];
-        let n = (u32::from(b[0]) << 16) | (u32::from(b[1]) << 8) | u32::from(b[2]);
-        cikti.push(ALFABE[(n >> 18) as usize & 63] as char);
-        cikti.push(ALFABE[(n >> 12) as usize & 63] as char);
-        cikti.push(if parca.len() > 1 {
-            ALFABE[(n >> 6) as usize & 63] as char
-        } else {
-            '='
-        });
-        cikti.push(if parca.len() > 2 {
-            ALFABE[n as usize & 63] as char
-        } else {
-            '='
-        });
-    }
-    cikti
 }
 
 /// RFC 2047 UTF-8/B kodlu başlık sözcüğü (76 karakterlik parçalar).

@@ -10,7 +10,41 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenen
+
+- **Makine uç noktası (K-405):** Outlook'un otomatik hesap kurulumu gibi
+  tarayıcı olmayan istemciler için CSRF istemeyen POST rotası yazılabilir:
+
+  ```text
+  POST "/autodiscover/autodiscover.xml" adresine istek geldiğinde
+      herkese açık makine uç noktası
+      gövde isteğin ham gövdesi olsun
+  ```
+
+  Bu rota `_csrf` ve `Origin` istemez; karşılığında oturuma, çerezlere ve
+  CSRF belirtecine hiç ulaşamaz (derlemede T061), yanıtı asla `Set-Cookie`
+  taşımaz. `isteğin ham gövdesi` gövdeyi en çok 8 KiB UTF-8 metin olarak
+  verir; yalnız `text/xml`, `application/xml` ve `application/json` kabul
+  edilir (başkası 415, büyük gövde 413). Yol sabit olmalı, yöntem POST
+  (T060); ham gövde başka rotada okunamaz (T062). Dil XML ayrıştırmaz.
+
+  **Göç:** Gerekmez; mevcut rotaların davranışı değişmez. Sıradan POST
+  rotaları CSRF ve Origin istemeye devam eder.
+
 ### Güvenlik
+
+- **Gizli değer biçimi tek katı base64 çözücüyle okunuyor (K-410):**
+  derleyicideki dört ayrı base64 kodlayıcı/çözücü tek uygulamada
+  birleştirildi. Şifreli `zee1:` değerlerin, e-posta başlık/gövde/AUTH
+  kodlamasının ve CSP betik özetinin çıktısı değişmedi. `zee1:` değeri
+  çözülürken aynı baytlara çözülen kanonik olmayan ikinci yazım ve ortada
+  dolgu taşıyan birleşik dörtlüler artık `gizli değer base64 biçimi bozuk`
+  ile reddedilir.
+
+  **Göç:** Zee'nin ürettiği şifreli değerler her zaman kanoniktir ve
+  eskisi gibi çözülür; bir şey yapmanız gerekmez. Elle bozulmuş bir `zee1:`
+  değeri artık reddedilir: böyle bir değeriniz varsa özgün metni
+  `<metin>in gizli şifrelenmişi` ile yeniden şifreleyin.
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
   rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya
@@ -38,6 +72,52 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **Ekli iletinin gövdesi tek dosyada kurulabiliyor (K-408):** bir dosyayı
+  e-posta ekinin biçiminde (RFC 2045 base64, 76 karakterlik CRLF
+  satırları) başka bir dosyanın sonuna ekleyen yeni kalıp:
+  `n "ekler/ek.bin" dosyasını base64 satırlarıyla "giden/govde.eml"
+  dosyasına eklemeyi dene olsun`. Sonuç yazılan bayt sayısıdır; çıktı
+  aynı dosyanın `bağlantıya aktarmayı dene` çıktısıyla bayt bayt aynıdır.
+  Böylece başlıklar ve metin parçası yazılmış gövde dosyasına ek eklenir,
+  ardından `bh=` aynı dosyadan `… dkim gövde özetini almayı dene` ile
+  alınır: ekli giden ileti de DKIM ile imzalanabilir. Ek belleğe alınmaz;
+  ekleme mevcut `eklemeyi dene` gibi atomiktir (dosyanın önceki içeriği
+  korunur, okuyan eski ya da yeni bütünü görür). Kaynak en çok 32 MiB,
+  hedefin toplamı en çok 32 MiB olabilir (≈ 23 MiB ham ek); aşımda, eylem
+  içinde ya da yetkisiz yolda dosyaya hiç bayt yazılmaz ve C013 döner.
+  Kaynak `dosya-okuma` (`veri:` için `veri-okuma`), hedef `dosya-yazma`
+  (`veri:` için `veri-yazma`) ister.
+
+  **Göç:** yok; yeni kalıptır.
+
+- **`dil göçür --ileri-kayitlara-izin` (K-407):** Aynı veritabanını paylaşan
+  iki uygulama sürümünden yenisi daha yeni bir göçü uyguladıktan sonra eski
+  sürüme geri dönüldüğünde, eski sürümün `dil göçür` çağrısı artık bu bayrakla
+  düşmeden açılabiliyor. Ağacınızdaki bütün göçler aynı ad ve içerikle
+  uygulanmışsa ve fazla kayıtlar ağacınızdaki en yüksek sürümden yeniyse hiçbir
+  SQL çalışmaz, kayıtlara dokunulmaz ve fazlalar `İleri kayıt` satırıyla
+  raporlanır; `--durum` ve `--kuru` ile de kullanılır. Değişmiş göç, aradaki
+  kayıp dosya ya da ileri kayıt varken bekleyen göç eskisi gibi C026'dır.
+  Bayraksız davranış değişmedi; göç adımı gerekmez. İleri göçlerin eski kodla
+  uyumlu kalması uygulamanın sorumluluğudur
+  ([ADR-181](../adr/181-goc-ileri-kayit-toleransi.md)).
+
+- **DKIM anahtarı DNS'te yayımlananla açılışta karşılaştırılır (K-413):**
+  `dkim_anahtarları` bildiren ve `dns` yetkinliği olan bir Zee programı
+  başlarken her anahtarın `<seçici>._domainkey.<alan>` TXT kaydını sorar.
+  Yayımlanan açık anahtar özel anahtarınıza uymuyorsa ya da iptal edilmişse
+  (boş `p=`), yalnız o anahtar devre dışı kalır. Açılışta hangi alan ile
+  seçicide sorun olduğu `HATA:` satırıyla yazılır, o anahtarla imza denemesi
+  `anahtar_dns_uyuşmuyor` ya da `anahtar_iptal` hatası döner. Program ve
+  öteki alanların anahtarları çalışmaya devam eder: çok kiracılı bir posta
+  sunucusunda tek bir müşterinin DNS değişikliği bütün hizmeti durdurmaz.
+  Kayıt henüz yoksa ya da DNS o an yanıt vermiyorsa yalnız uyarı yazılır ve
+  anahtar kullanılmaya devam eder.
+
+  **Göç:** Yeni anahtar yayımlarken önce DNS kaydını, sonra `proje.dil`'deki
+  seçiciyi güncelleyin. Ürün kodu bu iki hatayı yakalayıp iletiyi imzasız
+  gönderebilir ve yöneticiyi uyarabilir. `dns` bildirmeyen projeler
+  etkilenmez.
 - **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
   kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
 
