@@ -86,3 +86,4 @@ parametre-eski-yazim-belirsiz	K-398	8386fa7fcea439b3780548e175bd29da0cde5ea5	-	0
 yonlendirme-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-dev	security	web	-	-	0	200 → /giris	regression/security/yonlendirme-rota-sonu.dil
 islemde-yanit-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-dev	security	web	-	-	0	403 yetki yok	regression/security/islemde-yanit-rota-sonu.dil
 gizli-kanonik-olmayan-dolgu	K-410	01af7facc2418c90d0e1a36dd55f9bbd2abfd69a	-	0.8.0-dev	runtime	run	-	-	0	sentetik-k410\ngizli değer base64 biçimi bozuk	regression/runtime/gizli-kanonik-olmayan-dolgu.dil
+base64-pencere-toplam-otesi	K-414	5bd6263bb7abcab5960d5a2132243147dca8c464	ab34540e8a104b3b4dde12fc06d0ce9696ec0047	0.8.0-dev	runtime	baglanti	-	-	0	0	regression/runtime/base64-pencere-toplam-otesi.dil

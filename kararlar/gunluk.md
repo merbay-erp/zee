@@ -6444,3 +6444,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   hiçbir iç modüle bağımlı olmadığından `temel`e alındı; ADR-046 kuralları
   değişmedi, yeni SCC yok. K-408 (`kodlama.rs`/`main.rs` ekleme) ile bölge
   çakışması yok; birleştirme sırası merkezde. K-410 kapandı.
+
+## K-414 — Satırlı base64 penceresi toplam ötesi; GB-183 (26 Kasım 2026)
+
+- K-412 (`kodlama` fuzz hedefi) için yazılan sözleşme kâhininin "satırlı
+  pencere bütün çıktının aynı dilimine eşit ve ham konum dosya içinde"
+  değişmezi ilk üretilmiş girdilerde düştü: b = 55, konum = T = 78 →
+  `ham_baslangic` 57. Kök neden K-396'nın pencere formülü: `bas = T` iken
+  satır = ⌊T/78⌋, son satır tam 76 karakter ama 57'nin katı olmayan
+  dosyada (b ≡ 55, 56 mod 57) bir sonraki satıra düşer.
+- K-396 testi `(toplam, 10)` vakasını 200 baytlık dosyada sınıyordu
+  (200 mod 57 = 29); kalan sınıfı denenmediği için kaçtı. Yeni testler
+  57'ye göre dört kalan sınıfını kapsar.
+- Ciddiyet: release sunucuda sarma sonrası çıktı kalanı 0 olduğundan dosya
+  okunmaz ve bayt yazılmaz; panik yalnız debug ve hermetik yolda. Merkez
+  tabanıyla `orta` (DoS sınıfı, bellek/veri sızıntısı yok). Merkez kararıyla
+  K-412'den ayrı iş. K-414 kapandı.

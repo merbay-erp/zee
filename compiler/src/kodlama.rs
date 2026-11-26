@@ -333,7 +333,10 @@ pub fn base64_satir_penceresi(b: u64, konum: u64, adet: u64) -> Base64Penceresi 
     let bas = konum.min(toplam);
     let satir = bas / BASE64_SATIR_TOPLAMI;
     Base64Penceresi {
-        ham_baslangic: satir * BASE64_SATIR_HAM_BAYTI,
+        // K-414: son satırı tam 76 karakter olan ama 57'nin katı olmayan
+        // dosyada (b ≡ 55, 56 mod 57) `bas = toplam` sonraki satıra düşer;
+        // boş pencerenin ham konumu dosya sonunu aşamaz.
+        ham_baslangic: (satir * BASE64_SATIR_HAM_BAYTI).min(b),
         atla: bas - satir * BASE64_SATIR_TOPLAMI,
         uzunluk: adet.min(toplam - bas),
     }
@@ -532,6 +535,48 @@ mod testler {
         ] {
             let hata = utf8_coz(bozuk, 100).unwrap_err();
             assert_eq!((hata.tur, hata.konum), ("utf8", Some(100 + gecerli)));
+        }
+    }
+
+    #[test]
+    fn satir_penceresi_sinirlari_dosya_icinde_ve_dilimle_esit() {
+        // K-414: b mod 57 ∈ {0, 1, 55, 56}; toplamda ve ötesinde boş pencere
+        // dosya sonunu aşan ham konum vermez.
+        for kat in 0..4u64 {
+            for kalan in [0u64, 1, 55, 56] {
+                let b = kat * 57 + kalan;
+                let ham: Vec<u8> = (0..b).map(|i| i as u8).collect();
+                let mut tum = Vec::new();
+                base64_satirlari_kodla(&ham, &mut tum);
+                let toplam = base64_satirli_uzunluk(b);
+                assert_eq!(tum.len() as u64, toplam);
+                for konum in [
+                    0,
+                    1,
+                    77,
+                    78,
+                    toplam.saturating_sub(1),
+                    toplam,
+                    toplam + 1,
+                    u64::MAX,
+                ] {
+                    let p = base64_satir_penceresi(b, konum, 100);
+                    assert!(p.ham_baslangic <= b, "b={b} konum={konum} {p:?}");
+                    let mut parca = Vec::new();
+                    base64_satirlari_kodla(&ham[p.ham_baslangic as usize..], &mut parca);
+                    let bas = konum.min(toplam) as usize;
+                    let son = (bas + p.uzunluk as usize).min(tum.len());
+                    let atla = p.atla as usize;
+                    assert_eq!(
+                        &parca[atla..atla + (son - bas)],
+                        &tum[bas..son],
+                        "b={b} konum={konum}"
+                    );
+                    if konum >= toplam {
+                        assert_eq!(p.uzunluk, 0);
+                    }
+                }
+            }
         }
     }
 }
