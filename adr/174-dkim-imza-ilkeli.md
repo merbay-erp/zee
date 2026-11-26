@@ -137,6 +137,44 @@ olursa sızar.
    - Metin ilkesi (K-390) değişmez; simple kip ve LF kanonik gövdede onunla
      aynı değeri verir.
 
+9. **Açılışta yayımlanmış anahtar denetimi (K-413, 26 Kasım 2026).** Proje
+   `dkim_anahtarları` ile birlikte `dns` yetkinliği ve çözücü bildiriyorsa,
+   `dil çalıştır` ve `dil iz kaydet` anahtarları yükledikten sonra her
+   anahtar için `<s>._domainkey.<d>` TXT kaydını bildirilmiş loopback
+   çözücüye bir kez sorar (K-390 B1a istemcisi, 5 sn).
+   - Kayıt RFC 6376 §3.6.1 anahtar kaydı olarak okunur: `v=` varsa ilk
+     etiket ve `DKIM1`, `k=` varsayılanı `rsa`, `p=` zorunlu. Diğer TXT
+     kayıtları yok sayılır.
+   - `p=` (SPKI ya da PKCS#1; Ed25519'da ham 32 bayt) ADR-177'nin
+     `AcikAnahtar` ayrıştırıcısıyla çözülür. Özel anahtarın açık parçasıyla
+     birebir eşleşen bir kayıt varsa denetim geçer.
+   - **Anahtar başına sonuç, süreç durmaz.** Eşleşen kayıt yoksa ve iptal
+     edilmiş kayıt (boş `p=`) ya da başka anahtar yayımlanmışsa yalnız o
+     anahtar devre dışı kalır. O anahtarla imza denemesi C034 tipli hata
+     döner: `anahtar_iptal` ya da `anahtar_dns_uyuşmuyor`. Ürün o alanı
+     imzasız gönderip yöneticiyi uyarabilir.
+   - Açılışta stderr'e (systemd günlüğü) `HATA:` satırı yazılır: alan,
+     seçici, kayıt adı, neden ve C034 türü. Anahtar baytı yazılmaz.
+   - Kayıt yoksa ya da DNS geçici hata verirse `UYARI:` yazılır, anahtar
+     etkin kalır: doğrulanamadı, uyuşmuyor demek değildir.
+   - Zorunlu kip için proje alanı açılmadı (core freeze; gerçek ürün ihtiyacı
+     çıkarsa ayrı işte).
+   - `dns` bildirimi yoksa denetim yapılmaz; bu bilinçlidir, çünkü dil ancak
+     bildirilmiş çözücüye sorgu atabilir. `dil dene` anahtar ve DNS
+     yüklemez.
+   - Gerekçe (core freeze `correctness`; ZeeMail'de ayrı ZM kaydı yok):
+     - Bildirilen anahtarla yayımlanan anahtarın uyuşmaması, teslimde sessiz
+       DKIM `fail` ve DMARC reddi demektir; hata en erken açılışta görünür
+       olmalıdır (ADR-174 açık maddesi).
+     - ZeeMail ürün geri bildirimi: çok kiracılı kurulumda
+       `<s>._domainkey.<müşteri-alanı>` müşterinin DNS'indedir. Uyuşmazlıkta
+       süreci durdurmak, tek bir kiracının `p=`'yi değiştirmesiyle bütün
+       kiracıların dış postasını keserdi; müşteri denetimindeki veri hizmet
+       reddine dönüşürdü. Bu yüzden sonuç anahtar başınadır.
+   - Açılış denetimi süreç içi büyüyen durum bırakmaz (anahtar başına tek
+     işaret; soak gerekmez). Sonuç IO izine girmez, çünkü Zee yürütmesinin
+     parçası değildir; replay'de imza sonucu zaten izden gelir.
+
 ## Reddedilen seçenekler
 
 - **İmzada da doğrulama sınırı (RSA 1024–4096).** Doğrulama tarafı (ADR-177)
@@ -169,8 +207,11 @@ olursa sızar.
   sınırı bilinçli bir bellek zarfıdır; parçalı Metin API'si yeni bir durum
   nesnesi ister. Dosya tutamağı ürünün zaten diske yazdığı kanonik gövdeyi
   akışla okur.
-- **Açılışta DNS eşleme denetimi** (yayımlanmış `p=` = özel anahtarın açık
-  parçası). Bu açık iştir; ürün `dns` ile kendisi doğrulayabilir.
+- **Uyuşmazlıkta ya da iptalde çıkış 2** (K-413'ün ilk tasarımı). Çok
+  kiracılı kurulumda bir müşterinin DNS kaydı bütün hizmeti durdururdu (§9).
+- **Kayıt yokken ya da DNS hatasında anahtarı devre dışı bırakmak.** Geçici
+  bir DNS kesintisi ya da henüz yayılmamış yeni bir seçici imzayı keserdi;
+  doğrulanamamak uyuşmazlık değildir.
 
 ## Sonuçlar
 
@@ -191,5 +232,4 @@ olursa sızar.
 - Açık işler:
   - Gerçek alıcıda `dkim=pass` ve DMARC `pass` (insan adımı, RFC-0044 B3
     kabul 2).
-  - Anahtar döndürmede DNS eşleme denetimi.
   - `dil dkim-denetle` adayı.

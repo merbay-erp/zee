@@ -800,8 +800,11 @@ b dkim_girdisi metninin "ornek.test" alanı "z2026a" seçicisiyle dkim imzasın�
   adaptörde iki kez yapılır.
 - DKIM credential'ı projedeki başka bir gizli değerin adı olamaz (P015).
 - Tampon sıfırlama `zeroize` crate'i eklemeden en iyi çabadır.
-- Açılışta DNS `p=` eşleme denetimi açık iştir; `dkim_imza_girdisi` fuzz
-  hedefi 26 Kasım 2026'da RC kapısına alındı (K-411). Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
+- Açılışta DNS `p=` eşleme denetimi K-413 ile uygulandı (ADR-174 §9:
+  uyuşmazlık ve iptal yalnız o anahtarı devre dışı bırakır, çok kiracılı
+  kurulumda süreç durmaz; kayıt yokluğu ve DNS hatası uyarı);
+  `dkim_imza_girdisi` fuzz hedefi 26 Kasım 2026'da RC kapısına alındı
+  (K-411). Ürün yeniden üretimi ZM-F042'dir (ZeeMail 850d86b).
 
 ### Tehdit modeli (K-397)
 

@@ -30,14 +30,14 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 53 | 50 | 1 | 2 |
 | `spec/24-kaynak-guvenlik-profili.md` | 10 | 10 | 0 | 0 |
-| `spec/25-postgresql-veri-erisimi.md` | 12 | 11 | 0 | 1 |
+| `spec/25-postgresql-veri-erisimi.md` | 13 | 12 | 0 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 27 | 25 | 0 | 2 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
-| `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 42 | 39 | 0 | 3 |
-| **Toplam** | **467** | **439** | **6** | **22** |
+| `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 44 | 41 | 0 | 3 |
+| **Toplam** | **470** | **442** | **6** | **22** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -71,7 +71,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR ve genel gerçek ürün gecikmesi açık; tarihsel S3 66e4149e53451111d153f47283c219079a8d1cab kaynağındaki kabul korunur. S4 4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2 kaynağında ayrı 1800sn RSS ve lint açık/kapalı 1/41 belge stdio gözlemi vardır; 41 belge lint açık p95 223,698ms ile 200ms hedefi açıktır, UI/ürün SLA'sı değildir.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#f6da609c2bdaca46` — AÇIK: Zee yüzeyinde NXDOMAIN/NODATA ayrımı, olumsuz yanıtın doğrulanmışl… — K-390: NXDOMAIN/NODATA Zee ayrımı ve CNAME adı B4; dil dene bölge dosyası, PTR, SRV ve SVCB, U-label, süreç/oturum bütçesi B2 açık.
 - `spec/31-dns-ve-posta-kimlik-dogrulama.md#b62fde1c435ead61` — AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (R… — K-390: B2a/B2c–B2e, dil dene listesi, psl/DKIM fuzz hedefleri, IDN ve DMARCbis açık.
-- `spec/31-dns-ve-posta-kimlik-dogrulama.md#17b65629a1d91fbe` — AÇIK: Açılışta yayımlanmış `p=` ile özel anahtarın eşleşme denetimi, `di… — K-397: DNS p= eşleme, dil dkim-denetle ve gerçek alıcı dkim=pass açık; dkim_imza_girdisi fuzz hedefi RC kapısında (K-411, 26.11.2026).
+- `spec/31-dns-ve-posta-kimlik-dogrulama.md#d3928f56d8f67042` — AÇIK: `dil dkim-denetle` komutu (K-415, backlog adayı) ve gerçek alıcıda… — K-415 backlog adayı; gerçek alıcı dkim=pass yöntemi K-416 (docs/dkim-alici-kaniti.md), kayıt satırı yok; açılış p= denetimi K-413, fuzz K-411 ile kapandı.
 
 ## Sürüklenme
 

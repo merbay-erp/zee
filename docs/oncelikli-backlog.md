@@ -2589,6 +2589,40 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-415 — `dil dkim-denetle` işletim komutu (aday)
+
+**Durum: BEKLİYOR — aday; gerçek ürün ihtiyacı yok.** Kaynak: ADR-174 açık
+maddesi "`dil dkim-denetle` adayı". ZeeMail 26 Kasım 2026 yanıtı: "sürtünme
+değil, kolaylık; öncelik vermeyin". Core freeze altında yeni CLI komutu
+(K-167 uyumluluk yüzeyi) dogfood ihtiyacı olmadan açılmaz; kullanıcı kararı
+(26.11.2026) backlog'a aday olarak yazmaktır.
+
+Tasarım notu (açılırsa):
+- `dil dkim-denetle [proje]` kaynak yürütmeden `dkim_anahtarları`
+  anahtarlarını yükler ve K-413'ün `dns_kaydini_denetle` mantığını çağırır.
+- Anahtar başına durum satırı basar: `eşleşti`, `uyuşmuyor`, `iptal`,
+  `kayıt_yok`, `denetlenemedi`, `dns_yok`.
+- DNS'e konacak `<s>._domainkey.<d>. IN TXT` kaydını en çok 255 baytlık
+  parçalarla basar. RSA'da `p=` SPKI'dir; özel anahtar ve credential yolu
+  basılmaz.
+- Çıkış kodları: 0 hepsi eşleşti ya da `dns` yok; 1 uyuşmuyor/iptal;
+  3 kayıt yok ya da denetlenemedi; 2 kullanım/yükleme hatası. spec/31'de
+  normatif tablo olarak yazılır.
+
+## K-413 — Açılışta yayımlanmış DKIM anahtarı denetimi (ADR-174 §9)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174 açık
+maddesi, RFC-0044 B3 "Açılış denetimi". Freeze sınıfı `correctness`
+(bildirilen ve yayımlanan anahtarın uyuşmaması teslimde sessiz DKIM fail ve
+DMARC reddi). `dkim_anahtarları` + `dns` varsa açılışta her anahtarın
+`<s>._domainkey.<d>` TXT kaydı sorulur; uyuşmazlık ve iptal yalnız o anahtarı
+devre dışı bırakır (imza C034 `anahtar_dns_uyuşmuyor` / `anahtar_iptal`,
+süreç çalışır; ZeeMail çok kiracılı DoS geri bildirimi), kayıt yokluğu ve DNS
+hatası uyarı. Yeni proje alanı, tanı kodu ve kalıp yok.
+Kanıt: `dkim_imza.rs` (anahtar kaydı ayrıştırma ve eşleme birimi),
+`dkim_imza_testi.rs` (gerçek süreç + loopback sahte çözücü: Ed25519 ve RSA
+SPKI `p=` eşleşmesi, uyuşmazlık, iptal, kayıt yok, SERVFAIL; iki anahtarlı
+depoda yalnız uyuşmayanın devre dışı kalması).
 ## K-411 — `dkim_imza_girdisi` ve `x509_spki` fuzz hedefleri RC kapısında (ADR-174, ADR-173)
 
 **Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174
@@ -2679,6 +2713,8 @@ ve Metin ilkesi eşdeğerliği, baş ofseti, kip/CR/32 MiB reddi, yetkinlik, iz
 ve gerçek süreçte 400 KB ham CRLF ileti) ve `dkim_kripto` kanonikleştirme
 birimleri.
 
+Açık: `x509_spki` ve `dkim_imza_girdisi` fuzz hedeflerinin RC kapısına
+alınması; gerçek internette DANE/MTA-STS
 `dkim_imza_girdisi` fuzz hedefi K-411 ile RC kapısına alındı (26 Kasım 2026; ortak
 özellik denetimi `tests/ortak/dkim_ozellikleri.rs`, korpus replay
 `dkim_imza_testi.rs`).
@@ -2975,6 +3011,25 @@ Kanıt: `compiler/tests/web_testi.rs` (iki vaka), `compiler/tests/web_cok_surec_
 `compiler/src/cli/makine_ucu.rs` birim testi; dogfood `urun-h-outlook-autodiscover`.
 Kullanıcıya göre üretilen `application/xml` yanıtı K-406 türlü metin
 yanıtıyla yazılabilir. Açık: kimlikli DAV muafiyeti (RFC-0040 #5(c)), harfe duyarsız yol.
+
+## K-407 — `dil göçür` ileri kayıt toleransı (ADR-181)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-i`
+(ZeeOS) A/B kök güncellemesi: yeni dilim daha yeni bir göçü uyguladıktan
+sonra eski dilime geri dönüşte göç birimi "proje ağacında yok" C026 ile
+düşüyordu. Kullanıcı kararı: ileri şema toleransı, açık bayrakla. Freeze
+sınıfı `dogfood-change`.
+
+Karar: `--ileri-kayitlara-izin` yalnız "ağaçtaki her göç aynı ad/özetle
+uygulanmış, fazla kayıtlar ağaçtaki en yüksek sürümden büyük" şeklini kabul
+eder; SQL yürütmez, kaydı değiştirmez, ileri kayıtları raporlar. Değişmiş
+ad/özet, en yüksek sürüm altındaki kayıp dosya, ileri kayıt varken bekleyen
+göç ve bayraksız çağrı C026 kalır. Aşağı göç/kayıt temizliği AÇIK.
+
+Kanıt: `compiler/src/postgresql.rs` üç saf plan testi, gerçek PostgreSQL 16
+dedicated kapısı (`scripts/postgresql-goc-ci.py`, 1/1; `dogfood/urun-i`
+defter aynasının a–d adımları dahil), `compiler/tests/cli_goc_plani_testi.rs`;
+spec/25 K-407 maddesi.
 
 ## K-406 — Türlü metin yanıtı: `X metnini "<tür>" türünde gönder` (ADR-163 eki)
 

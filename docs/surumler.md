@@ -59,6 +59,34 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **`dil göçür --ileri-kayitlara-izin` (K-407):** Aynı veritabanını paylaşan
+  iki uygulama sürümünden yenisi daha yeni bir göçü uyguladıktan sonra eski
+  sürüme geri dönüldüğünde, eski sürümün `dil göçür` çağrısı artık bu bayrakla
+  düşmeden açılabiliyor. Ağacınızdaki bütün göçler aynı ad ve içerikle
+  uygulanmışsa ve fazla kayıtlar ağacınızdaki en yüksek sürümden yeniyse hiçbir
+  SQL çalışmaz, kayıtlara dokunulmaz ve fazlalar `İleri kayıt` satırıyla
+  raporlanır; `--durum` ve `--kuru` ile de kullanılır. Değişmiş göç, aradaki
+  kayıp dosya ya da ileri kayıt varken bekleyen göç eskisi gibi C026'dır.
+  Bayraksız davranış değişmedi; göç adımı gerekmez. İleri göçlerin eski kodla
+  uyumlu kalması uygulamanın sorumluluğudur
+  ([ADR-181](../adr/181-goc-ileri-kayit-toleransi.md)).
+
+- **DKIM anahtarı DNS'te yayımlananla açılışta karşılaştırılır (K-413):**
+  `dkim_anahtarları` bildiren ve `dns` yetkinliği olan bir Zee programı
+  başlarken her anahtarın `<seçici>._domainkey.<alan>` TXT kaydını sorar.
+  Yayımlanan açık anahtar özel anahtarınıza uymuyorsa ya da iptal edilmişse
+  (boş `p=`), yalnız o anahtar devre dışı kalır. Açılışta hangi alan ile
+  seçicide sorun olduğu `HATA:` satırıyla yazılır, o anahtarla imza denemesi
+  `anahtar_dns_uyuşmuyor` ya da `anahtar_iptal` hatası döner. Program ve
+  öteki alanların anahtarları çalışmaya devam eder: çok kiracılı bir posta
+  sunucusunda tek bir müşterinin DNS değişikliği bütün hizmeti durdurmaz.
+  Kayıt henüz yoksa ya da DNS o an yanıt vermiyorsa yalnız uyarı yazılır ve
+  anahtar kullanılmaya devam eder.
+
+  **Göç:** Yeni anahtar yayımlarken önce DNS kaydını, sonra `proje.dil`'deki
+  seçiciyi güncelleyin. Ürün kodu bu iki hatayı yakalayıp iletiyi imzasız
+  gönderebilir ve yöneticiyi uyarabilir. `dns` bildirmeyen projeler
+  etkilenmez.
 - **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
   kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
 
