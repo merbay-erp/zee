@@ -3009,7 +3009,6 @@ Kanıt: regresyon `regression/runtime/base64-pencere-toplam-otesi.dil`;
 (b mod 57 ∈ {0, 1, 55, 56}, K = T, T+1, T+500);
 `kodlama::testler::satir_penceresi_sinirlari_dosya_icinde_ve_dilimle_esit`.
 
-
 ## K-410 — İç base64 yardımcılarının tek katı uygulamada birleştirilmesi (ADR-083 eki)
 
 **Durum:** kapalı (26 Kasım 2026). RFC-0043 Dilim 2'nin açık bakım
