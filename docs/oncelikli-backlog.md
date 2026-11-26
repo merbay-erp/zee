@@ -2589,6 +2589,23 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-412 — `kodlama` fuzz hedefi RC kapısında (RFC-0043, ADR-167)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; RFC-0043
+Dilim 1 uygulama sırası madde 2 ve Dilim 1/2 açık kalemi. RC fuzz
+kapısının sekizinci hedefi (merkez kararı: ZeeMail'de ağdan gelen
+MIME/QP/AUTH girdisinin çözücüleri). Yeni bağımlılık yok; kâhin sözleşme
+değişmezleridir (`compiler/tests/ortak/kodlama_kahini.rs`): tek satır/MIME/
+satırlı gidiş-dönüş, katı çözücüde tek kanonik yazım, tavan, QP büyümemesi,
+`utf8_coz` ↔ std, satırlı pencere ↔ dilim. Stable replay
+`compiler/tests/kodlama_fuzz_testi.rs` (9 tohum + 1.200 üretilmiş girdi).
+compiler/src değişmedi.
+
+İlk bulgu: satırlı pencere değişmezi K-396 hatasını yakaladı (b ≡ 55, 56
+mod 57, K ≥ T) → ayrı iş K-414 (GB-183); K-412 dalı K-414'ün üstündedir.
+RC kampanyası (30–60 dk ASan, nightly) bu işte koşulmadı; sonraki RC
+adayında sekiz hedefle koşulur.
+
 ## K-411 — `dkim_imza_girdisi` ve `x509_spki` fuzz hedefleri RC kapısında (ADR-174, ADR-173)
 
 **Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174

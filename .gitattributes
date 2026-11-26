@@ -11,6 +11,8 @@ compiler/fuzz/corpus/dns_yaniti/*.dns binary
 # DKIM korpusunun ilk baytı parça sınırı seçicisidir; CRLF/çıplak CR korunur.
 compiler/fuzz/corpus/dkim_imza_girdisi/* binary
 compiler/fuzz/corpus/x509_spki/*.der binary
+# K-412: kodlama korpusu MIME/QP CRLF ve geçersiz UTF-8 baytlarını korur.
+compiler/fuzz/corpus/kodlama/* binary
 
 # WASM ABI korpusunun ilk kontrol baytı metin niteliğinde değildir.
 compiler/fuzz/corpus/wasm_abi/* binary
@@ -25,4 +27,3 @@ golden/pdf-host/assets/LICENSE-DejaVu.txt -text whitespace=-blank-at-eol
 docs/incelemeler/urunlesme-20261014/final-8b49113/e-archive-checks/E-doc-gates.log whitespace=-blank-at-eof
 docs/incelemeler/urunlesme-20261014/final-8b49113/rc/campaign/logs/miri-ondalik.log whitespace=-blank-at-eof
 docs/incelemeler/urunlesme-20261014/final-8b49113/rc/campaign/logs/miri-zaman.log whitespace=-blank-at-eof
-compiler/fuzz/corpus/kodlama/* binary

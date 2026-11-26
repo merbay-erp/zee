@@ -2,18 +2,19 @@
 
 K-157/ADR-056, günlük beş dakikalık fuzz smoke ile release-candidate soak
 kanıtını ayırır. `.github/workflows/fuzz-rc.yml` haftalık ve elle başlatılan
-koşuda yedi hedefi paralel, hedef başına 3.600 saniye AddressSanitizer altında
+koşuda sekiz hedefi paralel, hedef başına 3.600 saniye AddressSanitizer altında
 çalıştırır. `dns_yaniti` (K-390/ADR-169) 24 Kasım 2026'da eklendi; bu tarihten
 önceki RC kayıtları dört hedeflidir. `dkim_imza_girdisi` (ADR-174) ve `x509_spki`
-(ADR-173) K-411 ile 26 Kasım 2026'da eklendi; bu tarihten sonraki RC adayı yedi
-hedefin hepsini ister.
+(ADR-173) K-411 ile, `kodlama` (RFC-0043, ADR-167; ZeeMail'de ağdan gelen
+MIME/QP/AUTH girdisinin katı çözücüleri) K-412 ile 26 Kasım 2026'da eklendi; bu
+tarihten sonraki RC adayı sekiz hedefin hepsini ister.
 
 ## Geçme koşulu
 
 - `lexer_parser`, `morfoloji`, `http_istegi`, `dns_yaniti`, `dkim_imza_girdisi`,
-  `x509_spki`, `wasm_abi` aynı Git commit'inde
+  `x509_spki`, `kodlama`, `wasm_abi` aynı Git commit'inde
   30–60 dakika çalışmış olmalı;
-- yedi exit kodu da sıfır, crash/sanitizer bulgusu ve tek-girdi timeout'u sıfır
+- sekiz exit kodu da sıfır, crash/sanitizer bulgusu ve tek-girdi timeout'u sıfır
   olmalı;
 - log, sonuç TSV'si, K-156 SHA-256 korpus manifesti ve varsa crash girdisi 90
   günlük hedef artefaktında bulunmalı;

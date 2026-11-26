@@ -21,7 +21,7 @@ FUZZ_VERSION = 'cargo-fuzz 0.13.2'
 TARGETS = [('lexer_parser', 65536), ('morfoloji', 128),
            ('http_istegi', 81920), ('dns_yaniti', 65536),
            ('dkim_imza_girdisi', 65536), ('x509_spki', 65537),
-           ('wasm_abi', 4097)]
+           ('kodlama', 65536), ('wasm_abi', 4097)]
 STOP = threading.Event()
 RUN_DIR = None
 ACTIVE_PROOF = None
