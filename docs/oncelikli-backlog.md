@@ -2939,6 +2939,28 @@ ayrı K-işi olur. GB-175.
 Kanıt: `compiler/tests/web_testi.rs`
 `parola_degisiminde_oteki_oturumlar_mevcut_yuzeyle_kapatilir`.
 
+## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir (ADR-178)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) dış
+güvenlik incelemesi; bulgu 23.11.2026'da "Yüksek", 25.11'de yinelendi.
+Freeze sınıfı `security` (semantic-bugfix). GB-176.
+
+Hata: rota gövdesinde `yönlendir`/`yanıtını gönder` akışı bitirmiyordu;
+`yetkili değilse` → yönlendirme koruması fail-open çalışıyor, korumadan
+sonraki mutation/eylem/çıktı koşuyordu. Karar (ADR-178): yanıt taslağını
+belirleyen yanıt/yönlendirme rota gövdesini bitirir (işlem, döngü, iç blok
+dahil; Ç004 iç nöbetçisi, Ç000 emsali). Rota dışı ve dosya yanıtı değişmez.
+Lint: rota içinde kesin yanıttan sonraki cümle önerili S047.
+
+Ölçüm: 1 199 tekil yerel `.dil` (filo, zee-cekirdek, ZeeMail, dogfood)
+içinde 6 895 yanıt cümlesinin 37'sinden sonra kod koşuyordu; görünür yanıt
+hiçbirinde değişmez. 1 267 hedefte eski/yeni `dil denetle --lint --json`
+farkı 0 (yeni tanı ya da S047 yok).
+
+Kanıt: `compiler/tests/rota_sonu_testi.rs` (3 vaka), `compiler/tests/lint_testi.rs`
+(rota S047, koruma kalıbında uyarı yok, işlemde tahmin yok); regression
+`yonlendirme-rota-sonu`, `islemde-yanit-rota-sonu` (`web`; önce 500).
+
 ## K-400 — Web üretim sözleşmesi: deneysel web yalnız localhost (ADR-176)
 
 **Durum: KAPALI.** Kaynak: bağımsız inceleme ve merkez backlog'u ("deneysel

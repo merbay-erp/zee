@@ -400,6 +400,8 @@ pub(super) fn blok_calistir_async<'a>(
                     } else {
                         cikti.yanit_gonder(&metin);
                     }
+                    // K-403: yanıt rotayı bitirir; sonraki cümleler koşmaz.
+                    rota_sonu::rota_yaniti_belirlendi(*satir)?;
                 }
                 Cumle::Yonlendir { adres, satir } => {
                     let hedef = metne_sinirli(
@@ -416,6 +418,8 @@ pub(super) fn blok_calistir_async<'a>(
                             1,
                         )
                     })?;
+                    // K-403: yönlendirme rotayı bitirir (yetki koruması fail-closed).
+                    rota_sonu::rota_yaniti_belirlendi(*satir)?;
                 }
                 Cumle::CerezSil { ad, satir } => {
                     let ad = metne_sinirli(

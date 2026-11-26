@@ -61,7 +61,7 @@ kalır (ADR-025).
 | S044 | Yapılandırılmış hata biçimi/kodu geçersiz | `"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür`; neden önce, veri sonra yazılır |
 | S045 | Kaynak metni ya da token akışı güvenli profil sınırını aştı | Kaynağı sorumluluğu açık daha küçük birimlere böl |
 | S046 | Görünüm bloğu satırı biçimi geçersiz | Satır `etiket ad değer …`, `"sabit"`, `metin ifade` ya da `ham ifade` olmalı; öznitelikler çift, çocuklar öğe altında (K-212) |
-| S047 | Lint: erişilemeyen cümle veya sabit koşul dalı | Kesin `döndür`/`programı bitir` sonrasını ya da literal yanlış dalı gözden geçir; uygun dala taşı veya kaldır. `yanıtını gönder` bloğu sonlandırmaz. Yalnız isteğe bağlı uyarıdır |
+| S047 | Lint: erişilemeyen cümle veya sabit koşul dalı | Kesin `döndür`/`programı bitir` sonrasını ya da literal yanlış dalı gözden geçir; uygun dala taşı veya kaldır. Rota gövdesinde `yanıtını gönder`/`yönlendir` rotayı bitirir (K-403): sonrası ulaşılamaz, yanıttan sonra yapılacak işi yanıttan önceye taşı. Yalnız isteğe bağlı uyarıdır |
 | S048 | Lint: rotanın yanıt üretmeyen yolu olabilir | Her dala yanıt veya yönlendirme ekle. Örnek: `değilse` altında `"Geçersiz istek" yanıtını 400 durumuyla gönder`. Belirsiz çağrı etkisinde tahmin yapılmaz; yalnız isteğe bağlı uyarıdır |
 | S049 | Sıra eki noktası RFC-0029 kalıbına oturmuyor | Kalıp `<liste>nin <sıra>. öğesi` ya da `… öğesini almayı dene`; sıra tek ad ya da TamSayı sabitidir, hesaplanan sırayı önce bir ada ver: `konum sıra ile 1 in toplamı olsun` (K-386). Bitişik olmayan, `öğe…` öncesi olmayan ya da `3.14` gibi nokta S001 kalır |
 
@@ -233,6 +233,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | Ç001 | Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz |
 | Ç002 | Web isteğinde parola özeti giriş oran reddi nöbetçisi; istek döngüsü 429/503 sabit yanıtına çevirir, kullanıcıya sızmaz |
 | Ç003 | Web isteğinde oturum deposu yeni kaydı reddetti (kapasite, depo IO, kilit); istek döngüsü sabit 503 yanıtına çevirir, kullanıcıya sızmaz |
+| Ç004 | Rota yanıtı belirlendi iç nöbetçisi (K-403): rota gövdesindeki `yanıtını gönder`/`yönlendir` sonrası gövdeyi bitirir; yalnız rota yürütücüsü yakalar ve olağan bitiş sayar, kullanıcıya sızmaz |
 
 > S032, A004 ve C014 bilinçli mezar taşlarıdır; ayrılmış kodlar başka anlamda
 > kullanılamaz. Yeni tanılar ilgili ailedeki sıradaki boş numarayı alır.

@@ -16,7 +16,7 @@ Kaynak: `regression/v2.tsv`
 | morphology | 2 |
 | parser | 5 |
 | runtime | 20 |
-| security | 30 |
+| security | 32 |
 
 | Tanı | Vaka |
 | --- | --- |
@@ -29,9 +29,9 @@ Kaynak: `regression/v2.tsv`
 | T017 | 1 |
 | T036 | 1 |
 | T054 | 2 |
-| - | 70 |
+| - | 72 |
 
-Toplam 83 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 83/83.
+Toplam 85 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 85/85.
 
 ## Güvenlik bulguları
 
@@ -40,8 +40,8 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | Önem | Kapalı | Kabul | Açık | Toplam |
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
-| yuksek | 19 | 0 | 0 | 19 |
-| orta | 56 | 16 | 4 | 76 |
+| yuksek | 20 | 0 | 0 | 20 |
+| orta | 56 | 16 | 3 | 75 |
 | dusuk | 49 | 30 | 1 | 80 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
@@ -63,7 +63,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
-| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 26 | 0 | 0 | 26 | 100 |
+| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 27 | 0 | 0 | 27 | 100 |
 | spec/12-web-guvenlik-profili.md | 81 | 0 | 7 | 88 | 92 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
@@ -83,8 +83,8 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| spec/31-dns-ve-posta-kimlik-dogrulama.md | 39 | 0 | 3 | 42 | 92 |
-| **Toplam** | 424 | 6 | 20 | 450 | 94 |
+| spec/31-dns-ve-posta-kimlik-dogrulama.md | 30 | 0 | 2 | 32 | 93 |
+| **Toplam** | 416 | 6 | 19 | 441 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -148,15 +148,15 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 143 |
-| semantic-bugfix | 44 |
-| semantic-change | 78 |
+| semantic-bugfix | 45 |
+| semantic-change | 77 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
 | correctness | 44 |
-| dogfood-change | 53 |
+| dogfood-change | 52 |
 | maintenance | 140 |
-| security | 21 |
+| security | 22 |
 
 Toplam: 265 compiler değişiklik beyanı, 261 core freeze beyanı.

@@ -83,3 +83,5 @@ heap-zarfi-cerceve-iadesi	K-393	4d9fc56b89455ba5f756ff52beca4c2d0925edb7	4a264d7
 heap-zarfi-uzerine-yazma-iadesi	K-393	4d9fc56b89455ba5f756ff52beca4c2d0925edb7	4a264d706a268f4c113b949a30c801df77fafc7d	0.8.0-dev	runtime	run	-	-	0	1000\n1024	regression/runtime/heap-zarfi-uzerine-yazma-iadesi.dil
 parametre-sozluk-koku	K-398	8386fa7fcea439b3780548e175bd29da0cde5ea5	-	0.8.0-dev	checker	run	-	-	0	ab	regression/checker/parametre-sozluk-koku.dil
 parametre-eski-yazim-belirsiz	K-398	8386fa7fcea439b3780548e175bd29da0cde5ea5	-	0.8.0-dev	checker	compile	A002	7:5:6	1	-	regression/checker/parametre-eski-yazim-belirsiz.dil
+yonlendirme-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-dev	security	web	-	-	0	200 → /giris	regression/security/yonlendirme-rota-sonu.dil
+islemde-yanit-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-dev	security	web	-	-	0	403 yetki yok	regression/security/islemde-yanit-rota-sonu.dil
