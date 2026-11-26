@@ -60,3 +60,20 @@ pub(super) fn istek_sinirlarini_denetle(ham: &str) -> Result<(), (u16, &'static 
     }
     Ok(())
 }
+
+/// Rota önsözünün `"alan" alanı gerekli` bildiriminden ilk eksik/boş alan.
+pub(super) fn eksik_zorunlu_alan<'a>(
+    govde: &'a [Cumle],
+    veriler: &[(String, String)],
+) -> Option<&'a str> {
+    govde.iter().find_map(|cumle| match cumle {
+        Cumle::RotaAlaniGerekli { ad, .. }
+            if !veriler
+                .iter()
+                .any(|(gelen, deger)| gelen == ad && !deger.trim().is_empty()) =>
+        {
+            Some(ad.as_str())
+        }
+        _ => None,
+    })
+}

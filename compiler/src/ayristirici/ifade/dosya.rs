@@ -99,6 +99,7 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
 /// - `YOL dosyasının KONUM baytından N baytını metin olarak okumayı dene`
 /// - `YOL dosyasının KONUM baytından N baytını base64 okumayı dene`
 /// - `İÇERİK base64|quoted_printable çözerek YOL dosyasına yazmayı|eklemeyi dene`
+/// - K-408: `KAYNAK dosyasını base64 satırlarıyla HEDEF dosyasına eklemeyi dene`
 fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     use crate::intrinsic::{
         DOSYA_ARALIK_BASE64, DOSYA_ARALIK_METIN, DOSYA_BASE64_EKLE, DOSYA_BASE64_YAZ,
@@ -131,6 +132,23 @@ fn kodlanmis_icerik_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
             argumanlar: vec![
                 tekil_ifade(tokenlar[0].clone())?,
                 tekil_ifade(tokenlar[2].clone())?,
+                tekil_ifade(tokenlar[4].clone())?,
+            ],
+        }));
+    }
+    // K-408: `KAYNAK dosyasını base64 satırlarıyla HEDEF dosyasına eklemeyi dene`.
+    if n == 8
+        && kelime(1) == Some("dosyasını")
+        && kelime(2) == Some("base64")
+        && kelime(3) == Some("satırlarıyla")
+        && kelime(5) == Some("dosyasına")
+        && kelime(6) == Some("eklemeyi")
+        && kelime(7) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: crate::intrinsic::DOSYA_BASE64_SATIRLARI_EKLE.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
                 tekil_ifade(tokenlar[4].clone())?,
             ],
         }));

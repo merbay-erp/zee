@@ -34,6 +34,9 @@ pub(super) fn degerlendir_async<'a>(
                 }
                 match kimlik.as_str() {
                     ISTEMCI_ADRESI => Ok(Deger::Metin(io.istemci_adresi())),
+                    crate::intrinsic::WEB_HAM_GOVDE => {
+                        super::makine_istegi::ham_govde(ortam, satir)
+                    }
                     WEB_BIRINCIL_SUREC => Ok(Deger::Mantiksal(io.birincil_surec())),
                     CSRF_BELIRTECI => {
                         son_tarihi_denetle(io, satir)?;
@@ -95,8 +98,7 @@ pub(super) fn degerlendir_async<'a>(
                     POSTGRESQL_DEGISTIR => {
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, true)
                     }
-                    DOSYA_ATOMIK_TASI | DOSYA_SIL | DOSYALARI_LISTELE | DOSYA_SHA256
-                    | DOSYA_ILK_BAYTLAR | WEB_DOSYA_YANITI => {
+                    k if dosya::INTRINSICLER.contains(&k) => {
                         dosya::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
                     PAROLA_OZETI

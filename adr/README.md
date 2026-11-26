@@ -88,7 +88,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-079 | [ERP için güvenli oturum listeleme ve tekil iptal](079-erp-oturum-listeleme-ve-iptal.md) | **kabul** (K-188/GB-028) |
 | ADR-081 | [Resmî site ve üretim sınırı](081-resmi-site-ve-uretim-siniri.md) | **kabul** (K-203/GB-038) |
 | ADR-082 | [Legacy giriş ve kanonik istemci kimliği](082-legacy-giris-ve-kanonik-istemci-kimligi.md) | **kabul** (K-208/K-209) |
-| ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** |
+| ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** (K-410 eki: `zee1:` gövdesi tek katı base64 çözücüyle/GB-182) |
 | ADR-084 | [Rota birimleri: `<ad> rotalarını kullan` (K-211)](084-rota-birimleri.md) | **kabul** |
 | ADR-085 | [Görünüm bloğu: tipli HTML ağacı (K-212)](085-gorunum-blogu.md) | **kabul** |
 | ADR-086 | [Site derleyici hatlarının birleştirilmesi](086-site-hatlarinin-birlestirilmesi.md) | **kabul** (K-213) |
@@ -176,10 +176,12 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-169 | [DNS stub çözücü, loopback AD biti ve kendi tel biçimi sınırı](169-dns-stub-cozucu-ve-tel-bicimi-siniri.md) | **kabul** (K-390/GB-166) |
 | ADR-170 | [Paylaşılan veri kökü: `veri_kökü`, `veri:` öneki ve ayrı okuma/yazma yetkinliği](170-paylasilan-veri-koku.md) | **kabul** (K-394/GB-168; RFC-0045) |
 | ADR-171 | [C024 heap zarfı düşen değerin payını iade eder](171-heap-zarfi-iadesi.md) | **kabul** (K-393/GB-170; ADR-033 iade-yok ilkesini değiştirir) |
-| ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d) |
+| ADR-172 | [Bağlantıya satırlı base64 aktarımı ve kodlanmış çıktı aralığı](172-baglantiya-satirli-base64-aktarimi.md) | **kabul** (K-396/GB-171; RFC-0039 A2d; ek K-408/GB-181 dosya hedefli ayna) |
 | ADR-173 | [Giden TCP, `ağ_hedefleri` `tcp://` politikası ve istemci STARTTLS](173-giden-tcp-ve-istemci-starttls.md) | **kabul** (K-397 Dilim 1, RFC-0044 B4a) |
 | ADR-174 | [DKIM imza ilkeli ve `dkim_anahtarları` bildirimi](174-dkim-imza-ilkeli.md) | **kabul** (K-397 Dilim 2/GB-177; RFC-0044 B3) |
 | ADR-175 | [Parametre bağlama adı sözlük köküne bağlanır (profil değişmeden)](175-parametre-baglama-adi-sozluk-koku.md) | **kabul** (K-398; ZM-F030, K-164/F006) |
 | ADR-176 | [Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu](176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md) | **kabul** (K-400/GB-173) |
 | ADR-177 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-174; RFC-0044 B1b, B2b) |
 | ADR-178 | [Yanıt ve yönlendirme rota gövdesini bitirir](178-yanit-rota-sonu.md) | **kabul** (K-403/GB-176) |
+| ADR-179 | [Makine uç noktası: CSRF muafiyeti yalnız kimliksiz rotaya](179-makine-uc-noktasi.md) | **kabul** (K-405/GB-180; RFC-0046) |
+| ADR-181 | [`dil göçür` ileri kayıt toleransı (A/B kök geri dönüşü)](181-goc-ileri-kayit-toleransi.md) | **kabul** (K-407; `urun-i` dogfood) |

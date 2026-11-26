@@ -92,6 +92,12 @@ impl GirdiCikti for IzYenidenOynatici {
         })
     }
 
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        let islem = "dosyaya_base64_satirlari_ekle";
+        let sonuc = self.siradaki(islem, vec![kaynak.into(), hedef.into()]);
+        self.tamsayi_sonuc(islem, sonuc)
+    }
+
     fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
         let sonuc = self.siradaki("dosya_sha256", vec![yol.into()]);
         self.metin_sonuc("dosya_sha256", sonuc)
@@ -222,6 +228,11 @@ impl GirdiCikti for IzYenidenOynatici {
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         let sonuc = self.siradaki("durum_yaniti_gonder", vec![durum.to_string(), yanit.into()]);
         self.bos_sonuc("durum_yaniti_gonder", sonuc);
+    }
+
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        let sonuc = self.siradaki("turlu_yanit_gonder", vec![tur.into(), yanit.into()]);
+        self.bos_sonuc("turlu_yanit_gonder", sonuc);
     }
 
     fn baglanti_dinleyicisi_kaydet(&mut self, ad: &str) -> Result<i64, String> {

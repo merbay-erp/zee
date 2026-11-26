@@ -64,6 +64,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosya_ilk_baytlari"
             | "dosya_araligi_oku"
             | "dosyaya_bayt_yaz"
+            | "dosyaya_base64_satirlari_ekle"
             | "dosya_yaniti_gonder"
             | "baglanti_kaydet"
             | "baglanti_bekle"
@@ -78,6 +79,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "istek_al"
             | "yanit_gonder"
             | "durum_yaniti_gonder"
+            | "turlu_yanit_gonder"
             | "yonlendir_gonder"
             | "cerez_yaz"
             | "cerez_sil"
@@ -169,9 +171,20 @@ fn metin_listesi_sonuc_semasi(olay: &IzOlay, arguman: usize) -> Result<(), Strin
     Ok(())
 }
 
+/// K-406: türlü metin yanıtı olayı (tür, gövde); tür kapalı metin kümesinde.
+fn turlu_yanit_semasi(olay: &IzOlay) -> Result<(), String> {
+    alan_sayisi(olay, 2, 0)?;
+    if crate::icerik_turu::web_metin_turu(&olay.argumanlar[0]).is_some() {
+        Ok(())
+    } else {
+        Err("türlü metin yanıtının türü kayıtlı metin satırı olmalı".into())
+    }
+}
+
 fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
     match olay.islem.as_str() {
         "yazdir" | "yanit_gonder" => alan_sayisi(olay, 1, 0),
+        "turlu_yanit_gonder" => turlu_yanit_semasi(olay),
         "durum_yaniti_gonder" => {
             alan_sayisi(olay, 2, 0)?;
             if kanonik_tamsayi::<u16>(&olay.argumanlar[0]) {
@@ -203,7 +216,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
             birim_semasi(olay, 3)?;
             bool_coz(&olay.argumanlar[2]).map(|_| ())
         }
-        "dosya_atomik_tasi" => tamsayi_sonuc_semasi(olay, 2),
+        "dosya_atomik_tasi" | "dosyaya_base64_satirlari_ekle" => tamsayi_sonuc_semasi(olay, 2),
         "dosya_sil" => tamsayi_sonuc_semasi(olay, 1),
         "dosya_yaniti_gonder" => tamsayi_sonuc_semasi(olay, 3),
         "baglanti_kaydet" | "baglanti_bekle" | "baglanti_islemi" | "baglanti_gunluk" => {
@@ -459,6 +472,17 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
+    /// K-408: iz yalnız yolları ve yazılan bayt sayısını taşır, içerik yok.
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        let sonuc = self.ic.dosyaya_base64_satirlari_ekle(kaynak, hedef);
+        self.kaydet(
+            "dosyaya_base64_satirlari_ekle",
+            vec![kaynak.into(), hedef.into()],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
     fn dosya_sil(&mut self, yol: &str) -> Result<i64, String> {
         let sonuc = self.ic.dosya_sil(yol);
         self.kaydet("dosya_sil", vec![yol.into()], tamsayi_sonuc_yaz(&sonuc));
@@ -609,6 +633,15 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         self.kaydet(
             "durum_yaniti_gonder",
             vec![durum.to_string(), yanit.into()],
+            Vec::new(),
+        );
+    }
+
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        self.ic.turlu_yanit_gonder(tur, yanit);
+        self.kaydet(
+            "turlu_yanit_gonder",
+            vec![tur.into(), yanit.into()],
             Vec::new(),
         );
     }

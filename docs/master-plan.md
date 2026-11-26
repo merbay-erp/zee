@@ -190,7 +190,7 @@ birebir CRLF.CRLF, smuggling reddi, `bağlantı_blok_sınırı`), satır sonusuz
 yazma, bayt-kesin okuma, dosyadan bağlantıya aktarım ve IDLE için kısa
 süreli okuma vardır. A2d (K-396, ADR-172) ile dosya RFC 2045 base64
 satırları olarak (T = e + 2·⌈e/76⌉) ve kodlanmış çıktı aralığıyla belleğe
-alınmadan bağlantıya akar (IMAP `BODY[n]`, `BODY[n]<o.n>`; kaynak en çok 32 MiB). K-388 ile bağlantı görevinin çalışma bütçesi her
+alınmadan bağlantıya akar (IMAP `BODY[n]`, `BODY[n]<o.n>`; kaynak en çok 32 MiB). Aynı satırlar K-408 (ADR-172 eki) ile bir dosyanın sonuna da akışla ve atomik eklenir; ekli giden iletinin gövdesi tek dosyada kurulup DKIM `bh=` o dosyadan alınır. K-388 ile bağlantı görevinin çalışma bütçesi her
 protokol birimi sınırında (girdi tüketen ya da süresini dolduran okuma
 dönüşü) yenilenir; uzun IDLE oturumu C024'e yürümez, tek birimde 64 MiB
 zarfı aynen geçerlidir. K-393 (ADR-171) ile zarf düşen değerin payını iade
@@ -216,11 +216,15 @@ açılan JS'siz `multipart/form-data` tek dosya yüklemesi (CSRF dosya baytında
 ölçülebilir yerel ret). K-385 (ADR-163 eki) e-posta istemcisi
 yapılandırma XML'i ve Apple profili için `application/xml` ile
 `application/x-apple-aspen-config` türlerini yalnız web dosya sınıfına
-ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+ekledi. K-406 (ADR-163 eki, ZM-F048) bellekteki metni aynı kaydın metin
+satırlarıyla (`text/plain`, `text/csv`, `text/calendar`, `application/xml`)
+`… metnini "<tür>" türünde gönder` cümlesiyle 200 yanıtı yaptı (dosya
+yanıtının güvenlik başlıkları, ek yok, gövde bayt bayt). K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
 Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag
-sonrası; Outlook POX Autodiscover (POST + CSRF muafiyeti, RFC-0040 ile);
+sonrası; kimlikli DAV için CSRF muafiyeti (RFC-0040 #5(c); Outlook POX'un
+kimliksiz yarısı K-405/ADR-179 `herkese açık makine uç noktası` ile kapandı);
 `sandbox allow-downloads`. K-391 Dilim 2 rota bazlı gövde sınırını
 (`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;
@@ -240,7 +244,8 @@ değişmeziyle bağlanma ikinci ad çözümü yapmaz. Giden DKIM imzası da
 **gerçekleşti** (K-397 Dilim 2, [ADR-174](../adr/174-dkim-imza-ilkeli.md)):
 `dkim_anahtarları` credential anahtarı ve imza kâhini önlemiyle
 `imzalamayı dene`. **Açık:** gerçek internette DANE/MTA-STS teslim ve
-`dkim=pass` kanıtı; açılışta DNS `p=` eşleme denetimi. V1 sözü değildir.
+`dkim=pass` kanıtı. Açılışta yayımlanmış DKIM anahtarı denetimi K-413 ile
+gerçekleşti. V1 sözü değildir.
 
 Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 ([ADR-170](../adr/170-paylasilan-veri-koku.md),

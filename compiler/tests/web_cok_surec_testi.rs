@@ -2107,3 +2107,123 @@ fn isci_grubu_systemd_soketiyle_yeniden_baslatmada_istek_kaybetmez() {
     );
     assert!(kayit.len() > 50, "yetersiz yük: {}", kayit.len());
 }
+
+/// K-405: Origin/Cookie/Content-Type başlıkları serbestçe seçilen proxy
+/// isteği (Host/Forwarded güvenli profile uyar).
+fn makine_istegi(kapi: u16, basliklar: &str, govde: &str) -> String {
+    let mut akis = TcpStream::connect(SocketAddr::from(([127, 0, 0, 1], kapi))).expect("bağlantı");
+    akis.set_read_timeout(Some(Duration::from_secs(10)))
+        .expect("okuma timeout");
+    let ham = format!(
+        "POST /autodiscover/autodiscover.xml HTTP/1.1\r\nHost: panel.example\r\n\
+         Forwarded: for=203.0.113.7;proto=https;host=panel.example\r\nConnection: close\r\n\
+         {basliklar}Content-Length: {}\r\n\r\n{govde}",
+        govde.len()
+    );
+    akis.write_all(ham.as_bytes()).expect("HTTP isteği");
+    akis.shutdown(std::net::Shutdown::Write).ok();
+    let mut yanit = String::new();
+    akis.read_to_string(&mut yanit).expect("HTTP yanıtı");
+    yanit
+}
+
+/// K-405 (ADR-179): gerçek worker'da makine ucu Origin'siz ve CSRF'siz XML
+/// gövdesini alır; geçerli kayar oturum çerezi gönderilse bile Set-Cookie
+/// yazmaz, yalnız XML/JSON türlerini (415) ve 8 KiB'ı (413, gövde okunmadan)
+/// kabul eder; güvenlik başlıkları ve sıradan POST'un Origin/CSRF kapısı aynıdır.
+#[test]
+fn makine_uc_noktasi_origin_csrf_cerezsiz_calisir_413_415_verir() {
+    let gecici = GeciciKlasor::yeni();
+    std::fs::write(
+        gecici.0.join("proje.dil"),
+        "proje \"posta-panel\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+         yetkinlikler \"dosya-okuma\", \"dosya-yazma\", \"ağ-sunucusu\", \"web-oturumu\", \"kriptografi\" listesi olsun\n\
+         oturum_ömrü_saniye 28800 olsun\noturum_kayar doğru olsun\n",
+    )
+    .expect("proje bildirimi");
+    let kaynak = format!(
+        "{}\nPOST \"/autodiscover/autodiscover.xml\" adresine istek geldiğinde\n    herkese açık makine uç noktası\n    \
+         gövde isteğin ham gövdesi olsun\n    gövde yanıtını gönder\n",
+        include_str!("../../projeler/girisli-panel.dil")
+    );
+    std::fs::write(gecici.0.join("ana.dil"), kaynak).expect("proje kaynağı");
+    let kilit = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["kilitle", gecici.0.to_str().expect("UTF-8 yol")])
+        .output()
+        .expect("dil kilitle");
+    assert!(
+        kilit.status.success(),
+        "{}",
+        String::from_utf8_lossy(&kilit.stderr)
+    );
+    let kapi = bos_kapi();
+    let _sunucu = sunucuyu_baslat(&gecici.0, kapi);
+    let xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Autodiscover><Request>\
+               <EMailAddress>ali@ornek.test</EMailAddress></Request></Autodiscover>";
+
+    let form = istek(kapi, "203.0.113.9", "GET", "/giris", None, "");
+    let giris = istek(
+        kapi,
+        "203.0.113.9",
+        "POST",
+        "/giris-yap",
+        Some(&cerez(&form)),
+        &format!("_csrf={}&parola=zee2026", csrf(&form)),
+    );
+    assert_eq!(durum(&giris), 303, "{giris}");
+    let oturum = cerez(&giris);
+
+    let yanit = makine_istegi(kapi, "Content-Type: text/xml; charset=utf-8\r\n", xml);
+    assert_eq!(durum(&yanit), 200, "{yanit}");
+    assert!(yanit.ends_with(xml), "{yanit}");
+    assert!(cerez_satiri(&yanit).is_none(), "{yanit}");
+    assert!(yanit.contains("Cache-Control: no-store\r\n"), "{yanit}");
+    assert!(yanit.contains("X-Content-Type-Options: nosniff\r\n"));
+    assert!(yanit.contains("Content-Security-Policy: default-src 'self'"));
+
+    let cerezli = makine_istegi(
+        kapi,
+        &format!(
+            "Content-Type: application/xml\r\nOrigin: https://saldirgan.example\r\nCookie: __Host-zee-oturum={oturum}\r\n"
+        ),
+        xml,
+    );
+    assert_eq!(durum(&cerezli), 200, "{cerezli}");
+    assert!(
+        cerez_satiri(&cerezli).is_none(),
+        "makine ucu kayar yenileme dahil Set-Cookie yazmaz: {cerezli}"
+    );
+    let siradan = istek(kapi, "203.0.113.9", "GET", "/", Some(&oturum), "");
+    assert!(
+        cerez_satiri(&siradan).is_some(),
+        "kayar yenileme sıradan rotada sürer"
+    );
+
+    for tur in [
+        "",
+        "Content-Type: text/plain\r\n",
+        "Content-Type: application/x-www-form-urlencoded\r\n",
+        "Content-Type: text/xml; charset=iso-8859-9\r\n",
+    ] {
+        let red = makine_istegi(kapi, tur, xml);
+        assert_eq!(durum(&red), 415, "{tur}: {red}");
+        assert!(cerez_satiri(&red).is_none());
+    }
+    let buyuk = "a".repeat(8193);
+    let asim = makine_istegi(kapi, "Content-Type: application/json\r\n", &buyuk);
+    assert_eq!(durum(&asim), 413, "{asim}");
+    let tavan = "a".repeat(8192);
+    let sinirda = makine_istegi(kapi, "Content-Type: application/json\r\n", &tavan);
+    assert_eq!(durum(&sinirda), 200, "{sinirda}");
+
+    // Sıradan POST rotası Origin'siz 403 kalır; makine muafiyeti yayılmaz.
+    let mut akis = TcpStream::connect(SocketAddr::from(([127, 0, 0, 1], kapi))).expect("bağlantı");
+    akis.write_all(
+        b"POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\
+          Connection: close\r\nContent-Type: text/xml\r\nContent-Length: 4\r\n\r\n<a/>",
+    )
+    .expect("HTTP isteği");
+    let mut duz = String::new();
+    akis.read_to_string(&mut duz).expect("yanıt");
+    assert_eq!(durum(&duz), 403, "{duz}");
+}

@@ -38,7 +38,19 @@ pub(super) fn oturum_yonetimi_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>
 }
 
 /// Contextual, zero-argument HTTP metadata expressions (K-209).
-pub(super) fn sifir_argumanli(n: usize, ilk: Option<&str>, son: &str) -> Option<Ifade> {
+/// K-405: `isteğin ham gövdesi` aynı yüzeyin üç kelimelik tek biçimidir.
+pub(super) fn sifir_argumanli(tokenlar: &[Token], ilk: Option<&str>, son: &str) -> Option<Ifade> {
+    let n = tokenlar.len();
+    if n == 3
+        && ilk == Some("isteğin")
+        && matches!(&tokenlar[1].tur, TokenTur::Kelime(k) if k == "ham")
+        && son == "gövdesi"
+    {
+        return Some(Ifade::Intrinsic {
+            kimlik: crate::intrinsic::WEB_HAM_GOVDE.into(),
+            argumanlar: Vec::new(),
+        });
+    }
     if n != 2 {
         return None;
     }

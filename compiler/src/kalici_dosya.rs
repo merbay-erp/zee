@@ -19,7 +19,7 @@ mod adim;
 mod cozulmus;
 #[cfg(test)]
 pub(crate) use adim::{test_kancasi, Adim as YazimAdimi};
-pub use cozulmus::{sinirli_sona_ekle, yeni_dosyaya_yaz};
+pub use cozulmus::{base64_satirlari_sona_ekle, sinirli_sona_ekle, yeni_dosyaya_yaz};
 mod kilitli;
 pub use kilitli::{
     karsilastirip_cift_yaz, kilit_altinda_guncelle, CiftYazimHatasi, KilitliGuncellemeHatasi,
@@ -282,32 +282,15 @@ fn atomik_icerik_yaz<F>(hedef: &Path, icerik: &[u8], degistir: F) -> io::Result<
 where
     F: FnOnce(&Path, &Path) -> io::Result<()>,
 {
-    // K-351: her adımın hatası adını taşır; tür (`kind`) korunur.
-    let eski_metadata = nokta(Adim::Metadata)
-        .and_then(|()| metadata::MetadataKaynagi::yakala(hedef))
-        .map_err(sar(Adim::Metadata))?;
-    let (dosya, mut gecici) = nokta(Adim::GeciciYazim)
-        .and_then(|()| gecici_dosya_ac(hedef))
-        .map_err(sar(Adim::GeciciYazim))?;
-    let gecici_yol = gecici
-        .yol
-        .clone()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "zee geçici dosya yolu kayboldu"))
-        .map_err(sar(Adim::GeciciYazim))?;
-    gecici_icerigi_hazirla(dosya, icerik, &eski_metadata)?;
-    degistir(&gecici_yol, hedef)?;
-    gecici.yol = None;
-    nokta(Adim::KlasorEszamanlama)
-        .and_then(|()| klasoru_eszamanla(ebeveyn(hedef)))
-        .map_err(sar(Adim::KlasorEszamanlama))
+    cozulmus::atomik_akisla_yaz(hedef, |dosya| dosya.write_all(icerik), degistir)
 }
 
 fn gecici_icerigi_hazirla(
     mut dosya: File,
-    icerik: &[u8],
+    yaz: impl FnOnce(&mut File) -> io::Result<()>,
     metadata: &metadata::MetadataKaynagi,
 ) -> io::Result<()> {
-    dosya.write_all(icerik).map_err(sar(Adim::GeciciYazim))?;
+    yaz(&mut dosya).map_err(sar(Adim::GeciciYazim))?;
     metadata
         .geciciye_uygula(&dosya)
         .map_err(sar(Adim::Metadata))?;
