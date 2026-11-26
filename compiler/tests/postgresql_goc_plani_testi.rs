@@ -269,4 +269,45 @@ fn izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur() {
         .unwrap();
     let ret = gocleri_planla(&runtime, &proje.0).unwrap_err();
     assert!(ret.veri.contains(&("sqlstate".into(), "42501".into())));
+    urun_i_defter_geri_donusu(&owner, &mut gozlem);
+}
+
+/// K-407: `dogfood/urun-i` ZeeOS defter aynasının KOKEN a–d adımları; küme N
+/// 0001'i, küme N+1 0001+0002'yi taşır. Ayna dosyaları yalnız okunur.
+fn urun_i_defter_geri_donusu(owner: &VeritabaniBildirimi, gozlem: &mut Client) {
+    gozlem.batch_execute("DROP TABLE _zee_gocleri;").unwrap();
+    let kok = Path::new(env!("CARGO_MANIFEST_DIR")).join("../dogfood/urun-i/defter-geri-donus");
+    let (n, n1) = (kok.join("n"), kok.join("n1"));
+    let rapor = |uygulanan, atlanan| GocRaporu {
+        uygulanan,
+        atlanan,
+        ileri: vec![],
+    };
+    assert_eq!(gocleri_uygula(owner, &n).unwrap(), rapor(1, 0));
+    assert_eq!(gocleri_uygula(owner, &n1).unwrap(), rapor(1, 1));
+    let kayitlar = metadata(gozlem);
+    assert!(gocleri_uygula(owner, &n)
+        .unwrap_err()
+        .mesaj
+        .contains("proje ağacında yok"));
+    assert!(gocleri_planla(owner, &n)
+        .unwrap_err()
+        .mesaj
+        .contains("proje ağacında yok"));
+    let plan = gocleri_planla_secenekli(owner, &n, true).unwrap();
+    assert_eq!((plan.uygulanmis, plan.bekleyen), (1, 0));
+    assert_eq!(
+        plan.ileri
+            .iter()
+            .map(|a| (a.surum, a.ad.as_str()))
+            .collect::<Vec<_>>(),
+        [(2, "0002_etiket.sql")]
+    );
+    let geri = gocleri_uygula_secenekli(owner, &n, true).unwrap();
+    assert_eq!((geri.uygulanan, geri.atlanan), (0, 1));
+    assert_eq!(geri.ileri, plan.ileri);
+    assert_eq!(metadata(gozlem), kayitlar);
+    // N+1'e yeniden geçiş kayıtları aynen bulur.
+    assert_eq!(gocleri_uygula(owner, &n1).unwrap(), rapor(0, 2));
+    assert_eq!(metadata(gozlem), kayitlar);
 }

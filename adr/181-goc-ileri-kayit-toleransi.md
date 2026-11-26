@@ -18,7 +18,9 @@ Yeni dilim N+1 açılışta daha yeni bir göçü uygular; sağlık denetimi dü
 koşar, N+1'in kaydını ağaçta bulamaz ve düşer: geri dönüş, geri dönmenin
 tam amacı olan çalışan eski sürümü açamaz. Elle tablo düzeltmek veritabanını
 N+1'e yeniden geçişte tutarsız bırakır. Kullanıcı kararı (26 Kasım 2026):
-"ileri şema toleransı", açık bayrakla.
+"ileri şema toleransı", açık bayrakla. Ürün kanıtı ve yeniden üretim
+adımları: [`dogfood/urun-i/KOKEN.md`](../dogfood/urun-i/KOKEN.md) (ZeeOS
+`6e8af89a`, defter uygulaması kümeleri N ve N+1).
 
 ## Karar
 
@@ -67,7 +69,9 @@ geçerlidir. Bu yüzden ayrı GB satırı açılmaz.
   `izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur`
   ileri kayıtta bayraksız reddi, bayrakla owner/runtime planını, SQL'siz
   apply'ı, araya giren göç ve değişmiş özet reddini, metadata'nın
-  değişmediğini sınar.
+  değişmediğini sınar; ardından `dogfood/urun-i/defter-geri-donus/`
+  aynasında KOKEN a–d adımlarını (N, N+1, bayraksız N reddi, bayrakla N ve
+  N+1'e yeniden geçiş) koşar.
 - CLI: `compiler/tests/cli_goc_plani_testi.rs`
   `goc_ileri_kayit_toleransi_kiplerle_birlikte_kabul_edilir_ve_tekrari_reddedilir`.
 

@@ -2933,8 +2933,9 @@ ad/özet, en yüksek sürüm altındaki kayıp dosya, ileri kayıt varken bekley
 göç ve bayraksız çağrı C026 kalır. Aşağı göç/kayıt temizliği AÇIK.
 
 Kanıt: `compiler/src/postgresql.rs` üç saf plan testi, gerçek PostgreSQL 16
-dedicated kapısı (`scripts/postgresql-goc-ci.py`, 1/1),
-`compiler/tests/cli_goc_plani_testi.rs`; spec/25 K-407 maddesi.
+dedicated kapısı (`scripts/postgresql-goc-ci.py`, 1/1; `dogfood/urun-i`
+defter aynasının a–d adımları dahil), `compiler/tests/cli_goc_plani_testi.rs`;
+spec/25 K-407 maddesi.
 
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 
