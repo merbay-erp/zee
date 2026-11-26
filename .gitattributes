@@ -22,3 +22,4 @@ golden/pdf-host/assets/LICENSE-DejaVu.txt -text whitespace=-blank-at-eol
 docs/incelemeler/urunlesme-20261014/final-8b49113/e-archive-checks/E-doc-gates.log whitespace=-blank-at-eof
 docs/incelemeler/urunlesme-20261014/final-8b49113/rc/campaign/logs/miri-ondalik.log whitespace=-blank-at-eof
 docs/incelemeler/urunlesme-20261014/final-8b49113/rc/campaign/logs/miri-zaman.log whitespace=-blank-at-eof
+compiler/fuzz/corpus/kodlama/* binary
