@@ -38,6 +38,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Eklenenler
 
+- **`dil göçür --ileri-kayitlara-izin` (K-407):** Aynı veritabanını paylaşan
+  iki uygulama sürümünden yenisi daha yeni bir göçü uyguladıktan sonra eski
+  sürüme geri dönüldüğünde, eski sürümün `dil göçür` çağrısı artık bu bayrakla
+  düşmeden açılabiliyor. Ağacınızdaki bütün göçler aynı ad ve içerikle
+  uygulanmışsa ve fazla kayıtlar ağacınızdaki en yüksek sürümden yeniyse hiçbir
+  SQL çalışmaz, kayıtlara dokunulmaz ve fazlalar `İleri kayıt` satırıyla
+  raporlanır; `--durum` ve `--kuru` ile de kullanılır. Değişmiş göç, aradaki
+  kayıp dosya ya da ileri kayıt varken bekleyen göç eskisi gibi C026'dır.
+  Bayraksız davranış değişmedi; göç adımı gerekmez. İleri göçlerin eski kodla
+  uyumlu kalması uygulamanın sorumluluğudur
+  ([ADR-181](../adr/181-goc-ileri-kayit-toleransi.md)).
+
 - **Türlü metin yanıtı (K-406):** Rota bellekte kurduğu bir metni artık
   kayıtlı bir metin türüyle gönderebilir; örneğin takvim aboneliği adresi:
 

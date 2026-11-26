@@ -610,7 +610,7 @@ fn cli_seceneklerini_denetle(argumanlar: &mut Vec<String>, guvenli: bool) -> Res
         "denetle" => (&["--json", "--lint"], &[]),
         "sürüm" | "surum" => (&["--json", "--ayar-semasi"], &[]),
         "biçimle" | "bicimle" => (&["--denetle"], &[]),
-        "göçür" | "gocur" => (&["--durum", "--kuru"], &[]),
+        "göçür" | "gocur" => (&["--durum", "--kuru", "--ileri-kayitlara-izin"], &[]),
         "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
         "ekle" | "kilitle" | "paketler" => (
             &["--yenile", "--çevrimdışı", "--cevrimdisi"],
@@ -672,6 +672,9 @@ fn kullanim() {
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
     eprintln!("  dil kilitle [proje] [--çevrimdışı] bütün bağımlılıkları sabitler");
     eprintln!("  dil göçür [--durum|--kuru] [proje] migration uygular veya SQL yazmadan planlar");
+    eprintln!(
+        "  dil göçür --ileri-kayitlara-izin    A/B geri dönüşünde daha yeni kayıtları tolere eder"
+    );
     eprintln!("  dil anahtar üret <dosya>    0600 izinli Ed25519 yayıncı anahtarı üretir");
     eprintln!("  dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
     eprintln!("  dil paketler [proje] [--yenile] doğrudan/geçişli grafiği gösterir");
@@ -693,15 +696,23 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         .filter(|a| a.as_str() == "--durum")
         .count();
     let kuru = argumanlar.iter().filter(|a| a.as_str() == "--kuru").count();
+    // K-407: kip değil, uyuşmazlık toleransıdır; her kiple birlikte verilebilir.
+    let ileri = argumanlar
+        .iter()
+        .filter(|a| a.as_str() == "--ileri-kayitlara-izin")
+        .count();
     let yollar: Vec<&String> = argumanlar
         .iter()
         .skip(1)
-        .filter(|a| !matches!(a.as_str(), "--durum" | "--kuru"))
+        .filter(|a| !matches!(a.as_str(), "--durum" | "--kuru" | "--ileri-kayitlara-izin"))
         .collect();
-    if durum + kuru > 1 || yollar.len() > 1 {
-        eprintln!("Kullanım: dil göçür [--durum|--kuru] [proje]; kipler tekil ve ayrı olmalı");
+    if durum + kuru > 1 || ileri > 1 || yollar.len() > 1 {
+        eprintln!(
+            "Kullanım: dil göçür [--durum|--kuru] [--ileri-kayitlara-izin] [proje]; kipler tekil ve ayrı olmalı"
+        );
         return ExitCode::from(2);
     }
+    let ileri_kayitlara_izin = ileri == 1;
     let yol = std::path::Path::new(yollar.first().map_or(".", |a| a.as_str()));
     let proje = match dil::paket::ProjeGrafigi::cozumle(yol) {
         Ok(proje) => proje,
@@ -719,41 +730,26 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     };
     if durum + kuru == 1 {
-        return match dil::postgresql::gocleri_planla(bildirim, proje.ana_kok()) {
-            Ok(plan) => {
-                println!(
-                    "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
-                    plan.uygulanmis, plan.bekleyen
-                );
-                for adim in plan.adimlar {
-                    if durum == 1 || !adim.uygulanmis {
-                        println!(
-                            "{}\t{}\t{}\t{}",
-                            adim.surum,
-                            if adim.uygulanmis {
-                                "uygulanmış"
-                            } else {
-                                "bekleyen"
-                            },
-                            adim.ad,
-                            adim.sha256
-                        );
-                    }
-                }
-                ExitCode::SUCCESS
-            }
+        return match dil::postgresql::gocleri_planla_secenekli(
+            bildirim,
+            proje.ana_kok(),
+            ileri_kayitlara_izin,
+        ) {
+            Ok(plan) => goc_planini_yaz(plan, durum == 1),
             Err(hata) => {
                 eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
                 ExitCode::FAILURE
             }
         };
     }
-    match dil::postgresql::gocleri_uygula(bildirim, proje.ana_kok()) {
+    match dil::postgresql::gocleri_uygula_secenekli(bildirim, proje.ana_kok(), ileri_kayitlara_izin)
+    {
         Ok(rapor) => {
             println!(
                 "Migration tamamlandı: {} uygulandı, {} zaten günceldi.",
                 rapor.uygulanan, rapor.atlanan
             );
+            ileri_kayitlari_yaz(&rapor.ileri, true);
             ExitCode::SUCCESS
         }
         Err(hata) => {
@@ -762,6 +758,49 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
                 eprintln!("  {}: {}", ad, deger);
             }
             ExitCode::FAILURE
+        }
+    }
+}
+
+/// `--durum` (bütün adımlar) ya da `--kuru` (yalnız bekleyen) planını SQL
+/// yürütmeden yazar.
+fn goc_planini_yaz(plan: dil::postgresql::GocPlani, durum: bool) -> ExitCode {
+    println!(
+        "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
+        plan.uygulanmis, plan.bekleyen
+    );
+    for adim in plan.adimlar {
+        if durum || !adim.uygulanmis {
+            println!(
+                "{}\t{}\t{}\t{}",
+                adim.surum,
+                if adim.uygulanmis {
+                    "uygulanmış"
+                } else {
+                    "bekleyen"
+                },
+                adim.ad,
+                adim.sha256
+            );
+        }
+    }
+    ileri_kayitlari_yaz(&plan.ileri, durum);
+    ExitCode::SUCCESS
+}
+
+/// K-407: tolere edilen ileri kayıtlar özet satırı ve (istenirse) sürüm
+/// başına `ileri` durumlu satırla yazılır; boşsa çıktı değişmez.
+fn ileri_kayitlari_yaz(ileri: &[dil::postgresql::GocAdimi], satirlar: bool) {
+    if ileri.is_empty() {
+        return;
+    }
+    println!(
+        "İleri kayıt: {} kayıt proje ağacındaki en yüksek sürümden yeni; SQL uygulanmadı, kayıtlar korunuyor.",
+        ileri.len()
+    );
+    if satirlar {
+        for adim in ileri {
+            println!("{}\tileri\t{}\t{}", adim.surum, adim.ad, adim.sha256);
         }
     }
 }

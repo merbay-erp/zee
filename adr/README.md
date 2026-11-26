@@ -183,3 +183,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-176 | [Deneysel web yalnız localhost; üretim yalnız proxy/worker yolu](176-deneysel-web-yalniz-localhost-uretim-sozlesmesi.md) | **kabul** (K-400/GB-173) |
 | ADR-177 | [Kamu son ek listesi (PSL) ve DKIM imza doğrulama ilkeli](177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) | **kabul** (K-390/GB-174; RFC-0044 B1b, B2b) |
 | ADR-178 | [Yanıt ve yönlendirme rota gövdesini bitirir](178-yanit-rota-sonu.md) | **kabul** (K-403/GB-176) |
+| ADR-181 | [`dil göçür` ileri kayıt toleransı (A/B kök geri dönüşü)](181-goc-ileri-kayit-toleransi.md) | **kabul** (K-407; `urun-i` dogfood) |
