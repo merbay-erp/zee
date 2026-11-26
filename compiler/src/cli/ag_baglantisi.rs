@@ -1097,7 +1097,9 @@ impl Reaktor {
             .map_err(|hata| {
                 BaglantiSonucu::hata("dosya", format!("dosya konumlanamadı: {hata}"))
             })?;
-        aktarim.kalan -= pencere.ham_baslangic;
+        // K-414: pencere ham konumu dosya içinde kalır; ikinci savunma hattı
+        // olarak çıkarma doymalıdır (istemci aralığı sarma üretemez).
+        aktarim.kalan = aktarim.kalan.saturating_sub(pencere.ham_baslangic);
         aktarim.toplam = pencere.uzunluk;
         aktarim.kodlu = Some(KodluAktarim {
             bekleyen: Vec::new(),

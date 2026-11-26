@@ -104,6 +104,19 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 - **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
 
+### Düzeltilenler
+
+- **Satırlı base64 aktarımında dosya sonundaki aralık (K-414):**
+  `… dosyasının base64 satırlarının K baytından N baytını bağlantıya
+  aktarmayı dene`, boyu 57'ye bölümünden 55 ya da 56 kalan dosyada K
+  kodlanmış çıktının sonuna eşit ya da daha büyükse `dil dene`/test
+  ortamında paniğe, gerçek sunucunun debug derlemesinde bağlantı görevinin
+  çökmesine yol açıyordu. Artık her dosya boyunda belgelendiği gibi 0 bayt
+  yazılır ve `0` döner.
+
+  **Göç:** Gerekmez.
+
+
 ## 25 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
