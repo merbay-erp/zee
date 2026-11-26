@@ -5,24 +5,12 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## 25 Kasım 2026 — Geliştirme güncellemeleri
+## 26 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
-
-- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
-  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
-  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
-  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
-  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
-  tek istek içinde güvenle yapar. Desen ve sınırları
-  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
-  maddesinde ve testte. Davranış değişmedi.
-
-  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
-  ekleyin.
 
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
   rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya
@@ -47,6 +35,29 @@ Bu kayıt yeni sürüm etiketi değildir.
   taşıyın. Dosya yanıtı (`… ek olarak göndermeyi dene`) bir `Sonuç`
   ifadesidir, rotayı bitirmez; rota dışındaki (`test` bloğu, üst düzey)
   yanıt cümleleri de eskisi gibi akışı sürdürür.
+
+### Site
+
+- **zeedili.com 25–26 Kasım haberleri:** ana sayfa Gelişmeler bölümüne K-403 `yönlendir` ve `yanıtını gönder` sonrası rotanın bitmesi, K-390 kurumsal alan ve DKIM imza doğrulaması (RFC-0044) ve K-404 parola değişiminde öteki oturumları kapatma deseni haberleri eklendi. K-403 kaydı birleştiği güne (26 Kasım) taşındı. Dil davranışı değişmedi.
+
+## 25 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
+  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
+  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
+  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
+  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
+  tek istek içinde güvenle yapar. Desen ve sınırları
+  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
+  maddesinde ve testte. Davranış değişmedi.
+
+  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
+  ekleyin.
 
 - **Deneysel web yalnız localhost'a yanıt verir; üretim sözleşmesi yazıldı
   (K-400):** `dil çalıştır --deneysel-web` zaten yalnız `127.0.0.1`'de
