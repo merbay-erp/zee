@@ -31,8 +31,12 @@ fn zee_metni(m: &str) -> String {
     )
 }
 
+/// Her çağrıya ayrı dizin: paralel testler aynı adı (ör. `rsa2048`)
+/// kullanınca biri ötekinin dizinini silmesin.
 fn gecici_dizin(ad: &str) -> PathBuf {
-    let dizin = std::env::temp_dir().join(format!("zee-dkim-{}-{ad}", std::process::id()));
+    static SAYAC: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+    let sira = SAYAC.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let dizin = std::env::temp_dir().join(format!("zee-dkim-{}-{sira}-{ad}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dizin);
     std::fs::create_dir_all(&dizin).unwrap();
     dizin
