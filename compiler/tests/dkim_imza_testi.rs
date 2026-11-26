@@ -110,18 +110,45 @@ fn crlf(veri: &str) -> Vec<u8> {
 
 /// Bağımsız doğrulama: openssl RSA (dgst) ve RFC 8463 Ed25519 (pkeyutl -rawin
 /// SHA-256 özeti üzerinde).
-fn openssl_dogrular(pem: &str, veri: &str, b: &str, ed25519: bool) -> bool {
+/// `Ed25519` için açık anahtarın ham 32 baytı, RSA için PKCS#8 PEM.
+enum Anahtar<'a> {
+    Ed25519(&'a [u8]),
+    RsaPem(&'a str),
+}
+
+fn openssl_dogrular(anahtar: Anahtar, veri: &str, b: &str) -> bool {
+    let ed25519 = matches!(anahtar, Anahtar::Ed25519(_));
     let dizin = gecici_dizin(if ed25519 { "osl-ed" } else { "osl-rsa" });
-    std::fs::write(dizin.join("ozel.pem"), pem).unwrap();
-    let acik = Command::new("openssl")
-        .args(["pkey", "-pubout", "-in"])
-        .arg(dizin.join("ozel.pem"))
-        .arg("-out")
-        .arg(dizin.join("acik.pem"))
-        .status()
-        .unwrap();
-    assert!(acik.success());
-    std::fs::remove_file(dizin.join("ozel.pem")).unwrap();
+    match anahtar {
+        // RFC 8410 SPKI'yi kendimiz kurarız: OpenSSL 3.0 (Ubuntu 24.04), ring'in
+        // ürettiği açık anahtarlı PKCS#8 v2 Ed25519 anahtarını `pkey` ile okuyamıyor.
+        Anahtar::Ed25519(ham) => {
+            let mut spki = vec![
+                0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00,
+            ];
+            spki.extend_from_slice(ham);
+            std::fs::write(
+                dizin.join("acik.pem"),
+                format!(
+                    "-----BEGIN PUBLIC KEY-----\n{}\n-----END PUBLIC KEY-----\n",
+                    base64(&spki)
+                ),
+            )
+            .unwrap();
+        }
+        Anahtar::RsaPem(pem) => {
+            std::fs::write(dizin.join("ozel.pem"), pem).unwrap();
+            let acik = Command::new("openssl")
+                .args(["pkey", "-pubout", "-in"])
+                .arg(dizin.join("ozel.pem"))
+                .arg("-out")
+                .arg(dizin.join("acik.pem"))
+                .status()
+                .unwrap();
+            assert!(acik.success());
+            std::fs::remove_file(dizin.join("ozel.pem")).unwrap();
+        }
+    }
     std::fs::write(
         dizin.join("imza.bin"),
         dil::kodlama::base64_mime_coz(b, 4096).unwrap(),
@@ -172,7 +199,13 @@ fn ed25519_imzasi_k390_dogrulayicisi_ve_openssl_ile_tutar() {
     let b = imzala(Some(depo.clone()), &veri, "zeemail_dkim_anahtari", a);
     assert_eq!(b.len(), 88, "{b}");
     assert!(dogrula(&b, &veri, &p, a));
-    assert!(openssl_dogrular(&pem, &veri, &b, true));
+    let ham = dil::kodlama::base64_mime_coz(&p, 64).unwrap();
+    assert!(openssl_dogrular(Anahtar::Ed25519(&ham), &veri, &b));
+    assert!(!openssl_dogrular(
+        Anahtar::Ed25519(&ham),
+        &veri.replace("Merhaba", "Selam"),
+        &b
+    ));
     // Ed25519 deterministiktir: aynı girdi aynı `b=`.
     assert_eq!(imzala(Some(depo), &veri, "zeemail_dkim_anahtari", a), b);
 }
@@ -191,7 +224,7 @@ fn rsa_2048_ve_4096_imzasi_dogrulanir_kisa_ve_uzun_anahtar_yuklenmez() {
         let veri = girdi(a);
         let b = imzala(Some(depo), &veri, "dkim_rsa", a);
         assert!(dogrula(&b, &veri, &p, a), "{bit}");
-        assert!(openssl_dogrular(&pem, &veri, &b, false), "{bit}");
+        assert!(openssl_dogrular(Anahtar::RsaPem(&pem), &veri, &b), "{bit}");
         assert!(!dogrula(&b, &veri.replace("Merhaba", "Merhabа"), &p, a));
     }
     for (bit, parca) in [(1024, "2048 bitten kısa"), (4608, "4096 bitten uzun")] {
