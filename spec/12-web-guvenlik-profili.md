@@ -126,6 +126,21 @@ döndürmek ve ham belirteç/CSRF açmamak ZORUNDADIR. Her iki işlem `web-oturu
 yetkinliğine ve istek transaction'ına bağlıdır; ortak kalıcı depoda worker ve
 restart sınırlarını aşan iptal aynı cevabın commit/rollback semantiğini izler.
 
+TANIMLI (K-404): Parola değişimi ya da sıfırlaması sonrası kullanıcının öteki
+oturumlarını kapatmak ayrı bir dil ilkeli değil, bu üç yüzeyin bileşimidir:
+rota `oturumun "kimlik"` değerini saklar, aynı kullanıcı için
+`web oturumlarını listelemeyi dene` sonucunu gezer, kimliği geçerli
+oturumunkine eşit olmayan her kaydı `web oturumunu iptal etmeyi dene` ile
+iptal eder; geçerli oturum korunur ya da aynı istekte `oturuma al` ile yeni
+belirteç ve CSRF'e döndürülür (eski belirteç geçersizdir). Bileşim tek istek
+transaction'ıdır: başarıda iptaller ve döndürme birlikte commit edilir, rota
+hatasında hiçbiri uygulanmaz; başka kullanıcının oturumu etkilenmez. Oturumsuz
+"parolamı unuttum" akışı aynı listeyi koşulsuz iptal eder. Listeleme yalnız
+commit edilmiş oturumları görür; değişimle yarışan ve eski parolayla doğrulanmış
+eşzamanlı girişin oturumunu yakalamak uygulamanın görevidir
+([web-production-profili.md](../docs/web-production-profili.md) "Parola
+değişiminde öteki oturumları kapatma").
+
 ## 3. CSRF
 
 Form gösteren GET rotası `csrf belirteci` ifadesini kullanır:

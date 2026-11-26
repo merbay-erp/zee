@@ -3,7 +3,7 @@
 - **Durum:** kabul
 - **Tarih:** 25 Kasım 2026
 - **İlgili kayıt:** K-403, spec/11 §5, ADR-059 (core freeze), ADR-066
-  (güvenlik bulguları), ADR-157 (istek-yerel hata sınırı), GB-175
+  (güvenlik bulguları), ADR-157 (istek-yerel hata sınırı), GB-176
 
 ## Bağlam
 

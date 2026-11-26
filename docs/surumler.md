@@ -12,6 +12,18 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
+- **Parola değişiminde öteki oturumları kapatma deseni belgelendi (K-404):**
+  ZeeMail dış güvenlik incelemesi, parola değişince kullanıcının öteki
+  cihazlardaki oturumlarını kapatmanın bir yolunu istedi. Yeni dil özelliği
+  gerekmedi: var olan `web oturumlarını listelemeyi dene` ve
+  `web oturumunu iptal etmeyi dene` ifadeleri ile `oturuma al` döndürmesi bunu
+  tek istek içinde güvenle yapar. Desen ve sınırları
+  [üretim profili](web-production-profili.md) belgesinde, spec/12 §2 K-404
+  maddesinde ve testte. Davranış değişmedi.
+
+  **Göç:** Gerekmez. Parola değiştiren rotalarınıza belgedeki birkaç satırı
+  ekleyin.
+
 - **`yönlendir` ve `yanıtını gönder` artık rotayı bitirir (K-403):** Önceden
   rota gövdesinde yanıt ya da yönlendirme gönderildikten sonra kod çalışmaya
   devam ediyordu. Bu yüzden şu tür bir koruma güvenli değildi:

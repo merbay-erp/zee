@@ -2893,11 +2893,32 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
+
+**Durum: KAPALI (25 Kasım 2026), belge kararı.** Kaynak: ZeeMail (`urun-h`)
+dış güvenlik incelemesi, "Orta" bulgu: parola sıfırlama/değişimi sonrası
+uygulama kullanıcının öteki oturumlarını geçersizleyebilmeli, geçerli oturumu
+korumalı ya da döndürmeli. zee-cekirdek filosunun yönetim panelleri de
+yararlanır.
+
+Karar: core freeze altında yeni ilke eklenmez, çünkü K-188 yüzeyi
+(`web oturumlarını listelemeyi dene`, `web oturumunu iptal etmeyi dene`,
+`oturumun "kimlik"` özeti) ve `oturuma al` döndürmesi gereksinimi tek istek
+transaction'ında karşılıyor. Desen spec/12 §2'de TANIMLI madde, kullanım ve
+bilinçli sınır `docs/web-production-profili.md`'de. Bilinçli sınır: değişim
+isteğiyle yarışan, eski parolayla tamamlanan eşzamanlı giriş listeye
+girmeyebilir; uygulama PostgreSQL satır kilidi ve koşullu güncellemeyle
+daraltır. İstek başına denetlenen oturum kuşağı ilkesi ancak yeni ürün kanıtıyla
+ayrı K-işi olur. GB-175.
+
+Kanıt: `compiler/tests/web_testi.rs`
+`parola_degisiminde_oteki_oturumlar_mevcut_yuzeyle_kapatilir`.
+
 ## K-403 — Yanıt ve yönlendirme rota gövdesini bitirir (ADR-178)
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) dış
 güvenlik incelemesi; bulgu 23.11.2026'da "Yüksek", 25.11'de yinelendi.
-Freeze sınıfı `security` (semantic-bugfix). GB-175.
+Freeze sınıfı `security` (semantic-bugfix). GB-176.
 
 Hata: rota gövdesinde `yönlendir`/`yanıtını gönder` akışı bitirmiyordu;
 `yetkili değilse` → yönlendirme koruması fail-open çalışıyor, korumadan

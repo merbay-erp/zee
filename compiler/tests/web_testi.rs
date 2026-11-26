@@ -1444,3 +1444,149 @@ GET \"/duz\" adresine istek geldiğinde
     assert_eq!(io.sunucu_durumlari, vec![200, 200, 404, 200]);
     assert_eq!(io.onbellek_izinleri, vec![120, 120]);
 }
+
+/// K-404 (GB, ZeeMail dış inceleme): parola değişiminden sonra kullanıcının
+/// ÖTEKİ oturumları dil değişikliği olmadan kapatılır. Desen yalnız K-188
+/// listeleme/iptal ve `oturuma al` döndürmesini kullanır: aynı kullanıcının
+/// diğer oturumları 401 olur, başka kullanıcı etkilenmez, geçerli oturum
+/// istenirse yeni belirteçle döndürülür (eski belirteç de 401).
+#[test]
+fn parola_degisiminde_oteki_oturumlar_mevcut_yuzeyle_kapatilir() {
+    let kaynak = r#"
+8080 kapısında sunucu başlat
+
+POST "/giris-ali" adresine istek geldiğinde
+    herkese açık
+    "ali" kullanıcısını "üye" rolüyle oturuma al
+    "tamam" yanıtını gönder
+
+POST "/giris-veli" adresine istek geldiğinde
+    herkese açık
+    "veli" kullanıcısını "üye" rolüyle oturuma al
+    "tamam" yanıtını gönder
+
+GET "/form" adresine istek geldiğinde
+    csrf belirteci yanıtını gönder
+
+GET "/kim" adresine istek geldiğinde
+    oturum gerekli
+    oturumun "kullanıcı" değeri yanıtını gönder
+
+POST "/parola" adresine istek geldiğinde
+    oturum gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
+    mevcut oturumun "kimlik" değeri olsun
+    sonuç kullanıcı ile web oturumlarını listelemeyi dene olsun
+    sonuç başarılıysa
+        girdiler sonucun değeri olsun
+        her girdi için
+            kimlik girdinin "kimlik" değeri olsun
+            kimlik mevcut a eşit değilse
+                iptal kimlik ile web oturumunu iptal etmeyi dene olsun
+        kullanıcı kullanıcısını rol rolüyle oturuma al
+        "döndürüldü" yanıtını gönder
+    değilse
+        "oturumlar kapatılamadı" yanıtını 503 durumuyla gönder
+
+POST "/parola-hata" adresine istek geldiğinde
+    oturum gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    mevcut oturumun "kimlik" değeri olsun
+    sonuç kullanıcı ile web oturumlarını listelemeyi dene olsun
+    sonuç başarılıysa
+        girdiler sonucun değeri olsun
+        her girdi için
+            kimlik girdinin "kimlik" değeri olsun
+            kimlik mevcut a eşit değilse
+                iptal kimlik ile web oturumunu iptal etmeyi dene olsun
+    sayılar 1, 2 listesi olsun
+    taşan sayıların 5. öğesi olsun
+    "ulaşılmaz" yanıtını gönder
+"#;
+    let program = dil::kaynagi_derle(kaynak).expect("öteki oturumları kapatma deseni derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    let tur = |io: &mut ToplayanIo, istek: String| -> (u16, String) {
+        io.istekler.push_back(istek);
+        calistir_io(&program, io).expect("istek çalışmalı");
+        let durum = *io.sunucu_durumlari.last().unwrap();
+        (durum, io.sunucu_yanitlari.last().unwrap().1.clone())
+    };
+    let son_cerez = |io: &ToplayanIo| io.yazilan_cerezler.last().unwrap().1.clone();
+    // Her giriş taze anonim form oturumundan yapılır (giriş anonimi iptal eder).
+    let giris = |io: &mut ToplayanIo, yol: &str| -> String {
+        let (durum, csrf) = tur(io, "GET /form".into());
+        assert_eq!(durum, 200);
+        let anonim = son_cerez(io);
+        let (durum, _) = tur(io, csrfli_istek_ile(&format!("POST {yol}"), &anonim, &csrf));
+        assert_eq!(durum, 200, "{yol}");
+        son_cerez(io)
+    };
+    let ali_1 = giris(&mut io, "/giris-ali");
+    let ali_2 = giris(&mut io, "/giris-ali");
+    let ali_3 = giris(&mut io, "/giris-ali");
+    let veli = giris(&mut io, "/giris-veli");
+    let kim = |io: &mut ToplayanIo, belirtec: &str| -> u16 {
+        tur(io, format!("GET /kim\nçerez __Host-zee-oturum={belirtec}")).0
+    };
+    for b in [&ali_1, &ali_2, &ali_3, &veli] {
+        assert_eq!(kim(&mut io, b), 200, "başlangıçta dört oturum geçerli");
+    }
+
+    // Olumsuz: iptallerden sonra rota hatası → istek taslağı geri alınır,
+    // hiçbir oturum kapanmaz (yarım parola değişimi oturum bırakmaz).
+    let (_, csrf_1) = tur(
+        &mut io,
+        format!("GET /form\nçerez __Host-zee-oturum={ali_1}"),
+    );
+    let (durum, _) = tur(
+        &mut io,
+        csrfli_istek_ile("POST /parola-hata", &ali_1, &csrf_1),
+    );
+    assert_eq!(durum, 500, "rota hatası 500");
+    for b in [&ali_1, &ali_2, &ali_3, &veli] {
+        assert_eq!(kim(&mut io, b), 200, "geri alınan iptal uygulanmamalı");
+    }
+
+    // ali_2 parolasını değiştirir.
+    let (_, csrf_2) = tur(
+        &mut io,
+        format!("GET /form\nçerez __Host-zee-oturum={ali_2}"),
+    );
+    let (durum, govde) = tur(&mut io, csrfli_istek_ile("POST /parola", &ali_2, &csrf_2));
+    assert_eq!((durum, govde.as_str()), (200, "döndürüldü"));
+    let yeni = son_cerez(&io);
+    assert_ne!(yeni, ali_2, "geçerli oturum yeni belirteçle döndürülmeli");
+    let guvenli = io.guvenli_cerezler.last().unwrap();
+    assert!(guvenli.secure && guvenli.http_only && guvenli.azami_omur_saniye > 0);
+
+    assert_eq!(kim(&mut io, &ali_1), 401, "öteki oturum kapanmalı");
+    assert_eq!(kim(&mut io, &ali_3), 401, "öteki oturum kapanmalı");
+    assert_eq!(
+        kim(&mut io, &ali_2),
+        401,
+        "döndürülen eski belirteç geçersiz"
+    );
+    assert_eq!(kim(&mut io, &yeni), 200, "geçerli kullanıcı oturumda kalır");
+    assert_eq!(
+        kim(&mut io, &veli),
+        200,
+        "başka kullanıcının oturumu etkilenmez"
+    );
+    assert_eq!(
+        tur(&mut io, format!("GET /kim\nçerez __Host-zee-oturum={yeni}")).1,
+        "ali"
+    );
+
+    // İkinci değişim: yalnız tek oturum kaldığında desen idempotenttir.
+    let (_, csrf_y) = tur(
+        &mut io,
+        format!("GET /form\nçerez __Host-zee-oturum={yeni}"),
+    );
+    let (durum, _) = tur(&mut io, csrfli_istek_ile("POST /parola", &yeni, &csrf_y));
+    assert_eq!(durum, 200);
+    let son = son_cerez(&io);
+    assert_eq!(kim(&mut io, &son), 200);
+    assert_eq!(kim(&mut io, &yeni), 401);
+    assert_eq!(kim(&mut io, &veli), 200);
+}
