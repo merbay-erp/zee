@@ -1,0 +1,14 @@
+# K-414 (K-412 kodlama fuzz kâhininin bulgusu): 55 baytlık dosyanın satırlı base64'ü tek tam
+# 76 karakterlik satırdır (toplam 78). Toplamdan başlayan aralık spec/12 §9
+# A2d gereği 0 bayt döner; pencere dosya sonunu aşan ham konum vermez
+# (önce hermetik tarafta dilim paniği, gerçek sunucuda u64 taşması).
+# bağlantı-dinleyici: imap_v4
+# bağlantı-satırı: A1 FETCH
+
+"ekler/a.bin" dosyasına "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" yaz
+"imap_v4" dinleyicisinde bağlantı geldiğinde
+    komut bağlantıdan satır okumayı dene olsun
+    sonuç "ekler/a.bin" dosyasının base64 satırlarının 78 baytından 10 baytını bağlantıya aktarmayı dene olsun
+    sonuç başarılıysa
+        bayt sonucun değeri olsun
+        bağlantıya baytın metni satırını yaz

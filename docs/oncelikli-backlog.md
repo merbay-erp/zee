@@ -2991,6 +2991,24 @@ Ayrı hata (bu işte düzeltilmedi, K-392 ile KAPANDI): türsüz parametreli ve
 hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `C000 bağlanmış HIR değişmezi bozuldu … çözülmüş adı yok` iç hatası verir.
 
+## K-414 — Satırlı base64 penceresi toplam ötesinde dosya sonunu aşıyordu (GB-183)
+
+**Durum:** kapalı (26 Kasım 2026). K-412 `kodlama` fuzz kâhininin bulgusu
+(K-396 hatası, `introduced_by` ab34540). Ham boyu b ≡ 55, 56 (mod 57) olan
+dosyada `… base64 satırlarının K baytından N baytını bağlantıya aktarmayı
+dene` K ≥ T için hermetik tarafta dilim paniği, gerçek sunucuda u64
+taşması (debug panik, release sarma; çıktı yok) veriyordu. spec/12 §9
+A2d zaten 0 bayt der; davranış spec'e döndü.
+
+Düzeltme: `kodlama::base64_satir_penceresi` ham başlangıcı `min(b)`;
+`cli/ag_baglantisi.rs` çıkarması `saturating_sub` (ikinci savunma hattı).
+Sınıf `semantic-bugfix` + freeze `security`; GB-183 (orta).
+
+Kanıt: regresyon `regression/runtime/base64-pencere-toplam-otesi.dil`;
+`ag_blok_testi::base64_aktarim_son_satiri_tam_kisa_dosyada_toplam_otesi_bos`
+(b mod 57 ∈ {0, 1, 55, 56}, K = T, T+1, T+500);
+`kodlama::testler::satir_penceresi_sinirlari_dosya_icinde_ve_dilimle_esit`.
+
 ## K-410 — İç base64 yardımcılarının tek katı uygulamada birleştirilmesi (ADR-083 eki)
 
 **Durum:** kapalı (26 Kasım 2026). RFC-0043 Dilim 2'nin açık bakım

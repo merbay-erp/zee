@@ -674,3 +674,37 @@ fn base64_aktarim_kaliplari_turlu_arguman_ister_ve_iz_replay_eder() {
     assert_eq!(oynatici.uyusmazlik(), None);
     assert_eq!(oynatici.cikti, ic.cikti);
 }
+
+/// K-414 (K-412 kodlama fuzz kâhininin bulgusu): son satırı tam 76 karakter olan ama 57'nin
+/// katı olmayan dosyada (b ≡ 55, 56 mod 57) toplamdaki/ötesindeki aralık
+/// 0 bayt döner; pencere dosya sonunu aşan ham konum vermez.
+#[test]
+fn base64_aktarim_son_satiri_tam_kisa_dosyada_toplam_otesi_bos() {
+    // b mod 57 ∈ {0, 1, 55, 56}: tam satır, tek baytlık son satır ve son
+    // satırı tam 76 karakter olan kısa dosya.
+    for boy in [
+        0usize,
+        1,
+        55,
+        56,
+        57,
+        58,
+        112,
+        113,
+        57 * 4 + 55,
+        57 * 4 + 56,
+    ] {
+        let icerik = ascii_icerik(boy);
+        let e = 4 * boy.div_ceil(3);
+        let toplam = e + 2 * e.div_ceil(76);
+        for konum in [toplam, toplam + 1, toplam + 500] {
+            let (giden, cikti) = base64_aktar(
+                &icerik,
+                &format!("\"ekler/a.bin\" dosyasının base64 satırlarının {konum} baytından 10 baytını bağlantıya aktarmayı dene"),
+                1 << 20,
+            );
+            assert!(giden.is_empty(), "boy={boy} konum={konum}");
+            assert_eq!(cikti, vec!["0".to_string()], "boy={boy} konum={konum}");
+        }
+    }
+}
