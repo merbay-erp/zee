@@ -4573,12 +4573,18 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     .into(),
             );
         }
+        // Windows dizini açarken erişim hatası verir; tanı her platformda aynı
+        // olsun diye açmadan önce de bakılır (açılan tanıtıcı yine denetlenir).
+        let normal_degil = || format!("\"{kaynak}\" normal dosya değil");
+        if std::fs::metadata(self.dosya_yolu(kaynak, false)?).is_ok_and(|b| !b.is_file()) {
+            return Err(normal_degil());
+        }
         let mut dosya = self.okuma_icin_ac(kaynak)?;
         let bilgi = dosya
             .metadata()
             .map_err(|hata| format!("\"{kaynak}\" dosyası okunamadı: {hata}"))?;
         if !bilgi.is_file() {
-            return Err(format!("\"{kaynak}\" normal dosya değil"));
+            return Err(normal_degil());
         }
         if bilgi.len() > tavan {
             return Err(format!(
