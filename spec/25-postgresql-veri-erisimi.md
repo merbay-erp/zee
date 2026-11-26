@@ -193,3 +193,14 @@ Tablo yoksa oluşturmak, migration DDL/DML'i veya apply lock'u yürütmek
 YASAKTIR. Durum bütün adımları, kuru yalnız bekleyeni ad/sürüm/SHA/durum
 olarak gösterir; değiştirilmiş ad/hash ve kayıp dosya reddedilir. Default
 apply tek transaction/advisory lock sözleşmesini korur.
+
+## İleri kayıt toleransı (K-407)
+
+`dil göçür [--durum|--kuru] --ileri-kayitlara-izin [proje]` yalnız şu şekli
+tolere etmek ZORUNDADIR ([ADR-181](../adr/181-goc-ileri-kayit-toleransi.md)):
+ağaçtaki bütün göçler aynı sürüm, ad ve SHA-256 ile uygulanmış ve ağaçta
+olmayan her kaydın sürümü ağaçtaki en yüksek sürümden büyük. Bu durumda
+migration SQL'i yürütmek ya da kaydı değiştirmek YASAKTIR; ileri kayıtlar
+`surum\tileri\tad\tsha256` satırıyla raporlanır ve komut başarıyla biter.
+Bayraksız çağrı, değişmiş ad/özet, en yüksek sürümün altındaki kayıp dosya
+ve ileri kayıt varken bekleyen göç C026 olarak kalır.
