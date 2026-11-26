@@ -12,6 +12,9 @@ use dil::yorumlayici::{
 use std::collections::BTreeSet;
 use std::net::IpAddr;
 
+#[path = "ortak/x509_ozellikleri.rs"]
+mod x509_ozellikleri;
+
 const MX: &str = "93.184.216.34";
 
 fn politika(hedefler: &[&str], yerel: bool) -> YetkinlikPolitikasi {
@@ -444,4 +447,57 @@ fn proje_bildirimi_gecersiz_joker_ve_kapisiz_tcp_hedefini_reddeder() {
         let hata = bildirim(hedef).expect_err(hedef);
         assert_eq!(hata.kod, "P015", "{hedef}: {}", hata.mesaj);
     }
+}
+
+/// K-411: `x509_spki` fuzz korpusu stable'da referans DER okuyucusuyla
+/// diferansiyel denetimden geçer; her tohum 3000 kez deterministik bozulur.
+/// Gerçek (openssl üretimi) sertifikalarda SPKI, openssl'in kendi çıkardığı
+/// açık anahtar DER'ine bayt bayt eşittir.
+#[test]
+fn x509_fuzz_korpusu_referans_ve_openssl_ile_tutar() {
+    let kok = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("fuzz/corpus/x509_spki");
+    let mut yollar: Vec<_> = std::fs::read_dir(&kok)
+        .unwrap()
+        .map(|g| g.unwrap().path())
+        .collect();
+    yollar.sort();
+    assert!(yollar.len() >= 6, "korpus tohumu eksik");
+    let mut gecerli = 0;
+    let mut durum = 0x2545_f491_4f6c_dd1d_u64;
+    for yol in &yollar {
+        let der = std::fs::read(yol).unwrap();
+        x509_ozellikleri::denetle(&der);
+        gecerli += usize::from(dil::ag_satiri::x509::spki_dilimi(&der).is_some());
+        for _ in 0..3000 {
+            durum ^= durum << 13;
+            durum ^= durum >> 7;
+            durum ^= durum << 17;
+            let mut bozuk = der.clone();
+            let yer = (durum as usize) % bozuk.len();
+            match durum % 3 {
+                0 => bozuk[yer] ^= (durum >> 8) as u8 | 1,
+                1 => bozuk.truncate(yer),
+                _ => bozuk.insert(yer, (durum >> 16) as u8),
+            }
+            x509_ozellikleri::denetle(&bozuk);
+        }
+        let ad = yol.file_name().unwrap().to_string_lossy();
+        if ad.starts_with("rsa") || ad.starts_with("ed25519") {
+            let cikti = std::process::Command::new("openssl")
+                .args(["x509", "-inform", "DER", "-noout", "-pubkey", "-in"])
+                .arg(yol)
+                .output()
+                .expect("openssl bulunmalı");
+            assert!(cikti.status.success(), "{ad}");
+            let pem = String::from_utf8(cikti.stdout).unwrap();
+            let govde: String = pem.lines().filter(|s| !s.starts_with("-----")).collect();
+            let beklenen = dil::kodlama::base64_mime_coz(&govde, 4096).unwrap();
+            assert_eq!(
+                dil::ag_satiri::x509::spki_dilimi(&der),
+                Some(beklenen.as_slice()),
+                "{ad}"
+            );
+        }
+    }
+    assert!(gecerli >= 3, "SPKI dalını kapsayan geçerli tohum yok");
 }
