@@ -6,7 +6,7 @@
 - **İş:** K-405 (kaynak: ürün H web arayüzü sürtünmesi `ZM-F047`; exact ürün
   provenance'ı [dogfood kesiti](../dogfood/urun-h/outlook-autodiscover/README.md))
 - **İlgili belgeler:** spec/11, spec/12 §1 ve §K-335, ADR-034, ADR-059,
-  ADR-064, ADR-160, ADR-163 eki (K-385), ADR-176 (K-400), GB-179
+  ADR-064, ADR-160, ADR-163 eki (K-385), ADR-176 (K-400), GB-180
 - **Freeze sınıfı:** `dogfood-change` — mevcut `herkese açık` politikasının
   tek contextual biçimi ve yalnız o rotada okunan sıfır argümanlı bir
   ifade; yeni değer türü, bağımlılık veya `dil::api::v1` facade değişikliği

@@ -2925,7 +2925,7 @@ hiç çağrılmayan bir işlem, programın geri kalanı geçerliyken
 `POST /autodiscover/autodiscover.xml` gönderir, her POST `_csrf` istediği ve
 ham gövde okunamadığı için elle kuruluma düşüyordu. Merkez onayı 26.11
 (güvenlik sınırlarıyla). Freeze sınıfı `dogfood-change`. RFC-0046 (tehdit
-modeli), ADR-179, GB-179.
+modeli), ADR-179, GB-180.
 
 Karar: `herkese açık makine uç noktası` politika biçimi (S050), yalnız POST
 ve sabit öneksiz yol (T060), rota ve geçişli çağrılarda oturum/çerez/CSRF

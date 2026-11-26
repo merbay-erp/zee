@@ -5,7 +5,7 @@
 - **İlgili kayıt:** K-405, RFC-0046, ADR-034 (web güvenlik profili), ADR-059
   (core freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), ADR-160
   (önbelleklenebilir rota), ADR-163 eki (K-385 dosya türleri), ADR-176
-  (K-400 üretim sözleşmesi), spec/12 §1 ve §K-405, GB-179
+  (K-400 üretim sözleşmesi), spec/12 §1 ve §K-405, GB-180
 
 ## Bağlam
 
