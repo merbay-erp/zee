@@ -818,6 +818,14 @@ satır hesabını Zee'de yeniden yazmak zorunda kalırdı); satır uzunluğunu
 parametre yapmak (RFC 2045 76'yı sabitler, yüzey büyür); quoted-printable
 kodlama (ihtiyaç yok, ürün yalnız base64 ek saklar).
 
+Ek (K-408, ZM-F049, ADR-172 eki): aynı satırlar dosya hedefine de akar —
+`<kaynak> dosyasını base64 satırlarıyla <hedef> dosyasına eklemeyi dene` →
+`Sonuç<TamSayı>`. Ekli giden iletinin gövdesi tek dosyada kurulur ve DKIM
+`bh=` ADR-174 §8 ile aynı dosyadan alınır. Biçim, formül ve kodlayıcı A2d
+ile aynıdır (çıktı bağlantı çıktısıyla bayt bayt eşit); ekleme spec/08
+atomik eklemesidir, kaynak ve hedef toplamı 32 MiB, kaynak `dosya-okuma`/
+`veri-okuma`, hedef `dosya-yazma`/`veri-yazma`; normatif metin spec/26.
+
 ### A2 açık soruları — kapandı
 
 - Engellemeyen IO katmanı: **`libc` `poll(2)` üzerinden dar reaktör**

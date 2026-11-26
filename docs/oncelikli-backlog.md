@@ -2589,6 +2589,72 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-415 — `dil dkim-denetle` işletim komutu (aday)
+
+**Durum: BEKLİYOR — aday; gerçek ürün ihtiyacı yok.** Kaynak: ADR-174 açık
+maddesi "`dil dkim-denetle` adayı". ZeeMail 26 Kasım 2026 yanıtı: "sürtünme
+değil, kolaylık; öncelik vermeyin". Core freeze altında yeni CLI komutu
+(K-167 uyumluluk yüzeyi) dogfood ihtiyacı olmadan açılmaz; kullanıcı kararı
+(26.11.2026) backlog'a aday olarak yazmaktır.
+
+Tasarım notu (açılırsa):
+- `dil dkim-denetle [proje]` kaynak yürütmeden `dkim_anahtarları`
+  anahtarlarını yükler ve K-413'ün `dns_kaydini_denetle` mantığını çağırır.
+- Anahtar başına durum satırı basar: `eşleşti`, `uyuşmuyor`, `iptal`,
+  `kayıt_yok`, `denetlenemedi`, `dns_yok`.
+- DNS'e konacak `<s>._domainkey.<d>. IN TXT` kaydını en çok 255 baytlık
+  parçalarla basar. RSA'da `p=` SPKI'dir; özel anahtar ve credential yolu
+  basılmaz.
+- Çıkış kodları: 0 hepsi eşleşti ya da `dns` yok; 1 uyuşmuyor/iptal;
+  3 kayıt yok ya da denetlenemedi; 2 kullanım/yükleme hatası. spec/31'de
+  normatif tablo olarak yazılır.
+
+## K-413 — Açılışta yayımlanmış DKIM anahtarı denetimi (ADR-174 §9)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174 açık
+maddesi, RFC-0044 B3 "Açılış denetimi". Freeze sınıfı `correctness`
+(bildirilen ve yayımlanan anahtarın uyuşmaması teslimde sessiz DKIM fail ve
+DMARC reddi). `dkim_anahtarları` + `dns` varsa açılışta her anahtarın
+`<s>._domainkey.<d>` TXT kaydı sorulur; uyuşmazlık ve iptal yalnız o anahtarı
+devre dışı bırakır (imza C034 `anahtar_dns_uyuşmuyor` / `anahtar_iptal`,
+süreç çalışır; ZeeMail çok kiracılı DoS geri bildirimi), kayıt yokluğu ve DNS
+hatası uyarı. Yeni proje alanı, tanı kodu ve kalıp yok.
+Kanıt: `dkim_imza.rs` (anahtar kaydı ayrıştırma ve eşleme birimi),
+`dkim_imza_testi.rs` (gerçek süreç + loopback sahte çözücü: Ed25519 ve RSA
+SPKI `p=` eşleşmesi, uyuşmazlık, iptal, kayıt yok, SERVFAIL; iki anahtarlı
+depoda yalnız uyuşmayanın devre dışı kalması).
+## K-411 — `dkim_imza_girdisi` ve `x509_spki` fuzz hedefleri RC kapısında (ADR-174, ADR-173)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; ADR-174
+(K-397 Dilim 2) aday fuzz hedefi. RC fuzz kapısının altıncı hedefi; kanonik
+gövde özetleyicisi ve imza kâhini denetimi her RC adayında 30–60 dakika
+AddressSanitizer altında. Kâhin değişmezlerdir (parça sınırı ve LF/CRLF
+bağımsızlığı, kâhin denetiminin tutarlılığı); ortak denetim
+`compiler/tests/ortak/dkim_ozellikleri.rs`, stable korpus replay
+`dkim_imza_testi.rs` (tohum başına 2.000 bozulmuş girdi). compiler/src
+değişmedi.
+
+İkinci hedef `x509_spki` (ADR-173, K-397 Dilim 1): TLS uç sertifikasından SPKI
+çıkaran sınırlı DER yürüyücüsü, ayrı yazılmış referans DER okuyucusuyla
+diferansiyel (`compiler/tests/ortak/x509_ozellikleri.rs`); korpus openssl
+üretimi RSA/Ed25519 sertifikaları ve bozuk DER tohumları; stable replay
+`giden_baglanti_testi.rs` (tohum başına 3.000 bozulmuş girdi, gerçek
+sertifikada openssl `-pubkey` eşliği). RC kapısı yedi hedefli.
+Açık: ilk yedi hedefli RC koşusu ve tarihçe satırı.
+
+## K-416 — Gerçek alıcıda DKIM/DMARC kanıt yöntemi (RFC-0044 B3 kabul 2)
+
+**Durum: yöntem KAPALI (26 Kasım 2026); kanıt satırı AÇIK (operatör
+adımı).** Kaynak: kullanıcı isteği. [Runbook](dkim-alici-kaniti.md):
+anahtar ve TXT kaydı elle (K-415 aday), yayım ve gönderim operatörde, ham
+`.eml` özel depoda. `scripts/dkim-alici-kaniti.py` (stdlib, `-I`, ağsız)
+alıcının en üstteki `Authentication-Results` başlığından dkim/spf/dmarc ve
+hizalamayı okur, anonim satır üretir (`<kurum-alanı>`, `<seçici>`,
+`.eml` SHA-256, zee SHA). Satır alan, adres, IP ve Received taşımaz.
+Kayıt defteri [`dkim-alici-kanitlari-v1.tsv`](dkim-alici-kanitlari-v1.tsv)
+boş başlar. Kanıt: `scripts/tests/dkim-alici-kaniti-test.py` (6 sentetik
+`.eml` vakası, CI ubuntu). compiler/src değişmedi.
+
 ## K-397 — Giden TCP ve istemci STARTTLS; RFC-0044 B4a (ADR-173) ve B3 DKIM imzası (ADR-174)
 
 **Durum: Dilim 1 KAPALI (B4a, 25 Kasım 2026); Dilim 2 KAPALI (B3 DKIM imza ilkeli, ADR-174, 25 Kasım 2026).**
@@ -2648,7 +2714,14 @@ ve gerçek süreçte 400 KB ham CRLF ileti) ve `dkim_kripto` kanonikleştirme
 birimleri.
 
 Açık: `x509_spki` ve `dkim_imza_girdisi` fuzz hedeflerinin RC kapısına
-alınması; açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
+alınması; gerçek internette DANE/MTA-STS
+`dkim_imza_girdisi` fuzz hedefi K-411 ile RC kapısına alındı (26 Kasım 2026; ortak
+özellik denetimi `tests/ortak/dkim_ozellikleri.rs`, korpus replay
+`dkim_imza_testi.rs`).
+
+`x509_spki` fuzz hedefi de K-411 ile RC kapısına alındı.
+
+Açık: açılışta DNS `p=` eşleme denetimi; gerçek internette DANE/MTA-STS
 teslim ve `dkim=pass` kanıtı (insan adımı).
 
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
@@ -2941,6 +3014,98 @@ regresyon `gizli-kanonik-olmayan-dolgu` (`…tls=` çözülür, `…tlt=` ret);
 (gidiş-dönüş, kanonik olmayan yazım, satır sonu ve kısa gövde reddi);
 mevcut `eposta` RFC 2047/MIME/AUTH testleri ve `main.rs` RFC 4648
 vektörleri ortak kodlayıcıyla geçer; `katman_mimarisi_testi`.
+## K-408 — Satırlı base64'ü dosyaya akışla ekleme (ADR-172 eki, ZM-F049)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F049: giden iletiler DKIM ile imzalanıyor (K-397 Dilim 2) ama ekli
+iletinin gövdesi hiçbir yerde bütün olarak durmuyordu; ek parçaları yalnız
+SMTP'ye akarken (`bağlantıya aktarmayı dene`) oluşuyordu. ADR-174 §8 dosyadan
+`bh=` alınamadığından ekli dış ileti imzasız gidiyordu. Freeze sınıfı
+`dogfood-change`; yeni tür, anahtar kelime, kalıp kelimesi, koşul grameri ya
+da tanı kodu yok; bir intrinsic ve bir IO izi olayı.
+
+Karar (ADR-172 eki, RFC-0039 A2d eki, spec/26): `<kaynak> dosyasını base64
+satırlarıyla <hedef> dosyasına eklemeyi dene` → `Sonuç<TamSayı>` (T = e +
+2·⌈e/76⌉). K-396 kodlayıcısı; çıktı bağlantı çıktısıyla bayt bayt aynı.
+Akışlı (Metin yok, zarf yok); spec/08 kilitli atomik ekleme (önek korunur,
+geçici dosya + fsync + rename). Kaynak 32 MiB, hedef toplamı 32 MiB; aşım,
+eylem, normal dosya olmayan yol ve okuma sırasında boyu değişen kaynak hiç
+bayt yayımlamadan C013. Kaynak `dosya-okuma`/`veri-okuma`, hedef
+`dosya-yazma`/`veri-yazma`. İz yalnız yol ve bayt sayısı. Katman kenarı
+`kalici_dosya → kodlama`. GB-181 (geçici numara; merkez kesinleştirir).
+
+Kanıt: `compiler/tests/base64_satirlari_ekle_testi.rs` (8 vaka),
+`compiler/tests/ag_baglantisi_surec_testi.rs`
+`base64_satirlari_dosyaya_ekleme_baglanti_aktarimiyla_bayt_bayt_ayni`,
+`kalici_dosya::cozulmus` birim testi; dogfood `zm-f049-ekli-govde-dosyada`;
+K-167 iki API satırı.
+
+Açık: quoted-printable ve aralıklı dosya hedefi bilinçli dışarıda; ZeeMail
+uçtan uca (ekli ileti imzası ve alıcı doğrulaması) ürün tarafında.
+
+## K-405 — Makine uç noktası: CSRF'siz, kimliksiz POST rotası (ADR-179)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-h`
+(ZeeMail) sürtünmesi ZM-F047; klasik masaüstü Outlook
+`POST /autodiscover/autodiscover.xml` gönderir, her POST `_csrf` istediği ve
+ham gövde okunamadığı için elle kuruluma düşüyordu. Merkez onayı 26.11
+(güvenlik sınırlarıyla). Freeze sınıfı `dogfood-change`. RFC-0046 (tehdit
+modeli), ADR-179, GB-180.
+
+Karar: `herkese açık makine uç noktası` politika biçimi (S050), yalnız POST
+ve sabit öneksiz yol (T060), rota ve geçişli çağrılarda oturum/çerez/CSRF
+yüzeyi derlemede yasak (T061), `isteğin ham gövdesi` yalnız bu rotada
+(T062). Adaptör Origin/CSRF aramaz, Cookie okumaz, Set-Cookie yazmaz;
+XML/JSON dışı 415, 8 KiB üstü 413. Oran sınırı rotanın kendi kovasında.
+
+Kanıt: `compiler/tests/web_testi.rs` (iki vaka), `compiler/tests/web_cok_surec_testi.rs`
+`makine_uc_noktasi_origin_csrf_cerezsiz_calisir_413_415_verir`,
+`compiler/src/cli/makine_ucu.rs` birim testi; dogfood `urun-h-outlook-autodiscover`.
+Kullanıcıya göre üretilen `application/xml` yanıtı K-406 türlü metin
+yanıtıyla yazılabilir. Açık: kimlikli DAV muafiyeti (RFC-0040 #5(c)), harfe duyarsız yol.
+
+## K-407 — `dil göçür` ileri kayıt toleransı (ADR-181)
+
+**Durum: KAPALI (26 Kasım 2026).** Kaynak: etkin dogfood ürünü `urun-i`
+(ZeeOS) A/B kök güncellemesi: yeni dilim daha yeni bir göçü uyguladıktan
+sonra eski dilime geri dönüşte göç birimi "proje ağacında yok" C026 ile
+düşüyordu. Kullanıcı kararı: ileri şema toleransı, açık bayrakla. Freeze
+sınıfı `dogfood-change`.
+
+Karar: `--ileri-kayitlara-izin` yalnız "ağaçtaki her göç aynı ad/özetle
+uygulanmış, fazla kayıtlar ağaçtaki en yüksek sürümden büyük" şeklini kabul
+eder; SQL yürütmez, kaydı değiştirmez, ileri kayıtları raporlar. Değişmiş
+ad/özet, en yüksek sürüm altındaki kayıp dosya, ileri kayıt varken bekleyen
+göç ve bayraksız çağrı C026 kalır. Aşağı göç/kayıt temizliği AÇIK.
+
+Kanıt: `compiler/src/postgresql.rs` üç saf plan testi, gerçek PostgreSQL 16
+dedicated kapısı (`scripts/postgresql-goc-ci.py`, 1/1; `dogfood/urun-i`
+defter aynasının a–d adımları dahil), `compiler/tests/cli_goc_plani_testi.rs`;
+spec/25 K-407 maddesi.
+
+## K-406 — Türlü metin yanıtı: `X metnini "<tür>" türünde gönder` (ADR-163 eki)
+
+**Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (ZeeMail) sürtünmesi
+ZM-F048 (ürün `b75db4c`); merkez onayı 26.11.2026 09:05, küçük yüzey.
+Freeze sınıfı `dogfood-change` (semantic-change). GB-179.
+
+Sürtünme: takvim yayını (`GET /takvim/yayin.ics?k=<belirteç>`) bellekte
+kurulan iCalendar metnidir; bellekteki metin yanıtı yalnız `text/html` /
+`text/plain`, `text/calendar` ise yalnız dosya yanıtındaydı ve GET rotası dosya
+yazamaz (T045). Karar: yanıt cümlesinin kardeş biçimi, tür kapalı
+`icerik_turu` kaydının metin satırlarından (`text/plain`, `text/csv`,
+`text/calendar`, `application/xml`) kaynakta görünen literal; aksi S037.
+Başlıklar dosya yanıtıyla aynı (nosniff, no-store, sandbox CSP, CORP),
+`Content-Disposition` yok; gövde bayt bayt (CRLF için yeni sözdizimi yok,
+CR K-402 kod noktası yüzeyinden). Rotayı bitirir (K-403), eylemde T044.
+Yeni kalıp kelimesi yalnız `metnini`; tanı kodu, AST değer türü, bağımlılık
+ve `dil::api::v1` yok.
+
+Kanıt: `compiler/tests/dosya_yaniti_testi.rs` (4 vaka: gerçek TCP başlık +
+ham CRLF/LF/CR gövde + HEAD, S037 kapalı küme, hermetik adaptör + IO izi
+şeması, lint S047), `icerik_turu.rs::web_metin_turu_yalniz_metin_satirlarini_acar`;
+dogfood `urun-h/takvim-yayini/`. Açık: `attachment` biçimi ve abonelik
+istemcilerinin (Outlook, Google) gerçek davranış ölçümü (insan).
 
 ## K-404 — Parola değişiminde öteki oturumları kapatma (dil değişikliği yok)
 
@@ -3377,7 +3542,7 @@ dogfood `urun-h-istemci-yapilandirma` (`dogfood/urun-h/istemci-yapilandirma/`).
 
 Açık: (1) Outlook POX Autodiscover POST ister; `_csrf` ve `--web-proxy`
 `Origin` kuralı 403 verir — dar CSRF muafiyeti RFC-0040 #5(c) ile tek model,
-ayrı iş. (2) HTML standardı yanıt CSP'sindeki `sandbox`'ı gezinme
+ayrı iş (kimliksiz yarısı K-405/ADR-179 ile KAPANDI). (2) HTML standardı yanıt CSP'sindeki `sandbox`'ı gezinme
 bayraklarına katıp `allow-downloads` olmadan `attachment` indirmesini
 engelleyebilir; Chromium/WebKit bugün uygulamıyor. Bütün dosya yanıtlarını
 etkileyen `sandbox allow-downloads` önerisi ayrı iştir. (3) iOS cihazda

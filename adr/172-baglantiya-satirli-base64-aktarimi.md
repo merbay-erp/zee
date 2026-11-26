@@ -5,7 +5,8 @@
 - **İlgili kayıt:** K-396, ZM-F040, [RFC-0039](../rfcs/0039-ag-sunucusu-yetkinligi.md)
   Aşama A2d, ADR-165 (bağlantı yüzeyi, A2c eki), ADR-167 (RFC-0043 Dilim 1
   `kodlama`), ADR-170 (paylaşılan veri kökü), ADR-059 (core freeze),
-  ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), spec/12 §9, GB-171
+  ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), spec/12 §9, GB-171;
+  ek: K-408, ZM-F049, ADR-174 §8, spec/26, GB-181
 
 ## Bağlam
 
@@ -74,3 +75,57 @@ aralık semantiği ürünün SQL'ine sızan kalıcı bir sözleşmedir.
 - Yeni ayrıştırıcı yok (sabit konumlu kalıp eşleşmesi); yeni fuzz hedefi
   gerekmez. Satır kodlayıcı ve pencere `kodlama::testler` ile her kenarda
   dilim eşitliğiyle sınanır.
+
+## Ek — dosya hedefli ayna (K-408, ZM-F049, 26 Kasım 2026)
+
+**Bağlam.** `urun-h` giden iletileri DKIM ile imzalıyor (K-397 Dilim 2,
+ADR-174). Eksiz ileti bellekte imzalanabilir; ekli iletide ek parçaları
+yalnız SMTP'ye akarken (`bağlantıya aktarmayı dene`) oluşur, gövde hiçbir
+yerde bütün olarak durmaz. ADR-174 §8 dosyadan akışlı gövde özeti
+(`dosyasının 0 baytından "relaxed" kipinde dkim gövde özetini almayı dene`)
+bu yüzden kullanılamıyor; ekli dış ileti imzasız gidiyordu. Var olan
+`base64 okumayı dene` + `dosyaya ekle` döngüsü ZM-F040'taki 57 baytlık
+döngünün aynısıdır (her satır bir `Metin`, C024).
+
+**Karar.**
+
+1. **Yüzey.** `<kaynak> dosyasını base64 satırlarıyla <hedef> dosyasına
+   eklemeyi dene` → `Sonuç<TamSayı>` (yazılan bayt). İntrinsic
+   `dosya.base64_satirlari_ekle` (`dosya-yazma`, dış yazma etkisi; kaynak
+   ayrıca `dosya-okuma`). Yeni kalıp kelimesi, tür ya da tanı kodu yok:
+   `satırlarıyla` K-396'dan, `dosyasına eklemeyi dene` K-389'dan gelir.
+2. **Bayt eşitliği.** Satır düzeni ve formül §2 ile aynıdır (T = e +
+   2·⌈e/76⌉); kodlayıcı tek: `kodlama::base64_satirlari_kodla`. Aynı
+   kaynağın bağlantıya ve dosyaya çıktısı bayt bayt aynıdır.
+3. **Akış ve atomiklik.** Kaynak 57·256 baytlık parçalarla okunup kodlanır,
+   çıktı `Metin` olmaz, değer zarfına sayılmaz. Ekleme spec/08 / K-389
+   `eklemeyi dene` modelidir: hedef kilidi altında mevcut içerik bağ
+   izlenmeden okunur, geçici dosyaya önek + kodlanmış akış yazılır,
+   `fsync` ve tek atomik `rename` ile yayımlanır. Kaynak okuma sırasında
+   bildirilen boyundan kısa ya da uzun çıkarsa hiçbir bayt yayımlanmaz.
+4. **Tavanlar.** Kaynak 32 MiB (K-395/K-396/K-401 ile aynı), hedefin
+   eklemeden sonraki toplamı 32 MiB (K-395 çözerek ekleme hedef tavanı ve
+   ADR-174 §8 dosya gövde özeti tavanı). Sonuç olarak bir çağrıyla en çok
+   ≈ 23,4 MiB ham ek kodlanabilir; 25 MB iletinin ~18 MB eki (kodlanmış
+   ~24,6 MB) sığar. Tam sınır kabul, bir bayt fazlası hedefe dokunmadan
+   C013. Eylem içinde C013 (akışlı ekleme bir çalışma dosyasıdır, K-389).
+5. **Yetki ve iz.** İki yol ayrı ayrı merkezî denetimden geçer: kaynak
+   `dosya-okuma`/`veri-okuma`, hedef `dosya-yazma`/`veri-yazma` (statik +
+   çalışma anı; ADR-170). IO izi `dosyaya_base64_satirlari_ekle` olayı
+   yalnız `[kaynak, hedef]` ve yazılan bayt sayısını taşır.
+6. **Katman.** `kalici_dosya → kodlama` kenarı (ikisi de altyapı; yön
+   temel→temel, yeni SCC yok).
+
+**Neden bu ADR'nin eki.** Biçim, formül ve kodlayıcı A2d sözleşmesidir;
+değişen yalnız hedef (bağlantı yerine dosya). RFC-0043 dosya ↔ `Metin`
+dönüşümünü yönetir; bu ek tam o zarfın dışında kalmayı gerektirir.
+ADR-174 §8 tüketicidir, üreticiyi taşımaz.
+
+**Sonuçlar.** Ekli giden iletinin gövdesi tek dosyada kurulur ve `bh=`
+aynı dosyadan alınır. Kanıt: `compiler/tests/base64_satirlari_ekle_testi.rs`
+(boş, 57/76 kat, tek bayt, önek korunumu, 32 MiB tam sınır/aşım, eylem,
+yol kaçışı, dizin, `veri:` okuma/yazma ayrımı, T054, içeriksiz iz ve
+replay), `ag_baglantisi_surec_testi` (aynı kaynağın TCP ve dosya çıktısı
+bayt bayt eşit), `kalici_dosya::cozulmus` (boy değişiminde yayımlamama,
+geçici dosya kalmaz). Quoted-printable dosya hedefi ve aralıklı dosya
+hedefi bilinçli dışarıda.

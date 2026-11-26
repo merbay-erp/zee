@@ -120,6 +120,13 @@ adını `morfoloji::baglama_koku` ve `kok_adaylari` ile seçer (ADR-175).
 Morfoloji yalnız `guvenlik` temeline bağlıdır; yeni SCC yoktur, ters katman
 geçişi yoktur.
 
+## K-406 kenarı
+
+`ayristirici → icerik_turu` (`sozdizimi` → `altyapi`): türlü metin yanıtının
+(`… metnini "<tür>" türünde gönder`) tür literali derlemede kapalı içerik türü
+kaydının metin alt kümesine karşı denetlenir (ADR-163 eki). `icerik_turu`
+bağımlılıksız saf tablodur; yeni SCC ve ters katman geçişi yoktur.
+
 ## Değişiklik protokolü
 
 ```bash

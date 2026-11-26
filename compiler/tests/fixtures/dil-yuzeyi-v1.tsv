@@ -19,6 +19,7 @@ api	dosya.aralik_base64	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSY
 api	dosya.aralik_metin	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ARALIK_METIN: &str = "dosya.aralik_metin";
 api	dosya.base64_cozerek_ekle	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_BASE64_EKLE: &str = "dosya.base64_cozerek_ekle";
 api	dosya.base64_cozerek_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_BASE64_YAZ: &str = "dosya.base64_cozerek_yaz";
+api	dosya.base64_satirlari_ekle	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_BASE64_SATIRLARI_EKLE: &str = "dosya.base64_satirlari_ekle";
 api	dosya.ilk_baytlar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
 api	dosya.qp_cozerek_ekle	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_QP_EKLE: &str = "dosya.qp_cozerek_ekle";
 api	dosya.qp_cozerek_yaz	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_QP_YAZ: &str = "dosya.qp_cozerek_yaz";
@@ -39,6 +40,7 @@ api	io-izi.birincil_surec	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"bi
 api	io-izi.dosya_araligi_oku	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_araligi_oku"
 api	io-izi.dosya_ilk_baytlari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_ilk_baytlari"
 api	io-izi.dosya_yaniti_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_yaniti_gonder"
+api	io-izi.dosyaya_base64_satirlari_ekle	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosyaya_base64_satirlari_ekle"
 api	io-izi.dosyaya_bayt_yaz	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosyaya_bayt_yaz"
 api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
 api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
@@ -48,6 +50,7 @@ api	io-izi.istemci_adresi	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"is
 api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"parola_ozeti_uret"
 api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
 api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
+api	io-izi.turlu_yanit_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"turlu_yanit_gonder"
 api	posta.dkim_dogrula	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
 api	posta.dkim_dosya_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOSYA_GOVDE_OZETI: &str = "posta.dkim_dosya_govde_ozeti";
 api	posta.dkim_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_GOVDE_OZETI: &str = "posta.dkim_govde_ozeti";
@@ -56,6 +59,7 @@ api	posta.kurumsal_alan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POST
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
 api	web.dosya_yaniti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
+api	web.istek_ham_govdesi	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_HAM_GOVDE: &str = "web.istek_ham_govdesi";
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 bicim	icerik-turu.csv	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/csv",
 bicim	icerik-turu.docx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -75,6 +79,7 @@ bicim	multipart-yukleme-alanlari	aktif	1.0.0-dev	compiler/src/main.rs	"yukleme_g
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	smtp-yerel-ek-reddi	aktif	1.0.0-dev	compiler/src/eposta.rs	pub const MIME_EK_REDDI_ONEKI: &str = "MIME e-posta gönderilemedi: ek reddedildi (";
 bicim	web-dosya-yaniti-disposition	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	"attachment; filename=\"{}\"; filename*=UTF-8''{}",
+bicim	web-metin-yaniti-turleri	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "xml"];
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 bicim	zee-active-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-active-1
 bicim	zee-app-dispatch-inflight-1	aktif	0.8.0-dev	scripts/dispatcher-service.py	zee-app-dispatch-inflight-1
@@ -205,6 +210,7 @@ kalip	göre	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	görselini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	görünüm	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	gövde	aktif	1.0.0-dev	compiler/src/lsp.rs	-
+kalip	gövdesi	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	gövdesinin	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	harfini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -239,8 +245,10 @@ kalip	kuruşlusu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	küçültmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	listelemeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	makine	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	mesajı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	metni	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	metnini	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	nedeni	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nedeniyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	nokta	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -352,6 +360,7 @@ profil	cli-ag-izni	aktif	1.0.0-dev	compiler/src/cli/ag_izni.rs	pub(crate) const 
 profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
 profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
+profil	cli-goc-ileri-kayit	aktif	1.0.0-dev	compiler/src/main.rs	"--ileri-kayitlara-izin"
 profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
 profil	cli-kaynak-kapsami	aktif	0.8.0-dev	compiler/src/cli/kapsam.rs	"--kapsam"
 profil	cli-lint	aktif	0.8.0-dev	compiler/src/main.rs	"--lint"

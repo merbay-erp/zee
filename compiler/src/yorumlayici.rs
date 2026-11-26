@@ -21,6 +21,7 @@ mod kaynak;
 mod kendine_ekleme;
 mod kimlik_iletisim;
 mod kodlanmis_dosya;
+mod makine_istegi;
 mod metin;
 mod metin_kodlama;
 mod paylasilan_io;
@@ -66,15 +67,16 @@ pub use crate::web_guvenligi::OturumAyari;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
+    RotaKipi,
 };
 use crate::dns_teli::{DnsSonucu, KayitTuru};
 use crate::intrinsic::{
-    self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_ILK_BAYTLAR,
-    DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI,
-    EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR, ISTEMCI_ADRESI,
-    PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
-    TOTP_ANAHTARI, TOTP_DOGRULA, WEB_BIRINCIL_SUREC, WEB_DOSYA_YANITI, WEB_OTURUMLARINI_LISTELE,
-    WEB_OTURUMUNU_IPTAL_ET,
+    self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_BASE64_SATIRLARI_EKLE,
+    DOSYA_ILK_BAYTLAR, DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER,
+    EPOSTA_GONDER_BAGLANTILI, EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT,
+    HTTP_GETIR, ISTEMCI_ADRESI, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
+    SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, WEB_BIRINCIL_SUREC, WEB_DOSYA_YANITI,
+    WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -385,6 +387,16 @@ pub trait GirdiCikti {
     ) -> Result<(String, u64), String> {
         Err("IO adaptörü çözerek dosyaya yazmayı desteklemiyor".into())
     }
+    /// K-408: `kaynak`ın RFC 2045 satırlı base64 kodlamasını akışla `hedef`in
+    /// sonuna ekler (spec/08 ekleme atomikliği); yazılan bayt sayısı. Kaynak
+    /// en çok 32 MiB, hedef toplamı en çok 32 MiB; aşımda hiç bayt yazılmaz.
+    fn dosyaya_base64_satirlari_ekle(
+        &mut self,
+        _kaynak: &str,
+        _hedef: &str,
+    ) -> Result<i64, String> {
+        Err("IO adaptörü base64 satırlarıyla dosyaya eklemeyi desteklemiyor".into())
+    }
     /// Şimdiki zaman: (yıl, ay, gün, saat, dakika). v0'da UTC.
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32);
     /// Komut satırı argümanları (programa aktarılanlar).
@@ -474,6 +486,15 @@ pub trait GirdiCikti {
     }
     /// K-381: bağlantı görevi tanıyla bitti; neden yalnız operatör günlüğüne.
     fn baglanti_tanisini_gunlukle(&mut self, _kimlik: u64, _neden: &str) {}
+    /// K-406 (ADR-163 eki): son isteğe bellekteki metni kapalı `icerik_turu`
+    /// metin satırlarından `tur` ile 200 yanıtı olarak gönderir; başlıkları
+    /// (nosniff, no-store, sandbox CSP, CORP) dosya yanıtıyla aynı kurar,
+    /// `Content-Disposition` yazmaz ve gövdeyi bayt bayt değiştirmez.
+    /// Desteklemeyen adaptör türü düşürüp HTML koklamasına açılmaz: varsayılan
+    /// fail-closed 500 durum yanıtıdır.
+    fn turlu_yanit_gonder(&mut self, _tur: &str, _yanit: &str) {
+        self.durum_yaniti_gonder(500, "istek işlenemedi; sunucu hatası");
+    }
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
     /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.
     fn durum_yaniti_gonder(&mut self, _durum: u16, yanit: &str) {

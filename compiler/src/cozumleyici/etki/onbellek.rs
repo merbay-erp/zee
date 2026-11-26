@@ -1,17 +1,19 @@
 //! K-335 önbelleklenebilir rota denetimi (T056/T057, ADR-160).
 
-use crate::agac::{Cumle, HttpYontemi, Ifade};
+use crate::agac::{Cumle, HttpYontemi, Ifade, RotaKipi};
 use crate::tani::Tani;
 use crate::yetkinlik::Yetkinlik;
 
 /// Oturum/CSRF/çerez yüzeyine ilk dokunuşun satırları. `dokunus` çağrılan
 /// işlemlerden geçişli yayılır; `degisken` (rota ortamındaki `oturum` /
 /// `çerezler` okuması) yalnız rota gövdesinde anlamlıdır, çağrılan işlemin
-/// aynı adlı yereli sayılmaz.
+/// aynı adlı yereli sayılmaz. K-405 aynı izi makine uç noktası için kullanır;
+/// `ham_govde` `isteğin ham gövdesi` okumasının ilk satırıdır.
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(super) struct OnbellekIzi {
     dokunus: Option<usize>,
     degisken: Option<usize>,
+    ham_govde: Option<usize>,
 }
 
 fn en_erken(a: Option<usize>, b: Option<usize>) -> Option<usize> {
@@ -25,6 +27,16 @@ impl OnbellekIzi {
     pub(super) fn birlestir(&mut self, baska: OnbellekIzi) {
         self.dokunus = en_erken(self.dokunus, baska.dokunus);
         self.degisken = en_erken(self.degisken, baska.degisken);
+        self.ham_govde = en_erken(self.ham_govde, baska.ham_govde);
+    }
+
+    /// Rota gövdesinin doğrudan değişken okuması ya da geçişli dokunuşu.
+    pub(super) fn oturum_dokunusu(dogrudan: &Self, toplam: &Self) -> Option<usize> {
+        en_erken(toplam.dokunus, dogrudan.degisken)
+    }
+
+    pub(super) fn ham_govde(&self) -> Option<usize> {
+        self.ham_govde
     }
 
     /// Çerez yazma/silme ve oturum açma/kapatma cümleleri.
@@ -40,9 +52,13 @@ impl OnbellekIzi {
 
     /// `csrf belirteci`, web oturumu listeleme/iptal gibi web-oturumu intrinsic'leri.
     pub(super) fn intrinsic(&mut self, yetkinlik: Yetkinlik, ifade: &Ifade) {
+        let satir = ifade.kaynak_araligi().map_or(1, |aralik| aralik.satir());
         if yetkinlik == Yetkinlik::WebOturumu {
-            let satir = ifade.kaynak_araligi().map_or(1, |aralik| aralik.satir());
             self.dokunus = en_erken(self.dokunus, Some(satir));
+        }
+        if matches!(ifade.turu(), Ifade::Intrinsic { kimlik, .. } if kimlik == crate::intrinsic::WEB_HAM_GOVDE)
+        {
+            self.ham_govde = en_erken(self.ham_govde, Some(satir));
         }
     }
 
@@ -68,7 +84,7 @@ pub(super) fn onbellekli_rotayi_denetle(
     toplam: &OnbellekIzi,
 ) -> Result<(), Tani> {
     let Some(Cumle::RotaPolitikasi {
-        onbellek_saniye: Some(_),
+        kip: RotaKipi::Onbellekli(_),
         satir,
         ..
     }) = govde.first()
@@ -88,7 +104,7 @@ pub(super) fn onbellekli_rotayi_denetle(
         )
         .onerili("Durum değiştiren rotada `herkese açık` yaz; önbellek iznini salt-okuma GET rotasına taşı.".into()));
     }
-    if let Some(dokunus) = en_erken(toplam.dokunus, dogrudan.degisken) {
+    if let Some(dokunus) = OnbellekIzi::oturum_dokunusu(dogrudan, toplam) {
         return Err(Tani::yeni(
             "T057",
             "Önbelleklenebilir rota oturum, CSRF belirteci ya da çerez kullanıyor; yanıtı başka kullanıcıya sızabilir."

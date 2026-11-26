@@ -8,7 +8,12 @@ aynı soyut çözüme dönmesini ve çoklu köklerin sessizce seçilmemesini;
 `http_istegi` hedefi ise her byte dizisinin exact bir HTTP/1.x isteği ya da
 fail-closed hata olmasını arar. `dns_yaniti` (K-390/ADR-169) her byte
 dizisinin sınırlı bir DNS yanıtı ya da hata olmasını ve Zee'nin kabul ettiği
-her paketin bağımsız `hickory-proto` kâhininde de aynı okunmasını arar. `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
+her paketin bağımsız `hickory-proto` kâhininde de aynı okunmasını arar.
+`dkim_imza_girdisi` (K-411/ADR-174) DKIM kanonik gövde özetleyicisinin panik
+yapmamasını, parça sınırından ve LF/CRLF seçiminden bağımsız kalmasını ve imza
+kâhini denetiminin kabul ettiği girdide tutarlı olmasını arar. `x509_spki`
+(K-411/ADR-173) TLS uç sertifikasından SPKI çıkaran sınırlı DER yürüyücüsünün
+ayrı yazılmış referans DER okuyucusuyla aynı sonucu vermesini arar. `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
 uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 
 ## Kalıcı katmanlar
@@ -41,6 +46,27 @@ uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
   NXDOMAIN + SOA, CNAME + AAAA, TLSA ve kendine işaretçi döngüsü tohumları
   (`.gitattributes` ile ikili). `compiler/tests/dns_kahin_testi.rs` korpusu
   ve 40.000 deterministik bozulmuş paketi her ana testte yeniden oynatır.
+- `compiler/fuzz/fuzz_targets/dkim_imza_girdisi.rs`: ilk baytı parça sınırı
+  seçicisi sayar; kalan baytları iki gövde kipinde (`simple`, `relaxed`) bütün
+  ve iki parça olarak özetler, CR'siz girdide CRLF karşılığıyla karşılaştırır;
+  UTF-8 ise `dkim_imza::imza_girdisini_denetle`'den geçirir. Özellikler ortak
+  `compiler/tests/ortak/dkim_ozellikleri.rs` dosyasındadır.
+- `compiler/fuzz/corpus/dkim_imza_girdisi/`: geçerli ve katlanmış/tırnaklı imza
+  girdisi, RFC 6376 §3.4.5 CRLF gövdesi, relaxed boşluklu LF gövde, çıplak CR
+  ve boş tohumları (`.gitattributes` ile ikili).
+  `compiler/tests/dkim_imza_testi.rs` korpusu ve tohum başına 2.000
+  deterministik bozulmuş girdiyi her ana testte yeniden oynatır.
+- `compiler/fuzz/fuzz_targets/x509_spki.rs`: ham baytları
+  `ag_satiri::x509::spki_dilimi`'nden geçirir; ortak
+  `compiler/tests/ortak/x509_ozellikleri.rs` aynı X.690 kurallarını uygulayan
+  referans okuyucuyla diferansiyel karşılaştırır ve dönen dilimin girdinin
+  içinde tam bir SEQUENCE TLV'si olduğunu denetler.
+- `compiler/fuzz/corpus/x509_spki/`: openssl üretimi RSA-2048 ve Ed25519+SAN
+  sertifikaları, sürümsüz (v1) iskelet, kesik, kanonik olmayan ve belirsiz
+  uzunluklu DER (`.gitattributes` ile ikili; özel anahtar yok).
+  `compiler/tests/giden_baglanti_testi.rs` korpusu ve tohum başına 3.000
+  bozulmuş girdiyi yeniden oynatır, gerçek sertifikalarda SPKI'yi openssl'in
+  çıkardığı açık anahtarla karşılaştırır.
 - `compiler/fuzz/fuzz_targets/wasm_abi.rs`: kayıtlı girdinin yanında null,
   iç/kayıt dışı pointer, yanlış/taşkın uzunluk, keyfî UTF-8, kaynak/soru kipi
   ve yanlış+çift bırakma sıralarını yürütür; her canlı sonuç kaydının uzunluk
@@ -75,6 +101,12 @@ cargo +nightly-2026-08-31 fuzz run morfoloji fuzz/corpus/morfoloji -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=128 -timeout=5
 cargo +nightly-2026-08-31 fuzz run http_istegi fuzz/corpus/http_istegi -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=81920 -timeout=5
+cargo +nightly-2026-08-31 fuzz run dns_yaniti fuzz/corpus/dns_yaniti -- \
+  -dict=fuzz/dictionaries/zee.dict -max_len=65536 -timeout=5
+cargo +nightly-2026-08-31 fuzz run dkim_imza_girdisi fuzz/corpus/dkim_imza_girdisi -- \
+  -max_len=65536 -timeout=5
+cargo +nightly-2026-08-31 fuzz run x509_spki fuzz/corpus/x509_spki -- \
+  -max_len=65537 -timeout=5
 cargo +nightly-2026-08-31 fuzz run wasm_abi fuzz/corpus/wasm_abi -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=4097 -timeout=5
 ```

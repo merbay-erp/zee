@@ -44,6 +44,11 @@ impl GirdiCikti for PaylasilanIo<'_> {
     ) -> Result<(String, u64), String> {
         self.ic.borrow_mut().dosyaya_bayt_yaz(yol, baytlar, ekleme)
     }
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        self.ic
+            .borrow_mut()
+            .dosyaya_base64_satirlari_ekle(kaynak, hedef)
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.borrow_mut().simdi()
     }
@@ -127,6 +132,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         self.ic.borrow_mut().durum_yaniti_gonder(durum, yanit);
+    }
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        self.ic.borrow_mut().turlu_yanit_gonder(tur, yanit);
     }
     fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
         self.ic.borrow_mut().dosya_yaniti_gonder(yol, tur, ad)

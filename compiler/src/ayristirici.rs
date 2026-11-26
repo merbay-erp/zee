@@ -19,7 +19,7 @@ use self::parametre::parametre_adi;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
-    Parametre, RotaErisimi, Test, Yapi,
+    Parametre, RotaErisimi, RotaKipi, Test, Yapi,
 };
 use crate::intrinsic::{
     DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_ILK_BAYTLAR, DOSYA_SHA256, DOSYA_SIL,

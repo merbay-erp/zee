@@ -5,7 +5,7 @@ ag_satiri	altyapi	-	Baglanti satir akisi: CRLF okuyucu, cıplak CR/LF ve uzunluk
 agac	model	kimlik	Kaynak AST veri modeli
 api	adapter	agac,bicimleyici,faz,lib,proje,tani,yorumlayici	Desteklenen surumlu Rust gomme facade'i
 artefakt_dogrulama	proje	guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,zaman	ZEP arsiv imza SBOM ve provenance guven siniri
-ayristirici	sozdizimi	agac,intrinsic,morfoloji,ondalik,sozcukleyici,tani	Token akisini ASTye donusturme
+ayristirici	sozdizimi	agac,icerik_turu,intrinsic,morfoloji,ondalik,sozcukleyici,tani	Token akisini ASTye donusturme
 bicimleyici	sozdizimi	sozcukleyici,tani	Kanonik kaynak bicimi
 bin_depo_sayilari	muhendislik	kalici_dosya	Canli depo envanteri
 bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu
@@ -31,7 +31,7 @@ http_istegi	altyapi	-	Byte tabanli HTTP istek framingi
 icerik_turu	altyapi	-	Web dosya yaniti ve SMTP eki ortak kapali icerik turu kaydi ve RFC 6266 ad kodlamasi
 intrinsic	altyapi	yetkinlik	Yerlesik islem ve yetkinlik metadata si
 invariant	semantik	agac,faz,hir,tani	AST HIR yapisal dogrulama
-kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
+kalici_dosya	altyapi	kaynak_sinirlari,kodlama	Atomik kalici dosya ilkelleri; satirli base64 akisli ekleme kodlama ile (K-408)
 kamu_son_ekleri	altyapi	-	Public Suffix List ayrıştırıcısı ve RFC 7489 kurumsal alanı; veri derleyiciye gömülü değil (K-390 B1b)
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari

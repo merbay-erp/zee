@@ -38,6 +38,9 @@ pub struct ToplayanIo {
     /// K-378: hermetik dosya yanıtları — (Content-Type, Content-Disposition).
     /// Gövde `sunucu_yanitlari`na dosya içeriği olarak yazılır.
     pub dosya_yanitlari: Vec<(String, String)>,
+    /// K-406: hermetik türlü metin yanıtlarının `Content-Type` değerleri.
+    /// Gövde `sunucu_yanitlari`na bayt bayt yazılır.
+    pub turlu_yanitlar: Vec<String>,
     /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
     pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
@@ -130,6 +133,7 @@ impl ToplayanIo {
             sunucu_durumlari: Vec::new(),
             onbellek_izinleri: Vec::new(),
             dosya_yanitlari: Vec::new(),
+            turlu_yanitlar: Vec::new(),
             istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
@@ -304,6 +308,47 @@ impl GirdiCikti for ToplayanIo {
         let hedef = self.ikili_dosyalar.entry(yol.to_string()).or_default();
         hedef.extend_from_slice(baytlar);
         Ok((crate::guvenlik::sha256_hex(hedef), hedef.len() as u64))
+    }
+    /// K-408: hermetik taraf aynı saf kodlamayla (`kodlama`) ikili hedefe ekler.
+    fn dosyaya_base64_satirlari_ekle(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        let ham = match self.ikili_dosyalar.get(kaynak) {
+            Some(baytlar) => baytlar.clone(),
+            None => self
+                .dosyalar
+                .get(kaynak)
+                .map(|metin| metin.as_bytes().to_vec())
+                .ok_or_else(|| format!("\"{kaynak}\" dosyası bulunamadı"))?,
+        };
+        if ham.len() as u64 > crate::kodlama::BASE64_SATIRLARI_TAVANI {
+            return Err(format!(
+                "\"{kaynak}\" kaynak dosyası 32 MiB base64 satırları tavanını aşıyor; hiçbir bayt yazılmadı"
+            ));
+        }
+        if !self.eylem_yedekleri.is_empty() {
+            return Err("base64 satırlarıyla eklemeyi dene eylem içinde kullanılamaz".into());
+        }
+        let eklenecek = crate::kodlama::base64_satirli_uzunluk(ham.len() as u64);
+        let onceki = match self.dosyalar.get(hedef) {
+            Some(metin) => metin.len(),
+            None => self.ikili_dosyalar.get(hedef).map_or(0, Vec::len),
+        } as u64;
+        if onceki + eklenecek > crate::kodlama::BASE64_SATIRLARI_TAVANI {
+            return Err(format!(
+                "\"{hedef}\" dosyasına yazılamadı: hedefin toplam boyutu 32 MiB sınırını aşıyor"
+            ));
+        }
+        let mut cikti = Vec::new();
+        crate::kodlama::base64_satirlari_kodla(&ham, &mut cikti);
+        // Base64 satırları ASCII'dir: metin hedef (ör. MIME başlıkları) metin kalır.
+        match self.dosyalar.get_mut(hedef) {
+            Some(metin) => metin.push_str(std::str::from_utf8(&cikti).unwrap_or_default()),
+            None => self
+                .ikili_dosyalar
+                .entry(hedef.to_string())
+                .or_default()
+                .extend_from_slice(&cikti),
+        }
+        Ok(eklenecek as i64)
     }
     fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
         let icerik = self
@@ -484,6 +529,25 @@ impl GirdiCikti for ToplayanIo {
         let bayt = icerik.len() as i64;
         self.bekleyen_sunucu_yaniti = Some(SunucuYanitTaslagi::Govde(icerik));
         Ok(bayt)
+    }
+    fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
+        // Gerçek adaptörle aynı kapalı küme (K-406); kayıt dışı tür HTML
+        // koklamasına düşmez, 500 olur.
+        let Some(kayit) = crate::icerik_turu::web_metin_turu(tur) else {
+            self.durum_yaniti_gonder(500, "istek işlenemedi; sunucu hatası");
+            return;
+        };
+        if self.web_istek_yedegi.is_some() && self.bekleyen_sunucu_yaniti.is_some() {
+            return;
+        }
+        self.turlu_yanitlar
+            .push(crate::icerik_turu::baslik_degeri(kayit));
+        let taslak = SunucuYanitTaslagi::Govde(yanit.to_string());
+        if self.web_istek_yedegi.is_some() {
+            self.bekleyen_sunucu_yaniti = Some(taslak);
+        } else {
+            self.sunucu_yanitini_uygula(taslak);
+        }
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         let taslak = SunucuYanitTaslagi::Durum(durum, yanit.to_string());

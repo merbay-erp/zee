@@ -1,0 +1,10 @@
+# K-407 (ADR-181): küme N+1 0002 ile `etiket` sütununu ekler (genişleten göç;
+# küme N'nin sorguları değişmeden çalışır).
+eylem notu kaydet
+    metni Metin olarak al
+    etiketi Metin olarak al
+    TamSayı sonucu döndürür
+
+    parametreler metni, etiketi listesi olsun
+    sonuç "INSERT INTO notlar (metin, etiket) VALUES ($1, $2)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    sonuç döndür

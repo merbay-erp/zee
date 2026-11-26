@@ -2,6 +2,8 @@
 
 use super::*;
 
+mod makine;
+
 fn onbellek_bicimi_tanisi(satir: usize) -> Tani {
     Tani::yeni(
         "S043",
@@ -20,6 +22,9 @@ fn onbellek_bicimi_tanisi(satir: usize) -> Tani {
 /// K-335: `herkese açık önbelleklenebilir N saniye`. `None`, satırın bu
 /// kalıba ait olmadığını söyler; kalıp başlayıp bozuksa S043 döner.
 pub(super) fn onbellekli_politika(tokenlar: &[Token], satir: usize) -> Option<Result<Cumle, Tani>> {
+    if let Some(makine) = makine::makine_politikasi(tokenlar, satir) {
+        return Some(makine);
+    }
     if tokenlar.len() < 3
         || !kelime_mi(&tokenlar[0], "herkese")
         || !kelime_mi(&tokenlar[1], "açık")
@@ -41,7 +46,7 @@ pub(super) fn onbellekli_politika(tokenlar: &[Token], satir: usize) -> Option<Re
     Some(match saniye {
         Some(saniye) => Ok(Cumle::RotaPolitikasi {
             erisim: RotaErisimi::HerkeseAcik,
-            onbellek_saniye: Some(saniye),
+            kip: crate::agac::RotaKipi::Onbellekli(saniye),
             satir,
         }),
         None => Err(onbellek_bicimi_tanisi(satir)),
