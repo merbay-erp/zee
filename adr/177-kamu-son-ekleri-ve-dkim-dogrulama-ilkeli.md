@@ -145,8 +145,12 @@ Uygulama günü iki sürtünme ortaya çıktı:
 - **Açık:**
   - `dil dene` için PSL yüklemesi; şu an yalnız gerçek süreç ve hermetik
     `ToplayanIo` yüklüyor.
-  - `psl` ve `dkim_anahtari` fuzz hedefleri. Şimdilik 20 000'er
-    deterministik bozulmuş girdi birim testi var.
+  - `dkim_anahtari` fuzz hedefi (`p=` SPKI/PKCS#1 DER okuyucusu,
+    `dkim_kripto::rsa_acik_anahtari`). Şimdilik 20 000 deterministik
+    bozulmuş SPKI birim testi var; K-411 `x509_spki` hedefi bu okuyucuyu
+    değil, TLS uç sertifikası yürüyücüsünü (`ag_satiri::x509`) kapsar.
+    `psl` fuzz hedefi K-418 ile eklendi (bkz. aşağıdaki ek); RC fuzz
+    kapısına alınması ayrı karardır.
   - IDN (U-label) PSL kuralları.
   - DMARCbis ağaç yürüyüşü.
   - PSL güncellik uyarısı (CLI/lint).
@@ -160,3 +164,16 @@ Büyük gövdede `bh=` için gövde kanonikleştirmesi (simple/relaxed) dosyadan
 akışlı ilkelle host'a alındı; başlık kanonikleştirmesi Zee'de kalır. Bu
 kararın dar istisnası ve gerekçesi [ADR-174 §8](174-dkim-imza-ilkeli.md)'dedir.
 Metin ilkesi `gövdesinin dkim gövde özeti` değişmedi.
+
+## Ek — K-418 (27 Kasım 2026)
+
+`psl` fuzz hedefi (`compiler/fuzz/fuzz_targets/psl.rs`) günlük fuzz
+koşusuna eklendi. Kâhin `compiler/tests/ortak/psl_kahini.rs`'tedir ve
+yeni bağımlılık getirmez: kural listesinde etiket etiket yürüyen ayrı
+yazılmış referans uygulama ayrıştırma kabulünü, kural/yok sayılan satır
+sayısını ve kurumsal alanı birebir karşılaştırır; spec/31 §2 değişmezleri
+(sonek, küçük harf, sonda noktasız, geçersiz ad → boş, eşgüçlülük, harf ve
+son nokta bağımsızlığı) ayrıca denetlenir. Joker `*.x` adın kendisi `x`
+ise `x`'i kamu son eki sayar; referans bu belgelenmiş seçimi korur.
+Kararlı oynatma `compiler/tests/kamu_son_ekleri_fuzz_testi.rs`tedir.
+compiler/src değişmedi. Hedef RC fuzz kapısında değildir.

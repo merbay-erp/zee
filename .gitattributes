@@ -13,6 +13,8 @@ compiler/fuzz/corpus/dkim_imza_girdisi/* binary
 compiler/fuzz/corpus/x509_spki/*.der binary
 # K-412: kodlama korpusu MIME/QP CRLF ve geçersiz UTF-8 baytlarını korur.
 compiler/fuzz/corpus/kodlama/* binary
+# K-418: psl korpusunun ilk baytı kip seçicisidir; CRLF ve NUL ayıracı korunur.
+compiler/fuzz/corpus/psl/* binary
 
 # WASM ABI korpusunun ilk kontrol baytı metin niteliğinde değildir.
 compiler/fuzz/corpus/wasm_abi/* binary

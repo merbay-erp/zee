@@ -1,0 +1,5 @@
+0example.COM
+WwW.example.COM
+.example.com
+example
+b.example.example

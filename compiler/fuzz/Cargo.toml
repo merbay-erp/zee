@@ -77,3 +77,10 @@ path = "fuzz_targets/kodlama.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "psl"
+path = "fuzz_targets/psl.rs"
+test = false
+doc = false
+bench = false
