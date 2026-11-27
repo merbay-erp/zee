@@ -23,6 +23,12 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez.
 
+### Site
+
+- **Sürüm notları ham kopyası:** `/updates/surumler.md` ham kaynağı K-418
+  kaydıyla yeniden üretildi; `/belge/surumler/` sayfasıyla aynı içeriği
+  taşır.
+
 ## 26 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
