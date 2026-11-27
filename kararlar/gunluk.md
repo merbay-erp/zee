@@ -6551,3 +6551,32 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - RC kapısına alınmadı (kullanıcı kararı gerekir); yalnız günlük
   `fuzz.yml` ve belgeler. Düzeltilmiş kodda yerel nightly koşusu bulgu
   vermedi. K-419 kapandı.
+
+## K-364 — RFC-0040 ilk alt RFC taslağı: RFC-0047 (27 Kasım 2026)
+
+- Proje sahibi 27 Kasım 2026 16:35'te “RFC-0040 alt RFC'si”nin açılmasını
+  onayladı (26 Kasım “önce reproducer” kararının devamı). Onay taslak
+  içindir; uygulama ayrı `dogfood-change` beyanı, ADR, spec, test ve proje
+  sahibi kararı ister.
+- [RFC-0047](../rfcs/0047-dav-istemci-rotasi-ilk-dilim.md) ürün H'nin “en
+  küçük çalışan uç” notunu tasarlar: açık `dav istemcisi gerekli` sınıfı
+  (aday), PROPFIND/REPORT salt okuma yöntemleri, 405 + `Allow` ve 501, kapalı
+  `Depth`/`If-Match`/`If-None-Match` okuma (güven başlıkları Zee'ye kapalı),
+  DAV rotasında ham gövde (64 KiB, yöntem başına tür, CRLF dönüştürülmez),
+  türlü yanıt + durum (207) ve `text/vcard`, ETag, çerezsiz Basic + HMAC'li
+  uygulama parolası (40 bit arama öneki + 160 bit gizli kısım; Zee arar,
+  çalışma zamanı sabit zamanlı karşılaştırır), ayrı başarısız/başarılı DAV
+  kovaları; Argon2id kovası DAV'da hiç tetiklenmez.
+- **Sıra sapması:** RFC-0040 madde 4 “E+F+A önce” diyordu. Ürün
+  reproducer'ları (`rfc0040-b-depth-basligi`, `rfc0040-c-207-xml`,
+  `rfc0040-c-etag-basligi`, `rfc0040-f-put-makine`) bu kesitin tek başına
+  istemci kuramadığını gösterdi; gerekçe RFC-0047'de, uygulama ADR'sine
+  taşınacak. D (XML ağacı) ve G (well-known) sonraki alt RFC'de; ertelemek
+  XXE yüzeyi açmaz çünkü dil XML ayrıştırmaz (ADR-179 AÇIK).
+- **Korpus etkisi (uygulama sonrası):** yalnız `rfc0040-c-207-xml`
+  başarılıya döner; öteki sekiz vaka bilinçli sınır olarak ret kalır (bazısının
+  tanısı değişir) ve her biri ürün kaynağından çözüm vakası alır.
+- ZM-F027 (istemci IP'si) ve ZM-F050 (DKIM tavanı) kapsam dışı: ilki ADR-036
+  modeliyle ayrı web adaptörü RFC'si (ürün kaydı K-355), ikincisi K-397/ADR-174.
+- Yeni K numarası, ADR, spec maddesi, tanı, K-167 satırı ve `docs/surumler.md`
+  kaydı yok: kullanıcıya görünen dil değişikliği yoktur. K-364 açık kalır.
