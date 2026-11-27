@@ -6616,3 +6616,11 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   modeliyle ayrı web adaptörü RFC'si (ürün kaydı K-355), ikincisi K-397/ADR-174.
 - Yeni K numarası, ADR, spec maddesi, tanı, K-167 satırı ve `docs/surumler.md`
   kaydı yok: kullanıcıya görünen dil değişikliği yoktur. K-364 açık kalır.
+
+## K-364 — RFC-0047 açık sorularına ürün görüşü (27 Kasım 2026)
+
+- `urun-h` (ZeeMail) RFC-0047'nin on üç açık sorusunun tamamına görüş verdi
+  (12 ilk uygulama diliminde ölçülecek); RFC'ye "Ürün görüşü" alt bölümü olarak eklendi. Karar değildir;
+  uygulama ADR'si kabul ya da gerekçeli retle kapatır. Uygulama yok, dil
+  davranışı değişmedi.
+
