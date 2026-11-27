@@ -5,6 +5,24 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 27 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **Kamu son ek listesi için fuzz hedefi (K-418):** `AD alanının kurumsal
+  alanı` ifadesinin kullandığı kamu son ek listesi ayrıştırıcısı ve kurumsal
+  alan hesabı yeni `psl` fuzz hedefiyle günlük fuzz koşusuna alındı. Hedef
+  e-posta başlığından gelebilecek her alan adını ve küçük kural listelerini
+  ayrı yazılmış bir referans uygulamayla karşılaştırır; sonuç her zaman ya
+  boştur ya da adın küçük harfli sonekidir. Sürüm adayı (RC) fuzz kapısı
+  sekiz hedefte kalır; `psl` hedefinin oraya alınması ayrı karardır. Dil
+  davranışı değişmedi.
+
+  **Göç:** Gerekmez.
+
 ## 26 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
