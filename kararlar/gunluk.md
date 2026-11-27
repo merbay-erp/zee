@@ -6551,3 +6551,25 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - RC kapısına alınmadı (kullanıcı kararı gerekir); yalnız günlük
   `fuzz.yml` ve belgeler. Düzeltilmiş kodda yerel nightly koşusu bulgu
   vermedi. K-419 kapandı.
+
+## RC fuzz kapısı on hedef: `psl` ve `dkim_anahtari` (K-418, K-419; 27 Kasım 2026)
+
+- Kullanıcı kararı (27 Kasım 2026): K-418 ve K-419'un "RC kapısına alınması
+  ayrı karar" maddesi kapandı; iki hedef RC fuzz kapısına alındı, kapı sekiz
+  hedeften ona çıktı. İki hedef 27 Kasım gecelik `fuzz.yml` koşusunda
+  (`4669726a`) yeşildi. Yeni K numarası açılmadı.
+- `fuzz-rc.yml` matrisi gecelik matrisle hedef ve `max_len` bakımından
+  birebir oldu (`psl` 16384, `dkim_anahtari` 4097); `fuzz_korpusu_testi`
+  iki matrisi, `rc-kampanyasi.py`/`rc-kaniti.py` hedef/`max_len` kayıtlarını
+  ve `guvenlik-kapisi.sh` listesini birlikte denetler.
+- Kural geriye dönük değildir. Her RC kanıtı kendi exact kaynak commit'indeki
+  kapıyla doğrulanır; tarihçedeki dört/yedi/sekiz hedefli satırlar (ör.
+  `106d939c`) geçerli kalır. Dış pakette kural sürümü içeridedir:
+  `zee-local-asan-miri-campaign-2` + `target_policy: zee-rc-fuzz-hedefleri-10`
+  + sıralı `target_set`. Alanı olmayan `campaign-1` paketi yeni
+  doğrulayıcıda yeniden yargılanmaz, ayrı iletiyle reddedilir. Alternatif
+  (yeni doğrulayıcının eski sekiz hedefli kuralı da tanıması) seçilmedi:
+  paket exact kaynak SHA'sına bağlı olduğundan eski paket yeni kaynakta
+  zaten geçemez, iki kural tek betikte yalnız saldırı yüzeyi büyütürdü.
+- On hedefli RC kampanyası bu değişiklikte koşulmadı; compiler/src
+  değişmedi.

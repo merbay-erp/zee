@@ -15,8 +15,8 @@ kâhini denetiminin kabul ettiği girdide tutarlı olmasını arar.
 `dkim_anahtari` (K-419, RFC-0044 B2b, ADR-177) DNS'ten gelen DKIM `p=` açık
 anahtar okuyucusunun (`dkim_kripto::AcikAnahtar`) ayrı yazılmış referans DER
 okuyucusu ve ring'in RSA bileşen kabulüyle aynı kabul/ret, ret türü,
-`anahtar_biti` ve saklanan anahtarı vermesini arar (ilk bulgusu K-419; yalnız
-günlük koşu, RC kapısında değil). `x509_spki`
+`anahtar_biti` ve saklanan anahtarı vermesini arar (ilk bulgusu K-419; 27
+Kasım 2026'dan beri RC kapısında da). `x509_spki`
 (K-411/ADR-173) TLS uç sertifikasından SPKI çıkaran sınırlı DER yürüyücüsünün
 ayrı yazılmış referans DER okuyucusuyla aynı sonucu vermesini arar. `kodlama`
 (K-412, RFC-0043) katı base64 (tek satır/MIME/satırlı), quoted-printable ve
@@ -26,7 +26,7 @@ kanonik yazımı dışında girdi kabul etmemesini ve satırlı pencerenin büt�
 RFC-0044 B1b, ADR-177) e-posta başlığından gelen güvenilmez alan adının ve
 isteğe bağlı küçük kamu son ek listesinin ayrıştırıcıyı ve kurumsal alan
 hesabını paniğe sokmamasını, sonucun naif referans uygulamayla ve spec/31 §2
-değişmezleriyle uyuşmasını arar (yalnız günlük koşu; RC kapısında değil). `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
+değişmezleriyle uyuşmasını arar (27 Kasım 2026'dan beri RC kapısında da). `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
 uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 
 ## Kalıcı katmanlar
@@ -252,7 +252,9 @@ Kaynak+soru kipli ilk K-143 kampanyası 1.709.869 çağrıyı 61 saniyede ihlals
 tamamlamıştır.
 
 K-156 kalıcılık kapısı kampanya süresini büyütmez. Dört hedefte 30–60 dakikalık
-Uzun release-candidate koşusu K-157/ADR-056 ile ayrı bir kapıdır. İlk doğrulanmış
+Uzun release-candidate koşusu K-157/ADR-056 ile ayrı bir kapıdır; 27 Kasım
+2026'dan beri gecelik matrisin on hedefinin hepsini aynı `max_len` ile ister.
+İlk doğrulanmış
 tabanda dört hedef 30'ar dakika AddressSanitizer altında toplam 136.789.564
 girdiyi crash/timeout/bulgu olmadan yürüttü; seçili Miri testleri 3/3 geçti.
 Tekrar ve provenance sözleşmesi [RC fuzz rehberindedir](fuzz-rc.md).

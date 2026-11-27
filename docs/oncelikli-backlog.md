@@ -2620,9 +2620,14 @@ kabulüyle aynı bileşen denetimi; regresyon `dkim-anahtari-kanonik-olmayan-us`
 `dkim_kripto::testler::rsa_bilesenleri_ring_kabulune_uyar`. spec/31 §3
 ZORUNLU maddesi bileşen kuralını açıkça yazar.
 
-**RC kapısında değil:** `dkim_anahtari` hedefinin RC fuzz kapısına (AGENTS.md
-RC listesi, `guvenlik-kapisi.sh`, `fuzz-rc.yml`, `rc-kampanyasi.py`,
-`rc-kaniti.py`) alınması ayrı kullanıcı kararıdır.
+**RC kapısında (27 Kasım 2026):** kullanıcı kararıyla `dkim_anahtari` RC fuzz
+kapısına alındı (AGENTS.md RC listesi, `guvenlik-kapisi.sh`, `fuzz-rc.yml`,
+`rc-kampanyasi.py`, `rc-kaniti.py`; `max_len` 4097, gecelik matrisle aynı);
+27 Kasım gecelik koşusunda (`4669726a`) yeşildi. Kapı `psl` ile birlikte on
+hedefe çıktı; dış pakette kural sürümü `zee-local-asan-miri-campaign-2` /
+`zee-rc-fuzz-hedefleri-10`, eski sekiz hedefli kanıtlar kendi kaynak
+commit'lerinin kapısıyla geçerli kalır (ADR-177 RC eki, `docs/fuzz-rc.md`).
+On hedefli RC kampanyası bu değişiklikte koşulmadı; sonraki RC adayında koşulur.
 
 ## K-418 — `psl` fuzz hedefi (RFC-0044 B1b, ADR-177)
 
@@ -2642,9 +2647,9 @@ boş, eşgüçlülük, harf ve tek son nokta bağımsızlığı). Kararlı oynat
 girdi). Günlük `fuzz.yml` matrisinde (`azami_girdi` 16384); korpus
 artefakt doğrulayıcısı hedefi tanır.
 
-**RC kapısında değil:** `psl` hedefinin RC fuzz kapısına (AGENTS.md RC
-listesi, `guvenlik-kapisi.sh`, `fuzz-rc.yml`, `rc-kampanyasi.py`,
-`rc-kaniti.py`) alınması ayrı kullanıcı kararıdır.
+**RC kapısında (27 Kasım 2026):** kullanıcı kararıyla `psl` RC fuzz kapısına
+alındı (`max_len` 16384, gecelik matrisle aynı); ayrıntı ve tarihsel kural
+K-419 kapanış notundadır.
 
 **DKIM anahtarı tarafı açık kalır (doğrulandı):** K-411 `x509_spki` hedefi
 TLS uç sertifikasından SPKI çıkaran `ag_satiri::x509::spki_dilimi`
@@ -2669,7 +2674,8 @@ compiler/src değişmedi.
 İlk bulgu: satırlı pencere değişmezi K-396 hatasını yakaladı (b ≡ 55, 56
 mod 57, K ≥ T) → ayrı iş K-414 (GB-183); K-412 dalı K-414'ün üstündedir.
 RC kampanyası (30–60 dk ASan, nightly) bu işte koşulmadı; sonraki RC
-adayında sekiz hedefle koşulur.
+adayında sekiz hedefle koşulur (27 Kasım 2026'dan beri kapı on hedeflidir,
+bkz. K-419).
 
 ## K-415 — `dil dkim-denetle` işletim komutu (aday)
 
