@@ -99,6 +99,11 @@ Bu kayıt yeni sürüm etiketi değildir.
 - **Sürüm notları ham kopyası:** `/updates/surumler.md` ham kaynağı K-418
   kaydıyla yeniden üretildi; `/belge/surumler/` sayfasıyla aynı içeriği
   taşır.
+- **zeedili.com v1.0.0-rc.2 haberi:** Gelişmeler bölümüne ikinci sürüm
+  adayı haberi eklendi (kapı kanıtı rakamları, V1 olmadığı ve açık P27,
+  P29 ile kısmi ürün kapıları). Menüdeki sürüm rozeti, giriş çipi,
+  yapılandırılmış veri sürümü ve "son etiket" ifadeleri v1.0.0-rc.2'ye
+  çekildi.
 
 ## 26 Kasım 2026 — Geliştirme güncellemeleri
 
