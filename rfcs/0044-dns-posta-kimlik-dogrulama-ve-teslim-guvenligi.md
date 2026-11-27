@@ -303,7 +303,8 @@ SMTP tarafında geçici hata `451 4.4.3` sınıfına eşlenir; eşleme Zee'dedir
   girer (yeniden üretilebilirlik).
 - Ayrıştırma host'ta (biçim basit: kural, `*.` joker, `!` istisna; ICANN ve
   PRIVATE bölümleri; IDN satırları A-label'a çevrilmeden ilk sürümde
-  yok sayılır — açık soru). Fuzz hedefi `psl`.
+  yok sayılır — açık soru). Fuzz hedefi `psl` (K-418, 27 Kasım 2026:
+  günlük koşuda, diferansiyel referans kâhinli; RC kapısına alınması ayrı karar).
 - Algoritma publicsuffix.org "en uzun eşleşen kural" algoritmasıdır;
   kurumsal alan = kamu son eki + bir etiket (RFC 7489 §3.2).
 - **DMARCbis notu:** IETF DMARC çalışma grubunun DMARCbis taslağı

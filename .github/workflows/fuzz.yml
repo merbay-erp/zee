@@ -40,6 +40,9 @@ jobs:
           - hedef: kodlama
             korpus: kodlama
             azami_girdi: 65536
+          - hedef: psl
+            korpus: psl
+            azami_girdi: 16384
           - hedef: wasm_abi
             korpus: wasm_abi
             azami_girdi: 4097

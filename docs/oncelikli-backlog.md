@@ -2624,6 +2624,36 @@ ZORUNLU maddesi bileşen kuralını açıkça yazar.
 RC listesi, `guvenlik-kapisi.sh`, `fuzz-rc.yml`, `rc-kampanyasi.py`,
 `rc-kaniti.py`) alınması ayrı kullanıcı kararıdır.
 
+## K-418 — `psl` fuzz hedefi (RFC-0044 B1b, ADR-177)
+
+**Durum: KAPALI (27 Kasım 2026).** Kaynak: K-390 "Açık (bu PR'da
+kapanmıyor)" satırındaki "`psl`/DKIM anahtarı fuzz hedefleri" maddesinin
+PSL kısmı; GB-174 açık cümlesi. Freeze sınıfı security sertleştirmesi; dil
+yüzeyi, grammar, tanı ve CLI değişmedi, compiler/src değişmedi, yeni
+bağımlılık yok. Güvenilmez girdi e-posta başlığından gelen
+`<ad> alanının kurumsal alanı` adıdır (DMARC hizalaması). Hedef ilk baytla
+kip seçer (örnek publicsuffix.org listesi ya da girdideki küçük liste);
+kâhin `compiler/tests/ortak/psl_kahini.rs`: etiket etiket yürüyen ayrı
+yazılmış referansla ayrıştırma kabulü, kural/yok sayılan satır sayısı ve
+kurumsal alan eşitliği; spec/31 §2 değişmezleri (sonuç boş ya da
+olağanlaştırılmış adın nokta sınırındaki küçük harfli soneki, geçersiz ad →
+boş, eşgüçlülük, harf ve tek son nokta bağımsızlığı). Kararlı oynatma
+`compiler/tests/kamu_son_ekleri_fuzz_testi.rs` (10 tohum + 3.000 üretilmiş
+girdi). Günlük `fuzz.yml` matrisinde (`azami_girdi` 16384); korpus
+artefakt doğrulayıcısı hedefi tanır.
+
+**RC kapısında değil:** `psl` hedefinin RC fuzz kapısına (AGENTS.md RC
+listesi, `guvenlik-kapisi.sh`, `fuzz-rc.yml`, `rc-kampanyasi.py`,
+`rc-kaniti.py`) alınması ayrı kullanıcı kararıdır.
+
+**DKIM anahtarı tarafı açık kalır (doğrulandı):** K-411 `x509_spki` hedefi
+TLS uç sertifikasından SPKI çıkaran `ag_satiri::x509::spki_dilimi`
+yürüyücüsünü kapsar; DKIM `p=` anahtarını okuyan
+`dkim_kripto::AcikAnahtar::ayristir` / `rsa_acik_anahtari` ayrı bir DER
+okuyucusudur (`der_oge`) ve hiçbir fuzz hedefi onu yürütmez (yalnız 20.000
+bozulmuş SPKI birim testi). Bu nedenle K-390'daki "DKIM anahtarı fuzz
+hedefi" maddesi açık kalır (sonradan K-419 ile kapandı).
+
 ## K-412 — `kodlama` fuzz hedefi RC kapısında (RFC-0043, ADR-167)
 
 **Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; RFC-0043
@@ -2860,9 +2890,10 @@ imzası Gelen'e; bozuk bh=/b=, iptal p=, olmayan seçici, rsa-sha1, imzasız
 taklit 550 5.7.1; DMARC p=reject).
 
 Açık (bu PR'da kapanmıyor, K-390 sonrası): `dil dene` PSL
-yüklemesi, `psl` fuzz hedefi, IDN kuralları, DMARCbis. DKIM anahtarı
+yüklemesi, IDN kuralları, DMARCbis. `psl` fuzz hedefi K-418, DKIM anahtarı
 (`p=` DER, `dkim_kripto`) fuzz hedefi K-419 ile kapandı (27 Kasım 2026;
-günlük koşu, RC kapısı ayrı karar; ilk bulgusu GB-184).
+günlük koşu, RC kapısı ayrı karar; K-419'un ilk bulgusu GB-184); K-411
+`x509_spki` DKIM anahtar okuyucusunu kapsamaz (TLS sertifika yürüyücüsüdür).
 **B2a/B2c/B2d (27 Kasım 2026).** Ürün H (commit `a39356d`) başlık
 ayrıştırma + kendi authserv-id'li A-R/ARC-A-R temizliğini (RFC 8601 §5),
 SPF `check_host`'u RFC 7208 §4.6.4 sınırlarıyla (10 DNS terimi, 2 void

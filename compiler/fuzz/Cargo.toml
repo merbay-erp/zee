@@ -79,6 +79,13 @@ doc = false
 bench = false
 
 [[bin]]
+name = "psl"
+path = "fuzz_targets/psl.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
 name = "dkim_anahtari"
 path = "fuzz_targets/dkim_anahtari.rs"
 test = false

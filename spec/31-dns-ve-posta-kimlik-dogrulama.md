@@ -83,7 +83,7 @@ TANIMLI: Gövde özetinin C034 duruşu yalnız o işi sonlandırır: bağlantı 
 
 ZORUNLU: Ürün kodu CR içeren girdiyi (ör. dosyadan okunmuş ileti) kanonikleştirmeden önce reddeder; gövde özeti ve doğrulama ilkeli CR'yi yalnız son savunma olarak yakalar (özette duruş, doğrulamada `veri_bozuk` ret Sonucu).
 
-AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; `psl` fuzz hedefi ve `dkim_anahtari` fuzz hedefinin RC fuzz kapısına alınması; IDN kuralları ve DMARCbis ağaç yürüyüşü.
+AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; `psl` ve `dkim_anahtari` fuzz hedeflerinin RC fuzz kapısına alınması; IDN kuralları ve DMARCbis ağaç yürüyüşü.
 
 ## 4. DKIM imza ilkeli (B3)
 

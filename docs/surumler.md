@@ -12,6 +12,17 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
+- **Kamu son ek listesi için fuzz hedefi (K-418):** `AD alanının kurumsal
+  alanı` ifadesinin kullandığı kamu son ek listesi ayrıştırıcısı ve kurumsal
+  alan hesabı yeni `psl` fuzz hedefiyle günlük fuzz koşusuna alındı. Hedef
+  e-posta başlığından gelebilecek her alan adını ve küçük kural listelerini
+  ayrı yazılmış bir referans uygulamayla karşılaştırır; sonuç her zaman ya
+  boştur ya da adın küçük harfli sonekidir. Sürüm adayı (RC) fuzz kapısı
+  sekiz hedefte kalır; `psl` hedefinin oraya alınması ayrı karardır. Dil
+  davranışı değişmedi.
+
+  **Göç:** Gerekmez.
+
 - **DKIM açık anahtarı için fuzz hedefi ve bozuk RSA anahtarı reddi
   (K-419):** DNS'ten gelen DKIM `p=` anahtarını okuyan bölüm yeni
   `dkim_anahtari` fuzz hedefiyle günlük fuzz koşusuna alındı. Hedef her

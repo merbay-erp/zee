@@ -6515,6 +6515,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   olmadığını bildirdi; V1 için acil değil, K-397 kaydı değişmedi.
 - Compiler, grammar, tanı, CLI ve dil::api::v1 değişmedi.
 
+## K-418 — `psl` fuzz hedefi (27 Kasım 2026)
+
+- K-390 açık maddesinin PSL kısmı; GB-174'teki "psl fuzz hedefi yok"
+  cümlesi. Güvenilmez girdi e-posta başlığından gelen alan adıdır;
+  kurumsal alan hatası DMARC hizalamasını atlatır.
+- Kâhin için dış PSL kitaplığı (`publicsuffix`, `psl` crate) düşünüldü,
+  alınmadı: tedarik zinciri değişirdi ve kitaplıkların joker/istisna ve
+  geçersiz ad seçimleri modülün belgelenmiş sözleşmesinden (spec/31 §2;
+  `*.x` adın kendisi `x` iken `x` kamu son ekidir; LDH + alt çizgi) farklı
+  olabilir. Bunun yerine kural listesinde etiket etiket yürüyen naif
+  referans ve sözleşme değişmezleri seçildi (K-412 ile aynı yaklaşım).
+- DKIM anahtarı tarafının K-411 `x509_spki` ile kapandığı varsayımı
+  doğrulanınca yanlış çıktı: `x509_spki` TLS sertifika yürüyücüsünü,
+  DKIM `p=` ise `dkim_kripto`'nun ayrı DER okuyucusunu kullanır. Madde
+  K-390'da açık kalır.
+- RC kapısına alınmadı (kullanıcı kararı gerekir); yalnız günlük
+  `fuzz.yml` ve belgeler. Yerel nightly koşusu bulgu vermedi. K-418 kapandı.
 ## K-419 — `dkim_anahtari` fuzz hedefi ve RSA bileşen denetimi (27 Kasım 2026)
 
 - K-390 açık maddesinin DKIM anahtarı kısmı; K-418 incelemesi `x509_spki`

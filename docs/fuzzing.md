@@ -22,7 +22,11 @@ ayrı yazılmış referans DER okuyucusuyla aynı sonucu vermesini arar. `kodlam
 (K-412, RFC-0043) katı base64 (tek satır/MIME/satırlı), quoted-printable ve
 UTF-8 çözücülerinin panik yapmamasını, tavanı aşmamasını, kodlayıcının tek
 kanonik yazımı dışında girdi kabul etmemesini ve satırlı pencerenin bütün
-çıktının dilimine eşit olmasını arar (ilk bulgusu K-414). `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
+çıktının dilimine eşit olmasını arar (ilk bulgusu K-414). `psl` (K-418,
+RFC-0044 B1b, ADR-177) e-posta başlığından gelen güvenilmez alan adının ve
+isteğe bağlı küçük kamu son ek listesinin ayrıştırıcıyı ve kurumsal alan
+hesabını paniğe sokmamasını, sonucun naif referans uygulamayla ve spec/31 §2
+değişmezleriyle uyuşmasını arar (yalnız günlük koşu; RC kapısında değil). `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
 uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 
 ## Kalıcı katmanlar
@@ -109,6 +113,22 @@ uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
   pencere tohumu (`.gitattributes` ile ikili; CRLF korunur).
   `compiler/tests/kodlama_fuzz_testi.rs` korpusu ve 1.200 deterministik
   üretilmiş girdiyi her ana testte oynatır.
+- `compiler/fuzz/fuzz_targets/psl.rs`: ilk bayt kip seçicisidir. Çift ise
+  kural listesi publicsuffix.org `tests.txt` alt kümesidir; tek ise ilk
+  `0x00`'a kadar olan baytlar kural metnidir. Kalan baytlar `\n` ile ayrılmış
+  en çok 16 addır. Ortak `compiler/tests/ortak/psl_kahini.rs` (yeni bağımlılık
+  yok) kural listesinde etiket etiket yürüyen ayrı yazılmış referansla
+  ayrıştırma kabulünü, kural ve yok sayılan satır sayısını ve her adın
+  kurumsal alanını birebir karşılaştırır. Sonucun boş ya da olağanlaştırılmış
+  adın nokta sınırındaki küçük harfli soneki olduğunu, geçersiz adın boş
+  verdiğini, kurumsal alanın kurumsal alanının kendisi olduğunu ve harf ile
+  tek son noktanın sonucu değiştirmediğini denetler.
+- `compiler/fuzz/corpus/psl/`: harf karışımı ve varsayılan `*`, joker ve
+  istisna, A-label, geçersiz ad, 63/253 oktet sınırı tohumları ile CRLF'li,
+  ASCII dışı satırlı, iç içe istisnalı, ortada jokerli, kuralsız ve tek etiket
+  istisnalı özel liste tohumları (`.gitattributes` ile ikili).
+  `compiler/tests/kamu_son_ekleri_fuzz_testi.rs` korpusu ve 3.000
+  deterministik üretilmiş girdiyi her ana testte oynatır.
 - `compiler/fuzz/fuzz_targets/wasm_abi.rs`: kayıtlı girdinin yanında null,
   iç/kayıt dışı pointer, yanlış/taşkın uzunluk, keyfî UTF-8, kaynak/soru kipi
   ve yanlış+çift bırakma sıralarını yürütür; her canlı sonuç kaydının uzunluk
@@ -153,6 +173,8 @@ cargo +nightly-2026-08-31 fuzz run x509_spki fuzz/corpus/x509_spki -- \
   -max_len=65537 -timeout=5
 cargo +nightly-2026-08-31 fuzz run kodlama fuzz/corpus/kodlama -- \
   -max_len=65536 -timeout=5
+cargo +nightly-2026-08-31 fuzz run psl fuzz/corpus/psl -- \
+  -dict=fuzz/dictionaries/zee.dict -max_len=16384 -timeout=5
 cargo +nightly-2026-08-31 fuzz run wasm_abi fuzz/corpus/wasm_abi -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=4097 -timeout=5
 ```
@@ -212,6 +234,10 @@ Kurtarmalı parser'ın kardeş/kapsam sahipliği ve 20 tanı bütçesi
 HTTP hedefi `&[u8]` aldığı için geçersiz UTF-8'i özellikle tarar. 81920 byte
 fuzz sınırı production'daki 16 KiB başlık + 64 KiB gövde zarfıdır; daha büyük
 socket girdisi parser tahsisinden önce 431/413 ile kesilir.
+`psl` hedefinin 16 KiB girdisi birkaç bin kurallı listeye ve 253 oktetlik
+adlara yeter; referans kural başına yürüdüğü için daha büyük liste yalnız
+koşuyu yavaşlatır. 4 MiB/100.000 kural sınırı ve gerçek liste boyu birim
+testlerdedir (`kamu_son_ekleri::testler::`).
 `dkim_anahtari` hedefinin 4 KiB girdisi 4096 bitlik SPKI'nin (~550 bayt) ve
 base64 `p=` metninin (~740 karakter) birkaç katıdır; üretim `p=` çözümünü
 2048 baytla sınırlar, 4096 bit üstü anahtar `anahtar_uzun`dur.
