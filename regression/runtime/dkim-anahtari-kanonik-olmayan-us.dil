@@ -1,0 +1,22 @@
+# K-419 (dkim_anahtari fuzz kâhininin bulgusu): RSA `p=` anahtarının açık
+# üssü DER INTEGER olarak kanonik değilse (`02 04 00 01 00 01`, baştaki
+# gereksiz sıfır) ring anahtarı çözemez. Önce DER okuyucusu bu anahtarı kabul
+# ediyor, doğru imza her zaman `yanlış` (DKIM fail) dönüyordu; spec/31 §3
+# gereği çözülemeyen anahtar kriptografik işlemden önce C034 `anahtar_bozuk`
+# rettir. Aynı modül ve imza kanonik üsle doğrulanır.
+
+imza "ByKItlJWhJXbTWzzvnQCdIvoo3FVTGTowOz3kshGT1XgWXVZP5h0CGHUJuE6h3/NQDi8Q5AAJOIos4Y0G01RR6XXzWp41kKeSxx4FZV21IcgVZXLwk3DTzsQ+BiROy4FEMk0pm0qxL4QYc6b0ut6zJaintS2QEVWolcCdWLxsA9/nHVQF+tIyrSylUNQ/FUsQvx9A6SS5nsfTH15EKmEQKZ7GshtsX+Oq2vbORKWmCgDcObjrz5LbKIlOZbOLBA3NGLPfc9vCvDQDII2zFb9ZuBXlvhGjOgQBSuZQcY+S67eAbo+nGt3unnrmtooGnabHutmTt9oo26OFVt3g8lb9Q==" olsun
+veri "from:Zee Test <gonderen@ornek.test>\nsubject:Merhaba\ndkim-signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=ornek.test; s=z2026a; h=from:subject; bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=" olsun
+algoritma "rsa-sha256" olsun
+anahtarlar "MIIBCgKCAQEAn7vd9bmAJVmRUI+YQUafE1OY5AbzCDwYW0rusBBjOBVsljmWOS/7XE9ARSx3rCWiboOHPrApEysZJO0JmoYJMMH7q46l8RL/lkL0D4DWhK1zoofD15FaYWZWMh+1f6sqxxjDGJ+xaBKO62ZO86+CJbusJTVL5J/SLjiBOuWyD88wf2Ay/tTM9EvEiZ+zwgBUJmTniaM2/dprbKybqRDc8gnhP+C+3V8yrvDkw/EXI3OUzb5RytSxNathyI0yDTRdtHsxeyGnGc7498BofwtrIbNTghDJN5z3LjEU0fPXEi5u9MkTisWoRofKfqtbZ7KWoTI/ySM/m5lGwTK4ZX5GuwIDAQAB", "MIIBCwKCAQEAn7vd9bmAJVmRUI+YQUafE1OY5AbzCDwYW0rusBBjOBVsljmWOS/7XE9ARSx3rCWiboOHPrApEysZJO0JmoYJMMH7q46l8RL/lkL0D4DWhK1zoofD15FaYWZWMh+1f6sqxxjDGJ+xaBKO62ZO86+CJbusJTVL5J/SLjiBOuWyD88wf2Ay/tTM9EvEiZ+zwgBUJmTniaM2/dprbKybqRDc8gnhP+C+3V8yrvDkw/EXI3OUzb5RytSxNathyI0yDTRdtHsxeyGnGc7498BofwtrIbNTghDJN5z3LjEU0fPXEi5u9MkTisWoRofKfqtbZ7KWoTI/ySM/m5lGwTK4ZX5GuwIEAAEAAQ==" listesi olsun
+her anahtar için
+    sonuç imza dkim imzasını veri verisi için anahtar anahtarıyla algoritma olarak doğrulamayı dene olsun
+    sonuç başarılıysa
+        s sonucun değeri olsun
+        s "doğrulandı" değeri yaz
+        s "anahtar_biti" değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        ayrinti hatanın verisi olsun
+        hatanın kodunu yaz
+        ayrinti "tür" değeri yaz

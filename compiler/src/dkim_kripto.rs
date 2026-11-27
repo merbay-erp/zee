@@ -479,16 +479,35 @@ fn rsa_acik_anahtari(bayt: &[u8]) -> Option<(&[u8], usize)> {
     let (0x02, ust, []) = der_oge(kalan)? else {
         return None;
     };
-    if ust.is_empty() || modul.is_empty() || modul[0] & 0x80 != 0 {
+    // K-419: bileşenler ring'in doğrulayıcı anahtar kabulüyle aynıdır;
+    // ring'in çözemediği anahtar burada elenmezse her imza sessizce `fail`
+    // olurdu (spec/31 §3: çözülemeyen anahtar `anahtar_bozuk` rettir).
+    let modul = pozitif_tamsayi(modul)?;
+    let ust = pozitif_tamsayi(ust)?;
+    if modul[modul.len() - 1] & 1 == 0 || ust.len() > 5 {
         return None;
     }
-    let modul = match modul {
-        [0, kalan @ ..] if kalan.first().is_some_and(|b| b & 0x80 != 0) => kalan,
-        [0, ..] => return None,
-        _ => modul,
-    };
+    let ust = ust.iter().fold(0u64, |t, b| (t << 8) | u64::from(*b));
+    if !(3..=RSA_US_AZAMI).contains(&ust) || ust & 1 == 0 {
+        return None;
+    }
     let bit = modul.len() * 8 - modul[0].leading_zeros() as usize;
     Some((pkcs1, bit))
+}
+
+/// ring `PublicExponent::MAX` (2^33 − 1); doğrulamada alt sınır 3'tür.
+const RSA_US_AZAMI: u64 = (1 << 33) - 1;
+
+/// Pozitif, en kısa DER INTEGER içeriği (X.690 §8.3.2) → işaret sıfırı
+/// atılmış büyüklük. Boş, negatif, sıfır ve gereksiz baştaki sıfır reddedilir.
+fn pozitif_tamsayi(icerik: &[u8]) -> Option<&[u8]> {
+    match icerik {
+        [] => None,
+        [ilk, ..] if ilk & 0x80 != 0 => None,
+        [0, kalan @ ..] if kalan.first().is_some_and(|b| b & 0x80 != 0) => Some(kalan),
+        [0, ..] => None,
+        _ => Some(icerik),
+    }
 }
 
 #[cfg(test)]
@@ -605,6 +624,46 @@ mod testler {
         assert!(der_oge(&[0x30, 0x80]).is_none());
         assert!(rsa_acik_anahtari(&[0x30, 0x00]).is_none());
         assert!(rsa_acik_anahtari(&[]).is_none());
+    }
+
+    /// K-419: ring'in çözemeyeceği modül/üs `anahtar_bozuk`tur; geçerli
+    /// sınırlar (e = 3, e = 2^33 − 1) kabul edilir.
+    #[test]
+    fn rsa_bilesenleri_ring_kabulune_uyar() {
+        let anahtar = |modul_son: u8, us: &[u8]| {
+            let mut modul = vec![0x00];
+            modul.extend((0..128).map(|i| 0x80 | i as u8));
+            *modul.last_mut().unwrap() = modul_son;
+            let mut govde = vec![0x02, 0x81, 0x81];
+            govde.extend_from_slice(&modul);
+            govde.extend_from_slice(&[0x02, us.len() as u8]);
+            govde.extend_from_slice(us);
+            let mut der = vec![0x30, 0x81, govde.len() as u8];
+            der.extend_from_slice(&govde);
+            AcikAnahtar::ayristir(DkimAlgoritmasi::RsaSha256, &der).map(|a| a.bit)
+        };
+        assert_eq!(anahtar(0xff, &[0x01, 0x00, 0x01]), Ok(1024));
+        assert_eq!(anahtar(0xff, &[0x03]), Ok(1024));
+        assert_eq!(anahtar(0xff, &[0x01, 0xff, 0xff, 0xff, 0xff]), Ok(1024));
+        for us in [
+            &[0x00, 0x01, 0x00, 0x01][..],
+            &[0x81, 0x00, 0x01],
+            &[0x00],
+            &[0x01],
+            &[0x01, 0x00, 0x00],
+            &[0x02, 0x00, 0x00, 0x00, 0x01],
+            &[0x00, 0x00, 0x00, 0x00, 0x00, 0x03],
+        ] {
+            assert_eq!(
+                anahtar(0xff, us),
+                Err(DkimHatasi::AnahtarBozuk),
+                "{us:02x?}"
+            );
+        }
+        assert_eq!(
+            anahtar(0xfe, &[0x01, 0x00, 0x01]),
+            Err(DkimHatasi::AnahtarBozuk)
+        );
     }
 
     #[test]

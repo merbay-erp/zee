@@ -10,6 +10,8 @@ compiler/fuzz/corpus/http_istegi/*.http binary
 compiler/fuzz/corpus/dns_yaniti/*.dns binary
 # DKIM korpusunun ilk baytı parça sınırı seçicisidir; CRLF/çıplak CR korunur.
 compiler/fuzz/corpus/dkim_imza_girdisi/* binary
+# K-419: dkim_anahtari korpusunun ilk baytı kip seçicisidir (DER/`p=` metni).
+compiler/fuzz/corpus/dkim_anahtari/* binary
 compiler/fuzz/corpus/x509_spki/*.der binary
 # K-412: kodlama korpusu MIME/QP CRLF ve geçersiz UTF-8 baytlarını korur.
 compiler/fuzz/corpus/kodlama/* binary

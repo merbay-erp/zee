@@ -180,6 +180,50 @@ fn rsa_sha1_kisa_uzun_iptal_ve_bozuk_imza_c034_reddidir() {
     }
 }
 
+/// K-419 (dkim_anahtari fuzz kâhini bulgusu): ring'in çözemediği RSA
+/// bileşeni (kanonik olmayan/çift/1 üs, çift modül) doğru imzayı sessizce
+/// `yanlış` yapmaz; spec/31 §3 gereği C034 `anahtar_bozuk` rettir.
+#[test]
+fn ring_disi_rsa_bileseni_c034_anahtar_bozuk_reddidir() {
+    let v = vektor("rsa2048");
+    let pkcs1 = dil::kodlama::base64_mime_coz(&v.pkcs1, 2048).unwrap();
+    assert_eq!(&pkcs1[pkcs1.len() - 5..], [0x02, 0x03, 0x01, 0x00, 0x01]);
+    let govde = &pkcs1[4..pkcs1.len() - 5];
+    let anahtar = |modul: &[u8], us: &[u8]| {
+        let mut ic = modul.to_vec();
+        ic.push(0x02);
+        ic.push(us.len() as u8);
+        ic.extend_from_slice(us);
+        let mut der = vec![0x30, 0x82, (ic.len() >> 8) as u8, ic.len() as u8];
+        der.extend_from_slice(&ic);
+        dil::kodlama::base64_kodla(&der)
+    };
+    assert_eq!(
+        dkim(
+            &v.b,
+            IMZA_VERISI,
+            &anahtar(govde, &[0x01, 0x00, 0x01]),
+            "rsa-sha256"
+        ),
+        "doğru 2048 rsa-sha256"
+    );
+    let mut cift_modul = govde.to_vec();
+    *cift_modul.last_mut().unwrap() &= 0xfe;
+    for p in [
+        anahtar(govde, &[0x00, 0x01, 0x00, 0x01]),
+        anahtar(govde, &[0x01, 0x00, 0x00]),
+        anahtar(govde, &[0x01]),
+        anahtar(govde, &[0x02, 0x00, 0x00, 0x00, 0x01]),
+        anahtar(&cift_modul, &[0x01, 0x00, 0x01]),
+    ] {
+        assert_eq!(
+            dkim(&v.b, IMZA_VERISI, &p, "rsa-sha256"),
+            "C034 anahtar_bozuk",
+            "{p}"
+        );
+    }
+}
+
 /// RFC 6376 §3.4.3 (boş simple gövde CRLF), §3.4.4 (boş relaxed gövde) ve
 /// Ek A.2 örnek gövdesi; Zee satır sonunu `\n` yazar, özet CRLF üzerindedir.
 #[test]

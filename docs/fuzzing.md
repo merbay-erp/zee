@@ -11,7 +11,12 @@ dizisinin sınırlı bir DNS yanıtı ya da hata olmasını ve Zee'nin kabul ett
 her paketin bağımsız `hickory-proto` kâhininde de aynı okunmasını arar.
 `dkim_imza_girdisi` (K-411/ADR-174) DKIM kanonik gövde özetleyicisinin panik
 yapmamasını, parça sınırından ve LF/CRLF seçiminden bağımsız kalmasını ve imza
-kâhini denetiminin kabul ettiği girdide tutarlı olmasını arar. `x509_spki`
+kâhini denetiminin kabul ettiği girdide tutarlı olmasını arar.
+`dkim_anahtari` (K-419, RFC-0044 B2b, ADR-177) DNS'ten gelen DKIM `p=` açık
+anahtar okuyucusunun (`dkim_kripto::AcikAnahtar`) ayrı yazılmış referans DER
+okuyucusu ve ring'in RSA bileşen kabulüyle aynı kabul/ret, ret türü,
+`anahtar_biti` ve saklanan anahtarı vermesini arar (ilk bulgusu K-419; yalnız
+günlük koşu, RC kapısında değil). `x509_spki`
 (K-411/ADR-173) TLS uç sertifikasından SPKI çıkaran sınırlı DER yürüyücüsünün
 ayrı yazılmış referans DER okuyucusuyla aynı sonucu vermesini arar. `kodlama`
 (K-412, RFC-0043) katı base64 (tek satır/MIME/satırlı), quoted-printable ve
@@ -65,6 +70,26 @@ uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
   tohumları (`.gitattributes` ile ikili).
   `compiler/tests/dkim_imza_testi.rs` korpusu ve tohum başına 2.000
   deterministik bozulmuş girdiyi her ana testte yeniden oynatır.
+- `compiler/fuzz/fuzz_targets/dkim_anahtari.rs`: ilk baytın 0. biti
+  algoritmadır (`rsa-sha256` / `ed25519-sha256`); 1. bit sıfırsa kalan baytlar
+  çözülmüş anahtar (`AcikAnahtar::ayristir`), birse `p=` metnidir
+  (`AcikAnahtar::base64ten`; geçersiz UTF-8 atlanır). Ortak
+  `compiler/tests/ortak/dkim_anahtari_kahini.rs` (yeni bağımlılık yok) SPKI ve
+  çıplak PKCS#1 iskeletini en çok dört uzunluk oktetli, en kısa biçimli X.690
+  okuyucusuyla çözer; modül/üs için ring 0.17.14 doğrulayıcısının kabulünü
+  (pozitif en kısa INTEGER, tek modül, tek ve 3 ≤ e ≤ 2^33 − 1 üs) uygular.
+  Sonucu `anahtar_biti`, ret türü ve saklanan PKCS#1 baytlarıyla birebir
+  karşılaştırır. Kabul edilen RSA anahtarının 1024–4096 bit olduğunu, SPKI
+  zarfıyla ve çıplak verildiğinde aynı anahtarı verdiğini, sahte imzada panik
+  yapmadan `fail` döndüğünü denetler; Ed25519 yalnız ham 32 bayttır.
+- `compiler/fuzz/corpus/dkim_anahtari/`: openssl üretimi 1023/1024/2048/4096/
+  4104 bit SPKI ve PKCS#1 vektörleri, katlanmış/boş/bozuk `p=` metni, Ed25519
+  ham/metin/31 bayt ve kanonik olmayan, negatif, 1, çift, 2^33 − 1 ve üstü
+  üs, çift ve kanonik olmayan modül, parametresiz/NULL dışı parametreli SPKI,
+  kullanılmayan bitli BIT STRING, sonda fazla bayt ve kanonik olmayan uzunluk
+  tohumları (`.gitattributes` ile ikili).
+  `compiler/tests/dkim_anahtari_fuzz_testi.rs` korpusu ve 6.000 bozulmuş
+  girdiyi (ham DER olanlar ayrıca `p=` base64 kipinde) her ana testte oynatır.
 - `compiler/fuzz/fuzz_targets/x509_spki.rs`: ham baytları
   `ag_satiri::x509::spki_dilimi`'nden geçirir; ortak
   `compiler/tests/ortak/x509_ozellikleri.rs` aynı X.690 kurallarını uygulayan
@@ -142,6 +167,8 @@ cargo +nightly-2026-08-31 fuzz run dns_yaniti fuzz/corpus/dns_yaniti -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=65536 -timeout=5
 cargo +nightly-2026-08-31 fuzz run dkim_imza_girdisi fuzz/corpus/dkim_imza_girdisi -- \
   -max_len=65536 -timeout=5
+cargo +nightly-2026-08-31 fuzz run dkim_anahtari fuzz/corpus/dkim_anahtari -- \
+  -max_len=4097 -timeout=5
 cargo +nightly-2026-08-31 fuzz run x509_spki fuzz/corpus/x509_spki -- \
   -max_len=65537 -timeout=5
 cargo +nightly-2026-08-31 fuzz run kodlama fuzz/corpus/kodlama -- \
@@ -211,6 +238,9 @@ socket girdisi parser tahsisinden önce 431/413 ile kesilir.
 adlara yeter; referans kural başına yürüdüğü için daha büyük liste yalnız
 koşuyu yavaşlatır. 4 MiB/100.000 kural sınırı ve gerçek liste boyu birim
 testlerdedir (`kamu_son_ekleri::testler::`).
+`dkim_anahtari` hedefinin 4 KiB girdisi 4096 bitlik SPKI'nin (~550 bayt) ve
+base64 `p=` metninin (~740 karakter) birkaç katıdır; üretim `p=` çözümünü
+2048 baytla sınırlar, 4096 bit üstü anahtar `anahtar_uzun`dur.
 WASM ABI hedefinin ilk baytı çağrı ve kaynak/soru kipidir; kalan en çok 4 KiB
 girdi byte'ıdır. Bu fuzz kampanya sınırıdır, ürünün kaynak boyu sözü değildir.
 ABI katmanı tek

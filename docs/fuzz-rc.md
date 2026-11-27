@@ -12,6 +12,10 @@ tarihten sonraki RC adayı sekiz hedefin hepsini ister.
 27 Kasım 2026'dan beri yalnız günlük `fuzz.yml` koşusundadır; RC kapısına
 alınması ayrı kullanıcı kararıdır ve bu karar olmadan RC listesi sekiz hedef
 kalır.
+`dkim_anahtari` (K-419, RFC-0044 B2b, ADR-177; DNS'ten gelen DKIM `p=` açık
+anahtar DER okuyucusu) 27 Kasım 2026'dan beri yalnız günlük `fuzz.yml`
+koşusundadır; RC kapısına alınması ayrı kullanıcı kararıdır ve bu karar
+olmadan RC listesi sekiz hedef kalır.
 
 ## Geçme koşulu
 

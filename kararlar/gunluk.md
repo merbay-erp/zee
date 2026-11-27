@@ -6532,3 +6532,22 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   K-390'da açık kalır.
 - RC kapısına alınmadı (kullanıcı kararı gerekir); yalnız günlük
   `fuzz.yml` ve belgeler. Yerel nightly koşusu bulgu vermedi. K-418 kapandı.
+## K-419 — `dkim_anahtari` fuzz hedefi ve RSA bileşen denetimi (27 Kasım 2026)
+
+- K-390 açık maddesinin DKIM anahtarı kısmı; K-418 incelemesi `x509_spki`
+  hedefinin DKIM `p=` okuyucusunu kapsamadığını doğrulamıştı.
+- Kâhin için dış DER/RSA kitaplığı (`der`, `spki`, `rsa` crate) düşünüldü,
+  alınmadı: tedarik zinciri değişirdi. ring açık anahtar ayrıştırmasını
+  dışarı vermez (yanlış imzada ayrıştırma hatası ile imza hatası aynı
+  `Unspecified`). Bunun yerine ayrı yazılmış X.690 referans okuyucusu ve
+  ring 0.17.14 kaynağından alınan RSA bileşen kabulü (pozitif en kısa
+  INTEGER, tek modül, tek ve 3 ≤ e ≤ 2^33 − 1 üs) referansa yazıldı.
+- Bulgu (GB-184, düşük): üretim okuyucusu üssü yalnız boş olmamakla
+  sınıyordu; ring'in çözemediği anahtar kabul edilip doğru imza sessizce
+  `yanlış` dönüyordu. Doğruluk/sınıflama hatası: spec/31 §3 çözülemeyen
+  anahtarı `anahtar_bozuk` sayar. DMARC sonucu değişmez. Düzeltme aynı
+  PR'da, `rsa_acik_anahtari` ring kabulüne hizalandı; regresyon
+  `dkim-anahtari-kanonik-olmayan-us`.
+- RC kapısına alınmadı (kullanıcı kararı gerekir); yalnız günlük
+  `fuzz.yml` ve belgeler. Düzeltilmiş kodda yerel nightly koşusu bulgu
+  vermedi. K-419 kapandı.

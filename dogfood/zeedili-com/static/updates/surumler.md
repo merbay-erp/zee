@@ -23,6 +23,22 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez.
 
+- **DKIM açık anahtarı için fuzz hedefi ve bozuk RSA anahtarı reddi
+  (K-419):** DNS'ten gelen DKIM `p=` anahtarını okuyan bölüm yeni
+  `dkim_anahtari` fuzz hedefiyle günlük fuzz koşusuna alındı. Hedef her
+  anahtarı ayrı yazılmış bir referans okuyucuyla karşılaştırır. İlk bulgu
+  düzeltildi: açık üssü kanonik olmayan (ör. baştaki gereksiz sıfır), çift,
+  1 ya da çok büyük olan ya da modülü çift olan RSA anahtarı önceden kabul
+  ediliyor, doğru imza bile `doğrulandı` = `yanlış` dönüyordu. Böyle bir
+  anahtar artık spec/31 §3'teki gibi kriptografiden önce C034
+  `anahtar_bozuk` rettir. DMARC sonucu değişmez; imza atlatma yoktur.
+  Sürüm adayı (RC) fuzz kapısı sekiz hedefte kalır; `dkim_anahtari`
+  hedefinin oraya alınması ayrı karardır.
+
+  **Göç:** Gerekmez. Bozuk anahtarı imza sahteciliği (`yanlış`) olarak
+  günlüğe yazan ürün kodu artık C034 `anahtar_bozuk` ret Sonucunu görür;
+  ikisi de DKIM `pass` değildir.
+
 ### Site
 
 - **Sürüm notları ham kopyası:** `/updates/surumler.md` ham kaynağı K-418

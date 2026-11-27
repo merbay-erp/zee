@@ -73,7 +73,7 @@ TANIMLI: İfade `dns` yetkinliği ister; proje `kamu_son_ekleri` bildirmemişse 
 
 TANIMLI: `B dkim imzasını VERİ verisi için P anahtarıyla A olarak doğrulamayı dene` (`kriptografi`) `Sonuç<Metin sözlük>` verir; başarı `doğrulandı` (`"doğru"`/`"yanlış"`), `algoritma` ve `anahtar_biti` alanlarını taşır. İmzanın tutmaması başarılı Sonuç'tur (`doğrulandı` `"yanlış"`).
 
-ZORUNLU: Algoritma yalnız `rsa-sha256` (RSASSA-PKCS1-v1_5, `p=` SPKI ya da PKCS#1, 1024–4096 bit) ve `ed25519-sha256` (RFC 8463: imza VERİ'nin SHA-256 özeti üzerinde, `p=` ham 32 bayt) olabilir; `rsa-sha1` (`algoritma_reddedildi`), bilinmeyen algoritma, boş `p=` (`anahtar_iptal`), çözülemeyen anahtar, 1024 bitten kısa ve 4096 bitten uzun RSA anahtarı ve base64 olmayan ya da boyu anahtara uymayan imza C034 `tür` verili rettir ve kriptografik işlemden önce elenir.
+ZORUNLU: Algoritma yalnız `rsa-sha256` (RSASSA-PKCS1-v1_5, `p=` SPKI ya da PKCS#1, 1024–4096 bit) ve `ed25519-sha256` (RFC 8463: imza VERİ'nin SHA-256 özeti üzerinde, `p=` ham 32 bayt) olabilir; `rsa-sha1` (`algoritma_reddedildi`), bilinmeyen algoritma, boş `p=` (`anahtar_iptal`), çözülemeyen anahtar (`anahtar_bozuk`; RSA'da modül ve açık üs pozitif, en kısa DER INTEGER, modül tek, üs tek ve 3 ≤ e ≤ 2^33 − 1 olmalıdır — doğrulayıcının çözemediği anahtar imzayı sessizce `yanlış` yapmaz), 1024 bitten kısa ve 4096 bitten uzun RSA anahtarı ve base64 olmayan ya da boyu anahtara uymayan imza C034 `tür` verili rettir ve kriptografik işlemden önce elenir.
 
 TANIMLI: VERİ'deki her LF imza girdisinde CRLF olur; VERİ CR içerirse C034 `veri_bozuk` rettir. Zee metninde CR yazılamaz ve SMTP alıcısı çıplak CR/LF'yi reddeder (spec/12 §9), bu yüzden dönüşüm kayıpsızdır. Kanonikleştirme (başlık seçimi, relaxed/simple kuralları, `b=` boşaltma) Zee kodudur. `B` ve `P` içindeki boşluk ve satır sonları atlanır.
 
@@ -83,7 +83,7 @@ TANIMLI: Gövde özetinin C034 duruşu yalnız o işi sonlandırır: bağlantı 
 
 ZORUNLU: Ürün kodu CR içeren girdiyi (ör. dosyadan okunmuş ileti) kanonikleştirmeden önce reddeder; gövde özeti ve doğrulama ilkeli CR'yi yalnız son savunma olarak yakalar (özette duruş, doğrulamada `veri_bozuk` ret Sonucu).
 
-AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; DKIM anahtarı (`p=` DER) fuzz hedefi ve `psl` fuzz hedefinin RC fuzz kapısına alınması; IDN kuralları ve DMARCbis ağaç yürüyüşü.
+AÇIK: Başlık ayrıştırıcısı, `Authentication-Results`, SPF, DMARC, ARC (RFC-0044 B2a/B2c–B2e); `dil dene` için kamu son ek listesi; `psl` ve `dkim_anahtari` fuzz hedeflerinin RC fuzz kapısına alınması; IDN kuralları ve DMARCbis ağaç yürüyüşü.
 
 ## 4. DKIM imza ilkeli (B3)
 
