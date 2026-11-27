@@ -8,6 +8,10 @@ koşuda sekiz hedefi paralel, hedef başına 3.600 saniye AddressSanitizer altı
 (ADR-173) K-411 ile, `kodlama` (RFC-0043, ADR-167; ZeeMail'de ağdan gelen
 MIME/QP/AUTH girdisinin katı çözücüleri) K-412 ile 26 Kasım 2026'da eklendi; bu
 tarihten sonraki RC adayı sekiz hedefin hepsini ister.
+`dkim_anahtari` (K-419, RFC-0044 B2b, ADR-177; DNS'ten gelen DKIM `p=` açık
+anahtar DER okuyucusu) 27 Kasım 2026'dan beri yalnız günlük `fuzz.yml`
+koşusundadır; RC kapısına alınması ayrı kullanıcı kararıdır ve bu karar
+olmadan RC listesi sekiz hedef kalır.
 
 ## Geçme koşulu
 

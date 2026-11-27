@@ -2589,6 +2589,41 @@ Açık: iki adımlı geri çevrim (`kaybı`, `kaydı`), `l`/`m` sonlu ünlü dü
 (`şekli`, `ismi`), `kt`/`fs`/`hs` kümeleri ve iyelik+belirtme çakışması
 (`ip_adresini`); sözlük ya da `zee-tr-2` ister.
 
+## K-419 — `dkim_anahtari` fuzz hedefi ve RSA bileşen denetimi (RFC-0044 B2b, ADR-177, GB-184)
+
+**Durum: KAPALI (27 Kasım 2026).** Kaynak: K-390 "Açık (bu PR'da
+kapanmıyor)" satırındaki "DKIM anahtarı fuzz hedefi" maddesi; GB-174 açık
+cümlesi, ADR-177 ve spec/31 §3 AÇIK maddesi. K-418 incelemesi K-411
+`x509_spki` hedefinin yalnız `ag_satiri::x509::spki_dilimi`'ni yürüttüğünü,
+DKIM `p=` anahtarını okuyan `dkim_kripto::AcikAnahtar` / `rsa_acik_anahtari`
+DER okuyucusunu (`der_oge`) hiçbir hedefin kapsamadığını doğrulamıştı. Freeze
+sınıfı security sertleştirmesi + bugfix; dil yüzeyi, grammar, tanı kodu, CLI
+ve dil::api::v1 değişmedi, yeni bağımlılık yok.
+
+Hedef `compiler/fuzz/fuzz_targets/dkim_anahtari.rs`: ilk bayt algoritma ve
+kip seçer (ham DER `ayristir` / `p=` metni `base64ten`). Kâhin
+`compiler/tests/ortak/dkim_anahtari_kahini.rs`: ayrı yazılmış X.690 referans
+okuyucusu ve ring 0.17.14'ün RSA anahtar kabulüyle kabul/ret, ret türü,
+`anahtar_biti` ve saklanan PKCS#1 baytları birebir; kabul edilen RSA 1024–4096
+bit, SPKI ve çıplak biçim eşdeğer, sahte imza paniksiz `fail`; Ed25519 yalnız
+32 bayt. Kararlı oynatma `compiler/tests/dkim_anahtari_fuzz_testi.rs` (24
+tohum + 6.000 bozulmuş girdi). Günlük `fuzz.yml` matrisinde (`azami_girdi`
+4097); korpus artefakt doğrulayıcısı hedefi tanır.
+
+**Bulgu (GB-184, düşük):** okuyucu açık üssü yalnız boş olmamakla, modülü
+yalnız pozitif en kısa INTEGER olmakla sınıyordu; ring'in çözemediği
+kanonik olmayan/negatif/sıfır/1/çift/2^33 − 1 üstü üs ve çift modül geçerli
+anahtar sayılıyor, doğru imza sessizce `doğrulandı=yanlış` dönüyordu (spec/31
+§3: çözülemeyen anahtar `anahtar_bozuk`). Düzeltme `rsa_acik_anahtari`'da ring
+kabulüyle aynı bileşen denetimi; regresyon `dkim-anahtari-kanonik-olmayan-us`,
+`posta_kimligi_testi::ring_disi_rsa_bileseni_c034_anahtar_bozuk_reddidir`,
+`dkim_kripto::testler::rsa_bilesenleri_ring_kabulune_uyar`. spec/31 §3
+ZORUNLU maddesi bileşen kuralını açıkça yazar.
+
+**RC kapısında değil:** `dkim_anahtari` hedefinin RC fuzz kapısına (AGENTS.md
+RC listesi, `guvenlik-kapisi.sh`, `fuzz-rc.yml`, `rc-kampanyasi.py`,
+`rc-kaniti.py`) alınması ayrı kullanıcı kararıdır.
+
 ## K-412 — `kodlama` fuzz hedefi RC kapısında (RFC-0043, ADR-167)
 
 **Durum: KAPALI (26 Kasım 2026).** Kaynak: kullanıcı isteği; RFC-0043
@@ -2825,7 +2860,9 @@ imzası Gelen'e; bozuk bh=/b=, iptal p=, olmayan seçici, rsa-sha1, imzasız
 taklit 550 5.7.1; DMARC p=reject).
 
 Açık (bu PR'da kapanmıyor, K-390 sonrası): `dil dene` PSL
-yüklemesi, `psl`/DKIM anahtarı fuzz hedefleri, IDN kuralları, DMARCbis.
+yüklemesi, `psl` fuzz hedefi, IDN kuralları, DMARCbis. DKIM anahtarı
+(`p=` DER, `dkim_kripto`) fuzz hedefi K-419 ile kapandı (27 Kasım 2026;
+günlük koşu, RC kapısı ayrı karar; ilk bulgusu GB-184).
 **B2a/B2c/B2d (27 Kasım 2026).** Ürün H (commit `a39356d`) başlık
 ayrıştırma + kendi authserv-id'li A-R/ARC-A-R temizliğini (RFC 8601 §5),
 SPF `check_host`'u RFC 7208 §4.6.4 sınırlarıyla (10 DNS terimi, 2 void

@@ -77,3 +77,10 @@ path = "fuzz_targets/kodlama.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "dkim_anahtari"
+path = "fuzz_targets/dkim_anahtari.rs"
+test = false
+doc = false
+bench = false

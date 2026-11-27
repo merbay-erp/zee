@@ -196,6 +196,10 @@ Bunlar olmadan:
 > kuralla `<x> gövdesinin dkim gövde özeti` `bh=` biçiminde gövde özetini
 > verir (DKIM'e özgü, genel özet API'si değil).
 > (4) Kriptografi rustls'in kilitli `ring`'idir, yeni crate yok.
+> (5) K-419 (27 Kasım 2026): `p=` okuyucusu `dkim_anahtari` fuzz hedefiyle
+> günlük koşuda (RC kapısına alınması ayrı karar). İlk bulgusu GB-184: RSA
+> modül/üs bileşenleri ring'in doğrulayıcı kabulüne hizalandı; çözülemeyen
+> anahtar sessiz `fail` değil `anahtar_bozuk`tur.
 
 ### Çözücü modeli — karar
 

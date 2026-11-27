@@ -145,8 +145,9 @@ Uygulama günü iki sürtünme ortaya çıktı:
 - **Açık:**
   - `dil dene` için PSL yüklemesi; şu an yalnız gerçek süreç ve hermetik
     `ToplayanIo` yüklüyor.
-  - `psl` ve `dkim_anahtari` fuzz hedefleri. Şimdilik 20 000'er
-    deterministik bozulmuş girdi birim testi var.
+  - `psl` fuzz hedefi. Şimdilik 20 000 deterministik bozulmuş ad birim
+    testi var. `dkim_anahtari` fuzz hedefi K-419 ile eklendi (bkz.
+    aşağıdaki ek); RC fuzz kapısına alınması ayrı karardır.
   - IDN (U-label) PSL kuralları.
   - DMARCbis ağaç yürüyüşü.
   - PSL güncellik uyarısı (CLI/lint).
@@ -160,3 +161,26 @@ Büyük gövdede `bh=` için gövde kanonikleştirmesi (simple/relaxed) dosyadan
 akışlı ilkelle host'a alındı; başlık kanonikleştirmesi Zee'de kalır. Bu
 kararın dar istisnası ve gerekçesi [ADR-174 §8](174-dkim-imza-ilkeli.md)'dedir.
 Metin ilkesi `gövdesinin dkim gövde özeti` değişmedi.
+
+## Ek — K-419 (27 Kasım 2026)
+
+`dkim_anahtari` fuzz hedefi (`compiler/fuzz/fuzz_targets/dkim_anahtari.rs`)
+günlük fuzz koşusuna eklendi. K-411 `x509_spki` hedefi bu okuyucuyu
+kapsamıyordu: o, TLS uç sertifikası yürüyücüsünü (`ag_satiri::x509`) sınar;
+DKIM `p=` ise `dkim_kripto`'nun ayrı DER okuyucusundadır. Kâhin
+`compiler/tests/ortak/dkim_anahtari_kahini.rs`'tedir ve yeni bağımlılık
+getirmez: ayrı yazılmış X.690 referans okuyucusu ile ring 0.17.14'ün RSA
+anahtar kabulü kabul/ret, ret türü, `anahtar_biti` ve saklanan PKCS#1
+baytlarını birebir karşılaştırır. ring açık anahtar ayrıştırmasını dışa
+vermediği için (ayrıştırma ve imza hatası aynı `Unspecified`) diferansiyel
+taraf ring kaynağındaki kurallardır.
+
+İlk bulgu (GB-184, düşük): okuyucu üssü yalnız boş olmamakla sınıyordu.
+ring'in çözemediği anahtar (kanonik olmayan, negatif, sıfır, 1, çift ya da
+2^33 − 1 üstü üs; çift modül) kabul ediliyor, doğru imza sessizce `yanlış`
+dönüyordu. Karar: bileşen denetimi doğrulayıcıyla aynı olur. Çözülemeyen
+anahtar kriptografiden önce `anahtar_bozuk`tur (spec/31 §3). Sessiz `fail`
+yayıncının bozuk kaydını imza sahteciliğinden ayırt edilemez kılardı.
+Kararlı oynatma `compiler/tests/dkim_anahtari_fuzz_testi.rs`, regresyon
+`regression/runtime/dkim-anahtari-kanonik-olmayan-us.dil`'dir. Hedef RC
+fuzz kapısında değildir.
