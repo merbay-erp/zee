@@ -24,7 +24,7 @@ class Protocol(unittest.TestCase):
         git('init','-q');git('add','.');git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','-qm','synthetic protocol source')
         git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','--allow-empty','-qm','synthetic protocol candidate')
         self.git=git;self.source=V.identity(self.root);self.producer=V.digest((self.root/'scripts/rc-kampanyasi.py').read_bytes())
-        self.proof={'schema':'zee-local-asan-miri-campaign-1','source_sha':self.source['sha'],'source_unchanged':True,'producer_path':'scripts/rc-kampanyasi.py','producer_sha256':self.producer,'platform':{'system':'Darwin','release':'fixture-kernel','os_version':'fixture-os','machine':'arm64','processor':'fixture CPU','ram_bytes':1024},'host_target':'aarch64-apple-darwin','run_origin':'local','run_id':'123','run_attempt':1,'result':'passed-local-technical-campaign','tools':{'toolchain':'nightly-2026-08-31','cargo_fuzz':'cargo-fuzz 0.13.2','rustc':'rustc fixture-only\nhost: aarch64-apple-darwin\ncommit-hash: 90850177249efe0321573c569aec5d12b257f8d6','miri':'miri 0.1.0 (9085017724 2026-08-30)'},'maximum_concurrent_fuzz_targets':2,'builds':{},'targets':[],'miri':[]}
+        self.proof={'schema':V.CAMPAIGN_SCHEMA,'target_policy':V.TARGET_POLICY,'target_set':list(V.TARGETS),'source_sha':self.source['sha'],'source_unchanged':True,'producer_path':'scripts/rc-kampanyasi.py','producer_sha256':self.producer,'platform':{'system':'Darwin','release':'fixture-kernel','os_version':'fixture-os','machine':'arm64','processor':'fixture CPU','ram_bytes':1024},'host_target':'aarch64-apple-darwin','run_origin':'local','run_id':'123','run_attempt':1,'result':'passed-local-technical-campaign','tools':{'toolchain':'nightly-2026-08-31','cargo_fuzz':'cargo-fuzz 0.13.2','rustc':'rustc fixture-only\nhost: aarch64-apple-darwin\ncommit-hash: 90850177249efe0321573c569aec5d12b257f8d6','miri':'miri 0.1.0 (9085017724 2026-08-30)'},'maximum_concurrent_fuzz_targets':2,'builds':{},'targets':[],'miri':[]}
         for k in ('source_start','source_end','original_source_start','original_source_end'):self.proof[k]=self.source
         for t,maximum in V.TARGETS.items():
             build=b'rustc --cfg sanitizer=address\n';put(self.c/('logs/asan-build-'+t+'.log'),build);self.proof['builds'][t]=dict(command(t,['cargo','+nightly-2026-08-31','fuzz','build','--verbose','--sanitizer','address','--target','aarch64-apple-darwin','--target-dir',str(self.c/'fuzz-target'),t],build,2),explicit_sanitizer_flag=True)
@@ -62,6 +62,20 @@ class Protocol(unittest.TestCase):
         self.proof['targets'][1]=copy.deepcopy(self.proof['targets'][0]);self.rejected()
     def sync_target(self,index=0):
         rec=self.proof['targets'][index];put(self.c/('targets/'+rec['target']+'/result.json'),json.dumps(rec));self.save()
+    def test_ten_target_policy_includes_psl_and_dkim_anahtari(self):
+        self.assertEqual(len(V.TARGETS),10);self.assertEqual(V.TARGETS['psl'],16384);self.assertEqual(V.TARGETS['dkim_anahtari'],4097)
+        spec2=importlib.util.spec_from_file_location('rc_producer',ROOT/'scripts/rc-kampanyasi.py');P=importlib.util.module_from_spec(spec2);spec2.loader.exec_module(P)
+        self.assertEqual(dict(P.TARGETS),V.TARGETS);self.assertEqual([t for t,_ in P.TARGETS],list(V.TARGETS))
+        self.assertEqual((P.CAMPAIGN_SCHEMA,P.TARGET_POLICY),(V.CAMPAIGN_SCHEMA,V.TARGET_POLICY))
+    def test_target_policy_and_order_bound_to_schema(self):
+        for key,bad in [('target_policy','zee-rc-fuzz-hedefleri-8'),('target_policy',None),('target_set',list(V.TARGETS)[:-1]),('target_set',list(reversed(V.TARGETS)))]:
+            saved=copy.deepcopy(self.proof.get(key));self.proof[key]=bad;self.rejected();self.proof[key]=saved
+    def test_legacy_eight_target_campaign_not_rejudged_by_ten_target_rule(self):
+        # campaign-1 (e.g. the eight-target 106d939c bundle) validates only with its own source commit's checker.
+        legacy=[t for t in V.TARGETS if t not in ('psl','dkim_anahtari')];self.assertEqual(len(legacy),8)
+        self.proof['schema']=V.LEGACY_CAMPAIGN_SCHEMA;del self.proof['target_policy'];del self.proof['target_set']
+        self.proof['targets']=[r for r in self.proof['targets'] if r['target'] in legacy];self.save()
+        with self.assertRaises(V.Legacy):self.export()
     def test_wrong_build_target_and_run_operation_rejected(self):
         self.proof['builds']['lexer_parser']['argv'][-1]='morfoloji';self.rejected()
         self.proof['builds']['lexer_parser']['argv'][-1]='lexer_parser';self.proof['targets'][0]['command']['argv'][3]='build';self.sync_target();self.rejected()

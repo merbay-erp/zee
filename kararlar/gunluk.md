@@ -6552,6 +6552,42 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `fuzz.yml` ve belgeler. Düzeltilmiş kodda yerel nightly koşusu bulgu
   vermedi. K-419 kapandı.
 
+## RC fuzz kapısı on hedef: `psl` ve `dkim_anahtari` (K-418, K-419; 27 Kasım 2026)
+
+- Kullanıcı kararı (27 Kasım 2026): K-418 ve K-419'un "RC kapısına alınması
+  ayrı karar" maddesi kapandı; iki hedef RC fuzz kapısına alındı, kapı sekiz
+  hedeften ona çıktı. İki hedef 27 Kasım gecelik `fuzz.yml` koşusunda
+  (`4669726a`) yeşildi. Yeni K numarası açılmadı.
+- `fuzz-rc.yml` matrisi gecelik matrisle hedef ve `max_len` bakımından
+  birebir oldu (`psl` 16384, `dkim_anahtari` 4097); `fuzz_korpusu_testi`
+  iki matrisi, `rc-kampanyasi.py`/`rc-kaniti.py` hedef/`max_len` kayıtlarını
+  ve `guvenlik-kapisi.sh` listesini birlikte denetler.
+- Kural geriye dönük değildir. Her RC kanıtı kendi exact kaynak commit'indeki
+  kapıyla doğrulanır; tarihçedeki dört/yedi/sekiz hedefli satırlar (ör.
+  `106d939c`) geçerli kalır. Dış pakette kural sürümü içeridedir:
+  `zee-local-asan-miri-campaign-2` + `target_policy: zee-rc-fuzz-hedefleri-10`
+  + sıralı `target_set`. Alanı olmayan `campaign-1` paketi yeni
+  doğrulayıcıda yeniden yargılanmaz, ayrı iletiyle reddedilir. Alternatif
+  (yeni doğrulayıcının eski sekiz hedefli kuralı da tanıması) seçilmedi:
+  paket exact kaynak SHA'sına bağlı olduğundan eski paket yeni kaynakta
+  zaten geçemez, iki kural tek betikte yalnız saldırı yüzeyi büyütürdü.
+- On hedefli RC kampanyası bu değişiklikte koşulmadı; compiler/src
+  değişmedi.
+
+## K-420 — v1.0.0-rc.2 sürüm adayı (27 Kasım 2026)
+
+- Proje sahibi kararı (27.11 16:35): sürüm etiketi, RC kapısını on hedefe
+  çıkarma, RFC-0040 alt RFC'si ve birleşmiş dal temizliği sırayla.
+- Etiket S=`106d939cf6ff8a64d01873fabae3f88afd327726` (K-419/GB-184 dahil).
+  RC kanıtı S'de koşan 8 hedefli kampanyadan `rc-kaniti.py export` ile dış
+  paket olarak alındı; `--surum-adayi --rc-kanit` aynı temiz S'de exit 0.
+  Bu belge commit'i E'dir; E etiketlenebilir kaynak sayılmaz (ADR-124).
+- Cargo sürümü `1.0.0-dev` kalır: tireli aday etiketleri `uyumluluk_testi`
+  sürüm sıralamasına girmez (rc.1 ile aynı).
+- `surum-adayi` 46011821702 yeşil, ön-sürüm yayımlandı. Windows
+  `dil` etiket koşusundaki tek kilit zaman aşımı yavaş disk kaynaklı;
+  aynı kaynak master koşusunda (45960022504) yeşil.
+
 ## K-364 — RFC-0040 ilk alt RFC taslağı: RFC-0047 (27 Kasım 2026)
 
 - Proje sahibi 27 Kasım 2026 16:35'te “RFC-0040 alt RFC'si”nin açılmasını

@@ -2,27 +2,46 @@
 
 K-157/ADR-056, günlük beş dakikalık fuzz smoke ile release-candidate soak
 kanıtını ayırır. `.github/workflows/fuzz-rc.yml` haftalık ve elle başlatılan
-koşuda sekiz hedefi paralel, hedef başına 3.600 saniye AddressSanitizer altında
+koşuda on hedefi paralel, hedef başına 3.600 saniye AddressSanitizer altında
 çalıştırır. `dns_yaniti` (K-390/ADR-169) 24 Kasım 2026'da eklendi; bu tarihten
 önceki RC kayıtları dört hedeflidir. `dkim_imza_girdisi` (ADR-174) ve `x509_spki`
 (ADR-173) K-411 ile, `kodlama` (RFC-0043, ADR-167; ZeeMail'de ağdan gelen
-MIME/QP/AUTH girdisinin katı çözücüleri) K-412 ile 26 Kasım 2026'da eklendi; bu
-tarihten sonraki RC adayı sekiz hedefin hepsini ister.
-`psl` (K-418, RFC-0044 B1b, ADR-177; kamu son ek listesi ve kurumsal alan)
-27 Kasım 2026'dan beri yalnız günlük `fuzz.yml` koşusundadır; RC kapısına
-alınması ayrı kullanıcı kararıdır ve bu karar olmadan RC listesi sekiz hedef
-kalır.
-`dkim_anahtari` (K-419, RFC-0044 B2b, ADR-177; DNS'ten gelen DKIM `p=` açık
-anahtar DER okuyucusu) 27 Kasım 2026'dan beri yalnız günlük `fuzz.yml`
-koşusundadır; RC kapısına alınması ayrı kullanıcı kararıdır ve bu karar
-olmadan RC listesi sekiz hedef kalır.
+MIME/QP/AUTH girdisinin katı çözücüleri) K-412 ile 26 Kasım 2026'da eklendi.
+`psl` (K-418, RFC-0044 B1b, ADR-177; kamu son ek listesi ve kurumsal alan,
+`max_len` 16384) ve `dkim_anahtari` (K-419, RFC-0044 B2b, ADR-177; DNS'ten gelen
+DKIM `p=` açık anahtar DER okuyucusu, `max_len` 4097) 27 Kasım 2026'da önce
+gecelik `fuzz.yml`'ye, aynı gün kullanıcı kararıyla RC kapısına alındı; iki
+hedef 27 Kasım gecelik koşusunda (`4669726a`) yeşildi. RC matrisi artık gecelik
+matrisle hedef ve `max_len` bakımından birebir aynıdır (`fuzz_korpusu_testi`).
+
+### Tarihsel kayıtlar hangi kurala göre doğrulanır
+
+Hedef listesi geriye dönük uygulanmaz. Her RC kanıtı, **kendi exact kaynak
+commit'indeki** `scripts/guvenlik-kapisi.sh` ve `scripts/rc-kaniti.py` ile
+doğrulanır; etiket kapısı da aday checkout'unda koşar. Bu yüzden
+`docs/fuzz-rc-gecmisi-v1.tsv` içindeki dört, yedi ve sekiz hedefli satırlar
+(ör. `106d939c` sekiz hedefli kampanyası ve o SHA'ya dayanan `v1.0.0-rc.2`
+adayı) olduğu gibi geçerli tarihsel kanıttır; on hedef kuralı yalnız bu değişikliği içeren
+commit'lerden sonraki adaylara uygulanır.
+
+Dış paketlerde kural sürümü paketin içinde açıktır: on hedefli üretici
+`campaign-proof.json`'a `schema: zee-local-asan-miri-campaign-2`,
+`target_policy: zee-rc-fuzz-hedefleri-10` ve sıralı `target_set` yazar;
+doğrulayıcı üçünü exact ister. Alanı olmayan `zee-local-asan-miri-campaign-1`
+paketi (sekiz ve daha az hedef) yeni doğrulayıcıda yeniden yargılanmaz, ayrı bir
+iletiyle reddedilir: o paket yalnız kendi kaynak commit'inin doğrulayıcısıyla
+geçerlidir. Paket zaten exact kaynak SHA'sına bağlı olduğundan başka bir
+commit'in adayı yerine geçemez.
+
+Yerel kanonik üretici en çok iki hedefi aynı anda koşar; on hedef × 1.800 sn
+yaklaşık beş çift tur, yani derleme ve Miri dahil 2,5–3 saat sürer.
 
 ## Geçme koşulu
 
 - `lexer_parser`, `morfoloji`, `http_istegi`, `dns_yaniti`, `dkim_imza_girdisi`,
-  `x509_spki`, `kodlama`, `wasm_abi` aynı Git commit'inde
+  `dkim_anahtari`, `x509_spki`, `kodlama`, `psl`, `wasm_abi` aynı Git commit'inde
   30–60 dakika çalışmış olmalı;
-- sekiz exit kodu da sıfır, crash/sanitizer bulgusu ve tek-girdi timeout'u sıfır
+- on exit kodu da sıfır, crash/sanitizer bulgusu ve tek-girdi timeout'u sıfır
   olmalı;
 - log, sonuç TSV'si, K-156 SHA-256 korpus manifesti ve varsa crash girdisi 90
   günlük hedef artefaktında bulunmalı;
@@ -132,6 +151,14 @@ sanitizer bulgusu sıfır; iki Miri grubu (3 test) geçti. Bu SHA için
 ve K-419 `dkim_anahtari` hedefleri yalnız gecelik fuzz'dadır; RC kapısı hâlâ
 sekiz hedeflidir. Clippy, tam test ve koruk adımları ayrıca koşulur; bu kayıt
 sürüm etiketi değildir.
+
+## RC kapısı on hedefe çıktı (27 Kasım 2026)
+
+`psl` ve `dkim_anahtari` RC kapısına alındı (`fuzz-rc.yml` matrisi,
+`scripts/rc-kampanyasi.py`, `scripts/rc-kaniti.py`, `scripts/guvenlik-kapisi.sh`).
+Bu değişiklikten sonraki ilk RC adayı on hedefin hepsini aynı exact SHA'da ister;
+bu kayıt yazılırken on hedefli bir RC kampanyası henüz koşulmadı. Yukarıdaki
+sekiz hedefli satırlar tarihsel kalır.
 
 ## K-265 explicit dış RC kanıtı
 
