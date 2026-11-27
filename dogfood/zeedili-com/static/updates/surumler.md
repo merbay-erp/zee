@@ -5,6 +5,29 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 27 Kasım 2026 — rc.2 sonrası geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.2.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **RC fuzz kapısı on hedefe çıktı (K-418, K-419):** e-posta başlığından
+  gelen alan adını okuyan `psl` ve DNS'ten gelen DKIM anahtarını okuyan
+  `dkim_anahtari` hedefleri, günlük fuzz koşusunda yeşil geçtikten sonra
+  sürüm adayı (RC) fuzz kapısına da alındı. Bundan sonraki her RC adayı on
+  hedefin hepsini aynı commit'te 30–60 dakika AddressSanitizer altında ister;
+  RC hedefleri ve girdi sınırları günlük koşuyla birebir aynıdır. Kural
+  geriye dönük değildir: önceki sekiz hedefli RC kanıtları kendi commit'lerinin
+  kapısıyla geçerli kalır. Yerel dış RC paketinde kural sürümü açıkça yazılır
+  (`zee-local-asan-miri-campaign-2`, `zee-rc-fuzz-hedefleri-10`). On hedefli
+  RC kampanyası henüz koşulmadı. Dil davranışı değişmedi.
+
+  **Göç:** Dil kullanıcısı için gerekmez. Yerel RC kampanyası yürütenler yeni
+  `scripts/rc-kampanyasi.py` ile on hedefli paket üretir; eski `campaign-1`
+  paketi yalnız kendi kaynak commit'inin `scripts/rc-kaniti.py`'siyle
+  doğrulanır.
+
 ## v1.0.0-rc.2 — 27 Kasım 2026 (sürüm adayı)
 
 **Durum:** V1'in ikinci sürüm adayı; GitHub'da ön-sürüm olarak yayımlanır.
@@ -67,6 +90,7 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
 
+
 - **Kamu son ek listesi için fuzz hedefi (K-418):** `AD alanının kurumsal
   alanı` ifadesinin kullandığı kamu son ek listesi ayrıştırıcısı ve kurumsal
   alan hesabı yeni `psl` fuzz hedefiyle günlük fuzz koşusuna alındı. Hedef
@@ -97,8 +121,8 @@ Bu kayıt yeni sürüm etiketi değildir.
 ### Site
 
 - **Sürüm notları ham kopyası:** `/updates/surumler.md` ham kaynağı K-418
-  kaydıyla yeniden üretildi; `/belge/surumler/` sayfasıyla aynı içeriği
-  taşır.
+  kaydıyla, ardından on hedefli RC fuzz kapısı kaydıyla yeniden üretildi;
+  `/belge/surumler/` sayfasıyla aynı içeriği taşır.
 
 ## 26 Kasım 2026 — Geliştirme güncellemeleri
 

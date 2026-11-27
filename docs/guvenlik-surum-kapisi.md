@@ -34,8 +34,11 @@ bash scripts/guvenlik-kapisi.sh --surekli      # tedarik workflow'u her push'ta
 bash scripts/guvenlik-kapisi.sh --surum-adayi  # etiket öncesi, temiz ağaçta
 ```
 
-Sürüm adayı kipi exact HEAD için `docs/fuzz-rc-gecmisi-v1.tsv` içinde dört
-hedefin ≥1800 saniyelik `gecti` satırını ister; K-157 kampanyası aynı
+Sürüm adayı kipi exact HEAD için `docs/fuzz-rc-gecmisi-v1.tsv` içinde RC
+hedeflerinin her birinin (27 Kasım 2026'dan beri on hedef; liste
+`scripts/guvenlik-kapisi.sh` ve [RC fuzz rehberi](fuzz-rc.md)) ≥1800 saniyelik
+`gecti` satırını ister. Liste aday checkout'undaki betikten gelir; eski
+adayların daha kısa listeli kanıtı kendi commit'lerinde geçerli kalır; K-157 kampanyası aynı
 commit'te koşulmadan etiket kesilemez. Etiket sonrası sürüm ikilisi yalnız
 [tekrar üretilebilir artefakt](tekrar-uretilebilir-surum.md) akışından gelir.
 

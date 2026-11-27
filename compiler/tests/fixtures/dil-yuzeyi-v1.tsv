@@ -97,7 +97,8 @@ bicim	zee-editor-template-source-1	aktif	0.8.0-dev	editors/jetbrains/upstream.js
 bicim	zee-http-service-1	aktif	0.8.0-dev	scripts/http-service.py	zee-http-service-1
 bicim	zee-http-service-stop-1	aktif	0.8.0-dev	scripts/http-service.py	zee-http-service-stop-1
 bicim	zee-linux-packaging-preflight-1	aktif	0.8.0-dev	scripts/linux-package-preflight.py	zee-linux-packaging-preflight-1
-bicim	zee-local-asan-miri-campaign-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-campaign-1
+bicim	zee-local-asan-miri-campaign-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	LEGACY_CAMPAIGN_SCHEMA = 'zee-local-asan-miri-campaign-1'
+bicim	zee-local-asan-miri-campaign-2	aktif	1.0.0-dev	scripts/rc-kampanyasi.py	CAMPAIGN_SCHEMA = 'zee-local-asan-miri-campaign-2'
 bicim	zee-local-asan-miri-driver-failure-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-driver-failure-1
 bicim	zee-local-publication-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-local-publication-1
 bicim	zee-managed-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-managed-1
@@ -125,6 +126,7 @@ bicim	zee-private-carrier-payload-1	aktif	0.8.0-dev	scripts/linux-private-carrie
 bicim	zee-project-launcher-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-project-launcher-1
 bicim	zee-rc-evidence-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	SCHEMA = 'zee-rc-evidence-1'
 bicim	zee-rc-evidence-check-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	zee-rc-evidence-check-1
+bicim	zee-rc-fuzz-hedefleri-10	aktif	1.0.0-dev	scripts/rc-kaniti.py	TARGET_POLICY = 'zee-rc-fuzz-hedefleri-10'
 bicim	zee-service-fault-native-1	aktif	0.8.0-dev	scripts/tests/service-fault-native.py	zee-service-fault-native-1
 bicim	zee-sql-intent-dispatcher-1	aktif	0.8.0-dev	scripts/job-dispatcher.py	zee-sql-intent-dispatcher-1
 bicim	zee-sql-module-1	aktif	0.8.0-dev	scripts/modul-sql-yoneticisi.py	zee-sql-module-1
