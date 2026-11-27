@@ -6551,3 +6551,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - RC kapısına alınmadı (kullanıcı kararı gerekir); yalnız günlük
   `fuzz.yml` ve belgeler. Düzeltilmiş kodda yerel nightly koşusu bulgu
   vermedi. K-419 kapandı.
+
+## K-420 — v1.0.0-rc.2 sürüm adayı (27 Kasım 2026)
+
+- Proje sahibi kararı (27.11 16:35): sürüm etiketi, RC kapısını on hedefe
+  çıkarma, RFC-0040 alt RFC'si ve birleşmiş dal temizliği sırayla.
+- Etiket S=`106d939cf6ff8a64d01873fabae3f88afd327726` (K-419/GB-184 dahil).
+  RC kanıtı S'de koşan 8 hedefli kampanyadan `rc-kaniti.py export` ile dış
+  paket olarak alındı; `--surum-adayi --rc-kanit` aynı temiz S'de exit 0.
+  Bu belge commit'i E'dir; E etiketlenebilir kaynak sayılmaz (ADR-124).
+- Cargo sürümü `1.0.0-dev` kalır: tireli aday etiketleri `uyumluluk_testi`
+  sürüm sıralamasına girmez (rc.1 ile aynı).
+- `surum-adayi` 46011821702 yeşil, ön-sürüm yayımlandı. Windows
+  `dil` etiket koşusundaki tek kilit zaman aşımı yavaş disk kaynaklı;
+  aynı kaynak master koşusunda (45960022504) yeşil.
+
