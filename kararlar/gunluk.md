@@ -6501,3 +6501,16 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kaydı K-355 (yeni K numarası açılmadı). T050/T060/T062 bilinçli güvenlik
   sınırlarıdır; reproducer onları gevşetme kararı değildir.
 - Compiler, grammar, tanı, CLI ve dil::api::v1 değişmedi. K-364 açık kalır.
+
+## K-390 — B2a/B2c/B2d ürün Zee'de çözdü, dil yüzeyi açılmadı (27 Kasım 2026)
+
+- `urun-h` (ZeeMail, ürün commit'i `a39356ded33f0058aacaa0f3e93bd685c745a6ce`)
+  merkez sorusuna üç aşamanın tamamen Zee kodunda çözüldüğünü bildirdi;
+  merkez ürün kaynağında A-R temizliği, SPF sorgu/void sınırı ve DMARC
+  kurumsal alan kullanımını okuyarak doğruladı.
+- Core freeze (K-160A/ADR-059): gerçek ürün ihtiyacı kalmayan aşama
+  açılmaz. B2a/B2c/B2d dil yüzeyi gerektirmeden kapandı; B2e açık.
+- ZM-F050: ürün 16 DKIM anahtarı tavanının bugün yettiğini, veritabanından
+  alan kümesinin çok kiracılı barındırma gelene dek gerçek ihtiyaç
+  olmadığını bildirdi; V1 için acil değil, K-397 kaydı değişmedi.
+- Compiler, grammar, tanı, CLI ve dil::api::v1 değişmedi.

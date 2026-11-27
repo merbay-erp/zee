@@ -5,7 +5,10 @@
   doğrulama ilkeli) kabul edildi ve uygulandı** (K-390 ikinci dilimi,
   ADR-177, spec/31 §2–§3); **B4a uygulandı** (K-397 Dilim 1, ADR-173);
   **B3 DKIM imza ilkeli uygulandı** (K-397 Dilim 2, ADR-174, spec/31 §4);
-  B2a/B2c/B2d/B2e ve B4'ün kalanı taslak. Core
+  **B2a/B2c/B2d dil yüzeyi gerektirmeden kapandı** (27 Kasım 2026: ürün
+  başlık ayrıştırma + `Authentication-Results` temizliği, SPF ve DMARC'ı
+  tamamen Zee'de çözdü; bkz. "B2a/B2c/B2d — ürün Zee'de çözdü");
+  B2e ve B4'ün kalanı taslak. Core
   freeze (K-160A/ADR-059) altında her aşama ayrı `dogfood-change` K-işi,
   ADR'si ve depo içi reproducer'ıyla açılır.
 - **Uygulama:** K-397 Dilim 1 (B4a giden TCP + istemci STARTTLS, ADR-173)
@@ -1053,16 +1056,47 @@ ADR'nin eki) ve ayrı PR'dır.
 | 0 | — | RFC-0043 bayt/kodlama/özet | — | En küçük, önce |
 | 1 | B1a | `dns` yetkinliği, stub çözücü, MX/A/AAAA/TXT, hata sınıfları, sahte çözücü | — | Tek yeni crate burada (ADR-038) |
 | 2 | B1b | PSL veri dosyası + `kurumsal alanı` | B1a | ZM-F025; **uygulandı** (K-390, ADR-177) |
-| 3 | B2a | Paylaşılan başlık ayrıştırıcı + `Authentication-Results` temizliği/yazımı | RFC-0043 | **Güvenlik önceliği**; DNS'siz bile değerli (sahte A-R silme) |
+| 3 | B2a | Paylaşılan başlık ayrıştırıcı + `Authentication-Results` temizliği/yazımı | RFC-0043 | **Güvenlik önceliği**; DNS'siz bile değerli (sahte A-R silme). **Dil yüzeyi gerekmedi** (27.11, ürün Zee'de çözdü) |
 | 4 | B2b | DKIM doğrulama (`rsa-sha256`, `ed25519-sha256`) | B1a, B2a | İlkel olarak B2a'dan önce **uygulandı** (K-390, ADR-177); kanonikleştirme Zee'de |
-| 5 | B2c | SPF `check_host` | B1a | — |
-| 6 | B2d | DMARC kaydı + hizalama yardımcıları; politika Zee'de | B1b, B2b, B2c | ZeeMail reject/quarantine |
+| 5 | B2c | SPF `check_host` | B1a | **Dil yüzeyi gerekmedi** (27.11, ürün Zee'de çözdü; B1a `dns` ilkeli yeterli) |
+| 6 | B2d | DMARC kaydı + hizalama yardımcıları; politika Zee'de | B1b, B2b, B2c | ZeeMail reject/quarantine. **Dil yüzeyi gerekmedi** (27.11, ürün Zee'de çözdü; B1b `kurumsal alanı` yeterli) |
 | 7 | B3 | DKIM imzası + çoklu seçici + açılış denetimi | B2b (doğrulayıcıyla test) | Giden kabul |
 | 8 | B2e | ARC değerlendirme | B2b | Deneysel RFC 8617; daha düşük öncelik |
 | 9 | B4a | `smtp-teslim` (RFC-0039 E) + istemci TLS'i `rustls` | B1a | MX teslimi önkoşulu |
 | 10 | B4b | MTA-STS + kalıcı ilke önbelleği + soak | B4a | — |
 | 11 | B4c | DANE/TLSA | B4a, B1a `zorunlu` kip, ZeeOS çözücüsü | — |
 | 12 | B4d | TLS-RPT | B4b, B4c | — |
+
+### B2a/B2c/B2d — ürün Zee'de çözdü (27 Kasım 2026)
+
+Etkin dogfood ürünü `urun-h` (ZeeMail), ürün commit'i
+`a39356ded33f0058aacaa0f3e93bd685c745a6ce` üzerinde üç aşamayı ek dil
+yüzeyi istemeden saf Zee koduyla gerçekledi. Core freeze kuralı gereği
+gerçek ürün ihtiyacı kalmayan aşama açılmaz; bu üç aşama için compiler
+değişikliği yapılmayacaktır:
+
+- **B2a.** Başlık ayrıştırıcısı ürünün ileti/MIME birimlerindedir. Gelen
+  iletide, ürünün kendi authserv-id'sini taşıyan `Authentication-Results`
+  ve `ARC-Authentication-Results` alanları (ARC'de `i=N;` sonrası kimlik,
+  büyük/küçük harfe duyarsız karşılaştırma) RFC 8601 §5 uyarınca silinir;
+  yabancı A-R korunur, kendi A-R en üste yazılır. Ürün testi: sahte A-R
+  silinir, yabancısı kalır.
+- **B2c.** SPF `check_host`, RFC 7208 §4.6.4 sınırlarıyla (DNS sorgulayan
+  terimler toplam 10, void lookup 2, MX başına 10 ana makine; include/
+  redirect özyinelemesi aynı sayaçtan) ürün kodundadır; B1a `dns` ilkeli
+  yeterlidir. Ürün testleri: kendini içeren kayıt sorgu sınırında durur;
+  üçüncü boş yanıt permerror.
+- **B2d.** DMARC relaxed/strict hizalama, `sp` ve kurumsal alandan politika
+  araması (RFC 7489 §6.6.3) ürün kodundadır; kurumsal alan B1b
+  `<ad> alanının kurumsal alanı` ilkelinden gelir.
+
+Bu, dilde bilinçli olarak *eksik* bırakılan bir yüzeydir, kapanmış bir dil
+özelliği değildir. İkinci bir ürün aynı ayrıştırma ya da politika mantığını
+yeniden yazmak zorunda kalırsa (K-164 tekrar kuralı) ortak kitaplık ya da
+ilkel ayrı K-işiyle yeniden değerlendirilir. "Ayrıştırıcı tutarlılığı"
+riski (GB-174) ürün kodunda kalır. B2e (ARC değerlendirme) açık kalır:
+ürün zincir yapısını ve geçersiz kılma kararını Zee'de veriyor, ARC-Seal/
+ARC-Message-Signature kriptosu için ürün ihtiyacı henüz kanıtlanmadı.
 
 B2a'nın B1'den önce alınabilmesi bilinçlidir: dışarıdan gelen sahte
 `Authentication-Results` silmek DNS istemez ve ürünün en acil güvenlik
