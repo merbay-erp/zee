@@ -2768,7 +2768,8 @@ teslim ve `dkim=pass` kanıtı (insan adımı).
 ## K-390 — DNS stub çözücü ve gelen posta doğrulaması (RFC-0044 B1, B2)
 
 **Durum: AÇIK — B1a KAPALI (24 Kasım 2026), B1b + B2b KAPALI (25 Kasım
-2026); B2a/B2c/B2d/B2e açık.** Kaynak:
+2026); B2a/B2c/B2d dil yüzeyi gerekmeden KAPALI (27 Kasım 2026, ürün Zee'de
+çözdü); B2e açık.** Kaynak:
 etkin dogfood ürünü `urun-h` (ZeeMail) güvenlik kapsamı (oltalama/BEC/MITM)
 ve korpus ZM-R006/ZM-R007 (ürün commit `7f7b1fe`). Merkez kararı 23 Kasım
 2026 "Sırayla aç". Freeze sınıfı `dogfood-change`; iki PR: B1 (DNS) ve B2
@@ -2825,7 +2826,14 @@ taklit 550 5.7.1; DMARC p=reject).
 
 Açık (bu PR'da kapanmıyor, K-390 sonrası): `dil dene` PSL
 yüklemesi, `psl`/DKIM anahtarı fuzz hedefleri, IDN kuralları, DMARCbis.
-Sıradaki: B2a başlık ayrıştırıcısı + A-R temizliği, B2c SPF, B2d DMARC.
+**B2a/B2c/B2d (27 Kasım 2026).** Ürün H (commit `a39356d`) başlık
+ayrıştırma + kendi authserv-id'li A-R/ARC-A-R temizliğini (RFC 8601 §5),
+SPF `check_host`'u RFC 7208 §4.6.4 sınırlarıyla (10 DNS terimi, 2 void
+lookup) ve DMARC hizalama + `sp`/kurumsal alan politika aramasını saf Zee'de
+gerçekledi; B1a `dns` ve B1b `kurumsal alanı` ilkelleri yetti. Core freeze
+gereği bu üç aşama için compiler yüzeyi açılmaz (RFC-0044 "B2a/B2c/B2d —
+ürün Zee'de çözdü"). İkinci üründe tekrar ederse K-164 kuralıyla yeniden
+değerlendirilir. Kalan: B2e (ARC kriptosu; ürün ihtiyacı kanıtlanmadı).
 ## K-386 — Liste sıra erişimi (RFC-0029, K-180)
 
 **Durum: KAPALI.** Kaynak: K-180 dört ürün kanıtı (kanıt özeti K-164/F010,

@@ -278,6 +278,9 @@ döndürme, MTA-STS/DANE/TLS-RPT ile zorunlu teslim TLS'i);
 [RFC-0044](../rfcs/0044-dns-posta-kimlik-dogrulama-ve-teslim-guvenligi.md)
 B1–B4 aşamalarını, tehdit modellerini ve K-işi sırasını bağlar; aşamalar
 core freeze altında ayrı `dogfood-change` ile açılır, V1 sözü değildir.
+**Dil yüzeyi gerekmeden kapandı: B2a/B2c/B2d (27 Kasım 2026)** — ürün H
+başlık ayrıştırma + sahte A-R temizliği, SPF ve DMARC'ı B1a/B1b ilkelleriyle
+saf Zee'de çözdü; bu aşamalar için compiler yüzeyi açılmaz.
 **Gerçekleşen: B1a (K-390, ADR-169)** — `dns` yetkinliği, yalnız loopback
 `dns_çözücü` ve `dns_dnssec` (zorunlu kipte açılış AD sınaması);
 `AD için MX|TXT|TLSA|adres kayıtlarını sorgulamayı dene` → kayıt başına
