@@ -563,6 +563,54 @@ barındırma ihtiyacı kanıtlanırsa o hatta (RFC-0044 B3) yeniden açılır.
 13. 405 + `Allow` ve 501 düzeltmesi bütün rotalara mı (öneri), yalnız DAV
     sınıfına mı?
 
+### Ürün görüşü (urun-h, 27 Kasım 2026)
+
+Etkin dogfood ürünü `urun-h` (ZeeMail; ürün kodu 27 Kasım ana dalı ve temiz
+Ubuntu 24.04 uçtan uca kurulum denemesi) açık soruların bir kısmına görüş
+verdi. Bu görüşler karar değildir; uygulama ADR'si bunları kabul ya da
+gerekçeli ret ile kapatır.
+
+- **Soru 1 — kimlik çözücü:** proje alanıyla bildirilen işlem (aday
+  `dav_kimlik_çözücüsü`); çalışma zamanı deposu ve rota önsözünde ikinci
+  cümle istenmez. Uygulama parolaları ürünün kendi tablosunda tek doğruluk
+  kaynağıdır (IMAP, gönderim ve web iptal aynı tabloyu kullanır); ayrı depo
+  gecikmeli iptal doğurur. Hesap kapatma IMAP'te açık oturumu bir sonraki
+  komutta düşürüyor; DAV'da da aynı anda düşmesi için "önbellek yok" kuralı
+  korunmalı. Ürün isteği: kullanıcı adı karşılaştırması bayt eşitliği değil,
+  ASCII küçük harfe katlanmış olmalı ya da çözücünün döndürdüğü kanonik ad
+  esas alınmalı; istemciler kullanıcının yazdığı büyük harfi gönderir ve bayt
+  eşitliği gerçek kullanıcıda yanlış 401 üretir.
+- **Soru 2 — HMAC anahtarı:** ayrı credential; `gizli_anahtar`'dan türetme
+  istenmez (o anahtarın döndürülmesi bugün MFA'ları sıfırlatıyor, uygulama
+  parolalarını aynı olaya bağlamak bütün cihazları düşürür). Kurulum root
+  0600 dosya + `LoadCredential` modeliyle sınandı. Döndürmede eski anahtar
+  kimliği süreyle değil, ona bağlı en az bir kayıt kaldıkça tutulur; ürün
+  "eski anahtarla üretilmiş N parola" sorgusunu ve yenileme çağrısını verir.
+  Zaman aşımıyla silme sessizce çalışmayan cihaz bırakır.
+- **Soru 3 — biçim ve göç:** aday biçim ürünün bugünkü gösterimiyle
+  (Base32 dörtlü gruplar) uyumlu, kabul. Gizli değer saklanmadığından zorla
+  göç yoktur: (a) yeni parolalar yalnız yeni biçimde ve IMAP/gönderim de aynı
+  ilkelle doğrular (RFC-0039 ortak); (b) eski Argon2id kayıtları yalnız
+  IMAP/gönderimde geçerli kalır, DAV'da kabul edilmez, arayüz yenilemeyi
+  ister; (c) kapanış ürün kararıdır. Önekli arama IMAP girişindeki çoklu
+  Argon2id denemesini ve oran kovasına dokunmayı da bitirir.
+- **Soru 4 — `DAV` başlığı:** PROPPATCH/MKCOL/COPY/MOVE yokken sınıf 1/3
+  iddia edilmemeli; yalnız `calendar-access, addressbook`. Ürün iOS ve
+  Thunderbird ile ölçüme hazır.
+- **Soru 7 — gövde tavanı:** 64 KiB CardDAV PUT için yetmez (gömülü base64
+  fotoğraflı kişi kartı tipik 50–200 KB; 413 eşitlemeyi kullanıcıya görünmeden
+  takar). Öneri: `text/vcard`/`text/calendar` PUT 1 MiB (ürünün mevcut geniş
+  gövde sınırıyla aynı), REPORT/PROPFIND 256 KiB; tavanın yöntem ya da tür
+  başına bildirilebilmesi tercih edilir. DAV sınıfı K-391
+  `geniş_gövde_rotaları` kapsamına alınmalı.
+- **Soru 8 — ayrı origin:** üretim profilinde `dav.<alan>` **zorunlu**
+  olmalı; çerezli webmail ile aynı origin'de tarayıcının Basic önbelleği
+  üzerinden XSS'in DAV'a ulaşması gerçek risk. Ürünün ters vekili Host izin
+  listesi kullandığından ek maliyet düşüktür.
+
+Ürün tarafında iCalendar üretimi ve vCard 4.0 içe/dışa aktarma hazırdır.
+Açık kalan sorular: 5, 6, 9, 10, 11, 12, 13.
+
 ## Dört soru süzgeci
 
 1. **Türkçe doğal mı?** — `dav istemcisi gerekli`, `oturum gerekli`
