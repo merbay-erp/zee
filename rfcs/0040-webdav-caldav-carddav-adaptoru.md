@@ -21,6 +21,9 @@
   [RFC-0039](0039-ag-sunucusu-yetkinligi.md)
 - **Freeze sınıfı adayı:** her katman için ayrı `dogfood-change`; bu taslak
   kendi başına hiçbir dil, CLI, tanı ya da API yüzeyi açmaz.
+- **Alt RFC'ler:** [RFC-0047](0047-dav-istemci-rotasi-ilk-dilim.md) — ilk
+  dilim (A + dar B + dar C + E + F), taslak, 27 Kasım 2026; D ve G sonraki
+  alt RFC'de.
 
 ## Özet
 
@@ -428,7 +431,10 @@ RFC'nin hiçbir katmanı şu zincir kurulmadan uygulanmaz:
 4. **Sıra önerisi.** E+F (kimlik ve muafiyet; tasarım riski en yüksek) ile
    A (yöntem) birlikte ilk alt RFC'dir, çünkü tek başına açılan bir yöntem
    kaydı kimliksiz kullanılamaz. Ardından B+C (başlık okuma/yazma), D (XML),
-   G (well-known). Sıra değişirse gerekçe ADR'ye yazılır.
+   G (well-known). Sıra değişirse gerekçe ADR'ye yazılır. **27 Kasım 2026:**
+   ilk alt RFC [RFC-0047](0047-dav-istemci-rotasi-ilk-dilim.md) ürünün sıra
+   notuna göre A + dar B + dar C + E + F kesitini seçti; sapmanın ürün
+   kanıtına dayalı gerekçesi orada yazılıdır ve uygulama ADR'sine taşınır.
 5. **Grammar.** Yeni politika cümlesi ve yöntem adları mevcut rota başlığı
    ve önsöz kalıplarının uzantısıdır; yine de K-167 yüzey kaydı ve
    RFC-0028 deprecation kuralları geçerlidir. V1 syntax freeze penceresi
@@ -557,7 +563,8 @@ katman açıldığında ilgili `urun-h` reproducer'ı ret/çözüm çiftine dön
   kapsamalıdır. E'de istek başına Argon2id doğrulaması spec/12 §5 oran
   sınırına takılır (bir PROPFIND + REPORT + N GET turu altıncı istekte 429);
   bu HMAC modelini (E) zorunlu kılar. Sıra önerisi (madde 4) bu nota göre alt
-  RFC'de yeniden değerlendirilir.
+  RFC'de yeniden değerlendirilir. → [RFC-0047](0047-dav-istemci-rotasi-ilk-dilim.md)
+  bu kesiti tasarlar (taslak, 27 Kasım 2026).
 - İstemci IP'si (ZM-F027, `zm-f027-istemci-ip`): DAV dışı ama aynı web
   adaptörü sürtünmesi. Çözüm istek sözlüğü anahtarı ya da form alanı
   olamaz (değeri saldırgan belirler); ADR-036 güvenilir vekil modeline göre

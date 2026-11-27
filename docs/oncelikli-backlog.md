@@ -4209,11 +4209,20 @@ HMAC, cihaz başına iptal) ile çerezsiz Basic ve ayrı oran kapıları, açık
 Core freeze altında uygulama yok. Depo içi DAV reproducer'ları 26 Kasım
 2026'da korpusa girdi: A/B/C/E/F için dokuz tek dosyalı ret vakası
 (`dogfood/urun-h/korpus/rfc0040-*.dil`; S036, S015, S037, T050, T060, T062),
-köken [dav-reproducer.md](../dogfood/urun-h/dav-reproducer.md). Alt RFC kararı
-ürün sahibinin 26 Kasım “önce reproducer” kararıyla beklemededir (büyük
-olasılıkla V1 sonrası); ürünün en küçük çalışan uç notu RFC-0040 açık
-sorularındadır. RFC-0039'a bağımlı değildir, büyük gövde
-tutamak ilkelini onunla paylaşır. V1 kapısı değildir.
+köken [dav-reproducer.md](../dogfood/urun-h/dav-reproducer.md). 27 Kasım
+2026'da proje sahibi onayıyla ilk alt RFC **taslağı açıldı**:
+[RFC-0047](../rfcs/0047-dav-istemci-rotasi-ilk-dilim.md), ürünün “en küçük
+çalışan uç” notuna göre A (PROPFIND/REPORT + PUT/DELETE, 405 + `Allow`, 501)
++ dar B (`Depth`, `If-Match`, `If-None-Match`; güven başlıkları kapalı) + dar
+C (türlü yanıt + 207, `text/vcard`, ETag) + E (çerezsiz Basic, HMAC'li
+uygulama parolası, ayrı oran kovaları) + F (`dav istemcisi gerekli` sınıfına
+bağlı CSRF/Origin muafiyeti, PUT/DELETE dahil). RFC-0040 “E+F+A önce”
+sırasından sapmanın gerekçesi RFC-0047'de, uygulama ADR'sine taşınacak; D
+(XML ağacı) ve G (well-known) sonraki alt RFC'de. **Uygulama yok**:
+compiler, grammar, tanı, CLI, spec ve dil yüzeyi değişmedi; uygulama ayrıca
+`dogfood-change` kapısı ve proje sahibi kararı ister (büyük olasılıkla V1
+sonrası). RFC-0039'a bağımlı değildir, büyük gövde tutamak ilkelini onunla
+paylaşır. V1 kapısı değildir.
 
 ## K-354 — Ağ sunucusu yetkinliği çatı RFC taslağı
 
