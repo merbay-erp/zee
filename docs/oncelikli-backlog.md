@@ -2368,6 +2368,23 @@ kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Etiket aaf9
 RC kapısı ve yayın kanıtı: [kayıt](surum-v1.0.0-rc.1-kaniti.md). Son `v1.0.0`
 için P27, P28 (11.11.2026), P29 Windows ve kısmi ürün kapıları kapanmalı.
 
+## K-420 — V1 ikinci sürüm adayı (v1.0.0-rc.2)
+
+**Durum: SÜRÜYOR — aday yayımlandı (27 Kasım 2026), son V1 kapıları açık.**
+Proje sahibi kararıyla (27.11, "hepsini sırayla yap") etiket
+`106d939cf6ff8a64d01873fabae3f88afd327726`; derleyici `1.0.0-dev`. Aynı
+temiz kaynakta `guvenlik-kapisi.sh --surum-adayi` dış RC kanıt paketiyle
+(`385cb0b5…77a1`, sekiz ASan hedefi + iki Miri grubu; ADR-124) geçti,
+tam test 1583/0/36; `tani_kalitesi`, `spec_drift`, `faz_test_matrisi`,
+`islev_egilimi` temiz. `surum-adayi` 46011821702 üç platform imzalı
+paketleri GitHub ön-sürümü olarak yayımladı; kurulum tatbikatı, tedarik ve
+açık depo yeşil. Etiket üzerindeki `dil` koşusunda Windows
+`kalici_rate_limit_paralel_artisla_esigi_deldirmez` yavaş diskte 5 sn
+yazma kilidine takıldı (aynı kaynak master'da yeşil); başarısız iş yeniden
+koşuldu. Sürüm notu [docs/surumler.md](surumler.md). Son `v1.0.0` için P27,
+P29 ve kısmi ürün kapıları açık. Sonraki RC adayı on hedefli RC kapısını
+(K-418/K-419) aynı SHA'da ister.
+
 ## K-323 — İstek başına kaynak yalıtımı ve doğrusal metin birikimi
 
 **Durum: KAPALI.** Harici bir web ürününde saha bulgusu: rotada C023/C024
