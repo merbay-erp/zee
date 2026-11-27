@@ -33,3 +33,14 @@ Temiz S üzerinde dört ASAN hedefi ayrı ayrı1801sn geçti; lexer_parser7.117.
 [RC sonuç makbuzu](../docs/incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](../docs/incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](../docs/incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json).
 
 S kaynak, E append-only kanıt/belge commit’idir; E kendi exactHEAD RC kabulünü devralmaz. Artefakt/etiket kaynak kimliği S kalır. Hash integrity owned-local güven review’unun yerine authenticated provenance sayılmaz.
+
+## Ek — on hedef ve kural sürümü (27 Kasım 2026)
+
+Üretici ve doğrulayıcı on RC hedefini ister (`psl`, `dkim_anahtari` dahil;
+[ADR-177 eki](177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md)). Kampanya
+kanıtı `zee-local-asan-miri-campaign-2` şemasına geçti ve `target_policy`
+(`zee-rc-fuzz-hedefleri-10`) ile sıralı `target_set` taşır; doğrulayıcı üçünü
+exact ister. `campaign-1` paketi reddedilir ama geçersiz ilan edilmez: o paket
+yalnız kendi exact kaynak commit'indeki `scripts/rc-kaniti.py` ile doğrulanır.
+Paket exact kaynak SHA'sına bağlı olduğundan bu ayrım güvenlik sınırını
+gevşetmez. Protokol testi 28 vakadır.

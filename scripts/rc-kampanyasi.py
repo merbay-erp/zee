@@ -18,10 +18,15 @@ import time
 
 TOOLCHAIN = 'nightly-2026-08-31'
 FUZZ_VERSION = 'cargo-fuzz 0.13.2'
+# Target set is versioned with the proof schema: campaign-1 (<= 8 targets) proofs
+# are checked only by the rc-kaniti.py of their own exact source commit.
+CAMPAIGN_SCHEMA = 'zee-local-asan-miri-campaign-2'
+TARGET_POLICY = 'zee-rc-fuzz-hedefleri-10'
 TARGETS = [('lexer_parser', 65536), ('morfoloji', 128),
            ('http_istegi', 81920), ('dns_yaniti', 65536),
-           ('dkim_imza_girdisi', 65536), ('x509_spki', 65537),
-           ('kodlama', 65536), ('wasm_abi', 4097)]
+           ('dkim_imza_girdisi', 65536), ('dkim_anahtari', 4097),
+           ('x509_spki', 65537), ('kodlama', 65536),
+           ('psl', 16384), ('wasm_abi', 4097)]
 STOP = threading.Event()
 RUN_DIR = None
 ACTIVE_PROOF = None
@@ -188,7 +193,8 @@ def main():
     tools = {'toolchain': TOOLCHAIN, 'rustc': query([env['RUSTC'], '-vV']), 'cargo_fuzz': FUZZ_VERSION,
              'miri': query(['cargo', '+' + TOOLCHAIN, 'miri', '--version'])}
     run_id = str(time.time_ns())
-    proof = {'schema': 'zee-local-asan-miri-campaign-1', 'source_sha': args.source_sha,
+    proof = {'schema': CAMPAIGN_SCHEMA, 'target_policy': TARGET_POLICY,
+             'target_set': [target for target, _ in TARGETS], 'source_sha': args.source_sha,
              'source_start': start_source, 'original_source_start': original,
              'run_origin': 'local', 'run_id': run_id, 'run_attempt': 1, 'tools': tools,
              'producer_sha256': digest(producer), 'producer_path': 'scripts/rc-kampanyasi.py', 'host_target': 'aarch64-apple-darwin',

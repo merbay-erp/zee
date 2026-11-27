@@ -11,7 +11,13 @@ import subprocess
 import sys
 import tempfile
 
-TARGETS = {'lexer_parser':65536,'morfoloji':128,'http_istegi':81920,'dns_yaniti':65536,'dkim_imza_girdisi':65536,'x509_spki':65537,'kodlama':65536,'wasm_abi':4097}
+TARGETS = {'lexer_parser':65536,'morfoloji':128,'http_istegi':81920,'dns_yaniti':65536,'dkim_imza_girdisi':65536,'dkim_anahtari':4097,'x509_spki':65537,'kodlama':65536,'psl':16384,'wasm_abi':4097}
+# The required target set is bound to the proof schema. A campaign-1 proof (no
+# target_policy; 4/5/7/8 targets by date) is never re-judged by this newer rule:
+# it validates only with the rc-kaniti.py of its own exact source commit.
+CAMPAIGN_SCHEMA = 'zee-local-asan-miri-campaign-2'
+TARGET_POLICY = 'zee-rc-fuzz-hedefleri-10'
+LEGACY_CAMPAIGN_SCHEMA = 'zee-local-asan-miri-campaign-1'
 MIRI = ('ondalik','zaman')
 MAX_FILE = 64 * 1024 * 1024
 MAX_TOTAL = 256 * 1024 * 1024
@@ -19,6 +25,7 @@ MAX_FILES = 200000
 SCHEMA = 'zee-rc-evidence-1'
 
 class Invalid(ValueError): pass
+class Legacy(Invalid): pass
 
 def require(value, message):
     if not value: raise Invalid(message)
@@ -216,7 +223,9 @@ def validate(root,current,m,data):
     producer=digest(query(root,'show',current['sha']+':scripts/rc-kampanyasi.py'))
     require(m['producer_sha256']==producer,'producer source differs')
     p=decode(data.get('campaign-proof.json',b''))
-    require(p.get('schema')=='zee-local-asan-miri-campaign-1' and p.get('result')=='passed-local-technical-campaign','campaign incomplete')
+    if p.get('schema')==LEGACY_CAMPAIGN_SCHEMA:raise Legacy('legacy campaign-1 proof')
+    require(p.get('schema')==CAMPAIGN_SCHEMA and p.get('result')=='passed-local-technical-campaign','campaign incomplete')
+    require(p.get('target_policy')==TARGET_POLICY and p.get('target_set')==list(TARGETS),'campaign target policy differs')
     require(p.get('producer_path')=='scripts/rc-kampanyasi.py' and p.get('producer_sha256')==producer,'campaign producer differs')
     require(p.get('source_sha')==current['sha'] and p.get('source_unchanged') is True,'campaign source differs')
     for key in ('source_start','source_end','original_source_start','original_source_end'):require(isinstance(p.get(key),dict) and p[key].get('clean') is True and p[key]==current,'campaign clean source differs')
@@ -270,7 +279,7 @@ def validate(root,current,m,data):
         totals=re.findall(rb'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',log)
         require(len(totals)==1 and int(totals[0][0])>0 and totals[0][1:]==(b'0',b'0') and rec.get('actual_tests')==int(totals[0][0]),'Miri actual results')
     require(identity(root)==current,'source changed during validation')
-    return {'schema':'zee-rc-evidence-check-1','source':current,'origin':'owned-local-reviewed-not-authenticated','targets':len(TARGETS),'miri_groups':2,'status':'validated-integrity-and-policy'}
+    return {'schema':'zee-rc-evidence-check-1','source':current,'origin':'owned-local-reviewed-not-authenticated','campaign_schema':CAMPAIGN_SCHEMA,'target_policy':TARGET_POLICY,'targets':len(TARGETS),'miri_groups':2,'status':'validated-integrity-and-policy'}
 
 def export(root,campaign,output):
     current=identity(root);require(output.resolve(strict=False)==output,'output ancestor symlink rejected');require(not output.exists() and output.is_absolute() and not output.is_relative_to(root),'fresh external bundle required')
@@ -317,5 +326,7 @@ def main():
 
 if __name__=='__main__':
     try:main()
+    except Legacy:
+        sys.stderr.write('RC evidence rejected; campaign-1 bundles validate only with scripts/rc-kaniti.py of their own exact source commit.\n');sys.exit(2)
     except (Invalid,OSError,subprocess.SubprocessError,KeyError,TypeError,ValueError,AttributeError,IndexError,RecursionError):
         sys.stderr.write('RC evidence rejected; exact source or complete immutable evidence required.\n');sys.exit(2)

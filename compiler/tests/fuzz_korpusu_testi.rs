@@ -194,3 +194,77 @@ fn rc_kampanyasi_dort_hedefi_address_sanitizer_ve_miriyle_korur() {
         assert!(workflow.contains(parca), "RC fuzz kapısı eksik: {parca}");
     }
 }
+
+/// Workflow matrisinden `(hedef, azami_girdi)` çiftlerini sırasıyla çıkarır.
+fn matris_hedefleri(workflow: &str) -> Vec<(String, String)> {
+    let mut hedefler = Vec::new();
+    let mut hedef = None;
+    for satir in workflow.lines().map(str::trim) {
+        if let Some(ad) = satir.strip_prefix("- hedef: ") {
+            hedef = Some(ad.to_string());
+        } else if let Some(azami) = satir.strip_prefix("azami_girdi: ") {
+            let ad = hedef.take().expect("azami_girdi bir hedefi izlemeli");
+            hedefler.push((ad, azami.to_string()));
+        }
+    }
+    hedefler
+}
+
+#[test]
+fn rc_kapisi_on_hedefi_gecelik_matris_ve_rc_betikleriyle_hizalar() {
+    let depo = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("compiler depo içinde olmalı");
+    let oku = |yol: &str| std::fs::read_to_string(depo.join(yol)).expect("dosya okunmalı");
+    let gecelik = matris_hedefleri(&oku(".github/workflows/fuzz.yml"));
+    let rc = matris_hedefleri(&oku(".github/workflows/fuzz-rc.yml"));
+    assert_eq!(rc.len(), 10, "RC fuzz kapısı on hedef ister: {rc:?}");
+    assert_eq!(
+        rc, gecelik,
+        "RC matrisi gecelik hedef/azami_girdi matrisiyle aynı olmalı"
+    );
+    for (hedef, azami) in [("psl", "16384"), ("dkim_anahtari", "4097")] {
+        assert!(
+            rc.contains(&(hedef.to_string(), azami.to_string())),
+            "K-418/K-419 hedefi RC kapısında değil: {hedef}"
+        );
+    }
+    let kampanya = oku("scripts/rc-kampanyasi.py");
+    let kanit = oku("scripts/rc-kaniti.py");
+    let kapi = oku("scripts/guvenlik-kapisi.sh");
+    let liste = rc
+        .iter()
+        .map(|(h, _)| h.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    assert!(
+        kapi.contains(&format!("for hedef in {liste}; do")),
+        "güvenlik kapısı RC listesi: {liste}"
+    );
+    let mut sira = 0;
+    for (hedef, azami) in &rc {
+        let kayit = format!("('{hedef}', {azami})");
+        let konum = kampanya
+            .find(&kayit)
+            .unwrap_or_else(|| panic!("rc-kampanyasi.py: {kayit}"));
+        assert!(
+            konum > sira,
+            "rc-kampanyasi.py hedef sırası matrisle aynı olmalı: {hedef}"
+        );
+        sira = konum;
+        assert!(
+            kanit.contains(&format!("'{hedef}':{azami}")),
+            "rc-kaniti.py: {hedef}:{azami}"
+        );
+    }
+    for parca in ["zee-local-asan-miri-campaign-2", "zee-rc-fuzz-hedefleri-10"] {
+        assert!(
+            kampanya.contains(parca) && kanit.contains(parca),
+            "RC hedef ilkesi sürümü: {parca}"
+        );
+    }
+    assert!(
+        kanit.contains("LEGACY_CAMPAIGN_SCHEMA = 'zee-local-asan-miri-campaign-1'"),
+        "eski sekiz hedefli paketler yeni kuralla yeniden yargılanmaz"
+    );
+}

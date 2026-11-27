@@ -193,7 +193,7 @@ fn guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir() {
         "cargo check --manifest-path fuzz/Cargo.toml --locked --bins",
         "--test guvenlik_kapisi_testi --test tedarik_kapisi_testi",
         "docs/fuzz-rc-gecmisi-v1.tsv",
-        "lexer_parser morfoloji http_istegi dns_yaniti dkim_imza_girdisi x509_spki kodlama wasm_abi",
+        "lexer_parser morfoloji http_istegi dns_yaniti dkim_imza_girdisi dkim_anahtari x509_spki kodlama psl wasm_abi",
         "git status --porcelain",
         "cargo clippy --locked --all-targets -- -D warnings",
         "cargo test --locked --no-fail-fast",
@@ -343,7 +343,7 @@ fn rc_kaniti_exact_kaynak_ve_kosucu_sahipligi() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap();
-    for (script, count) in [("rc-kaniti-test.py", 25), ("rc-kampanyasi-test.py", 9)] {
+    for (script, count) in [("rc-kaniti-test.py", 28), ("rc-kampanyasi-test.py", 9)] {
         let result = std::process::Command::new("python3")
             .args(["-I", "-B"])
             .arg(root.join("scripts/tests").join(script))

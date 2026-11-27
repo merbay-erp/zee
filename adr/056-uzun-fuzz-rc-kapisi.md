@@ -53,3 +53,15 @@ kaydetmek gerekir.
   üzerinde dört yeşil hedef ister.
 
 K-265 [ADR-124](124-exact-kaynak-dis-rc-kaniti.md) aynı temiz sourceS için explicit dış immutable kanıt profilini ekler. Dört uzun ASAN hedefi ve iki seçili Miri gereksinimi değişmez. Gate önce exact cleanHEAD/tree pinler, tüm adımlarda S’yi korur ve external rawhash/completepolicy doğrular. Sonraki append-only tarihçe commit’i E satırlarda S kimliğini taşır; E, S ile eşdeğer veya fuzzlanmış gösterilemez. Default tracked self-reference yolu çözülmüş sayılmaz. Gerçek yeni kampanya kısa protokol testlerinden kapanmaz.
+
+## Ek — hedef listesinin sürümlenmesi (27 Kasım 2026)
+
+Hedef sayısı 24–26 Kasım'da dörtten sekize, 27 Kasım'da
+[ADR-177 eki](177-kamu-son-ekleri-ve-dkim-dogrulama-ilkeli.md) ile `psl` ve
+`dkim_anahtari` eklenerek ona çıktı; güncel liste `AGENTS.md`,
+`scripts/guvenlik-kapisi.sh` ve `.github/workflows/fuzz-rc.yml`dedir. Yukarıdaki
+"dört hedef" ifadeleri kararın ilk hâlidir. Liste geriye dönük uygulanmaz: her
+aday kendi exact kaynak commit'indeki kapıyla doğrulanır, tarihçedeki eski
+satırlar geçerli kalır. Dış pakette (ADR-124) kural sürümü kanıtın içindedir:
+`zee-local-asan-miri-campaign-2` + `target_policy: zee-rc-fuzz-hedefleri-10`;
+alanı olmayan `campaign-1` paketi yeni doğrulayıcıda yeniden yargılanmaz.

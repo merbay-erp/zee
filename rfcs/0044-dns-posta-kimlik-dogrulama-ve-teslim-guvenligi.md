@@ -197,7 +197,8 @@ Bunlar olmadan:
 > verir (DKIM'e özgü, genel özet API'si değil).
 > (4) Kriptografi rustls'in kilitli `ring`'idir, yeni crate yok.
 > (5) K-419 (27 Kasım 2026): `p=` okuyucusu `dkim_anahtari` fuzz hedefiyle
-> günlük koşuda (RC kapısına alınması ayrı karar). İlk bulgusu GB-184: RSA
+> günlük koşuda; 27 Kasım 2026'da RC fuzz kapısına da alındı (ADR-177 eki).
+> İlk bulgusu GB-184: RSA
 > modül/üs bileşenleri ring'in doğrulayıcı kabulüne hizalandı; çözülemeyen
 > anahtar sessiz `fail` değil `anahtar_bozuk`tur.
 
@@ -304,7 +305,8 @@ SMTP tarafında geçici hata `451 4.4.3` sınıfına eşlenir; eşleme Zee'dedir
 - Ayrıştırma host'ta (biçim basit: kural, `*.` joker, `!` istisna; ICANN ve
   PRIVATE bölümleri; IDN satırları A-label'a çevrilmeden ilk sürümde
   yok sayılır — açık soru). Fuzz hedefi `psl` (K-418, 27 Kasım 2026:
-  günlük koşuda, diferansiyel referans kâhinli; RC kapısına alınması ayrı karar).
+  günlük koşuda, diferansiyel referans kâhinli; aynı gün RC fuzz kapısına da
+  alındı, ADR-177 eki).
 - Algoritma publicsuffix.org "en uzun eşleşen kural" algoritmasıdır;
   kurumsal alan = kamu son eki + bir etiket (RFC 7489 §3.2).
 - **DMARCbis notu:** IETF DMARC çalışma grubunun DMARCbis taslağı
@@ -933,7 +935,9 @@ alanı satırları ve RFC-0024 ile aynı committe yapılır.
 6. **RC fuzz kapısı.** Yeni ayrıştırıcılar (`dns_yaniti`, `psl`,
    `ileti_basligi`, `dkim_imzasi`, `spf_kaydi`, `dmarc_kaydi`,
    `mta_sts_ilkesi`, `tlsa`) AGENTS.md RC fuzz listesine aday; hangilerinin
-   RC kapısına gireceği aşama ADR'sinde.
+   RC kapısına gireceği aşama ADR'sinde. Durum (27 Kasım 2026): `dns_yaniti`,
+   `dkim_imza_girdisi`, `dkim_anahtari` ve `psl` RC kapısında (on hedef);
+   diğerleri henüz yazılmadı.
 
 V1 kapı listesine eklenmez; V1 sözü değildir.
 

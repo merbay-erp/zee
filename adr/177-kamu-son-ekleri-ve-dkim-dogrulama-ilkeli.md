@@ -146,8 +146,8 @@ Uygulama günü iki sürtünme ortaya çıktı:
   - `dil dene` için PSL yüklemesi; şu an yalnız gerçek süreç ve hermetik
     `ToplayanIo` yüklüyor.
   - `psl` ve `dkim_anahtari` fuzz hedefleri K-418 ve K-419 ile günlük
-    koşuya eklendi (bkz. aşağıdaki ekler); RC fuzz kapısına alınmaları
-    ayrı karardır. K-411 `x509_spki` hedefi DKIM `p=` okuyucusunu değil,
+    koşuya eklendi (bkz. aşağıdaki ekler) ve 27 Kasım 2026'da RC fuzz
+    kapısına alındı (bkz. RC kapısı eki). K-411 `x509_spki` hedefi DKIM `p=` okuyucusunu değil,
     TLS uç sertifikası yürüyücüsünü (`ag_satiri::x509`) kapsar.
   - IDN (U-label) PSL kuralları.
   - DMARCbis ağaç yürüyüşü.
@@ -174,7 +174,9 @@ sayısını ve kurumsal alanı birebir karşılaştırır; spec/31 §2 değişme
 son nokta bağımsızlığı) ayrıca denetlenir. Joker `*.x` adın kendisi `x`
 ise `x`'i kamu son eki sayar; referans bu belgelenmiş seçimi korur.
 Kararlı oynatma `compiler/tests/kamu_son_ekleri_fuzz_testi.rs`tedir.
-compiler/src değişmedi. Hedef RC fuzz kapısında değildir.
+compiler/src değişmedi. Hedef aynı gün RC fuzz kapısına alındı (aşağıdaki RC
+kapısı eki).
+
 ## Ek — K-419 (27 Kasım 2026)
 
 `dkim_anahtari` fuzz hedefi (`compiler/fuzz/fuzz_targets/dkim_anahtari.rs`)
@@ -195,5 +197,20 @@ dönüyordu. Karar: bileşen denetimi doğrulayıcıyla aynı olur. Çözülemey
 anahtar kriptografiden önce `anahtar_bozuk`tur (spec/31 §3). Sessiz `fail`
 yayıncının bozuk kaydını imza sahteciliğinden ayırt edilemez kılardı.
 Kararlı oynatma `compiler/tests/dkim_anahtari_fuzz_testi.rs`, regresyon
-`regression/runtime/dkim-anahtari-kanonik-olmayan-us.dil`'dir. Hedef RC
-fuzz kapısında değildir.
+`regression/runtime/dkim-anahtari-kanonik-olmayan-us.dil`'dir. Hedef aynı
+gün RC fuzz kapısına alındı (aşağıdaki RC kapısı eki).
+
+## Ek — RC fuzz kapısı on hedef (27 Kasım 2026)
+
+Kullanıcı kararıyla `psl` (`max_len` 16384) ve `dkim_anahtari` (`max_len`
+4097) RC fuzz kapısına alındı; kapı sekiz hedeften ona çıktı. İki hedef 27
+Kasım gecelik koşusunda (`4669726a`) yeşildi. Gerekçe: ikisi de ağdan gelen
+güvenilmez girdinin (e-posta başlığındaki alan adı, DNS TXT `p=` anahtarı)
+ilk okuyucusudur ve diğer posta hedefleri (`dns_yaniti`, `dkim_imza_girdisi`,
+`kodlama`) gibi her RC adayında 30–60 dakika AddressSanitizer altında
+koşmalıdır. RC matrisi gecelik matrisle hedef ve `max_len` bakımından
+birebirdir. Kural geriye dönük değildir: daha önceki sekiz hedefli RC kanıtları
+kendi kaynak commit'lerinin kapısıyla geçerli kalır; dış pakette kural sürümü
+`zee-local-asan-miri-campaign-2`/`zee-rc-fuzz-hedefleri-10` ile açıktır
+([ADR-056 eki](056-uzun-fuzz-rc-kapisi.md), [RC fuzz rehberi](../docs/fuzz-rc.md)).
+compiler/src değişmedi; on hedefli RC kampanyası bu kararla koşulmadı.
