@@ -5,9 +5,9 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## 27 Kasım 2026 — Geliştirme güncellemeleri
+## 27 Kasım 2026 — rc.2 sonrası geliştirme güncellemeleri
 
-**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.2.
 Bu kayıt yeni sürüm etiketi değildir.
 
 ### Güvenlik
@@ -27,6 +27,69 @@ Bu kayıt yeni sürüm etiketi değildir.
   `scripts/rc-kampanyasi.py` ile on hedefli paket üretir; eski `campaign-1`
   paketi yalnız kendi kaynak commit'inin `scripts/rc-kaniti.py`'siyle
   doğrulanır.
+
+## v1.0.0-rc.2 — 27 Kasım 2026 (sürüm adayı)
+
+**Durum:** V1'in ikinci sürüm adayı; GitHub'da ön-sürüm olarak yayımlanır.
+Bu bir V1 yayını değildir: son `v1.0.0`, aşağıdaki açık kapılar kapanınca
+etiketlenir. Etiket kaynağı `106d939cf6ff8a64d01873fabae3f88afd327726`;
+derleyici kimliği `1.0.0-dev` serisindedir.
+
+### Ne var
+
+- Linux (x86_64), macOS (arm64) ve Windows (x86_64) için hazır `dil` ve
+  `dillsp`; iki bağımsız temiz derlemede birebir aynı ikili, SBOM,
+  provenance ve resmî yayıncı imzası
+  ([yayıncı anahtarı](yayinci-anahtari-v1.txt)).
+- v1.0.0-rc.1'den bu yana aşağıdaki bütün geliştirme güncellemeleri
+  (20 Ekim – 27 Kasım 2026 kayıtları): ağ sunucusu, DNS ve posta kimlik
+  doğrulama ilkelleri (RFC-0039, RFC-0044), bayt/kodlama/özet yüzeyi
+  (RFC-0043), liste sıra erişimi (RFC-0029), K-419/GB-184 DKIM anahtar
+  düzeltmesi ve güvenlik/correctness düzeltmeleri. Her değişikliğin
+  davranışı ve göç adımı kendi tarihli kaydındadır.
+
+### Sürüm kapısı kanıtı
+
+Aynı temiz kaynakta `scripts/guvenlik-kapisi.sh --surum-adayi` geçti: RC
+kanıt paketi `385cb0b53140717b2006ece6aee6ce473c3ddd041e85e8375fd39005b99077a1`
+(sekiz AddressSanitizer fuzz hedefi yerelde hedef başına 1.801 sn ve
+GitHub fuzz-rc koşusu 45961432810'da 9/9; çökme, zaman aşımı ve sanitizer
+bulgusu yok; iki Miri grubu), clippy, tam test 1583 geçti / 0 kaldı / 36
+yok sayıldı, conformance, semantic regresyon ve core-freeze korukları.
+`tani_kalitesi`, `spec_drift`, `faz_test_matrisi` ve `islev_egilimi`
+temiz. Ayrıntı [fuzz-rc tarihçesinde](fuzz-rc-gecmisi-v1.tsv).
+
+### Kurulum
+
+Paketler [GitHub ön-sürüm sayfasındadır](https://github.com/merbay-erp/zee/releases/tag/v1.0.0-rc.2)
+(`surum-adayi` koşusu 46011821702: üç platform iki temiz klon, imza
+doğrulaması, kurulum tatbikatı yeşil). İndirilen paketi açın, önce imzayı sonra kurulumu doğrulayın
+([runbook](surum-runbook.md)):
+`bash scripts/imza-dogrula.sh <klasör>` (OpenSSL 3+; macOS'ta
+`brew install openssl@3`) → `bash scripts/kur.sh --artefakt <klasör>` →
+`dil sürüm`. Windows: `powershell -File scripts/kur.ps1 -Artefakt <klasör>`.
+
+### V1 öncesi açık kapılar
+
+- İnsan kullanılabilirlik oturumları (P27): 10 öğrenci/çocuk ve 5 profesyonel.
+- Fiziksel Windows cihaz kabulü (P29).
+- Kısmi ürün kapıları: göç/uyumluluk (P05), teslim (P06), pilot güvenlik (P24),
+  PostgreSQL üretim (P31), worker işletimi (P34).
+
+### Uyumluluk ve göç
+
+v1.0.0-rc.1'den bu yana yeni yüzeyler eklemedir; kaldırılan ya da yeniden
+adlandırılan yüzey yoktur. Davranışı daralan durumların (ör. bozuk DKIM
+anahtarının C034 ile reddi) göç notu ilgili tarihli kayıttadır.
+
+## 27 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; bu kayıttaki değişiklikler
+v1.0.0-rc.2'ye dahildir.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
 
 - **Kamu son ek listesi için fuzz hedefi (K-418):** `AD alanının kurumsal
   alanı` ifadesinin kullandığı kamu son ek listesi ayrıştırıcısı ve kurumsal
