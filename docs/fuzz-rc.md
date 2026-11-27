@@ -119,6 +119,20 @@ adımı sekiz hedefte karşılanır. K-418 `psl` hedefi bu SHA'dan sonra yalnız
 gecelik fuzz'a eklendi; RC kapısı hâlâ sekiz hedeflidir. Clippy, tam test ve
 koruk adımları ayrıca koşulur; bu kayıt sürüm etiketi değildir.
 
+## Sekiz hedefli yeniden koşu, `106d939c` (27 Kasım 2026)
+
+Master yine ilerlediği için (K-418 #138 ve K-419 #140, ikincisi `compiler/src`
+değiştirdi) kampanya `106d939cf6ff8a64d01873fabae3f88afd327726` üzerinde yeniden
+koşuldu. Yerel kanonik üretici sonucu `passed-local-technical-campaign`: hedef
+başına 1.801 sn, toplam 63.203.536 yürütme, kaynak kampanya boyunca temiz ve
+değişmedi. GitHub `fuzz-rc` koşusu 45961432810 de yeşil (9/9 iş): hedef başına
+3.601 sn, toplam 2.570.107.847 yürütme. İki ortamda da crash, timeout ve
+sanitizer bulgusu sıfır; iki Miri grubu (3 test) geçti. Bu SHA için
+`scripts/guvenlik-kapisi.sh` RC fuzz adımı sekiz hedefte karşılanır. K-418 `psl`
+ve K-419 `dkim_anahtari` hedefleri yalnız gecelik fuzz'dadır; RC kapısı hâlâ
+sekiz hedeflidir. Clippy, tam test ve koruk adımları ayrıca koşulur; bu kayıt
+sürüm etiketi değildir.
+
 ## K-265 explicit dış RC kanıtı
 
 [Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.
