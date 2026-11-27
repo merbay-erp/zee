@@ -6619,8 +6619,8 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 
 ## K-364 — RFC-0047 açık sorularına ürün görüşü (27 Kasım 2026)
 
-- `urun-h` (ZeeMail) RFC-0047'nin 1, 2, 3, 4, 7 ve 8. açık sorularına görüş
-  verdi; RFC'ye "Ürün görüşü" alt bölümü olarak eklendi. Karar değildir;
+- `urun-h` (ZeeMail) RFC-0047'nin on üç açık sorusunun tamamına görüş verdi
+  (12 ilk uygulama diliminde ölçülecek); RFC'ye "Ürün görüşü" alt bölümü olarak eklendi. Karar değildir;
   uygulama ADR'si kabul ya da gerekçeli retle kapatır. Uygulama yok, dil
   davranışı değişmedi.
 

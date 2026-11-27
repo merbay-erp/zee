@@ -566,7 +566,7 @@ barındırma ihtiyacı kanıtlanırsa o hatta (RFC-0044 B3) yeniden açılır.
 ### Ürün görüşü (urun-h, 27 Kasım 2026)
 
 Etkin dogfood ürünü `urun-h` (ZeeMail; ürün kodu 27 Kasım ana dalı ve temiz
-Ubuntu 24.04 uçtan uca kurulum denemesi) açık soruların bir kısmına görüş
+Ubuntu 24.04 uçtan uca kurulum denemesi) açık soruların tamamına görüş
 verdi. Bu görüşler karar değildir; uygulama ADR'si bunları kabul ya da
 gerekçeli ret ile kapatır.
 
@@ -608,8 +608,27 @@ gerekçeli ret ile kapatır.
   üzerinden XSS'in DAV'a ulaşması gerçek risk. Ürünün ters vekili Host izin
   listesi kullandığından ek maliyet düşüktür.
 
+- **Soru 5 — başlık okuma/ETag kapsamı:** ilk dilimde yalnız DAV sınıfında;
+  webmail'in ihtiyacı yok, dar yüzey denetimi kolaylaştırır.
+- **Soru 6 — `If-Match`/`If-None-Match` türü:** `Liste<Metin>`; RFC 9110
+  virgülle ayrılmış liste ve `*` izin verir, `Metin` ürünü hataya açık
+  ayrıştırmaya zorlar. `*` ayrı bir değer olarak tanınmalı
+  (`If-None-Match: *` oluşturma korumasıdır; iOS PUT'ta kullanır).
+- **Soru 9 — `--deneysel-web`:** Basic yalnız loopback'te kabul edilmeli;
+  aksi hâlde DAV geliştirmede uçtan uca sınanamaz (ürün testleri bu
+  profilde koşuyor).
+- **Soru 10 — `Sec-Fetch-Site`:** `cross-site` reddi de olmalı; tarayıcı
+  Basic'i önbellekten kendisi ekler, `Origin` tek başına yetmez. DAV
+  istemcileri `Sec-Fetch-*` göndermediğinden yanlış ret riski yoktur.
+- **Soru 11 — salt okuma:** ilk dilimde olmalı; ürünün temsilci düzeyleriyle
+  (okur/düzenler) doğrudan eşleşir, PUT/DELETE 403 maliyeti küçüktür.
+- **Soru 12 — başarılı DAV kovası:** ilk uygulama diliminde ürünle birlikte
+  ölçülecek (iOS/Thunderbird ilk eşitleme).
+- **Soru 13 — 405 + `Allow` ve 501:** bütün rotalarda; tanımsız yönteme
+  verilen yanıtın tutarlılığı güvenlik ve istemci davranışı için iyidir.
+
 Ürün tarafında iCalendar üretimi ve vCard 4.0 içe/dışa aktarma hazırdır.
-Açık kalan sorular: 5, 6, 9, 10, 11, 12, 13.
+Ürün görüşü olmayan açık soru kalmadı; 12 ölçüm bekler.
 
 ## Dört soru süzgeci
 
