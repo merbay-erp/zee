@@ -139,8 +139,12 @@ ZORUNLU: Kök mutlak olmalı, `/` olamaz ve `.`/`..` taşıyamaz; `/`'den her
 bileşen sembolik bağ izlenmeden açılır (yolda bağ YASAKTIR). Kökün ve üst
 klasörlerinin sahibi root ya da etkin kullanıcıdır; üst klasörler grup/diğer
 kullanıcılarca yazılamaz (yapışkan bitli klasör hariç). Linux'ta
-`fs.protected_hardlinks` kapalıysa kök reddedilir. Kök okunamaz ya da
-kurala uymazsa çağrı başarısız olur; proje klasörüne geri düşülmez.
+`fs.protected_hardlinks` değeri `0` ise (çekirdek koruması kapalı) ya da
+dosya yoksa (`/proc` bağlı değil) kök reddedilir; ileti iki nedeni ayrı
+söyler. Ayrıcalıksız hizmet değeri okuyamıyorsa (EACCES/EPERM; Ubuntu
+22.04'te dosya `0600 root`) koruma **bilinmiyor** sayılır ve kök kabul
+edilir: güvence aşağıdaki tek-bağ kuralından gelir (K-422). Kök okunamaz
+ya da kurala uymazsa çağrı başarısız olur; proje klasörüne geri düşülmez.
 
 ZORUNLU: Kök altındaki her klasör sembolik bağ izlenmeden açılır. Yaprağın
 doğrudan üst klasörü dışındaki her klasör (kök dahil) root'a ya da etkin
@@ -150,6 +154,18 @@ var olan yaprak normal dosyadır. Okuma, sembolik bağ izlenmeden ve
 bloklamadan açılan tanıtıcıdan yapılır; tanıtıcı normal dosya ve tek
 hard-link olmalıdır. Veri kökünde klasör oluşturma işlemi yoktur; hedef
 klasör yoksa ileti klasörü işletmenin oluşturacağını söyler.
+
+ZORUNLU (K-422): Veri kökü yazımları (satır yazma/ekleme, çözerek
+yazma/ekleme, base64 satırlarıyla ekleme, atomik taşıma, silme ve eylem
+savepoint'i) `fs.protected_hardlinks` değerinden bağımsız **tek-bağ
+kipinde** koşar: yaprağın yazma kilidi, var olan hedefin içerik ve metadata
+okuması, eylem/taşıma/silme izi ve aygıtlar arası taşıma kopyası sembolik
+bağ izlenmeden açılan tanıtıcıda normal dosya ve tek hard-link ister; aksi
+C013'tür ve hiçbir bayt yayımlanmaz. Böylece eş hizmetin paylaşılan son
+klasöre sert bağladığı kök dışı dosya ne okunur, ne üzerine yazılır, ne de
+ekleme/geri alma ile tek bağlı yeni dosyaya kopyalanır. İçerik okumayan
+izsiz silme yalnız dizin girdisini kaldırır ve serbesttir. Proje dosyası
+yazımları bu kipte değildir.
 
 TANIMLI: Desteklenen işlemler: dosya okuma, aralıklı okuma, SHA-256, ilk
 bayt imzası, dosya yanıtı, e-posta MIME eki ve bağlantıya dosya aktarımı

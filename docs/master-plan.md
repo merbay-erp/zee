@@ -262,7 +262,9 @@ Projeler arası paylaşılan veri kökü **gerçekleşti**: K-394
 program `veri:` önekiyle adlandırır, okuma `veri-okuma` ve yazma
 `veri-yazma` ister (P023). Kök/ara klasörler `O_NOFOLLOW` yürüyüşü ve ata
 değişmeziyle, yaprak bağsız ve tek hard-link'li okunur; spec/08 iç okumaları
-da bağ izlemez (`urun-h` ZM-F038, GB-168). **Açık:** veri kökünde dizin
+da bağ izlemez (`urun-h` ZM-F038, GB-168). K-422 ile yazımlar tek-bağ
+kipindedir ve `fs.protected_hardlinks` okunamayan (Ubuntu 22.04) hizmet kökü
+kullanabilir (ZM-F051, GB-189). **Açık:** veri kökünde dizin
 listeleme, görsel küçültme, bağlantı blok dosyası, Windows. V1 sözü
 değildir.
 

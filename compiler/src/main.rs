@@ -4334,6 +4334,16 @@ const DOSYA_OZETI_BAYTI: usize = 32 * 1024 * 1024;
 /// (K-389'da yükleme tavanıyla eşit 16 MiB idi; ADR-167 eki).
 const COZEREK_YAZMA_HEDEF_BAYTI: u64 = 32 * 1024 * 1024;
 
+/// K-422 (ADR-170 eki): `veri:` yolunun kalıcı yazımı tek-bağ kipinde
+/// koşar; proje dosyası yazımı kipsizdir.
+fn veri_kipinde<T>(veri: bool, calis: impl FnOnce() -> T) -> T {
+    if veri {
+        dil::kalici_dosya::tek_bag_kipinde(calis)
+    } else {
+        calis()
+    }
+}
+
 impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yazdir(&mut self, satir: String) {
         println!("{}", satir);
@@ -4374,13 +4384,18 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
+        let veri = dil::yetkinlik::veri_yolu_mu(yol);
         let yazim_hatasi = |hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata);
         if self.eylem_yedekleri.is_empty() {
-            return dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
-                .map_err(yazim_hatasi);
+            return veri_kipinde(veri, || {
+                dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
+            })
+            .map_err(yazim_hatasi);
         }
-        let degisim = dil::kalici_dosya::atomik_satir_yaz_izli(&gercek_yol, satir, ekleme)
-            .map_err(yazim_hatasi)?;
+        let degisim = veri_kipinde(veri, || {
+            dil::kalici_dosya::atomik_satir_yaz_izli(&gercek_yol, satir, ekleme)
+        })
+        .map_err(yazim_hatasi)?;
         self.dosya_eylem_degisimi(&gercek_yol, degisim);
         Ok(())
     }
@@ -4409,15 +4424,20 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         };
         // K-401: eylem dışında geri alma kaydı yoktur; taşıma içeriği okumaz,
         // 16 MiB veri okuma sınırına bağlı değildir (silmedeki izsiz yolun eşi).
+        let veri = dil::yetkinlik::veri_yolu_mu(kaynak) || dil::yetkinlik::veri_yolu_mu(hedef);
         if self.eylem_yedekleri.is_empty() {
-            return dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
-                .map(|()| 1)
-                .map_err(tasima_hatasi);
+            return veri_kipinde(veri, || {
+                dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
+            })
+            .map(|()| 1)
+            .map_err(tasima_hatasi);
         }
         // K-347: içerik iki klasör kilidi altında, adlandırmayla aynı
         // pencerede yakalanır; kilit dışı yedek araya giren yazarı görmüyordu.
-        let icerik = dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu)
-            .map_err(tasima_hatasi)?;
+        let icerik = veri_kipinde(veri, || {
+            dil::kalici_dosya::atomik_tasi_izli(&kaynak_yolu, &hedef_yolu)
+        })
+        .map_err(tasima_hatasi)?;
         let kaynak_degisimi = dil::kalici_dosya::KilitliDegisim {
             onceki: Some(icerik.clone()),
             sonraki: None,
@@ -4445,13 +4465,15 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         // doğrula. Var olan hedeflerde symlink/kök denetimi yine dosya_yolu
         // içinde uygulanır.
         let gercek_yol = self.dosya_yolu(yol, true)?;
+        let veri = dil::yetkinlik::veri_yolu_mu(yol);
         let silme_hatasi = |hata| format!("\"{}\" dosyası silinemedi: {}", yol, hata);
         if self.eylem_yedekleri.is_empty() {
-            return dil::kalici_dosya::atomik_sil(&gercek_yol)
+            return veri_kipinde(veri, || dil::kalici_dosya::atomik_sil(&gercek_yol))
                 .map(i64::from)
                 .map_err(silme_hatasi);
         }
-        let degisim = dil::kalici_dosya::atomik_sil_izli(&gercek_yol).map_err(silme_hatasi)?;
+        let degisim = veri_kipinde(veri, || dil::kalici_dosya::atomik_sil_izli(&gercek_yol))
+            .map_err(silme_hatasi)?;
         let silindi = degisim.onceki.is_some();
         self.dosya_eylem_degisimi(&gercek_yol, degisim);
         Ok(i64::from(silindi))
@@ -4597,6 +4619,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
+        let veri = dil::yetkinlik::veri_yolu_mu(yol);
         // K-395 (ADR-167 eki, GB satırı): hedef toplamı 32 MiB; 25 MB iletinin
         // tek ~18 MB eki sığar. Çağrı başına çözülen çıktı yine ≤ 1 MiB.
         let azami = COZEREK_YAZMA_HEDEF_BAYTI;
@@ -4617,7 +4640,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     azami / 1024 / 1024
                 ));
             }
-            dil::kalici_dosya::yeni_dosyaya_yaz(&gercek_yol, baytlar).map_err(yazim_hatasi)?;
+            veri_kipinde(veri, || {
+                dil::kalici_dosya::yeni_dosyaya_yaz(&gercek_yol, baytlar)
+            })
+            .map_err(yazim_hatasi)?;
             if eylemde {
                 // Hedef kilit altında yoktu: geri alma yeni dosyayı siler.
                 self.dosya_eylem_degisimi(
@@ -4630,8 +4656,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
             return Ok((hex(&Sha256::digest(baytlar)), baytlar.len() as u64));
         }
-        let icerik = dil::kalici_dosya::sinirli_sona_ekle(&gercek_yol, baytlar, azami)
-            .map_err(yazim_hatasi)?;
+        let icerik = veri_kipinde(veri, || {
+            dil::kalici_dosya::sinirli_sona_ekle(&gercek_yol, baytlar, azami)
+        })
+        .map_err(yazim_hatasi)?;
         // Özet, kilit altında yayımlanan bütün içerikten hesaplanır.
         Ok((hex(&Sha256::digest(&icerik)), icerik.len() as u64))
     }
@@ -4669,9 +4697,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             ));
         }
         let gercek = self.dosya_yolu(hedef, true)?;
-        dil::kalici_dosya::base64_satirlari_sona_ekle(&mut dosya, bilgi.len(), &gercek, tavan)
-            .map(|yazilan| yazilan as i64)
-            .map_err(|hata| format!("\"{hedef}\" dosyasına yazılamadı: {hata}"))
+        veri_kipinde(dil::yetkinlik::veri_yolu_mu(hedef), || {
+            dil::kalici_dosya::base64_satirlari_sona_ekle(&mut dosya, bilgi.len(), &gercek, tavan)
+        })
+        .map(|yazilan| yazilan as i64)
+        .map_err(|hata| format!("\"{hedef}\" dosyasına yazılamadı: {hata}"))
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.

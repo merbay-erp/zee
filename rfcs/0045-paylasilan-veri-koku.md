@@ -110,8 +110,11 @@ dönen credential/ortam değişikliği bir sonraki çağrıda geçerlidir):
 3. Kökün üst klasörleri: sahibi root ya da hizmetin etkin kullanıcısı;
    grup/diğer yazamaz — yalnız yapışkan bitli klasör (`/tmp`) istisnadır.
    Kök klasörünün sahibi root ya da etkin kullanıcıdır.
-4. Linux'ta `fs.protected_hardlinks` kapalıysa (ya da okunamıyorsa) kök
-   reddedilir (§Tehdit T4).
+4. Linux'ta `fs.protected_hardlinks` kapalıysa (`0`) ya da `/proc` bağlı
+   değilse kök reddedilir (§Tehdit T4). K-422 (ADR-170 eki): hizmet değeri
+   okuma izni olmadığından okuyamıyorsa (EACCES/EPERM; Ubuntu 22.04) koruma
+   bilinmiyor kipidir ve kök kabul edilir; güvence veri kökü yazımlarının
+   tek-bağ kipinden gelir (§Tehdit T11).
 5. İletiler kökün mutlak yolunu taşımaz; ortam/credential adını ve
    programın `veri:` yolunu taşır.
 
@@ -229,16 +232,18 @@ kullanıcı; (A4) işletme hatası (yanlış izin/yol).
 | T8 | Salt okuyucu hizmetin yazması (A1) | Ayrı `veri-yazma`; statik T054 + çalışma zamanı ret | `yazma_yetkisi_olmayan_proje_…` |
 | T9 | Ortam eksik/yanlışken sessizce proje klasörüne düşme (A4) | Fail-closed: kök okunamazsa çağrı başarısız; `veri:` hiçbir kipte yerel ad değil | `ortam_degiskeni_yoksa_…`, `tek_dosya_kipinde_…` |
 | T10 | Hata iletisinde mutlak yol/sunucu düzeni sızması | İletiler yalnız `veri:` yolunu ve ortam adını taşır | web ve kaçış testleri |
+| T11 | Paylaşılan klasöre bağlanan sert bağla **yazara** dış dosyayı okutup tek bağlı yeni dosyaya aklatma — ekleme, eylem yedeği, taşıma/silme izi, EXDEV kopyası (A2; `protected_hardlinks` bilinmiyor/macOS) | K-422 tek-bağ kipi: kilit, mevcut içerik, metadata, iz ve kopya okuyucusu tanıtıcıda `st_nlink == 1` | `veri_koku_tek_bag_kipinde_…`, `sert_bagli_veri_yapragi_…`, `regression/security/veri-koku-sert-bag-ekleme.dil` |
 
 **Kalan riskler (bilinçli sınır):**
 
 - Aynı köke yazan hizmetler birbirinin dosyasını ezebilir/silebilir
   (§6); disk/inode tüketimi işletim kotası işidir (dosya başına 16 MiB
   tavanı sürer).
-- macOS'ta çekirdek hard-link koruması yoktur: okuyucu `nlink` denetimiyle
-  korunur; yazarın iç okuması (ekleme) bir eş hizmetin bağladığı hard-link
-  üzerinden yazara okunabilir dosyayı kopyalayabilir. macOS geliştirme
-  platformudur; üretim Linux'ta `protected_hardlinks` zorunludur.
+- ~~macOS'ta çekirdek hard-link koruması yoktur: yazarın iç okuması
+  (ekleme) bir eş hizmetin bağladığı hard-link üzerinden yazara okunabilir
+  dosyayı kopyalayabilir.~~ K-422 ile kapandı (T11): yazımlar tek-bağ
+  kipindedir. Kalan: değer `0` iken okunamıyorsa kilit adına bağlanmış ve
+  hizmetin açabildiği aygıt düğümü bir kez açılıp reddedilir (ADR-170 eki).
 - POSIX/macOS ACL'leri ayrıca incelenmez (Linux'ta ACL maskesi mod grup
   bitlerine yansır).
 - Ağ dosya sistemleri kapsam dışıdır (spec/08 ile aynı).

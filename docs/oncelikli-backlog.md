@@ -2368,6 +2368,21 @@ kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Etiket aaf9
 RC kapısı ve yayın kanıtı: [kayıt](surum-v1.0.0-rc.1-kaniti.md). Son `v1.0.0`
 için P27, P28 (11.11.2026), P29 Windows ve kısmi ürün kapıları kapanmalı.
 
+## K-422 — Veri kökü: `protected_hardlinks` okunamazsa koruma bilinmiyor, yazımlar tek-bağ kipinde
+
+**Durum: KAPALI.** Ürün H (ZM-F051): Ubuntu 22.04'te
+`/proc/sys/fs/protected_hardlinks` `0600 root`; ayrıcalıksız hizmet EACCES
+alınca veri kökü "okunamadı (/proc bağlı değil)" C013'üyle reddediliyor, ekli
+gelen ileti saklanamıyordu (452). Okuma hatası artık ayrılır: `0` ve `/proc`
+yokluğu ayrı iletiyle ret, izin yokluğu koruma bilinmiyor kipinde kabul.
+Güvence: `veri:` yazımları değerden bağımsız tek-bağ kipinde koşar; kilit,
+mevcut içerik, metadata, eylem/taşıma/silme izi ve EXDEV kopyası
+tanıtıcıda tek sert bağ ister (RFC-0045 macOS kalan riski de kapandı).
+Kanıt: `compiler/src/guvenlik/veri_koku/testler.rs` (beş yeni test, `/proc`
+yerine enjekte okuma), `compiler/tests/veri_koku_testi.rs::sert_bagli_veri_yapragi_yazim_yollarinda_aklanamaz`,
+`regression/security/veri-koku-sert-bag-ekleme.dil`. ADR-170 eki, spec/07,
+GB-189.
+
 ## K-421 — HEAD isteği GET rotasını örtük kullanır
 
 **Durum: KAPALI.** RFC-0047 dilim A (#149) yayıldıktan sonra GET-only

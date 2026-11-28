@@ -66,6 +66,20 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Veri kökü Ubuntu 22.04'te ayrıcalıksız hizmette çalışır (K-422):**
+  `/proc/sys/fs/protected_hardlinks` dosyası Ubuntu 22.04'te yalnız root'a
+  okunur; root olmayan hizmet `veri:` yolunu kullanınca C013
+  "`fs.protected_hardlinks` okunamadı (/proc bağlı değil)" alıyordu. Değer
+  okunamıyorsa kök artık kabul edilir; değer `0` ise ("çekirdek koruması
+  kapalı") ya da `/proc` gerçekten yoksa yine reddedilir ve ileti hangisi
+  olduğunu söyler. Bunun güvencesi olarak `veri:` yazımları (ekleme, üzerine
+  yazma, çözerek/base64 ekleme, taşıma, eylem içi silme) birden çok sert bağ
+  (hard-link) taşıyan hedefi C013 ile reddeder; başka hizmetin paylaşılan
+  klasöre bağladığı dış dosya okunmaz ya da kopyalanmaz. İzsiz silme yalnız
+  bağ girdisini kaldırır.
+
+  **Göç:** Gerekmez. Veri kökündeki dosyalar zee'nin yazdığı tek bağlı
+  dosyalardır; elle sert bağ kurulmuş dosya varsa kopyayla değiştirin.
 - **HEAD isteği GET rotasını kullanır (K-421):** GET rotası olan her adres
   HEAD isteğine de GET ile aynı durum ve başlıklarla, gövdesiz yanıt verir
   (RFC 9110 §9.3.2); statik, önekli, dosya ve metin yanıtlı rotalar dahil.

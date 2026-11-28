@@ -41,11 +41,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 20 | 0 | 0 | 20 |
-| orta | 59 | 16 | 4 | 79 |
+| orta | 60 | 16 | 4 | 80 |
 | dusuk | 56 | 30 | 1 | 87 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 187.
+Toplam bulgu: 188.
 
 ## Spec maddeleri
 
@@ -59,7 +59,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/04-turler.md | 15 | 0 | 0 | 15 | 100 |
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
-| spec/07-birimler.md | 20 | 1 | 2 | 23 | 86 |
+| spec/07-birimler.md | 21 | 1 | 2 | 24 | 87 |
 | spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
@@ -84,7 +84,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 41 | 0 | 3 | 44 | 93 |
-| **Toplam** | 464 | 6 | 24 | 494 | 93 |
+| **Toplam** | 465 | 6 | 24 | 495 | 93 |
 
 ## Dogfood ürünleri ve korpusu
 
