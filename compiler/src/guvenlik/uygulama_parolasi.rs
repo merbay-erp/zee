@@ -218,7 +218,7 @@ pub fn basic_coz(deger: &str) -> Option<(String, String)> {
 
 fn kati_base64_coz(metin: &str) -> Option<Vec<u8>> {
     let b = metin.as_bytes();
-    if b.is_empty() || b.len() % 4 != 0 {
+    if b.is_empty() || !b.len().is_multiple_of(4) {
         return None;
     }
     let deger = |c: u8| -> Option<u32> {
