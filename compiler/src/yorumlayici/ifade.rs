@@ -34,8 +34,8 @@ pub(super) fn degerlendir_async<'a>(
                 }
                 match kimlik.as_str() {
                     ISTEMCI_ADRESI => Ok(Deger::Metin(io.istemci_adresi())),
-                    crate::intrinsic::WEB_HAM_GOVDE => {
-                        super::makine_istegi::ham_govde(ortam, satir)
+                    k if super::dav_istegi::INTRINSICLER.contains(&k) => {
+                        super::dav_istegi::intrinsic_degerlendir(k, &degerler, ortam, io, satir)
                     }
                     WEB_BIRINCIL_SUREC => Ok(Deger::Mantiksal(io.birincil_surec())),
                     CSRF_BELIRTECI => {

@@ -1813,13 +1813,14 @@ fn dav_istemci_rotasi_kimlik_kapsam_ve_secenekler_hermetik() {
         "PROPFIND /dav/takvim/",
         "PROPFIND /dav/takvim/",
         "PROPFIND /dav/takvim/",
-        "PUT /dav/takvim/a.ics",
-        "PUT /dav/takvim/a.ics",
+        "PUT /dav/takvim/a.ics\nçerez \nBEGIN:VCALENDAR",
+        "PUT /dav/takvim/a.ics\nçerez \nBEGIN:VCALENDAR",
         "OPTIONS /dav/takvim/",
         "OPTIONS /baska",
     ]
     .map(String::from)
     .into();
+    io.dav_basliklari = [vec![("Depth".to_string(), "1".to_string())]].into();
     io.dav_basic = [
         // Büyük harfli kullanıcı adı ASCII katlanır; kanonik ad çözücüden.
         Some(format!("ALI@ornek.test:{yazar}")),
@@ -1944,6 +1945,216 @@ fn dav_kimlik_karari_io_izinde_gizlisiz_kaydedilir_ve_oynar() {
     assert!(!iz.contains(&hex(&gizli)), "gizli kısım ize girmez");
     assert!(!iz.contains(&hex(&yazar)), "görünen parola ize girmez");
     let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    calistir_io(&program, &mut oynatici).expect("oynamalı");
+    oynatici.bitir().expect("iz tükenmeli");
+}
+
+/// RFC-0047 B/C/D (ADR-182 dilim D): DAV rotasında başlık okuma, ham gövde
+/// ve ETag; hermetik adaptör.
+fn dav_d_programi() -> (dil::agac::Program, String) {
+    use dil::guvenlik::uygulama_parolasi::uret;
+    let p = uret(&[0x5a; 32], "dene", &[1; 25]).expect("parola");
+    let kaynak = format!(
+        "\
+işlem kimlik_coz
+    kullanıcıyı Metin olarak al
+    öneki Metin olarak al
+    Metin sözlüğü döndürür
+    bilgi boş sözlük olsun
+    bilginin \"özet\" değeri \"{ozet}\" olsun
+    bilginin \"kullanıcı\" değeri \"ali\" olsun
+    bilginin \"rol\" değeri \"kullanıcı\" olsun
+    bilginin \"kapsam\" değeri \"tam\" olsun
+    bilginin \"kimlik\" değeri \"c1\" olsun
+    bilgiyi döndür
+
+8080 kapısında sunucu başlat
+
+PROPFIND \"/dav/\" önekli adrese istek geldiğinde
+    dav istemcisi gerekli
+    derinlik isteğin \"Depth\" başlığı olsun
+    derinlik metnini \"application/xml\" türünde 207 durumuyla gönder
+
+REPORT \"/dav/\" önekli adrese istek geldiğinde
+    dav istemcisi gerekli
+    derinlik isteğin \"Depth\" başlığı olsun
+    gövde isteğin ham gövdesi olsun
+    derinlik ile \"|\" ile gövde metnini \"application/xml\" türünde 207 durumuyla gönder
+
+PUT \"/dav/\" önekli adrese istek geldiğinde
+    dav istemcisi gerekli
+    koşul isteğin \"If-Match\" başlığı olsun
+    olmasın isteğin \"if-none-match\" başlığı olsun
+    takvim isteğin ham gövdesi olsun
+    etiket isteğin \"yol\" değeri olsun
+    yanıta \"ETag\" başlığını \"\\\"v1\\\"\" olarak ekle
+    koşulun adedi ile \"/\" ile olmasının adedi ile \"/\" ile takvim yanıtını 201 durumuyla gönder
+
+DELETE \"/dav/kotu\" adresine istek geldiğinde
+    dav istemcisi gerekli
+    yanıta \"ETag\" başlığını \"W/\\\"zayif\\\"\" olarak ekle
+    \"\" yanıtını 204 durumuyla gönder
+",
+        ozet = p.ozet
+    );
+    (dil::kaynagi_derle(&kaynak).expect("derlenmeli"), p.gorunen)
+}
+
+#[test]
+fn dav_baslik_ham_govde_ve_etag_hermetik() {
+    let (program, parola) = dav_d_programi();
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.dav_kimlik_cozucusu = Some("kimlik_coz".into());
+    let istekler = [
+        ("PROPFIND /dav/a/", vec![("Depth", "0")]),
+        ("PROPFIND /dav/a/", vec![("Depth", "Infinity")]),
+        ("PROPFIND /dav/a/", vec![]),
+        ("PROPFIND /dav/a/", vec![("Depth", "1"), ("Depth", "0")]),
+        ("PROPFIND /dav/a/", vec![("Depth", "2")]),
+        ("REPORT /dav/a/\nçerez \n<q/>", vec![]),
+        (
+            "PUT /dav/a.ics\nçerez \nBEGIN\r\nX",
+            vec![("If-Match", "\"v0\", W/\"v1\""), ("If-None-Match", "*")],
+        ),
+        ("PUT /dav/a.ics\nçerez \nX", vec![("If-Match", "v0")]),
+        ("DELETE /dav/kotu", vec![]),
+    ];
+    io.istekler = istekler.iter().map(|(i, _)| i.to_string()).collect();
+    io.dav_basliklari = istekler
+        .iter()
+        .map(|(_, b)| {
+            b.iter()
+                .map(|(a, d)| (a.to_string(), d.to_string()))
+                .collect()
+        })
+        .collect();
+    io.dav_basic = istekler
+        .iter()
+        .map(|_| Some(format!("ali:{parola}")))
+        .collect();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(
+        io.sunucu_durumlari,
+        [207, 403, 403, 400, 400, 207, 201, 400, 500],
+        "{:?}",
+        io.sunucu_yanitlari
+    );
+    assert_eq!(io.sunucu_yanitlari[0].1, "0");
+    assert!(io.sunucu_yanitlari[1].1.contains("propfind-finite-depth"));
+    assert_eq!(io.sunucu_yanitlari[5].1, "0|<q/>", "REPORT eksik Depth 0");
+    assert_eq!(
+        io.sunucu_yanitlari[6].1, "2/1/BEGIN\r\nX",
+        "gövde bayt bayt"
+    );
+    assert_eq!(io.etagler, ["\"v1\""], "zayıf ETag başlığa girmez");
+}
+
+#[test]
+fn dav_ham_govde_yontem_kurallari_hermetik() {
+    let (program, parola) = dav_d_programi();
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.dav_kimlik_cozucusu = Some("kimlik_coz".into());
+    let buyuk = format!("PUT /dav/a.ics\nçerez \n{}", "x".repeat(1024 * 1024 + 1));
+    io.istekler = [
+        "DELETE /dav/kotu\nçerez \ngövde".to_string(),
+        "PUT /dav/a.ics".to_string(),
+        "REPORT /dav/a/".to_string(),
+        buyuk,
+    ]
+    .into();
+    io.dav_basic = (0..4).map(|_| Some(format!("ali:{parola}"))).collect();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.sunucu_durumlari, [400, 400, 400, 413]);
+}
+
+#[test]
+fn dav_baslik_ve_etag_statik_kapilari() {
+    let derle = |k: &str| dil::kaynagi_derle(k).map(|_| ()).map_err(|t| t.kod);
+    let rota = |onsoz: &str, govde: &str| {
+        format!("8080 kapısında sunucu başlat\n\nPUT \"/dav/\" önekli adrese istek geldiğinde\n    {onsoz}\n{govde}    \"x\" yanıtını 201 durumuyla gönder\n")
+    };
+    // Okunamayan ad, güven başlıkları ve hesaplanmış ad.
+    for (ifade, kod) in [
+        ("isteğin \"Prefer\" başlığı", "S051"),
+        ("isteğin ad başlığı", "S051"),
+        ("isteğin \"Authorization\" başlığı", "S052"),
+        ("isteğin \"cookie\" başlığı", "S052"),
+        ("isteğin \"Origin\" başlığı", "S052"),
+    ] {
+        let govde = format!("    ad \"Depth\" olsun\n    b {ifade} olsun\n");
+        assert_eq!(
+            derle(&rota("dav istemcisi gerekli", &govde)),
+            Err(kod.into()),
+            "{ifade}"
+        );
+    }
+    assert_eq!(
+        derle(&rota(
+            "dav istemcisi gerekli",
+            "    yanıta \"Location\" başlığını \"/x\" olarak ekle\n"
+        )),
+        Err("S053".into())
+    );
+    // DAV dışında başlık okuma ve ETag; işlemde; iki ETag.
+    assert_eq!(
+        derle(&rota(
+            "herkese açık",
+            "    d isteğin \"Depth\" başlığı olsun\n"
+        )),
+        Err("T068".into())
+    );
+    assert_eq!(
+        derle("işlem d al\n    değer döndürür\n    isteğin \"Depth\" başlığı döndür\n\nd al yaz\n"),
+        Err("T068".into())
+    );
+    assert_eq!(
+        derle(&rota(
+            "herkese açık",
+            "    yanıta \"ETag\" başlığını \"\\\"a\\\"\" olarak ekle\n"
+        )),
+        Err("T069".into())
+    );
+    assert_eq!(
+        derle(&rota(
+            "dav istemcisi gerekli",
+            "    yanıta \"ETag\" başlığını \"\\\"a\\\"\" olarak ekle\n    yanıta \"ETag\" başlığını \"\\\"b\\\"\" olarak ekle\n"
+        )),
+        Err("T069".into())
+    );
+    // Ham gövde DAV rotasında serbest, oturumlu rotada T062 kalır.
+    assert_eq!(
+        derle(&rota(
+            "dav istemcisi gerekli",
+            "    g isteğin ham gövdesi olsun\n"
+        )),
+        Ok(())
+    );
+    assert_eq!(
+        derle(&rota(
+            "\"kullanıcı\" yetkisi gerekli",
+            "    g isteğin ham gövdesi olsun\n"
+        )),
+        Err("T062".into())
+    );
+}
+
+#[test]
+fn dav_baslik_ve_etag_io_izinde_oynar() {
+    use dil::yorumlayici::{IzKaydedenIo, IzYenidenOynatici};
+    let (program, parola) = dav_d_programi();
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban.dav_kimlik_cozucusu = Some("kimlik_coz".into());
+    taban.istekler = ["PUT /dav/a.ics\nçerez \nBEGIN".to_string()].into();
+    taban.dav_basliklari = [vec![("If-Match".to_string(), "*".to_string())]].into();
+    taban.dav_basic = [Some(format!("ali:{parola}"))].into();
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    calistir_io(&program, &mut kaydeden).expect("çalışmalı");
+    let iz = kaydeden.iz_metni().expect("iz");
+    assert!(
+        iz.contains("etag_yaz") && iz.contains("dav_istek_basliklari"),
+        "{iz}"
+    );
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz");
     calistir_io(&program, &mut oynatici).expect("oynamalı");
     oynatici.bitir().expect("iz tükenmeli");
 }

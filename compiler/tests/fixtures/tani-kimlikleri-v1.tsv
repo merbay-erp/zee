@@ -124,6 +124,8 @@ aktif	T064	tur.dav_yontemi	PROPFIND ya da REPORT rotası `dav istemcisi gerekli`
 aktif	T065	tur.dav_rotasi	`dav istemcisi gerekli` POST/PATCH rotasında ya da sabit olmayan yolda
 aktif	T066	tur.dav_oturumu	DAV istemci rotası çerez oturumu, CSRF belirteci ya da çerez kullanıyor
 aktif	T067	tur.dav_cozucusu	DAV kimlik çözücüsü bildirilmemiş, tanımsız ya da salt okuma değil
+aktif	T068	tur.dav_basligi_yeri	DAV istek başlığı `dav istemcisi gerekli` rotası dışında okunuyor
+aktif	T069	tur.etag_yeri	ETag DAV rotası dışında ya da bir rotada iki kez yazılıyor
 aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
 aktif	C001	calisma.eksik_deger	Değer bulunamadı
 aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması
@@ -193,3 +195,6 @@ aktif	S047	soz.lint_erisilemeyen_kod	Lint: erişilemeyen cümle veya sabit koşu
 aktif	S048	soz.lint_eksik_rota_yaniti	Lint: rotanın yanıt üretmeyen yolu olabilir
 aktif	S049	soz.sira_eki_kalibi	Sıra eki noktası RFC-0029 kalıbına oturmuyor
 aktif	S050	soz.makine_politikasi	Makine uç noktası `herkese açık makine uç noktası` dışında yazılmış
+aktif	S051	soz.dav_basligi_adi	Okunamayan ya da hesaplanmış istek başlığı adı
+aktif	S052	soz.guven_basligi	Güven başlığı okuma girişimi
+aktif	S053	soz.yanit_basligi	Yanıta ETag dışında başlık yazma girişimi

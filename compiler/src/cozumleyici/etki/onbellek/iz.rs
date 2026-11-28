@@ -16,6 +16,10 @@ pub(in crate::cozumleyici::etki) struct OnbellekIzi {
     ham_govde: Option<usize>,
     /// RFC-0047 E: `yeni uygulama parolası` üretiminin ilk satırı (T063).
     pub(in crate::cozumleyici::etki) uygulama_parolasi: Option<usize>,
+    /// RFC-0047 B/C: DAV başlık okuması (T068), ETag cümlesi ve ikincisi (T069).
+    pub(in crate::cozumleyici::etki) baslik: Option<usize>,
+    pub(in crate::cozumleyici::etki) etag: Option<usize>,
+    pub(in crate::cozumleyici::etki) etag_ikinci: Option<usize>,
 }
 
 fn en_erken(a: Option<usize>, b: Option<usize>) -> Option<usize> {
@@ -31,6 +35,12 @@ impl OnbellekIzi {
         self.degisken = en_erken(self.degisken, baska.degisken);
         self.ham_govde = en_erken(self.ham_govde, baska.ham_govde);
         self.uygulama_parolasi = en_erken(self.uygulama_parolasi, baska.uygulama_parolasi);
+        self.baslik = en_erken(self.baslik, baska.baslik);
+        self.etag_ikinci = match (self.etag, baska.etag) {
+            (Some(_), Some(ikinci)) => en_erken(self.etag_ikinci, Some(ikinci)),
+            _ => en_erken(self.etag_ikinci, baska.etag_ikinci),
+        };
+        self.etag = en_erken(self.etag, baska.etag);
     }
 
     /// Rota gövdesinin doğrudan değişken okuması ya da geçişli dokunuşu.
@@ -59,6 +69,12 @@ impl OnbellekIzi {
         {
             self.dokunus = en_erken(self.dokunus, Some(*satir));
         }
+        if let Cumle::YanitEtagi { satir, .. } = cumle {
+            if self.etag.is_some() {
+                self.etag_ikinci = en_erken(self.etag_ikinci, Some(*satir));
+            }
+            self.etag = en_erken(self.etag, Some(*satir));
+        }
     }
 
     /// `csrf belirteci`, web oturumu listeleme/iptal gibi web-oturumu intrinsic'leri.
@@ -73,6 +89,12 @@ impl OnbellekIzi {
             }
             Ifade::Intrinsic { kimlik, .. } if kimlik == crate::intrinsic::UYGULAMA_PAROLASI => {
                 &mut self.uygulama_parolasi
+            }
+            Ifade::Intrinsic { kimlik, .. }
+                if kimlik == crate::intrinsic::WEB_ISTEK_DERINLIGI
+                    || kimlik == crate::intrinsic::WEB_ISTEK_KOSULU =>
+            {
+                &mut self.baslik
             }
             _ => return,
         };

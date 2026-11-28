@@ -583,7 +583,7 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         }
     }
 
-    if let Some(ifade) = web::sifir_argumanli(tokenlar, kelime(0), son) {
+    if let Some(ifade) = web::sifir_argumanli(tokenlar, kelime(0), son)? {
         return Ok(Some(ifade));
     }
 

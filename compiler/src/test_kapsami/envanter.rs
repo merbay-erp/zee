@@ -308,6 +308,7 @@ impl Gezici {
             | Cumle::YanitGonder {
                 deger: i, satir, ..
             }
+            | Cumle::YanitEtagi { deger: i, satir }
             | Cumle::Yonlendir { adres: i, satir }
             | Cumle::CerezSil { ad: i, satir }
             | Cumle::Bekle { sure: i, satir }

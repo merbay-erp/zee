@@ -37,6 +37,15 @@ macro_rules! yontemler {
             }
         }
 
+        fn etag_yaz(&mut self, etag: &str) -> Result<(), String> {
+            self.politika.gerektir(Yetkinlik::AgSunucusu)?;
+            self.ic.etag_yaz(etag)
+        }
+
+        fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+            self.ic.dav_istek_basliklari()
+        }
+
         fn secenekler_gonder(&mut self, izinli: &str) {
             if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
                 self.ic.secenekler_gonder(izinli);

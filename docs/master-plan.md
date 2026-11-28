@@ -227,7 +227,8 @@ kardeşini (`… türünde 207 durumuyla gönder`, kapalı dokuz durum),
 dilim B `yeni uygulama parolası` ve kimlikli HMAC anahtarlarını
 (`uygulama_parolası_anahtarları`) ekledi; dilim C `dav istemcisi gerekli`
 sınıfını (PROPFIND/REPORT, çerezsiz Basic, kovalar, CSRF muafiyeti, ayrı
-DAV origin'i, OPTIONS) açtı. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+DAV origin'i, OPTIONS) açtı; dilim D başlık okumayı, ham DAV gövdesini ve
+ETag'i ekledi (RFC-0047 kabul, uygulandı; saha kabulü ürünle). K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
 Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag

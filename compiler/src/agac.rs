@@ -806,6 +806,9 @@ pub enum Cumle {
     TestBlogu(Test),
     /// `kare 16 ya eşit olmalı` — doğrulama (K-025). Koşul tutmazsa D001.
     Olmali { kosul: Ifade, satir: usize },
+    /// RFC-0047 C (ADR-182 dilim D): `yanıta "ETag" başlığını <ifade> olarak
+    /// ekle` — yalnız DAV rotası gövdesinde, en çok bir kez (T069).
+    YanitEtagi { deger: Ifade, satir: usize },
     /// `ayşenin adı "Ayşe" olsun` — alan yazma (K-020).
     AlanAta {
         nesne: Ifade,

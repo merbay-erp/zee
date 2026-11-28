@@ -116,7 +116,7 @@ pub(super) fn web_istegini_calistir(
         if let RotaKipi::Onbellekli(saniye) = kip {
             io.yanit_onbellegine_izin_ver(saniye);
         }
-        makine_istegi::ortama_ekle(&mut rota_ortami, makine, &ham_govde, *satir)?;
+        makine_istegi::ortama_ekle(&mut rota_ortami, kip, &ham_govde, *satir)?;
         ortama_yazma_butcesini_tuket(&rota_ortami, "istek", &istek_sozlugu, *satir)?;
         rota_ortami.insert("istek".into(), istek_sozlugu.clone());
         ortama_yazma_butcesini_tuket(&rota_ortami, "çerezler", &cerez_sozlugu, *satir)?;

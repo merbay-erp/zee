@@ -7,6 +7,7 @@
 //! deterministik ayrıştırmayı mümkün kılar.
 
 mod cumle;
+mod dav_basligi;
 mod ifade;
 mod kaynak;
 mod kimlik_iletisim;
@@ -1076,6 +1077,9 @@ impl Ayristirici {
 
     fn ekle_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "ekle"
+        if let Some(cumle) = dav_basligi::etag_cumlesi(&tokenlar, satir, &self.islem_adlari) {
+            return cumle;
+        }
 
         // Dosyanın sonuna ekleme (K-019): `"X" dosyasına ... ekle`.
         if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "dosyasına") {

@@ -159,6 +159,12 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn dav_kova_reddi_gonder(&mut self, saniye: i64) {
         self.ic.borrow_mut().dav_kova_reddi_gonder(saniye);
     }
+    fn etag_yaz(&mut self, etag: &str) -> Result<(), String> {
+        self.ic.borrow_mut().etag_yaz(etag)
+    }
+    fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+        self.ic.borrow_mut().dav_istek_basliklari()
+    }
     fn secenekler_gonder(&mut self, izinli: &str) {
         self.ic.borrow_mut().secenekler_gonder(izinli);
     }

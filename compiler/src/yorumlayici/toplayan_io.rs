@@ -50,6 +50,11 @@ pub struct ToplayanIo {
     pub dav_kimlik_cozucusu: Option<String>,
     /// 401/429 kararları ve OPTIONS `Allow` değerleri, sırayla.
     pub dav_kararlari: Vec<String>,
+    /// RFC-0047 dilim D: DAV isteklerinin `Depth`/`If-Match`/`If-None-Match`
+    /// başlıkları (kimlik çözüldükçe sırayla) ve yazılan ETag'ler.
+    pub dav_basliklari: VecDeque<Vec<(String, String)>>,
+    pub etagler: Vec<String>,
+    dav_gecerli_basliklar: Vec<(String, String)>,
     dav_parolasi: Option<(String, String)>,
     /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
     pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
@@ -148,6 +153,9 @@ impl ToplayanIo {
             dav_basic: VecDeque::new(),
             dav_kimlik_cozucusu: None,
             dav_kararlari: Vec::new(),
+            dav_basliklari: VecDeque::new(),
+            etagler: Vec::new(),
+            dav_gecerli_basliklar: Vec::new(),
             dav_parolasi: None,
             istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
@@ -591,6 +599,7 @@ impl GirdiCikti for ToplayanIo {
     }
     fn dav_kimligi(&mut self) -> Option<super::DavKimligi> {
         use crate::guvenlik::uygulama_parolasi as up;
+        self.dav_gecerli_basliklar = self.dav_basliklari.pop_front().unwrap_or_default();
         let basic = self.dav_basic.pop_front().flatten()?;
         let (kullanici, parola) = basic.split_once(':')?;
         self.dav_parolasi = up::parolayi_coz(parola);
@@ -641,6 +650,13 @@ impl GirdiCikti for ToplayanIo {
         self.dav_kararlari
             .push(format!("429 Retry-After: {saniye}"));
         self.durum_yaniti_gonder(429, super::DAV_KOVA_REDDI);
+    }
+    fn etag_yaz(&mut self, etag: &str) -> Result<(), String> {
+        self.etagler.push(etag.to_string());
+        Ok(())
+    }
+    fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+        self.dav_gecerli_basliklar.clone()
     }
     fn secenekler_gonder(&mut self, izinli: &str) {
         self.dav_kararlari.push(format!("200 Allow: {izinli}"));

@@ -400,23 +400,14 @@ pub(super) fn blok_calistir_async<'a>(
                     // K-403: yanıt rotayı bitirir; sonraki cümleler koşmaz.
                     rota_sonu::rota_yaniti_belirlendi(*satir)?;
                 }
-                Cumle::Yonlendir { adres, satir } => {
-                    let hedef = metne_sinirli(
-                        &degerlendir_async(adres, ortam, program, cikti, derinlik, *satir).await?,
-                        *satir,
-                    )?;
-                    son_tarihi_denetle(cikti, *satir)?;
-                    cikti.yonlendir_gonder(&hedef).map_err(|hata| {
-                        Tani::yeni(
-                            "C022",
-                            format!("Yönlendirme reddedildi: {}.", hata),
-                            *satir,
-                            1,
-                            1,
-                        )
-                    })?;
-                    // K-403: yönlendirme rotayı bitirir (yetki koruması fail-closed).
-                    rota_sonu::rota_yaniti_belirlendi(*satir)?;
+                Cumle::Yonlendir {
+                    adres: deger,
+                    satir,
+                }
+                | Cumle::YanitEtagi { deger, satir } => {
+                    let deger =
+                        degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
+                    rota_sonu::metin_cumlesi(cumle, cikti, &metne_sinirli(&deger, *satir)?)?;
                 }
                 Cumle::CerezSil { ad, satir } => {
                     let ad = metne_sinirli(

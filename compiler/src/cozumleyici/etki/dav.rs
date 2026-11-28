@@ -11,6 +11,50 @@ use super::{blok_bilgisi, etkileri_yay, makine};
 use crate::agac::{Cumle, HttpYontemi, Ifade, IslemTuru, Program, RotaKipi};
 use crate::tani::Tani;
 
+pub(super) fn dav_rotasi(govde: &[Cumle]) -> bool {
+    dav_mi(govde).is_some()
+}
+
+fn baslik_tanisi(satir: usize) -> Tani {
+    Tani::yeni(
+        "T068",
+        "`isteğin \"<ad>\" başlığı` yalnız `dav istemcisi gerekli` rotasının kendi gövdesinde okunur.".into(),
+        satir,
+        1,
+        1,
+    )
+    .onerili(
+        "Başlığı DAV rotasında `derinlik isteğin \"Depth\" başlığı olsun` ile al ve işleme argüman olarak geçir."
+            .into(),
+    )
+}
+
+fn etag_tanisi(satir: usize, mesaj: &str) -> Tani {
+    Tani::yeni("T069", mesaj.into(), satir, 1, 1).onerili(
+        "ETag'i DAV rotasının kendi gövdesinde, yanıt cümlesinden önce bir kez `yanıta \"ETag\" başlığını etiket olarak ekle` ile yaz."
+            .into(),
+    )
+}
+
+/// İşlem/eylem gövdeleri ve rota dışı üst düzey cümleler DAV başlığı okuyamaz
+/// (T068) ve ETag yazamaz (T069).
+pub(super) fn rota_disi_izleri_denetle<'a>(
+    izler: impl Iterator<Item = &'a OnbellekIzi>,
+) -> Result<(), Tani> {
+    for iz in izler {
+        if let Some(satir) = iz.baslik {
+            return Err(baslik_tanisi(satir));
+        }
+        if let Some(satir) = iz.etag {
+            return Err(etag_tanisi(
+                satir,
+                "ETag yalnız `dav istemcisi gerekli` rotasının kendi gövdesinde yazılır.",
+            ));
+        }
+    }
+    Ok(())
+}
+
 fn dav_mi(govde: &[Cumle]) -> Option<usize> {
     match govde.first() {
         Some(Cumle::RotaPolitikasi {
@@ -26,6 +70,7 @@ fn dav_mi(govde: &[Cumle]) -> Option<usize> {
 pub(super) fn rotayi_denetle(
     rota: &Cumle,
     yontem: HttpYontemi,
+    dogrudan: &OnbellekIzi,
     toplam: &OnbellekIzi,
 ) -> Result<(), Tani> {
     let Cumle::IstekGeldiginde {
@@ -51,8 +96,20 @@ pub(super) fn rotayi_denetle(
                     .into(),
             ));
         }
+        if let Some(satir) = dogrudan.baslik {
+            return Err(baslik_tanisi(satir));
+        }
+        if let Some(satir) = dogrudan.etag {
+            return Err(etag_tanisi(
+                satir,
+                "ETag yalnız `dav istemcisi gerekli` rotasında yazılır.",
+            ));
+        }
         return Ok(());
     };
+    if let Some(satir) = dogrudan.etag_ikinci {
+        return Err(etag_tanisi(satir, "DAV rotasında ETag bir kez yazılır."));
+    }
     let bicim = if !yontem.dav_yontemi() {
         Some(format!(
             "{} rotası DAV istemci rotası olamaz; DAV yalnız GET, HEAD, PROPFIND, REPORT, PUT ve DELETE yöntemlerindedir.",

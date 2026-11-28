@@ -65,6 +65,9 @@ kalır (ADR-025).
 | S048 | Lint: rotanın yanıt üretmeyen yolu olabilir | Her dala yanıt veya yönlendirme ekle. Örnek: `değilse` altında `"Geçersiz istek" yanıtını 400 durumuyla gönder`. Belirsiz çağrı etkisinde tahmin yapılmaz; yalnız isteğe bağlı uyarıdır |
 | S049 | Sıra eki noktası RFC-0029 kalıbına oturmuyor | Kalıp `<liste>nin <sıra>. öğesi` ya da `… öğesini almayı dene`; sıra tek ad ya da TamSayı sabitidir, hesaplanan sırayı önce bir ada ver: `konum sıra ile 1 in toplamı olsun` (K-386). Bitişik olmayan, `öğe…` öncesi olmayan ya da `3.14` gibi nokta S001 kalır |
 | S050 | Makine uç noktası `herkese açık makine uç noktası` dışında yazılmış | Rotanın ilk satırı tam olarak `herkese açık makine uç noktası` olmalı; oturumlu/yetkili rota ya da tek başına `makine uç noktası` makine ucu olamaz (K-405) |
+| S051 | Okunamayan ya da hesaplanmış istek başlığı adı | `isteğin "<ad>" başlığı` yalnız tırnaklı `"Depth"`, `"If-Match"`, `"If-None-Match"` okur (büyük/küçük harf duyarsız); öteki başlıkları çalışma zamanı işler (RFC-0047, ADR-182) |
+| S052 | Güven başlığı okuma girişimi | `Authorization`, `Cookie`, `Forwarded`, `X-Forwarded-For`, `Host`, `Origin`, `X-Zee-CSRF` Zee'ye kapalıdır; kimlik `dav istemcisi gerekli` ile çalışma zamanından gelir, `oturumun "kullanıcı" değeri` ile oku (RFC-0047, ADR-182) |
+| S053 | Yanıta ETag dışında başlık yazma girişimi | Keyfi başlık yazımı yoktur; yalnız `yanıta "ETag" başlığını <ifade> olarak ekle`; `Allow`, `DAV`, `WWW-Authenticate`, `Retry-After` gibi başlıkları çalışma zamanı yazar (RFC-0047, ADR-182) |
 
 ## A — Ad çözümleme
 
@@ -154,6 +157,8 @@ kalır (ADR-025).
 | T065 | `dav istemcisi gerekli` POST/PATCH rotasında ya da sabit olmayan yolda | DAV yalnız GET, HEAD, PROPFIND, REPORT, PUT ve DELETE'tedir; durum değiştiren işi PUT/DELETE'e taşı, yolu sabit (tam ya da önekli) metin yap (RFC-0047, ADR-182) |
 | T066 | DAV istemci rotası çerez oturumu, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; kimliği `oturumun "kullanıcı" değeri` ile oku, oturum/çerez/CSRF işini ayrı CSRF korumalı rotaya taşı (RFC-0047, ADR-182) |
 | T067 | DAV kimlik çözücüsü bildirilmemiş, tanımsız ya da salt okuma değil | Proje kipinde `dav_kimlik_çözücüsü "kimlik_coz" olsun` yaz; işlem iki Metin parametreli, değer döndüren ve durum/web etkisiz olmalı, kayıt yoksa sözlüğün alanlarını boş bırak (RFC-0047, ADR-182) |
+| T068 | DAV istek başlığı `dav istemcisi gerekli` rotası dışında okunuyor | Başlığı DAV rotasının kendi gövdesinde `derinlik isteğin "Depth" başlığı olsun` ile al ve işleme argüman olarak geçir; işlem, eylem ve rota dışı kod başlık okuyamaz (RFC-0047, ADR-182) |
+| T069 | ETag DAV rotası dışında ya da bir rotada iki kez yazılıyor | ETag'i DAV rotasının kendi gövdesinde, yanıttan önce bir kez yaz; değer güçlü entity-tag (`"..."`) olmalı, `W/` ve CR/LF içeren değer çalışma zamanında C022 (RFC-0047, ADR-182) |
 
 ## C — Çalışma zamanı
 

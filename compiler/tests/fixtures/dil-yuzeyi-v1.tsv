@@ -38,6 +38,7 @@ api	io-izi.baglanti_gunluk	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"b
 api	io-izi.baglanti_islemi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_islemi"
 api	io-izi.baglanti_kaydet	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_kaydet"
 api	io-izi.birincil_surec	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"birincil_surec"
+api	io-izi.dav_istek_basliklari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_istek_basliklari"
 api	io-izi.dav_kimligi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_kimligi"
 api	io-izi.dav_kovasi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_kovasi"
 api	io-izi.dav_ozet_dogrula	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_ozet_dogrula"
@@ -47,6 +48,7 @@ api	io-izi.dosya_yaniti_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.r
 api	io-izi.dosyaya_base64_satirlari_ekle	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosyaya_base64_satirlari_ekle"
 api	io-izi.dosyaya_bayt_yaz	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosyaya_bayt_yaz"
 api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
+api	io-izi.etag_yaz	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"etag_yaz"
 api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
 api	io-izi.gizli_sifrele	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_sifrele"
 api	io-izi.gorsel_kucult	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gorsel_kucult"
@@ -64,8 +66,11 @@ api	posta.kurumsal_alan	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POST
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_BIRINCIL_SUREC: &str = "web.birincil_surec";
 api	web.dosya_yaniti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
+api	web.istek_derinligi	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_ISTEK_DERINLIGI: &str = "web.istek_derinligi";
 api	web.istek_ham_govdesi	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_HAM_GOVDE: &str = "web.istek_ham_govdesi";
+api	web.istek_kosulu	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_ISTEK_KOSULU: &str = "web.istek_kosulu";
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
+bicim	dav-govde-sinirlari	aktif	1.0.0-dev	compiler/src/yorumlayici/dav_istegi.rs	pub const DAV_PUT_GOVDE_SINIRI: usize = 1024 * 1024;
 bicim	http-yontem-kaydi	aktif	1.0.0-dev	compiler/src/agac.rs	pub const KAYIT: [Self; 8] = [
 bicim	icerik-turu.csv	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/csv",
 bicim	icerik-turu.docx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

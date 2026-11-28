@@ -52,9 +52,10 @@ pub(super) fn ozel_kipleri_denetle(
     uygulama_parolasi_yerini_denetle(yontem, govde, toplam)?;
     onbellekli_rotayi_denetle(yontem, govde, dogrudan, toplam)?;
     let Some(satir) = makine_mi(govde) else {
+        // RFC-0047 (ADR-182 dilim D): DAV rotası da ham gövde okur.
         return match dogrudan.ham_govde() {
-            Some(satir) => Err(ham_govde_tanisi(satir)),
-            None => Ok(()),
+            Some(satir) if !super::dav::dav_rotasi(govde) => Err(ham_govde_tanisi(satir)),
+            _ => Ok(()),
         };
     };
     let bicim = if yontem != HttpYontemi::Post {
@@ -149,8 +150,13 @@ pub(super) fn islem_bilgileri(
         .filter(|cumle| !matches!(cumle, Cumle::IstekGeldiginde { .. }))
         .cloned()
         .collect::<Vec<_>>();
-    match islemde.or_else(|| blok_bilgisi(&rota_disi).onbellek.ham_govde()) {
+    let rota_disi = blok_bilgisi(&rota_disi).onbellek;
+    match islemde.or_else(|| rota_disi.ham_govde()) {
         Some(satir) => Err(ham_govde_tanisi(satir)),
-        None => Ok(dogrudan),
+        None => {
+            let izler = dogrudan.values().map(|bilgi| &bilgi.onbellek);
+            super::dav::rota_disi_izleri_denetle(izler.chain([&rota_disi]))?;
+            Ok(dogrudan)
+        }
     }
 }

@@ -170,7 +170,7 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
         Cumle::BaglantiGeldiginde { .. }
         | Cumle::BaglantiyaYaz { .. }
         | Cumle::BaglantiyiKapat { .. } => bilgi.baglanti(cumle),
-        Cumle::YanitGonder { deger, satir, .. } => {
+        Cumle::YanitGonder { deger, satir, .. } | Cumle::YanitEtagi { deger, satir } => {
             bilgi.ekle(Yetkinlik::AgSunucusu, (*satir, 1, 1));
             ifade_bilgisi(deger, bilgi);
         }

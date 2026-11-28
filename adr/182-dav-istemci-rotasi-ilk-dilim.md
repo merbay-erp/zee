@@ -1,13 +1,12 @@
 # ADR-182 — DAV istemci rotası: RFC-0047 uygulaması, dilim sırası ve açık soruların kapanışı
 
-- **Durum:** kabul — dilim A, B ve C uygulandı (28 Kasım 2026); D aynı ADR'nin
-  ekiyle açılır
+- **Durum:** kabul — dört dilim (A, B, C, D) uygulandı (28 Kasım 2026)
 - **Tarih:** 28 Kasım 2026
 - **İlgili kayıt:** K-364, [RFC-0047](../rfcs/0047-dav-istemci-rotasi-ilk-dilim.md),
   [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md), ADR-059 (core
   freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), ADR-163 K-406 eki
   (türlü metin yanıtı), ADR-178 (rota sonu), ADR-179 (makine uç noktası),
-  ADR-036 (kanonik proxy origin), spec/11 §4, spec/12 §RFC-0047, GB-185, GB-186, GB-187
+  ADR-036 (kanonik proxy origin), spec/11 §4, spec/12 §RFC-0047, GB-185, GB-186, GB-187, GB-188
 
 ## Bağlam
 
@@ -54,7 +53,7 @@ doğrulaması olmadan açılamaz (CSRF'siz, kimliksiz PUT/DELETE olurdu).
 | A | Durumlu türlü yanıt (her rota), `text/vcard`, 405 + `Allow` ve 501 (her rota), durum satırı açıklamaları, 204 gövdesizliği | **uygulandı** (bu ADR, GB-185) |
 | B | Uygulama parolası ilkeli: `yeni uygulama parolası`, `uygulama_parolası_anahtarları` (kimlikli HMAC credential'ları, döndürme), doğrulama kitaplığı (biçim kapısı, sabit zamanlı özet, katı Basic, ASCII katlama) | **uygulandı** (dilim B eki, GB-186) |
 | C | `dav istemcisi gerekli` sınıfı ve `dav_kimlik_çözücüsü` bildirimi (salt okuma kanıtı): PROPFIND/REPORT kaydı, yöntem-politika tanıları, statik kapı, CSRF/Origin muafiyeti, `Sec-Fetch-Site` reddi, çerezsiz Basic doğrulaması, ayrı oran kovaları, salt okuma kapsamı, ayrı DAV origin'i, otomatik OPTIONS | **uygulandı** (dilim C eki, GB-187) |
-| D | `Depth`/`If-Match`/`If-None-Match` okuma, DAV ham gövdesi (tür ve tavan kuralları), `propfind-finite-depth` 403, `ETag` yazımı, korpus geçişi ve çözüm vakaları, RFC-0047 durumu | açık (ADR-182 eki) |
+| D | `Depth`/`If-Match`/`If-None-Match` okuma, DAV ham gövdesi (tür ve tavan kuralları), `propfind-finite-depth` 403, `ETag` yazımı, korpus geçişi ve çözüm vakaları, RFC-0047 durumu | **uygulandı** (dilim D eki, GB-188) |
 
 Her dilim kendi spec maddesi, testi, tanı kataloğu, K-167 satırı, GB satırı
 ve `dogfood-change` beyanıyla kapanır. Ara durumda kayıt dışı yöntemler
@@ -186,6 +185,37 @@ vektörleri dahil).
 Kanıt: `compiler/tests/web_testi.rs::dav_*`,
 `compiler/tests/dosya_yaniti_testi.rs::dav_istemci_rotasi_gercek_worker_ayri_origin_basic_ve_csrf_muafiyeti`,
 `compiler/tests/proje_testi.rs::dav_bildirimi_p015_ve_cozucu_t067`.
+
+## Ek — dilim D: başlık okuma, ham DAV gövdesi ve ETag (28 Kasım 2026, GB-188)
+
+1. **Başlık okuma (soru 5, 6).** `isteğin "<ad>" başlığı`; ad tırnaklı
+   literal ve kapalı liste (`Depth` → Metin, `If-Match`/`If-None-Match` →
+   `Liste<Metin>`, `*` tek öğeli ayrı değer). Liste dışı/hesaplanmış ad S051,
+   güven başlıkları S052 (`rfc0040-e-basic-kimlik` S015 → S052, kalıcı ret);
+   yalnız DAV rotasının kendi gövdesinde (T068; `rfc0040-b-depth-basligi`
+   S015 → T068). Adaptör üç başlığın ham değerini verir; yorumlayıcı kimlik
+   kararından sonra, rota öncesi doğrular (400; PROPFIND sonsuz/eksik Depth
+   403 `propfind-finite-depth`; REPORT eksik Depth `0`).
+2. **Ham gövde (soru 7, kısmi kabul).** DAV yolunun gövdesi form değildir;
+   `isteğin ham gövdesi` DAV rotasında okunur (T062 orada kalkar), CRLF
+   dönüştürülmez. Sabit yöntem tavanları PUT 1 MiB, REPORT/PROPFIND 256 KiB;
+   GET/HEAD/DELETE gövdesiz; PUT/REPORT gövde zorunlu. İçerik türü (PUT
+   `text/calendar`/`text/vcard`, XML yöntemleri `application/xml`/`text/xml`,
+   `charset` yalnız `utf-8`) gerçek adaptörde 415.
+3. **ETag.** `yanıta "ETag" başlığını <ifade> olarak ekle` (AST
+   `Cumle::YanitEtagi`); başka başlık adı S053; yalnız DAV rotasında bir kez
+   (T069; `rfc0040-c-etag-basligi` S015 → T069); değer güçlü entity-tag,
+   geçersiz değer C022 → 500 ve başlığa girmez; yalnız 2xx yanıtta.
+4. **IO izi.** `dav_istek_basliklari` (ham çiftler) ve `etag_yaz` olayları.
+5. **Korpus.** Dokuz vakanın hepsi beklenen sonucunda: `rfc0040-c-207-xml`
+   başarılı; `a-*` T064, `b` T068, `c-etag` T069, `e` S052, `f-*` T050/T060/
+   T062 bilinçli ret. Ürün kaynağından alınacak çözüm vakaları ZeeMail'den
+   istendi; ürün provenance'ıyla birebir gelince korpusa eklenir (merkez
+   uydurmaz) — bu ADR'nin açık maddesidir.
+6. **Kabul ölçütleri (RFC-0047).** Dil tarafı (madde 2 ve 5'in derleme/
+   çalışma zamanı kısmı, madde 6) kanıtlı. Thunderbird/DAVx5/iOS ile hesap
+   kurma, iki cihaz eşitlemesi, 401 süre dağılımı ve ilk eşitleme kova
+   ölçümü ürünle yapılacak saha kabulüdür.
 
 ## Değerlendirilen seçenekler
 

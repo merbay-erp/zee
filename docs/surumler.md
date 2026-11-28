@@ -51,6 +51,18 @@ Bu kayıt yeni sürüm etiketi değildir.
   **Göç:** Gerekmez. `PROPFIND`/`REPORT` artık kayıtlı yöntemdir: DAV
   rotası olmayan ama tanımlı bir adreste 501 yerine 405 + `Allow`, tanımsız
   adreste 404 alır.
+- **DAV başlıkları, istek gövdesi ve ETag (RFC-0047 dilim D):** DAV rotası
+  `derinlik isteğin "Depth" başlığı olsun`, `koşul isteğin "If-Match"
+  başlığı olsun` (liste; `*` ayrı değer) ve `takvim isteğin ham gövdesi
+  olsun` ile isteği okur; `yanıta "ETag" başlığını etiket olarak ekle` ile
+  yanıta ETag yazar. Yalnız `Depth`, `If-Match`, `If-None-Match` okunabilir;
+  `Authorization`, `Cookie`, `Origin` gibi güven başlıkları derlemede
+  reddedilir (S052). `Depth`'siz ya da `infinity` PROPFIND 403'tür. PUT
+  gövdesi en çok 1 MiB (`text/calendar`, `text/vcard`), REPORT/PROPFIND 256
+  KiB (`application/xml`, `text/xml`); gövde satır sonu dahil olduğu gibi
+  gelir. Böylece RFC-0047'nin dört dilimi tamamlandı.
+
+  **Göç:** Gerekmez.
 
 ### Değişenler
 

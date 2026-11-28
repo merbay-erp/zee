@@ -85,6 +85,8 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dav_kimligi"
             | "dav_ozet_dogrula"
             | "dav_kovasi"
+            | "etag_yaz"
+            | "dav_istek_basliklari"
             | "yonlendir_gonder"
             | "cerez_yaz"
             | "cerez_sil"
@@ -209,7 +211,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         "yazdir" | "yanit_gonder" => alan_sayisi(olay, 1, 0),
         "turlu_yanit_gonder" => turlu_yanit_semasi(olay),
         "turlu_durumlu_yanit_gonder" => turlu_durumlu_yanit_semasi(olay),
-        "dav_kimligi" | "dav_ozet_dogrula" | "dav_kovasi" => dav::sema(olay),
+        islem if dav::OLAYLAR.contains(&islem) => dav::sema(olay),
         "durum_yaniti_gonder" => {
             alan_sayisi(olay, 2, 0)?;
             if kanonik_tamsayi::<u16>(&olay.argumanlar[0]) {
@@ -690,6 +692,14 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
 
     fn dav_kovasi(&mut self, kova: crate::yorumlayici::DavKova, anahtar: &str) -> Result<(), i64> {
         dav::kaydet_kova(self, kova, anahtar)
+    }
+
+    fn etag_yaz(&mut self, etag: &str) -> Result<(), String> {
+        dav::kaydet_etag(self, etag)
+    }
+
+    fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+        dav::kaydet_basliklar(self)
     }
 
     /// RFC-0047 C: 401/429/OPTIONS başlıkları karardan deterministik türer;
