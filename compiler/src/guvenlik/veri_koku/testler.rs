@@ -334,3 +334,146 @@ fn veri_koku_cozerek_ekleme_boy_denetimi_sonrasi_baga_donen_yapragi_okumaz() {
     assert!(sonuc.is_err(), "bağa dönen yaprak okunmamalı: {sonuc:?}");
     assert_eq!(std::fs::read(d.0.join("dis/sir")).unwrap(), SIR);
 }
+
+#[test]
+fn veri_koku_hard_link_korumasi_okuma_hatalarini_ayirir() {
+    // K-422 (ZM-F051): Ubuntu 22.04'te `/proc/sys/fs/protected_hardlinks`
+    // `0600 root`; ayrıcalıksız hizmet EACCES alır. İzin yokluğu koruma
+    // bilinmiyor kipidir (kök kabul), `/proc` yokluğu ve `0` ret.
+    use std::io::Error;
+    let karar = platform::koruma_karari;
+    assert_eq!(karar(Ok("1\n".into())), Ok(()));
+    let kapali = karar(Ok("0\n".into())).unwrap_err();
+    assert!(kapali.contains("çekirdek koruması kapalı"), "{kapali}");
+    for kod in [libc::EACCES, libc::EPERM] {
+        assert_eq!(karar(Err(Error::from_raw_os_error(kod))), Ok(()), "{kod}");
+    }
+    for kod in [libc::ENOENT, libc::ENOTDIR] {
+        let yok = karar(Err(Error::from_raw_os_error(kod))).unwrap_err();
+        assert!(yok.contains("/proc bağlı değil"), "{yok}");
+    }
+    let diger = karar(Err(Error::from_raw_os_error(libc::EIO))).unwrap_err();
+    assert!(
+        diger.contains("okunamadı (") && !diger.contains("/proc bağlı değil"),
+        "gerçek neden söylenmeli: {diger}"
+    );
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn veri_koku_koruma_okunamazsa_kok_kabul_edilir_kapaliysa_reddedilir() {
+    use platform::koruma_kancasi::kur;
+    let d = Dizin::yeni("koruma");
+    {
+        let _k = kur(|| Err(std::io::Error::from_raw_os_error(libc::EACCES)));
+        assert!(VeriKoku::yoldan(&d.kok()).is_ok());
+    }
+    {
+        let _k = kur(|| Err(std::io::Error::from_raw_os_error(libc::ENOENT)));
+        let hata = VeriKoku::yoldan(&d.kok()).unwrap_err();
+        assert!(hata.contains("/proc bağlı değil"), "{hata}");
+    }
+    {
+        let _k = kur(|| Ok("0\n".into()));
+        let hata = VeriKoku::yoldan(&d.kok()).unwrap_err();
+        assert!(hata.contains("kapalı"), "{hata}");
+    }
+    {
+        let _k = kur(|| Ok("1\n".into()));
+        assert!(VeriKoku::yoldan(&d.kok()).is_ok());
+    }
+}
+
+/// Paylaşılan son klasöre eş hizmetin bağladığı dış dosya ve yazım hedefi.
+fn sert_bagli(d: &Dizin, ad: &str) -> PathBuf {
+    let yaprak = d.kok().join("ekler").join(ad);
+    std::fs::hard_link(d.0.join("dis/sir"), &yaprak).unwrap();
+    yaprak
+}
+
+fn sir_aklanmadi(d: &Dizin) {
+    for girdi in std::fs::read_dir(d.kok().join("ekler")).unwrap() {
+        let yol = girdi.unwrap().path();
+        let bilgi = std::fs::symlink_metadata(&yol).unwrap();
+        if bilgi.is_file() && std::os::unix::fs::MetadataExt::nlink(&bilgi) == 1 {
+            let icerik = std::fs::read(&yol).unwrap();
+            assert!(
+                !icerik.windows(SIR.len()).any(|p| p == SIR),
+                "{} dış içeriği tek bağlı dosyaya akladı",
+                yol.display()
+            );
+        }
+    }
+    assert_eq!(std::fs::read(d.0.join("dis/sir")).unwrap(), SIR);
+}
+
+#[test]
+fn veri_koku_tek_bag_kipinde_sert_bagli_yaprak_yazima_aklanamaz() {
+    // K-422: koruma bilinmiyor kipinde (ya da macOS'ta) eş hizmet yazarın
+    // okuyabildiği dış dosyayı paylaşılan klasöre sert bağlayabilir. Ekleme,
+    // üzerine yazma, eylem yedeği, taşıma/silme izi o içeriği yeni tek bağlı
+    // dosyaya kopyalamamalı; yalnız bağ girdisini kaldıran silme serbesttir.
+    use crate::kalici_dosya as k;
+    let d = Dizin::yeni("tekbag");
+    let gunluk = sert_bagli(&d, "gunluk");
+    let hatalar: Vec<std::io::Result<()>> = k::tek_bag_kipinde(|| {
+        vec![
+            k::atomik_satir_yaz(&gunluk, "ek", true),
+            k::atomik_satir_yaz(&gunluk, "ezme", false),
+            k::atomik_satir_yaz_izli(&gunluk, "iz", false).map(|_| ()),
+            k::sinirli_sona_ekle(&gunluk, b"bayt", 1 << 20).map(|_| ()),
+            k::base64_satirlari_sona_ekle(&mut &b"abc"[..], 3, &gunluk, 1 << 20).map(|_| ()),
+            k::atomik_sil_izli(&gunluk).map(|_| ()),
+            k::atomik_tasi_izli(&gunluk, &d.kok().join("ekler/tasinan")).map(|_| ()),
+        ]
+    });
+    for (sira, sonuc) in hatalar.into_iter().enumerate() {
+        let hata = sonuc.expect_err(&format!("{sira}. yazım sert bağı kabul etti"));
+        assert!(hata.to_string().contains("sert bağ"), "{sira}: {hata}");
+    }
+    sir_aklanmadi(&d);
+    assert!(!d.kok().join("ekler/tasinan").exists());
+    // Bağ girdisini kaldırmak dış dosyayı değiştirmez ve kopyalamaz.
+    assert!(k::tek_bag_kipinde(|| k::atomik_sil(&gunluk)).unwrap());
+    sir_aklanmadi(&d);
+}
+
+#[test]
+fn veri_koku_tek_bag_kipinde_kilit_adina_baglanan_dis_dosya_kilit_sayilmaz() {
+    use crate::kalici_dosya as k;
+    let d = Dizin::yeni("kilit");
+    sert_bagli(&d, ".zee-yazma-kilidi");
+    let hedef = d.kok().join("ekler/yeni");
+    let hata = k::tek_bag_kipinde(|| k::atomik_satir_yaz(&hedef, "x", false)).unwrap_err();
+    assert!(hata.to_string().contains("sert bağ"), "{hata}");
+    assert!(!hedef.exists());
+    sir_aklanmadi(&d);
+}
+
+#[test]
+fn veri_koku_tek_bag_kipi_yalniz_veri_yazimini_kapsar() {
+    // Kip dışında (proje dosyası) sert bağlı hedefe ekleme önceki davranışta
+    // kalır: içerik okunup yeni dosya yayımlanır. Kip iş parçacığına özeldir
+    // ve kapanınca sızmaz.
+    use crate::kalici_dosya as k;
+    let d = Dizin::yeni("kapsam");
+    let gunluk = sert_bagli(&d, "proje-gunluk");
+    k::tek_bag_kipinde(|| ());
+    k::atomik_satir_yaz(&gunluk, "ek", true).unwrap();
+    let mut beklenen = SIR.to_vec();
+    beklenen.extend_from_slice(b"ek\n");
+    assert_eq!(std::fs::read(&gunluk).unwrap(), beklenen);
+    let okuyucu = crate::kaynak_sinirlari::bagsiz_okuma::kalici_okuyucu_ac;
+    let bag = sert_bagli(&d, "ikinci");
+    assert!(
+        okuyucu(&bag).is_ok(),
+        "kip dışında EXDEV okuyucusu eski davranışta"
+    );
+    let hata = k::tek_bag_kipinde(|| okuyucu(&bag)).unwrap_err();
+    assert!(hata.to_string().contains("sert bağ"), "{hata}");
+    let sembolik = d.kok().join("ekler/sembolik");
+    symlink(d.0.join("dis/sir"), &sembolik).unwrap();
+    assert!(k::tek_bag_kipinde(|| okuyucu(&sembolik)).is_err());
+    std::fs::write(d.kok().join("ekler/duz"), b"duz").unwrap();
+    assert!(k::tek_bag_kipinde(|| okuyucu(&d.kok().join("ekler/duz"))).is_ok());
+}

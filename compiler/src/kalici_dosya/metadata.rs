@@ -49,6 +49,7 @@ impl MetadataKaynagi {
                     "metadata kaynağı açılırken normal dosya olmaktan çıktı",
                 ));
             }
+            crate::kaynak_sinirlari::bagsiz_okuma::tek_bag_denetle(dosya)?; // K-422
         }
         Ok(Self {
             #[cfg(unix)]

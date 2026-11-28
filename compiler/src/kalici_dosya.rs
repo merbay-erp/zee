@@ -38,6 +38,17 @@ const KILIT_BEKLEME: Duration = Duration::from_millis(
 );
 static GECICI_SAYACI: AtomicU64 = AtomicU64::new(0);
 
+/// K-422 (ADR-170 eki): `calis` süresince bu iş parçacığındaki kalıcı
+/// yazımlar tek-bağ kipindedir. Kilit dosyası, var olan hedefin içerik ve
+/// metadata okuması, eylem/taşıma/silme izi ve EXDEV kopyası açılan
+/// tanıtıcıda tek sert bağ ister; eş hizmetin paylaşılan veri kökü
+/// klasörüne bağladığı dış dosya yeni tek bağlı dosyaya aklanamaz. Çağıran
+/// (`veri:` yolu) `fs.protected_hardlinks` değerinden bağımsız açar.
+pub fn tek_bag_kipinde<T>(calis: impl FnOnce() -> T) -> T {
+    let _kip = crate::kaynak_sinirlari::bagsiz_okuma::TekBagKipi::ac();
+    calis()
+}
+
 /// İçeriğin tamamını atomik olarak hedefe yerleştirir.
 pub fn atomik_yaz(yol: &Path, icerik: &[u8]) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
@@ -180,13 +191,15 @@ impl DosyaKilidi {
         let mut secenek = OpenOptions::new();
         secenek.create(true).truncate(false).read(true).write(true);
         // K-394: paylaşılan klasörde kilit adına konmuş sembolik bağ izlenmez
-        // (kök dışında dosya oluşturtma / açtırma yok).
+        // (kök dışında dosya oluşturtma / açtırma yok). K-422: tek-bağ
+        // kipinde kilit bloklamaz; bağlanmış dış dosya/FIFO/aygıt kilit değil.
         #[cfg(unix)]
         {
             use std::os::unix::fs::OpenOptionsExt;
-            secenek.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+            secenek.custom_flags(crate::kaynak_sinirlari::bagsiz_okuma::kilit_bayraklari());
         }
         let dosya = secenek.open(kilit_yolu)?;
+        crate::kaynak_sinirlari::bagsiz_okuma::kilit_dosyasini_denetle(&dosya)?;
         // Hızlı yol: boş kilit iş parçacığı açmadan alınır.
         if platform::kilitlemeyi_dene(&dosya)? {
             Ok(Self::tutulan(dosya))

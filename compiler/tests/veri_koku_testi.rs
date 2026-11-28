@@ -651,3 +651,67 @@ fn yerel_paketin_veri_yazimi_ana_projenin_veri_kokune_cozulur() {
         "{stderr}"
     );
 }
+
+/// K-422 (ZM-F051, ADR-170 eki): `fs.protected_hardlinks` okunamayan ya da
+/// olmayan ortamda eş hizmet yazarın okuyabildiği dış dosyayı paylaşılan
+/// son klasöre sert bağlayabilir. Gerçek `dil` sürecinde ekleme, üzerine
+/// yazma, eylem içinde yazma ve taşıma kaynağı o içeriği tek bağlı yeni
+/// dosyaya aklamaz; yalnız bağ girdisini kaldıran silme serbesttir.
+#[test]
+fn sert_bagli_veri_yapragi_yazim_yollarinda_aklanamaz() {
+    use std::os::unix::fs::MetadataExt;
+    let alan = Alan::yeni();
+    let bagla = |ad: &str| {
+        std::fs::hard_link(
+            alan.0.join("dis/sir.txt"),
+            alan.depo().join("ekler").join(ad),
+        )
+        .unwrap();
+    };
+    let yazimlar = [
+        ("ekle", "\"veri:ekler/a\" dosyasına \"ek\" ekle\n"),
+        ("yaz", "\"veri:ekler/a\" dosyasına \"ezme\" yaz\n"),
+        (
+            "eylem",
+            "eylem kaydı sil\n    TamSayı sonucu döndürür\n    \"veri:ekler/a\" dosyasını silmeyi dene döndür\n\nsilme kaydı sil olsun\nsilme başarısızsa\n    silmenin hatası yaz\n",
+        ),
+        (
+            "tasi",
+            "tasima \"veri:ekler/a\" dosyasını \"veri:ekler/b\" yoluna atomik taşımayı dene olsun\ntasima başarısızsa\n    tasimanın hatası yaz\ntasima başarılıysa\n    \"taşındı\" yaz\n",
+        ),
+    ];
+    for (ad, ana) in yazimlar {
+        bagla("a");
+        let proje = alan.proje(&format!("yazar-{ad}"), YAZICI, ana);
+        let (_, stdout, stderr) = calistir(&proje, Some(&alan.depo()));
+        let cikti = format!("{stdout}{stderr}");
+        assert!(
+            cikti.contains("sert bağ") || cikti.contains("hard-link"),
+            "{ad}: {cikti}"
+        );
+        assert!(!cikti.contains(SIR), "{ad}: sır iletide: {cikti}");
+        for girdi in std::fs::read_dir(alan.depo().join("ekler")).unwrap() {
+            let yol = girdi.unwrap().path();
+            let bilgi = std::fs::symlink_metadata(&yol).unwrap();
+            if bilgi.is_file() && bilgi.nlink() == 1 {
+                let icerik = std::fs::read_to_string(&yol).unwrap_or_default();
+                assert!(!icerik.contains(SIR), "{ad}: {} aklandı", yol.display());
+            }
+        }
+        std::fs::remove_file(alan.depo().join("ekler/a")).unwrap();
+    }
+    bagla("a");
+    let proje = alan.proje(
+        "silici",
+        "\"veri-okuma\", \"veri-yazma\"",
+        "silme \"veri:ekler/a\" dosyasını silmeyi dene olsun\nsilme başarılıysa\n    silmenin değeri yaz\nsilme başarısızsa\n    silmenin hatası yaz\n",
+    );
+    let (tamam, stdout, stderr) = calistir(&proje, Some(&alan.depo()));
+    assert!(tamam, "{stdout}{stderr}");
+    assert_eq!(stdout.trim(), "1");
+    assert!(!alan.depo().join("ekler/a").exists());
+    assert_eq!(
+        std::fs::read_to_string(alan.0.join("dis/sir.txt")).unwrap(),
+        SIR
+    );
+}

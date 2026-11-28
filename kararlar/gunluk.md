@@ -6683,3 +6683,26 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yabancı Origin 403; üretimde ayrı `dav_kökeni` zorunlu; OPTIONS otomatik.
   GB-187.
 
+## K-422 — Veri kökü `protected_hardlinks` izin hatası ve tek-bağ yazımı (28 Kasım 2026)
+
+- Ürün H bildirimi (ZM-F051): `sudo -u zeemail-smtp env ZEEMAIL_VERI_KOKU=…
+  dil çalıştır .` Ubuntu 22.04'te C013 "`fs.protected_hardlinks` okunamadı
+  (/proc bağlı değil)" verdi; dosya orada `0600 root`, 24.04'te `0644`. Ekli
+  gelen ileti saklanamıyordu (452). Kök neden K-394'ten (77cf4c78) beri her
+  okuma hatasının aynı retle karşılanması.
+- İnceleme: çekirdek korumasının kapattığı tehdit eş hizmetin paylaşılan
+  klasöre dış dosyayı sert bağlamasıdır. Okuyucu tanıtıcıda tek bağ istiyordu;
+  yazarın iç okumaları (ekleme, çözerek/base64 ekleme, eylem yedeği,
+  taşıma/silme izi, EXDEV kopyası) ve metadata kaynağı istemiyordu — bağlı
+  içerik tek bağlı yeni dosyaya aklanabilirdi (RFC-0045'te macOS kalan riski).
+  Yalnız izni kaldırmak bu yolu Linux'ta da açardı.
+- Düzeltme (semantic-bugfix, correctness/security): okuma sonucu ayrılır (`0`
+  ve ENOENT/ENOTDIR ayrı iletiyle ret, başka hata gerçek nedenle ret,
+  EACCES/EPERM bilinmiyor kipinde kabul); `veri:` yazımları
+  `kalici_dosya::tek_bag_kipinde` altında koşar ve her içerik okuyan açılış
+  tanıtıcıda tek sert bağ ister; kilit ayrıca bloklamaz ve normal dosya
+  ister. İzsiz silme yalnız dizin girdisini kaldırır (serbest). Proje
+  dosyası yazımı değişmez. Testler `/proc` yerine enjekte okuma sonucu
+  kullanır. Regresyon vakası `regression/security/veri-koku-sert-bag-ekleme.dil`
+  (yeni `native-veri-koku-sert-bag` kipi); ADR-170 eki, RFC-0045 T11, GB-189.
+

@@ -2,7 +2,6 @@
 
 use super::adim::{nokta, sar, Adim};
 use super::{ebeveyn, gecici_dosya_ac, klasoru_eszamanla, metadata::MetadataKaynagi, DosyaKilidi};
-use std::fs::File;
 use std::io;
 use std::path::Path;
 
@@ -105,7 +104,8 @@ fn aygitlar_arasi_tasi(
     adlandir: &impl Fn(&Path, &Path) -> io::Result<()>,
 ) -> io::Result<()> {
     let metadata = MetadataKaynagi::yakala(kaynak)?;
-    let mut okuyucu = File::open(kaynak)?;
+    // K-422: tek-bağ kipinde kopya bağ izlemez ve sert bağlı kaynağı aklamaz.
+    let mut okuyucu = crate::kaynak_sinirlari::bagsiz_okuma::kalici_okuyucu_ac(kaynak)?;
     let (mut dosya, mut gecici) = gecici_dosya_ac(hedef)?;
     io::copy(&mut okuyucu, &mut dosya)?;
     metadata.geciciye_uygula(&dosya)?;

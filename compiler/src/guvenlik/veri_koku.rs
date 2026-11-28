@@ -20,7 +20,12 @@
 //! - Yaprak: sembolik bağ izlenmez; okuma `O_NOFOLLOW|O_NONBLOCK` ile açılır,
 //!   açılan tanıtıcı normal dosya ve **tek hard-link** olmalıdır (başka
 //!   kullanıcının paylaşılan klasöre bağladığı dış dosya okunmaz).
-//! - Linux'ta `fs.protected_hardlinks` kapalıysa kök reddedilir.
+//! - Linux'ta `fs.protected_hardlinks` kapalıysa (`0`) ya da `/proc` bağlı
+//!   değilse kök reddedilir; ayrıcalıksız hizmet değeri okuyamıyorsa
+//!   (EACCES/EPERM) koruma bilinmiyor kipidir ve kök kabul edilir (K-422).
+//! - Yazımlar tek-bağ kipindedir (K-422): kilit, var olan hedefin içerik ve
+//!   metadata okuması, eylem/taşıma/silme izi ve EXDEV kopyası açılan
+//!   tanıtıcıda tek sert bağ ister ([`crate::kalici_dosya::tek_bag_kipinde`]).
 //! - Hata iletileri kökün mutlak yolunu taşımaz; programın `veri:` yolunu taşır.
 //! - Windows ve unix dışı hedeflerde veri kökü bu sürümde desteklenmez.
 
@@ -207,14 +212,61 @@ mod platform {
         Ok(sahip)
     }
 
-    #[cfg(target_os = "linux")]
-    fn hard_link_korumasi() -> Result<(), String> {
-        match std::fs::read_to_string("/proc/sys/fs/protected_hardlinks") {
+    /// K-422: `fs.protected_hardlinks` okumasının kararı. Değer `0` ise
+    /// çekirdek koruması kapalıdır ve kök reddedilir. Dosya yoksa (`/proc`
+    /// bağlı değil) ya da başka bir okuma hatasında kök gerçek nedenle
+    /// reddedilir. Ayrıcalıksız hizmetin okuma izni yoksa (EACCES/EPERM;
+    /// Ubuntu 22.04'te dosya `0600 root`) koruma **bilinmiyor** kipidir: kök
+    /// kabul edilir, çünkü veri kökünün her içerik okuyan açılışı zaten
+    /// tanıtıcıda tek sert bağ ister (okuma ailesi, ekleme/eylem/taşıma/silme
+    /// izi, metadata, EXDEV kopyası, kilit; ADR-170 eki).
+    #[cfg(any(target_os = "linux", test))]
+    pub(super) fn koruma_karari(okuma: std::io::Result<String>) -> Result<(), String> {
+        match okuma {
             Ok(deger) if deger.trim() != "0" => Ok(()),
             Ok(_) => {
                 Err("için `fs.protected_hardlinks=1` gerekir (çekirdek koruması kapalı)".into())
             }
-            Err(_) => Err("için `fs.protected_hardlinks` okunamadı (/proc bağlı değil)".into()),
+            Err(hata) => match hata.raw_os_error() {
+                Some(libc::EACCES) | Some(libc::EPERM) => Ok(()),
+                Some(libc::ENOENT) | Some(libc::ENOTDIR) => Err(
+                    "için `fs.protected_hardlinks` okunamadı: /proc bağlı değil (dosya yok)".into(),
+                ),
+                _ => Err(format!("için `fs.protected_hardlinks` okunamadı ({hata})")),
+            },
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    fn hard_link_korumasi() -> Result<(), String> {
+        #[cfg(test)]
+        if let Some(kaynak) = koruma_kancasi::al() {
+            return koruma_karari(kaynak());
+        }
+        koruma_karari(std::fs::read_to_string("/proc/sys/fs/protected_hardlinks"))
+    }
+
+    /// Test derlemesinde `/proc` okumasının yerine geçen iş parçacığı kancası.
+    #[cfg(all(test, target_os = "linux"))]
+    pub(super) mod koruma_kancasi {
+        use std::cell::Cell;
+        type Kaynak = fn() -> std::io::Result<String>;
+        thread_local! {
+            static KANCA: Cell<Option<Kaynak>> = const { Cell::new(None) };
+        }
+        pub(crate) fn al() -> Option<Kaynak> {
+            KANCA.with(Cell::get)
+        }
+        /// Kancayı kurar; dönen değer düşünce kaldırılır.
+        pub(crate) fn kur(kaynak: Kaynak) -> impl Drop {
+            struct Kaldir;
+            impl Drop for Kaldir {
+                fn drop(&mut self) {
+                    KANCA.with(|k| k.set(None));
+                }
+            }
+            KANCA.with(|k| k.set(Some(kaynak)));
+            Kaldir
         }
     }
 

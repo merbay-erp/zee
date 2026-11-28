@@ -1,0 +1,7 @@
+# K-422: harness veri kökünü kurar; `veri:ekler/gunluk` eş hizmetin bağladığı
+# kök dışı dosyanın sert bağıdır. Ekleme onu tek bağlı dosyaya aklamamalı.
+sonuc "eWVuaQ==" base64 çözerek "veri:ekler/gunluk" dosyasına eklemeyi dene olsun
+sonuc başarılıysa
+    "eklendi" yaz
+sonuc başarısızsa
+    sonucun hatası yaz
