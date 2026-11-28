@@ -77,6 +77,7 @@ hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 | `baglanti` | Runtime fazında typed runtime → hermetik bağlantı adaptörü (`SahteBaglanti`); başlıklar dinleyiciyi, gelen satırları ve susan istemciyi verir; çıktı giden satırlar ve `[günlük] <neden>` |
 | `lsp-utf16` | LSP mesaj işleyicisinde BMP dışı önek sonrası hover, definition ve iki imleçten aynı rename aralıkları; süreç/taşıma kabulü değildir |
 | `lsp-uri` | LSP fazında gerçek stdio ikilisi, yüzde UTF-8 dosya URI'si ve hermetik disk birimi |
+| `native-veri-koku-sert-bag` | Security fazında gerçek `dil` ikilisi, geçici paylaşılan veri kökü ve kök dışı dosyaya sert bağlı yaprak (K-422) |
 
 K-248 `lsp-uri`, iki satırlık kaynağı ve aynı dizindeki `yardimci.birim`
 girdisini geçici Türkçe/emoji klasörüne kopyalar. Initialize, didOpen,
@@ -85,6 +86,16 @@ tanı kodlarının kanonik JSON dizisi (`[]` başarı), gerçek exit ve boş
 stderr'dir; manifest tanı/span alanları `-` kalır. URI echo ve üç tam
 yanıt ayrıca doğrulanır; süreç 10 saniyede kapanmazsa öldürülüp beklenir.
 Bu kip salt CLI derlemesiyle taklit edilmez.
+
+K-422 `native-veri-koku-sert-bag`, yapışkan geçici dizin altında `0700`
+bir alan, `0755` veri kökü ve `ekler/gunluk` adıyla kök dışı bir dosyanın
+sert bağını kurar; projenin `proje.dil`'ini (`veri_kökü`, `veri-okuma`,
+`veri-yazma`) harness yazar ve manifestin kaynağını gerçek `dil çalıştır .`
+ile koşar. Çıktı program satırları, `aklanan <n>` (ekler altında dış içeriği
+taşıyan tek bağlı dosya sayısı) ve `dış aynı|değişti`dir. Düzeltme öncesi
+`eklendi` ve `aklanan 1` görülür. `protected_hardlinks` okuma izni kararı
+(Ubuntu 22.04) hermetik değildir; birim testinde enjekte okuma sonucuyla
+sınanır. Veri kökü unix dışında yoktur; libtest vakası orada ignored.
 
 ## Yeni bug düzeltme protokolü
 

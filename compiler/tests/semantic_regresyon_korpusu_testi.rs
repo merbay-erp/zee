@@ -50,6 +50,8 @@ mod native_proje_dosya_koku_fixture;
 mod native_registry_durum_cekismesi_fixture;
 #[path = "semantic_regresyon/native_unicode_kimlik.rs"]
 mod native_unicode_kimlik_fixture;
+#[path = "semantic_regresyon/native_veri_koku_sert_bag.rs"]
+mod native_veri_koku_sert_bag_fixture;
 #[path = "semantic_regresyon/native_web_depo_cekismesi.rs"]
 mod native_web_depo_cekismesi_fixture;
 #[path = "semantic_regresyon/native_web_kopma.rs"]
@@ -114,6 +116,7 @@ const KIPLER: &[&str] = &[
     "native-unicode-kimlik",
     "native-proje-dosya-koku",
     "native-buyuk-dosya-tasima",
+    "native-veri-koku-sert-bag",
 ];
 
 #[derive(Debug, Clone)]
@@ -303,6 +306,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
                 | "native-web-oturum-deposu"
                 | "native-registry-durum-cekismesi"
                 | "native-unicode-kimlik"
+                | "native-veri-koku-sert-bag"
         ),
         "cli" => matches!(
             kip,
@@ -519,6 +523,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-buyuk-dosya-tasima" {
         let (cikis, cikti) = native_buyuk_dosya_tasima_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-veri-koku-sert-bag" {
+        let (cikis, cikti) = native_veri_koku_sert_bag_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -1020,6 +1032,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-eszamanli-paket-ekle"
                 | "native-registry-durum-cekismesi"
                 | "native-unicode-kimlik"
+                | "native-veri-koku-sert-bag"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -1673,6 +1686,38 @@ fn native_proje_dosya_koku_regresyonu_gercek_surecle_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: yokluk iletisi", vaka.ad);
+    }
+}
+
+#[test]
+fn native_veri_koku_sert_bag_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-veri-koku-sert-bag"));
+    assert!(faz_kipi_kabul_eder("security", "native-veri-koku-sert-bag"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-veri-koku-sert-bag"));
+    }
+}
+
+/// K-422: paylaşılan veri kökü yaprağı kök dışı dosyanın sert bağıyken gerçek
+/// native `dil` eklemesi içeriği tek bağlı dosyaya aklamaz. Veri kökü unix
+/// dışında yoktur; sahte başarı yerine görünür ignored durumundadır.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix shared data root unavailable")]
+fn native_veri_koku_sert_bag_regresyonu_gercek_surecle_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-veri-koku-sert-bag")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "veri kökü sert bağ regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: aklama", vaka.ad);
     }
 }
 
