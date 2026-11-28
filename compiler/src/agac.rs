@@ -171,7 +171,33 @@ impl HttpYontemi {
     pub fn guvenli(self) -> bool {
         matches!(self, Self::Get | Self::Head)
     }
+
+    /// RFC-0047 A (ADR-182): kapalı yöntem kaydı, `Allow` başlığının kanonik
+    /// sırasıyla. Kayıtta olmayan yöntem yoldan bağımsız 501'dir.
+    pub const KAYIT: [Self; 6] = [
+        Self::Get,
+        Self::Head,
+        Self::Post,
+        Self::Put,
+        Self::Patch,
+        Self::Delete,
+    ];
+
+    /// RFC-0047 A (ADR-182): yol eşleşip yöntem eşleşmediğinde 405 yanıtının
+    /// `Allow` değeri; yöntemler kanonik kayıt sırasıyla, tekrarsız.
+    pub fn allow_degeri(izinli: &[Self]) -> String {
+        Self::KAYIT
+            .iter()
+            .filter(|yontem| izinli.contains(yontem))
+            .map(|yontem| yontem.yazimi())
+            .collect::<Vec<_>>()
+            .join(", ")
+    }
 }
+
+/// RFC-0047 C (ADR-182): `<ifade> metnini "<tür>" türünde <durum> durumuyla
+/// gönder` için kapalı durum kümesi. Kaynakta görünen literal olmak zorundadır.
+pub const TURLU_YANIT_DURUMLARI: [u16; 9] = [200, 201, 207, 400, 403, 404, 409, 412, 415];
 
 /// İşlem parametresi. Başlangıç yüzeyi `sayıyı al`; açık API sözleşmesi
 /// `sayıyı Ondalık olarak al` (K-083). Tür yazımı çözümleyicide doğrulanır.

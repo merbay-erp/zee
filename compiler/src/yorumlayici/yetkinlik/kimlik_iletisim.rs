@@ -14,6 +14,18 @@ macro_rules! yontemler {
             }
         }
 
+        fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
+            if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
+                self.ic.turlu_durumlu_yanit_gonder(tur, durum, yanit);
+            }
+        }
+
+        fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
+            if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
+                self.ic.yontem_reddi_gonder(izinli, yanit);
+            }
+        }
+
         fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
             self.politika.gerektir(Yetkinlik::Kriptografi)?;
             self.ic.parola_ozeti_uret(parola)

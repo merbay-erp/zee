@@ -103,6 +103,18 @@ pub const TURLER: &[IcerikTuru] = &[
         smtp_aday: true,
         web_dosya: true,
     },
+    // RFC-0047 C (ADR-182): CardDAV kişi kartı (RFC 6350/6352). Yalnız web
+    // yüzeyi (metin yanıtı ve dosya yanıtı); SMTP adayı değildir.
+    IcerikTuru {
+        ad: "vcf",
+        mime: "text/vcard",
+        uzantilar: &["vcf"],
+        metin: true,
+        imza: None,
+        smtp_varsayilan: false,
+        smtp_aday: false,
+        web_dosya: true,
+    },
     IcerikTuru {
         ad: "docx",
         mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -203,7 +215,8 @@ pub fn web_dosya_turu(mime: &str) -> Option<&'static IcerikTuru> {
 /// verilebileceği kayıt satırları. Yalnız UTF-8 metin taşıyan, tarayıcıda
 /// betik yürütmeyen dosya sınıfı türleri; ikili türler, `octet-stream` ve
 /// Apple profili (imzalı hâli ikili CMS'tir) bilinçli olarak dışarıdadır.
-pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "xml"];
+/// RFC-0047 C (ADR-182) `vcf` (text/vcard) satırını ekler.
+pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "vcf", "xml"];
 
 /// `<metin> metnini "<tür>" türünde gönder` için exact (küçük harf,
 /// parametresiz) MIME yazımıyla satır.
@@ -373,7 +386,7 @@ mod tests {
             assert!(web_dosya_turu(kotu).is_none(), "{kotu}");
         }
         // Web'e özgü satırlar SMTP adayı değildir; uzantıdan SMTP seçimi yok.
-        for ad in ["xml", "mobileconfig"] {
+        for ad in ["xml", "mobileconfig", "vcf"] {
             let tur = adla(ad).expect(ad);
             assert!(tur.web_dosya && !tur.smtp_aday && !tur.smtp_varsayilan);
         }
@@ -388,6 +401,7 @@ mod tests {
             ("text/plain", "text/plain; charset=utf-8"),
             ("text/csv", "text/csv; charset=utf-8"),
             ("text/calendar", "text/calendar; charset=utf-8"),
+            ("text/vcard", "text/vcard; charset=utf-8"),
             ("application/xml", "application/xml"),
         ] {
             let tur = web_metin_turu(mime).expect(mime);

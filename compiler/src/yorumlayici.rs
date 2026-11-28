@@ -34,6 +34,7 @@ mod veritabani;
 mod web_istek;
 mod yetkinlik;
 mod yetkinlik_hatasi;
+mod yontem_reddi;
 
 pub use self::baglanti::{
     BaglantiIslemi, BaglantiOlayi, BaglantiSonucu, TlsIstemciKaydi, YeniBaglanti,
@@ -494,6 +495,18 @@ pub trait GirdiCikti {
     /// fail-closed 500 durum yanıtıdır.
     fn turlu_yanit_gonder(&mut self, _tur: &str, _yanit: &str) {
         self.durum_yaniti_gonder(500, "istek işlenemedi; sunucu hatası");
+    }
+    /// RFC-0047 C (ADR-182): türlü metin yanıtının durumlu kardeşi. Tür
+    /// K-406 metin satırı, durum `TURLU_YANIT_DURUMLARI` kümesindedir;
+    /// başlıklar türlü yanıtla aynıdır. Varsayılan fail-closed 500'dür.
+    fn turlu_durumlu_yanit_gonder(&mut self, _tur: &str, _durum: u16, _yanit: &str) {
+        self.durum_yaniti_gonder(500, "istek işlenemedi; sunucu hatası");
+    }
+    /// RFC-0047 A (ADR-182): yol eşleşti, yöntem eşleşmedi. `izinli`, o yol
+    /// için tanımlı yöntemlerin kanonik `Allow` değeridir (RFC 9110
+    /// §15.5.6). Başlık yazamayan adaptör yine 405 durum yanıtı verir.
+    fn yontem_reddi_gonder(&mut self, _izinli: &str, yanit: &str) {
+        self.durum_yaniti_gonder(405, yanit);
     }
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
     /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.

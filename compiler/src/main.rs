@@ -2130,8 +2130,11 @@ enum WebYanitTaslagi {
     Yonlendirme(String),
     /// K-378: rotanın kayıtlı türle `attachment` olarak verdiği dosya.
     Dosya(DosyaYaniti),
-    /// K-406: kayıtlı metin türüyle (Content-Type değeri) bellekteki gövde.
-    Turlu(String, String),
+    /// K-406: kayıtlı metin türüyle (Content-Type değeri) bellekteki gövde;
+    /// RFC-0047 C (ADR-182): durum kapalı `TURLU_YANIT_DURUMLARI` kümesinde.
+    Turlu(String, u16, String),
+    /// RFC-0047 A (ADR-182): 405 + kanonik `Allow` değeri ve gövde.
+    YontemReddi(String, String),
 }
 
 /// K-378: doğrulanmış, açık dosya tanıtıcısı ve çağrı anındaki uzunluğu.
@@ -2577,7 +2580,8 @@ impl GercekIo {
         let head = std::mem::take(&mut self.bekleyen_head);
         let (taslak, asim) = govde_asimi_taslagi(self.bekleyen_govde_asimi.take(), taslak);
         let status = match &taslak {
-            WebYanitTaslagi::Durum(status, _) => *status,
+            WebYanitTaslagi::Durum(status, _) | WebYanitTaslagi::Turlu(_, status, _) => *status,
+            WebYanitTaslagi::YontemReddi(..) => 405,
             WebYanitTaslagi::Yonlendirme(_) => 303,
             WebYanitTaslagi::Govde(_) if asim => 413,
             _ => 200,
@@ -2601,14 +2605,16 @@ impl GercekIo {
                 );
                 (baslik, govde)
             }
-            WebYanitTaslagi::Turlu(tur, govde) => {
-                (self.turlu_yanit_basligi(&tur, govde.len()), govde)
+            WebYanitTaslagi::Turlu(tur, durum, govde) => {
+                (self.turlu_yanit_basligi(&tur, durum, govde.len()), govde)
             }
+            WebYanitTaslagi::YontemReddi(izinli, govde) => {
+                self.yontem_reddi_basligi(&izinli, govde)
+            }
+            WebYanitTaslagi::Durum(204, _) => (self.bos_204_basligi(), String::new()),
             WebYanitTaslagi::Durum(durum, govde) => {
                 let guvenlik_basliklari = self.guvenlik_basliklari();
-                self.bekleyen_cerezler.clear();
-                self.bekleyen_silinen_cerezler.clear();
-                self.kayar_oturum_belirteci = None;
+                self.durum_cerezlerini_at();
                 // Gövde `<` ile başlıyorsa HTML hata sayfasıdır (200 yanıtıyla aynı kural, K-210 eki).
                 let tur = if govde.trim_start().starts_with('<') {
                     "text/html"
@@ -2839,11 +2845,49 @@ impl GercekIo {
     /// K-406: türlü metin yanıtı başlığı — dosya yanıtının başlık kümesi
     /// (nosniff, no-store, sandbox CSP, CORP); `Content-Disposition` yok, rota
     /// önbellek izni uygulanmaz, gövde dönüştürülmez.
-    fn turlu_yanit_basligi(&mut self, icerik_turu: &str, uzunluk: usize) -> String {
+    /// Durum/red yanıtı çerez taslağını ve kayar oturum yenilemesini atar.
+    fn durum_cerezlerini_at(&mut self) {
+        self.bekleyen_cerezler.clear();
+        self.bekleyen_silinen_cerezler.clear();
+        self.kayar_oturum_belirteci = None;
+    }
+    /// RFC-0047 A (ADR-182): 405 + kanonik `Allow`; çerez taslağı atılır.
+    fn yontem_reddi_basligi(&mut self, izinli: &str, govde: String) -> (String, String) {
+        let guvenlik_basliklari = self.guvenlik_basliklari();
+        self.durum_cerezlerini_at();
+        let baslik = format!(
+            "HTTP/1.1 405 Method Not Allowed\r\nAllow: {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
+            izinli,
+            govde.len(),
+            guvenlik_basliklari
+        );
+        (baslik, govde)
+    }
+    /// RFC-0047 C (ADR-182): 204 gövde, `Content-Type` ve `Content-Length`
+    /// taşımaz (RFC 9110 §6.4.1, §8.6); program gövdesi yazılmaz.
+    fn bos_204_basligi(&mut self) -> String {
+        let guvenlik_basliklari = self.guvenlik_basliklari();
+        self.durum_cerezlerini_at();
+        format!("HTTP/1.1 204 No Content\r\n{guvenlik_basliklari}Connection: close\r\n\r\n")
+    }
+    /// Rota yanıt taslağını bırakır: istek transaction'ı açıksa ilk taslak
+    /// kazanır (commit/geri alma sonra yazar), değilse hemen yazılır.
+    fn web_taslagini_birak(&mut self, taslak: WebYanitTaslagi) {
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_web_yaniti.is_none() {
+                self.bekleyen_web_yaniti = Some(taslak);
+            }
+            return;
+        }
+        let _ = self.web_yanit_taslagini_yaz(taslak);
+    }
+    /// RFC-0047 C (ADR-182): durum satırı kapalı kümeden; başlık kümesi aynı.
+    fn turlu_yanit_basligi(&mut self, icerik_turu: &str, durum: u16, uzunluk: usize) -> String {
         let guvenlik = dosya_guvenlik_basliklari(self.guvenli_proxy_origin().is_some());
         let cerezler = self.cerez_basliklarini_al();
+        let aciklama = http_durum_aciklamasi(durum);
         format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: {icerik_turu}\r\nContent-Length: {uzunluk}\r\n{cerezler}{guvenlik}Connection: close\r\n\r\n"
+            "HTTP/1.1 {durum} {aciklama}\r\nContent-Type: {icerik_turu}\r\nContent-Length: {uzunluk}\r\n{cerezler}{guvenlik}Connection: close\r\n\r\n"
         )
     }
     fn dosya_taslagini_yaz(
@@ -3529,6 +3573,15 @@ fn yanit_butcesi_doldu() -> std::io::Error {
 
 fn http_durum_aciklamasi(durum: u16) -> &'static str {
     match durum {
+        // RFC-0047 C (ADR-182): programın yazabildiği başarı ve DAV durumları.
+        200 => "OK",
+        201 => "Created",
+        204 => "No Content",
+        207 => "Multi-Status",
+        409 => "Conflict",
+        412 => "Precondition Failed",
+        415 => "Unsupported Media Type",
+        501 => "Not Implemented",
         400 => "Bad Request",
         408 => "Request Timeout",
         401 => "Unauthorized",
@@ -5215,19 +5268,27 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
         // Ayrıştırıcı türü denetledi; çalışma zamanı kapalı kümeyi yeniden
         // uygular (iz/oynatıcı ya da gömme yolu): kayıt dışı tür 500'dür.
-        let taslak = match dil::icerik_turu::web_metin_turu(tur) {
-            Some(kayit) => {
-                WebYanitTaslagi::Turlu(dil::icerik_turu::baslik_degeri(kayit), yanit.to_string())
-            }
+        self.turlu_durumlu_yanit_gonder(tur, 200, yanit);
+    }
+    fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
+        // RFC-0047 C (ADR-182): tür ve durum kapalı kümeler; dışı 500'dür.
+        let taslak = match dil::icerik_turu::web_metin_turu(tur)
+            .filter(|_| dil::agac::TURLU_YANIT_DURUMLARI.contains(&durum))
+        {
+            Some(kayit) => WebYanitTaslagi::Turlu(
+                dil::icerik_turu::baslik_degeri(kayit),
+                durum,
+                yanit.to_string(),
+            ),
             None => WebYanitTaslagi::Durum(500, "istek işlenemedi; sunucu hatası".into()),
         };
-        if self.web_istek_yedegi.is_some() {
-            if self.bekleyen_web_yaniti.is_none() {
-                self.bekleyen_web_yaniti = Some(taslak);
-            }
-            return;
-        }
-        let _ = self.web_yanit_taslagini_yaz(taslak);
+        self.web_taslagini_birak(taslak);
+    }
+    fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
+        self.web_taslagini_birak(WebYanitTaslagi::YontemReddi(
+            izinli.to_string(),
+            yanit.to_string(),
+        ));
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.web_istek_yedegi.is_some() {

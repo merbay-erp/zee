@@ -124,6 +124,31 @@ fn istek(kapi: u16, yontem: &str, hedef: &str) -> (String, Vec<u8>) {
     )
 }
 
+/// RFC-0047: durum değiştiren yöntemde proxy kapısı (spec/12 §5) `Origin`
+/// ister; 405/501 yolu ondan sonra gelir.
+fn originli_istek(kapi: u16, yontem: &str, hedef: &str) -> (String, Vec<u8>) {
+    let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+    let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(5)).expect("bağlantı");
+    akis.set_read_timeout(Some(Duration::from_secs(30)))
+        .expect("okuma süresi");
+    write!(
+        akis,
+        "{yontem} {hedef} HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.9;proto=https;host=panel.example\r\nOrigin: https://panel.example\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+    )
+    .expect("istek");
+    let mut ham = Vec::new();
+    akis.read_to_end(&mut ham).expect("yanıt");
+    let son = ham
+        .windows(4)
+        .position(|p| p == b"\r\n\r\n")
+        .expect("başlık sonu")
+        + 4;
+    (
+        String::from_utf8(ham[..son].to_vec()).expect("başlık UTF-8"),
+        ham[son..].to_vec(),
+    )
+}
+
 fn ek(kapi: u16, yontem: &str, yol: &str, tur: &str, ad: &str) -> (String, Vec<u8>) {
     istek(
         kapi,
@@ -838,4 +863,254 @@ fn turlu_metin_yaniti_rotayi_bitirir_lint_s047() {
         + &String::from_utf8_lossy(&cikti.stdout);
     assert!(metin.contains("S047"), "{metin}");
     assert!(metin.contains("bu yanıt görünmemeli"), "{metin}");
+}
+
+/// RFC-0047 A + C (ADR-182, K-364): türlü metin yanıtının durumlu kardeşi
+/// (207 multistatus, 201, 412), `text/vcard`, kanonik durum satırı, 204
+/// gövdesizliği, her rotada 405 + `Allow` ve kayıt dışı yönteme 501.
+const DAV_A: &str = r#"8080 kapısında sunucu başlat
+
+GET "/dav/" önekli adrese istek geldiğinde
+    herkese açık
+    xml "<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\"/>" olsun
+    xml metnini "application/xml" türünde 207 durumuyla gönder
+
+HEAD "/dav/" önekli adrese istek geldiğinde
+    herkese açık
+    "" yanıtını 204 durumuyla gönder
+
+GET "/kart.vcf" adresine istek geldiğinde
+    herkese açık
+    "BEGIN:VCARD\nVERSION:4.0\nEND:VCARD\n" metnini "text/vcard" türünde 201 durumuyla gönder
+
+GET "/cakisma" adresine istek geldiğinde
+    herkese açık
+    "<e/>" metnini "application/xml" türünde 412 durumuyla gönder
+    "bu yanıt görünmemeli" yanıtını gönder
+
+GET "/notlar" adresine istek geldiğinde
+    herkese açık
+    "liste" yanıtını gönder
+
+DELETE "/notlar" adresine istek geldiğinde
+    herkese açık
+    "silindi" yanıtını gönder
+
+HEAD "/notlar" adresine istek geldiğinde
+    herkese açık
+    "" yanıtını 204 durumuyla gönder
+"#;
+
+#[test]
+fn dav_a_turlu_durumlu_yanit_405_allow_501_ve_204_gercek_surecte() {
+    let proje = Proje::yeni(DAV_A);
+    let kapi = kopma::bos_kapi();
+    let _sunucu = baslat(&proje.0, kapi);
+
+    let (basliklar, govde) = istek(kapi, "GET", "/dav/takvimler/");
+    assert!(
+        basliklar.starts_with("HTTP/1.1 207 Multi-Status\r\n"),
+        "{basliklar}"
+    );
+    assert_eq!(baslik(&basliklar, "Content-Type"), ["application/xml"]);
+    assert_eq!(baslik(&basliklar, "X-Content-Type-Options"), ["nosniff"]);
+    assert_eq!(
+        baslik(&basliklar, "Content-Security-Policy"),
+        ["default-src 'none'; sandbox"]
+    );
+    assert_eq!(baslik(&basliklar, "Cache-Control"), ["no-store"]);
+    assert_eq!(
+        govde,
+        b"<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\"/>"
+    );
+
+    let (basliklar, govde) = istek(kapi, "GET", "/kart.vcf");
+    assert!(
+        basliklar.starts_with("HTTP/1.1 201 Created\r\n"),
+        "{basliklar}"
+    );
+    assert_eq!(
+        baslik(&basliklar, "Content-Type"),
+        ["text/vcard; charset=utf-8"]
+    );
+    assert_eq!(govde, b"BEGIN:VCARD\nVERSION:4.0\nEND:VCARD\n");
+
+    let (basliklar, govde) = istek(kapi, "GET", "/cakisma");
+    assert!(
+        basliklar.starts_with("HTTP/1.1 412 Precondition Failed\r\n"),
+        "{basliklar}"
+    );
+    assert_eq!(govde, b"<e/>", "türlü durumlu yanıt rotayı bitirir");
+
+    // 204: gövde, Content-Type ve Content-Length yok (RFC 9110 §8.6).
+    let (basliklar, govde) = istek(kapi, "HEAD", "/dav/x");
+    assert!(
+        basliklar.starts_with("HTTP/1.1 204 No Content\r\n"),
+        "{basliklar}"
+    );
+    assert!(baslik(&basliklar, "Content-Type").is_empty(), "{basliklar}");
+    assert!(
+        baslik(&basliklar, "Content-Length").is_empty(),
+        "{basliklar}"
+    );
+    assert!(govde.is_empty());
+
+    // 405 + Allow: yolun bütün yöntemleri kanonik sırada, her rota sınıfında.
+    for yontem in ["PUT", "POST", "PATCH"] {
+        let (basliklar, govde) = originli_istek(kapi, yontem, "/notlar");
+        assert!(
+            basliklar.starts_with("HTTP/1.1 405 Method Not Allowed\r\n"),
+            "{yontem}: {basliklar}"
+        );
+        assert_eq!(
+            baslik(&basliklar, "Allow"),
+            ["GET, HEAD, DELETE"],
+            "{yontem}"
+        );
+        assert!(String::from_utf8_lossy(&govde).contains("HTTP yöntemini"));
+    }
+    let (basliklar, _) = originli_istek(kapi, "PUT", "/dav/a/b.ics");
+    assert_eq!(baslik(&basliklar, "Allow"), ["GET, HEAD"], "{basliklar}");
+    // Eşleşen yol yoksa 404 kalır ve Allow yazılmaz.
+    let (basliklar, _) = originli_istek(kapi, "PUT", "/yok");
+    assert!(
+        basliklar.starts_with("HTTP/1.1 404 Not Found\r\n"),
+        "{basliklar}"
+    );
+    assert!(baslik(&basliklar, "Allow").is_empty());
+
+    // 501: kayıt dışı yöntem yoldan bağımsız; Allow yok, rota çalışmaz.
+    for (yontem, hedef) in [
+        ("PROPFIND", "/dav/takvimler/"),
+        ("REPORT", "/dav/takvimler/"),
+        ("MKCALENDAR", "/dav/yeni/"),
+        ("LOCK", "/notlar"),
+        ("PROPPATCH", "/yok"),
+        ("OPTIONS", "/notlar"),
+    ] {
+        let (basliklar, _) = originli_istek(kapi, yontem, hedef);
+        assert!(
+            basliklar.starts_with("HTTP/1.1 501 Not Implemented\r\n"),
+            "{yontem} {hedef}: {basliklar}"
+        );
+        assert!(baslik(&basliklar, "Allow").is_empty(), "{yontem}");
+    }
+}
+
+#[test]
+fn dav_a_turlu_durum_kapali_kumede_s037() {
+    let rota = |son: &str| {
+        format!(
+            "8080 kapısında sunucu başlat\n\nGET \"/t\" adresine istek geldiğinde\n    herkese açık\n    \"x\" metnini \"application/xml\" türünde {son} gönder\n"
+        )
+    };
+    for kabul in [
+        "200", "201", "207", "400", "403", "404", "409", "412", "415",
+    ] {
+        dil::kaynagi_derle(&rota(&format!("{kabul} durumuyla"))).expect(kabul);
+    }
+    for kotu in [
+        "204 durumuyla",
+        "302 durumuyla",
+        "500 durumuyla",
+        "503 durumuyla",
+        "99 durumuyla",
+        "kod durumuyla",
+        "\"207\" durumuyla",
+        "durumuyla",
+    ] {
+        let hata = dil::kaynagi_derle(&rota(kotu)).expect_err(kotu);
+        assert_eq!(hata.kod, "S037", "{kotu}: {}", hata.mesaj);
+    }
+    let hata = dil::kaynagi_derle(&rota("204 durumuyla")).expect_err("204");
+    assert!(
+        hata.oneri.as_deref().is_some_and(|o| o.contains("207")),
+        "öneri kapalı kümeyi anmalı: {:?}",
+        hata.oneri
+    );
+    // Kayıt dışı tür durumlu biçimde de S037.
+    let hata = dil::kaynagi_derle(
+        "8080 kapısında sunucu başlat\n\nGET \"/t\" adresine istek geldiğinde\n    herkese açık\n    \"x\" metnini \"text/html\" türünde 207 durumuyla gönder\n",
+    )
+    .expect_err("text/html");
+    assert_eq!(hata.kod, "S037");
+}
+
+#[test]
+fn dav_a_hermetik_adaptor_ve_io_izi_ayni_kural() {
+    use dil::yorumlayici::{calistir_io, GirdiCikti, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
+
+    let program = dil::kaynagi_derle(DAV_A).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec![
+        "GET /dav/a/".to_string(),
+        "GET /kart.vcf".to_string(),
+        "PATCH /notlar".to_string(),
+        "PROPFIND /dav/a/".to_string(),
+        "GET /yok".to_string(),
+    ]
+    .into();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.sunucu_durumlari, [207, 201, 405, 501, 404]);
+    assert_eq!(
+        io.turlu_yanitlar,
+        ["application/xml", "text/vcard; charset=utf-8"]
+    );
+    assert_eq!(io.izinli_yontemler, ["GET, HEAD, DELETE"]);
+
+    // Gömme yolu kapalı kümeleri uygular: kayıt dışı durum ya da tür 500.
+    for (tur, durum) in [("application/xml", 500), ("text/html", 207)] {
+        let mut io = ToplayanIo::yeni(Vec::new());
+        io.istekler.push_back("GET /".into());
+        assert!(io.istek_al().is_some());
+        io.turlu_durumlu_yanit_gonder(tur, durum, "<x/>");
+        io.istek_islemini_tamamla().expect("tamamlanmalı");
+        assert_eq!(io.sunucu_durumlari, [500], "{tur} {durum}");
+        assert!(io.turlu_yanitlar.is_empty());
+    }
+
+    // IO izi: türlü durumlu olay üç alan; 405 olayı eski `durum_yaniti_gonder`
+    // biçimindedir, oynatıcı aynı sırayı bekler; şema kayıt dışı durumu reddeder.
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban.istekler.push_back("GET /dav/".into());
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    assert!(kaydeden.istek_al().is_some());
+    kaydeden.turlu_durumlu_yanit_gonder("application/xml", 207, "<m/>");
+    kaydeden.yontem_reddi_gonder("GET, HEAD", "red");
+    let iz = kaydeden.iz_metni().expect("iz");
+    assert!(iz.contains("turlu_durumlu_yanit_gonder"), "{iz}");
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    assert!(oynatici.istek_al().is_some());
+    oynatici.turlu_durumlu_yanit_gonder("application/xml", 207, "<m/>");
+    oynatici.durum_yaniti_gonder(405, "red");
+    oynatici.bitir().expect("iz tükenmeli");
+    let hex = |m: &str| m.bytes().map(|b| format!("{b:02x}")).collect::<String>();
+    let bozuk = iz.replacen(&hex("207"), &hex("500"), 1);
+    assert_ne!(bozuk, iz);
+    assert!(
+        IzYenidenOynatici::yeni(&bozuk).is_err(),
+        "şema kayıt dışı durumu reddeder"
+    );
+}
+
+/// RFC-0047 A (spec/12, ADR-182): yöntem reddi proxy kapısından sonra gelir;
+/// 405/501 yanıtı çerez yazmaz ve `Allow` istekten bayt taşımaz.
+#[test]
+fn dav_a_yontem_reddi_proxy_kapisindan_sonra_cerezsiz() {
+    let proje = Proje::yeni(DAV_A);
+    let kapi = kopma::bos_kapi();
+    let _sunucu = baslat(&proje.0, kapi);
+    // Origin'siz kayıt dışı yöntem durum değiştiren yöntem sayılır: 403.
+    let (basliklar, _) = istek(kapi, "PROPFIND", "/dav/takvimler/");
+    assert!(basliklar.starts_with("HTTP/1.1 403 "), "{basliklar}");
+    // Origin'li: 501, çerezsiz.
+    let (basliklar, _) = originli_istek(kapi, "PROPFIND", "/dav/takvimler/");
+    assert!(basliklar.starts_with("HTTP/1.1 501 "), "{basliklar}");
+    assert!(baslik(&basliklar, "Set-Cookie").is_empty(), "{basliklar}");
+    // 405: Allow yalnız kayıt adları; yol ve yöntem baytı başlığa girmez.
+    let (basliklar, _) = originli_istek(kapi, "PATCH", "/notlar");
+    assert!(basliklar.starts_with("HTTP/1.1 405 "), "{basliklar}");
+    assert!(baslik(&basliklar, "Set-Cookie").is_empty(), "{basliklar}");
+    assert_eq!(baslik(&basliklar, "Allow"), ["GET, HEAD, DELETE"]);
+    assert!(!basliklar.contains("PATCH"), "{basliklar}");
 }

@@ -5,6 +5,38 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 28 Kasım 2026 — rc.2 sonrası geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.2.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **Durumlu metin yanıtı ve `text/vcard` (RFC-0047 dilim A, ADR-182):** rota
+  bellekteki metni kayıtlı metin türüyle birlikte sabit bir durumla
+  gönderebilir: `xml metnini "application/xml" türünde 207 durumuyla gönder`.
+  Durum kaynakta görünen literal ve yalnız 200, 201, 207, 400, 403, 404, 409,
+  412 ya da 415 olabilir; başka durum ya da değişken S037'dir. Başlıklar
+  durumsuz türlü yanıtla aynıdır. Kişi kartı için `text/vcard` metin türü
+  eklendi (web metin ve dosya yanıtı; e-posta eki değil). Takvim/kişi
+  eşitlemesinin (CalDAV/CardDAV) ilk parçasıdır; kimlikli DAV rotası,
+  PROPFIND/REPORT, başlık okuma ve ETag sonraki dilimlerdedir.
+
+### Değişenler
+
+- **Yanlış yönteme 405 + `Allow`, bilinmeyen yönteme 501 (RFC-0047 dilim A):**
+  yolu tanımlı ama yöntemi olmayan istek artık 405 ile birlikte o yolun
+  yöntemlerini `Allow` başlığında (ör. `GET, HEAD, DELETE`) alır. Dilin
+  tanımadığı yöntem (PROPFIND, REPORT, OPTIONS, LOCK, MKCALENDAR…) yoldan
+  bağımsız 501'dir; önceden yola göre 405 ya da 404 alıyordu. `--web-proxy`
+  profilinde bu yöntemler durum değiştiren yöntem sayılır, `Origin`'siz
+  istek önce 403 alır. Durum satırı 200/201/204/207/409/412/415/501 için
+  `Error` yerine kanonik açıklamayı taşır; 204 yanıtı gövde,
+  `Content-Type` ve `Content-Length` taşımaz.
+
+  **Göç:** Gerekmez. Bilinmeyen yöntemde 404/405 bekleyen istemci ya da
+  izleme kuralı varsa 501'e güncellenmelidir.
+
 ## 27 Kasım 2026 — rc.2 sonrası geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.2.

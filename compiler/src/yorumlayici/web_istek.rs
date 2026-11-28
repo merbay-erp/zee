@@ -27,13 +27,14 @@ pub(super) fn web_istegini_calistir(
         return Ok(None);
     }
 
-    let (gelen_yontem, yol, veriler, cerezler) = match istek_parcala_cerezli(&ham) {
-        Ok(istek) => istek,
-        Err((durum, mesaj)) => {
-            io.durum_yaniti_gonder(durum, mesaj);
-            return Ok(None);
-        }
-    };
+    let (gelen_yontem, yol, veriler, cerezler) =
+        match istek_parcala_cerezli(&ham).and_then(yontem_reddi::kayitli_yontem) {
+            Ok(istek) => istek,
+            Err((durum, mesaj)) => {
+                io.durum_yaniti_gonder(durum, mesaj);
+                return Ok(None);
+            }
+        };
     let (cerezler, oturum_bilgileri) = match oturum_cerezlerini_ayir(cerezler) {
         Ok(deger) => deger,
         Err((durum, mesaj)) => {
@@ -45,7 +46,7 @@ pub(super) fn web_istegini_calistir(
     let cerez_sozlugu = metin_sozlugu(cerezler);
     let oturum_sozlugu = metin_sozlugu(oturum_bilgileri);
     let mut eslesti = false;
-    let mut yol_eslesti = false;
+    let mut izinli = Vec::new();
 
     for cumle in &program.program().cumleler {
         let Cumle::IstekGeldiginde {
@@ -67,8 +68,10 @@ pub(super) fn web_istegini_calistir(
         } else {
             kayitli == yol
         };
-        yol_eslesti |= uydu;
         let beklenen = yontem.unwrap_or(HttpYontemi::Get);
+        if uydu {
+            izinli.push(beklenen);
+        }
         if !uydu || beklenen.yazimi() != gelen_yontem {
             continue;
         }
@@ -129,11 +132,7 @@ pub(super) fn web_istegini_calistir(
     }
 
     if !eslesti {
-        if yol_eslesti {
-            io.durum_yaniti_gonder(405, "bu adres istenen HTTP yöntemini kabul etmiyor");
-        } else {
-            io.durum_yaniti_gonder(404, &format!("aranan sayfa yok: {}", yol));
-        }
+        yontem_reddi::eslesmeyen_istek(io, &izinli, &yol);
     }
     Ok(None)
 }

@@ -1,8 +1,12 @@
 # RFC-0047 — DAV istemci rotası: RFC-0040'ın ilk dilimi (A + dar B + dar C + E + F)
 
-- **Durum:** taslak — 27 Kasım 2026. RFC-0040'ın ilk alt RFC'sidir. Core
-  freeze (K-160A/ADR-059) ve V1 syntax freeze altında uygulanmaz; uygulama
-  ayrıca `dogfood-change` kapısı ve proje sahibi kararı ister. V1 sözü
+- **Durum:** kabul, uygulama sürüyor — 28 Kasım 2026. Proje sahibi "RFC-0047
+  ilk dilimini uygula" kararını verdi; uygulama `dogfood-change` (urun-h)
+  olarak [ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md) ile dört
+  dilimde açılır. Dilim A (durumlu türlü yanıt, `text/vcard`, 405 + `Allow`,
+  501) uygulandı; B (uygulama parolası), C (`dav istemcisi gerekli` sınıfı,
+  kimlik, CSRF muafiyeti) ve D (başlık okuma, ham gövde, ETag) açık. Açık
+  soruların kapanışı ADR-182'dedir. Taslak durumu: 27 Kasım 2026. V1 sözü
   değildir.
 - **Tarih:** 27 Kasım 2026
 - **İş:** K-364 (yeni K numarası açılmadı)

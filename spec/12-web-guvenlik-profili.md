@@ -517,6 +517,10 @@ ZORUNLU: Makine isteğinin tek `Content-Type` başlığı `text/xml`, `applicati
 
 AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle işler. E-posta adresinin günlüğe yazılmaması ve yanıtın alan adına göre değişmemesi (sayım) ürünün sorumluluğundadır. Kullanıcıya göre üretilen yanıt K-406 türlü metin yanıtıyla (`application/xml`) yazılabilir; adresi XML'e kaçışlamak ürünün işidir. Büyük/küçük harfe duyarsız yol, PUT/PATCH ve CORS başlıkları bu sözleşmenin parçası değildir. Normatif gerekçe ve tehdit modeli: RFC-0046, ADR-179.
 
+## RFC-0047 dilim A — Yöntem reddi ve güvenlik sırası
+
+ZORUNLU: 501 (kayıt dışı yöntem) ve 405 (yol eşleşti, yöntem eşleşmedi) kararı `--web-proxy` profilinin Host, `Forwarded`, HTTPS ve durum değiştiren yöntemde `Origin` denetiminden (§5) SONRA verilir; bu denetimler kayıt dışı yöntemi de durum değiştiren yöntem sayar. 501 ve 405 yanıtı rota gövdesini, `_csrf` denetimini ve zorunlu alan denetimini çalıştırmaz; yanıt `Set-Cookie` taşımaz ve kayar oturum yenilemesi yapmaz. `Allow` değeri yalnız program kaynağındaki rota yöntemlerinin kapalı kayıttaki sabit adlarından kurulur; istekten gelen hiçbir bayt başlığa girmez. Normatif gerekçe: RFC-0047, ADR-182.
+
 ## K-379 — Satır içi betik CSP özeti
 
 TANIMLI: Gerçek web adaptörünün `text/html` 200 yanıtında CSP `script-src` yönergesi `'self'` ile, gövdedeki öznitelik taşımayan her satır içi `<script>…</script>` bloğundan (gövde ilk `</script>` kapanışında biter) yalnız güvenilir olanların `'sha256-…'` özetlerini taşır. Güvenilir betik kümesi program derlendikten sonra ve ilk istekten önce bir kez kurulur: ana kaynak ile derlemenin yüklediği her birimin (yerel, paket ve gömülü) `test` blokları (derinlik 0'da satır başı `test` kelimesi ve girintili gövdesi) dışındaki her dize değişmezinin, kaçışları çözülmüş değerinde aynı kuralla tam bulunan betik gövdeleridir.

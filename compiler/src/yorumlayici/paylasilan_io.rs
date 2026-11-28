@@ -136,6 +136,14 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn turlu_yanit_gonder(&mut self, tur: &str, yanit: &str) {
         self.ic.borrow_mut().turlu_yanit_gonder(tur, yanit);
     }
+    fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
+        self.ic
+            .borrow_mut()
+            .turlu_durumlu_yanit_gonder(tur, durum, yanit);
+    }
+    fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
+        self.ic.borrow_mut().yontem_reddi_gonder(izinli, yanit);
+    }
     fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
         self.ic.borrow_mut().dosya_yaniti_gonder(yol, tur, ad)
     }

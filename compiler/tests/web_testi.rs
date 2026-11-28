@@ -935,6 +935,8 @@ POST \"/notlar\" adresine istek geldiğinde
 ";
     let io = sunucuyla(kaynak, vec!["GET /notlar", "GET /yok"]);
     assert_eq!(io.sunucu_durumlari, vec![405, 404]);
+    // RFC-0047 A (ADR-182): 405 yolun yöntemlerini `Allow` ile bildirir.
+    assert_eq!(io.izinli_yontemler, ["POST"]);
     assert!(io.sunucu_yanitlari[0].1.contains("HTTP yöntemini"));
     assert!(io.sunucu_yanitlari[1].1.contains("aranan sayfa yok"));
 }
