@@ -118,8 +118,10 @@ pub(super) fn nokta(adim: Adim) -> io::Result<()> {
     }
 }
 
-/// Bekleyen yazarın kilit bütçesi (spec/08: 5 sn). Test, durma senaryosunu
-/// saniyelerce beklemeden kurmak için yalnız kendi iş parçacığında kısaltır.
+/// Bekleyen yazarın kilit bütçesi (spec/08: 5 sn). Test yalnız kendi iş
+/// parçacığında değiştirir: durma senaryosunu saniyelerce beklemeden kurmak
+/// için kısaltır; bütçeyi değil atomikliği kanıtlayan çok yazarlı test yavaş
+/// disk için uzatır.
 pub(super) fn kilit_bekleme() -> Duration {
     #[cfg(test)]
     if let Some(sure) = test_kancasi::kilit_bekleme() {
@@ -162,7 +164,7 @@ pub(crate) mod test_kancasi {
         KURULU.with(|kurulu| kurulu.borrow_mut().clear());
     }
 
-    pub fn kilit_beklemesini_kisalt(sure: Duration) {
+    pub fn kilit_beklemesini_ayarla(sure: Duration) {
         KILIT_BEKLEME.with(|bekleme| *bekleme.borrow_mut() = Some(sure));
     }
 
@@ -190,7 +192,7 @@ pub(crate) mod test_kancasi {
 
 #[cfg(test)]
 mod tests {
-    use super::test_kancasi::{kilit_beklemesini_kisalt, kur, Enjeksiyon};
+    use super::test_kancasi::{kilit_beklemesini_ayarla, kur, Enjeksiyon};
     use super::*;
     use crate::kalici_dosya::{atomik_satir_yaz, atomik_yaz};
     use std::path::PathBuf;
@@ -313,7 +315,7 @@ mod tests {
             assert!(baslangic.elapsed() < Duration::from_secs(5), "A başlamadı");
             std::thread::sleep(Duration::from_millis(2));
         }
-        kilit_beklemesini_kisalt(Duration::from_millis(150));
+        kilit_beklemesini_ayarla(Duration::from_millis(150));
         let hata = atomik_satir_yaz(&yol, "b", true).expect_err("durma bütçeyi aşar");
         assert_eq!(hata.kind(), io::ErrorKind::TimedOut, "{hata}");
         assert_eq!(hata_adimi(&hata), Some(Adim::Kilit), "{hata}");

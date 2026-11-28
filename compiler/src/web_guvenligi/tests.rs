@@ -420,10 +420,19 @@ fn kalici_rate_limit_paralel_artisla_esigi_deldirmez() {
     // fsync'li yazdığından 10×10 CI'ın yavaş diskinde 5 sn kilit sınırına
     // takılıyordu (ubuntu-latest). Paralel atomiklik daha az yazmayla da
     // kanıtlanır; kilit adaleti ve yavaş disk bütçesi K-183'te ölçülür.
+    // Dört yazarlı kuyrukta bekleyen, önündeki üç fsync'li yazım kadar bekler;
+    // Windows CI'da (ReplaceFileW + FlushFileBuffers, paralel testler) bu
+    // 5 sn'yi aştı (run 46011821639). Bu test bütçeyi değil sayım
+    // atomikliğini kanıtlar: yalnız yazar iş parçacıklarının bütçesi
+    // genişletilir, her artış yine başarılı olmak zorundadır. spec/08'in
+    // 5 sn sınırı `kalici_dosya` kilit testlerinde kanıtlanır.
     let mut isler = Vec::new();
     for _ in 0..4 {
         let depo = temel.clone();
         isler.push(std::thread::spawn(move || -> Result<usize, String> {
+            crate::kalici_dosya::test_kancasi::kilit_beklemesini_ayarla(
+                std::time::Duration::from_secs(60),
+            );
             let mut izinli = 0;
             for _ in 0..5 {
                 if depo
