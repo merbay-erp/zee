@@ -23,6 +23,9 @@ pub const WEB_OTURUMUNU_IPTAL_ET: &str = "web.oturumunu_iptal_et";
 pub const PAROLA_OZETI: &str = "guvenlik.parola_ozeti";
 /// K-210: `yeni totp anahtarı` — 160 bit Base32 TOTP gizli anahtarı.
 pub const TOTP_ANAHTARI: &str = "guvenlik.totp_anahtari";
+/// RFC-0047 E (ADR-182 dilim B): `yeni uygulama parolası` — cihaz başına
+/// uygulama parolası; `{görünen, önek, özet}` sözlüğü.
+pub const UYGULAMA_PAROLASI: &str = "guvenlik.uygulama_parolasi";
 /// K-210: `<kod> <gizli> anahtarıyla doğrulanıyorsa` — RFC 6238 TOTP doğrulaması.
 pub const TOTP_DOGRULA: &str = "guvenlik.totp_dogrula";
 pub const POSTGRESQL_OKU: &str = "veritabani.postgresql_oku";
@@ -548,6 +551,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::Metin,
         etki: IntrinsicEtkisi::Saf,
         tur_hatasi: "TOTP anahtarı argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: UYGULAMA_PAROLASI,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::MetinSozluk,
+        etki: IntrinsicEtkisi::Saf,
+        tur_hatasi: "Uygulama parolası argüman almaz.",
     },
     IntrinsicTanimi {
         kimlik: TOTP_DOGRULA,

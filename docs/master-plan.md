@@ -223,7 +223,9 @@ satırlarıyla (`text/plain`, `text/csv`, `text/calendar`, `application/xml`)
 yanıtının güvenlik başlıkları, ek yok, gövde bayt bayt). RFC-0047 dilim A
 ([ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md), K-364) durumlu
 kardeşini (`… türünde 207 durumuyla gönder`, kapalı dokuz durum),
-`text/vcard`, her rotada 405 + `Allow` ve kayıt dışı yönteme 501'i ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+`text/vcard`, her rotada 405 + `Allow` ve kayıt dışı yönteme 501'i ekledi;
+dilim B `yeni uygulama parolası` ve kimlikli HMAC anahtarlarını
+(`uygulama_parolası_anahtarları`) ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
 Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag

@@ -209,3 +209,48 @@ fn systemd_credential_gizli_anahtari_okur_ve_retlerde_sabit_neden_verir() {
         "{eski:?}"
     );
 }
+
+/// RFC-0047 E (ADR-182 dilim B): gerçek `dil` ikilisi uygulama parolasını
+/// credential dosyasındaki etkin HMAC anahtarıyla üretir; özet kitaplığın
+/// sabit zamanlı doğrulamasından geçer, anahtar hiçbir akışa sızmaz.
+#[test]
+fn systemd_credential_uygulama_parolasi_etkin_anahtarla_uretilir() {
+    const UP_AD: &str = "ZEE_K364_UP";
+    let p = Proje::yeni(
+        "uygulama-parolasi",
+        &format!(
+            "proje \"k364\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"kriptografi\" listesi olsun\nuygulama_parolası_anahtarları \"k2026 {UP_AD}\", \"k2025 ZEE_K364_ESKI\" listesi olsun\n"
+        ),
+        "parola yeni uygulama parolası olsun\nparolanın \"görünen\" değeri yaz\nparolanın \"önek\" değeri yaz\nparolanın \"özet\" değeri yaz\n",
+    );
+    // Anahtar yokken üretim yok: ret iletisi credential adını anar, değer yok.
+    let (basarili, _, hata) = p.calistir(None, &[]);
+    assert!(!basarili);
+    assert!(hata.contains("C028"), "{hata}");
+    p.credential(UP_AD, &"ab".repeat(32), 0o400);
+    let cikti = p.calistir(Some(&p.cred), &[]);
+    assert!(cikti.0, "{}", cikti.2);
+    p.sizinti_yok(&cikti);
+    let satirlar: Vec<&str> = cikti.1.lines().collect();
+    assert_eq!(satirlar.len(), 3, "{satirlar:?}");
+    use dil::guvenlik::uygulama_parolasi::{ozet_dogrula, parolayi_coz};
+    let (onek, gizli) = parolayi_coz(satirlar[0]).expect("biçim");
+    assert_eq!(onek, satirlar[1]);
+    assert!(satirlar[2].starts_with("zuah1:k2026:"), "{}", satirlar[2]);
+    let anahtar = [0xabu8; 32];
+    assert!(ozet_dogrula(
+        &[("k2026".into(), anahtar)],
+        &onek,
+        &gizli,
+        Some(satirlar[2])
+    ));
+    assert!(!ozet_dogrula(
+        &[("k2026".into(), [0u8; 32])],
+        &onek,
+        &gizli,
+        Some(satirlar[2])
+    ));
+    // İki çalıştırma farklı parola (CSPRNG).
+    let ikinci = p.calistir(Some(&p.cred), &[]);
+    assert_ne!(ikinci.1, cikti.1);
+}

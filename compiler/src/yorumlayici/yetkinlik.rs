@@ -1,4 +1,5 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
+mod dav;
 mod dosya;
 mod http;
 mod kimlik_iletisim;
@@ -245,4 +246,5 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.ic.an_ms()
     }
     posta::yontemler!();
+    dav::yontemler!();
 }

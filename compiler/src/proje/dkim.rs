@@ -41,7 +41,7 @@ fn dns_adi(ad: &str) -> bool {
 
 /// K-339 credential kimliği kuralı (`guvenlik::sir_dizini::ad_guvenli` ile
 /// aynı; proje katmanı güvenlik adaptörüne bağlanmaz).
-fn credential_adi_mi(ad: &str) -> bool {
+pub(super) fn credential_adi_mi(ad: &str) -> bool {
     let b = ad.as_bytes();
     !b.is_empty()
         && b.len() <= 255
@@ -124,6 +124,34 @@ pub(super) fn alanlari_al(
 /// DKIM credential'ı başka bir gizli değerin adıyla aynı olamaz: imza
 /// kâhini TLS anahtarı ya da veritabanı parolası üzerinde çalışmamalı.
 pub(super) fn ad_cakismasini_denetle(bildirim: &ProjeBildirimi, satir: usize) -> Result<(), Tani> {
+    let mut gizliler = gizli_adlari(bildirim);
+    gizliler.extend(
+        bildirim
+            .uygulama_parolasi_anahtarlari
+            .iter()
+            .map(|b| b.credential.as_str()),
+    );
+    match bildirim
+        .dkim_anahtarlari
+        .iter()
+        .find(|b| gizliler.contains(&b.credential.as_str()))
+    {
+        Some(b) => Err(proje_hatasi(
+            "P015",
+            &format!(
+                "DKIM credential'ı \"{}\" projede başka bir gizli değer için de bildirilmiş.",
+                b.credential
+            ),
+            satir,
+            "Her DKIM özel anahtarı için ayrı bir credential adı kullan.",
+        )),
+        None => Ok(()),
+    }
+}
+
+/// Projede bildirilen gizli değerlerin credential/ortam adları (DKIM ve
+/// uygulama parolası anahtarları hariç; her biri ötekini kendisi ekler).
+pub(super) fn gizli_adlari(bildirim: &ProjeBildirimi) -> Vec<&str> {
     let mut gizliler: Vec<&str> = bildirim
         .http_gizli_degiskenleri
         .iter()
@@ -151,20 +179,5 @@ pub(super) fn ad_cakismasini_denetle(bildirim: &ProjeBildirimi, satir: usize) ->
             tls.anahtar_degiskeni.as_str(),
         ]);
     }
-    match bildirim
-        .dkim_anahtarlari
-        .iter()
-        .find(|b| gizliler.contains(&b.credential.as_str()))
-    {
-        Some(b) => Err(proje_hatasi(
-            "P015",
-            &format!(
-                "DKIM credential'ı \"{}\" projede başka bir gizli değer için de bildirilmiş.",
-                b.credential
-            ),
-            satir,
-            "Her DKIM özel anahtarı için ayrı bir credential adı kullan.",
-        )),
-        None => Ok(()),
-    }
+    gizliler
 }

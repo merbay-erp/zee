@@ -119,6 +119,7 @@ aktif	T059	tur.sira_bir_tabanli	Sabit sıra 1'den küçük
 aktif	T060	tur.makine_rotasi	Makine uç noktası POST dışı rotada ya da sabit öneksiz yolda değil
 aktif	T061	tur.makine_oturumu	Makine uç noktası oturum, CSRF belirteci ya da çerez kullanıyor
 aktif	T062	tur.ham_govde_yeri	`isteğin ham gövdesi` makine uç noktası rotası dışında okunuyor
+aktif	T063	tur.uygulama_parolasi_yeri	`yeni uygulama parolası` herkese açık, salt okuma (GET/HEAD) ya da makine/önbellekli rotada üretiliyor
 aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
 aktif	C001	calisma.eksik_deger	Değer bulunamadı
 aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması

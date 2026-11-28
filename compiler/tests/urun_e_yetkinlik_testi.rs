@@ -351,3 +351,94 @@ fn totp_web_disinda_oran_kovasina_tabi_degildir() {
     calistir_io(&program, &mut io).expect("çalışmalı");
     assert_eq!(io.cikti, vec!["doğru"; 6]);
 }
+
+/// RFC-0047 E (ADR-182 dilim B, K-364): `yeni uygulama parolası` merkezi
+/// intrinsic'e iner, hermetik adaptörde deterministiktir ve özet yalnız
+/// HMAC'li `zuah1:` biçimidir; görünen değer depoya giden alanlarda yoktur.
+#[test]
+fn uygulama_parolasi_hermetikte_bicimli_ve_deterministik() {
+    let kaynak = "parola yeni uygulama parolası olsun\nparolanın \"görünen\" değeri yaz\nparolanın \"önek\" değeri yaz\nparolanın \"özet\" değeri yaz\n";
+    let bir = kostur(kaynak).expect("çalışmalı");
+    assert_eq!(bir, kostur(kaynak).expect("çalışmalı"), "zee-io-1");
+    assert_eq!(bir.len(), 3, "{bir:?}");
+    let (gorunen, onek, ozet) = (&bir[0], &bir[1], &bir[2]);
+    assert!(
+        gorunen.starts_with("zua1-") && gorunen.len() == 54,
+        "{gorunen}"
+    );
+    assert_eq!(onek.len(), 8);
+    assert!(ozet.starts_with("zuah1:dene:"), "{ozet}");
+    let (cozulen_onek, gizli) =
+        dil::guvenlik::uygulama_parolasi::parolayi_coz(gorunen).expect("biçim");
+    assert_eq!(&cozulen_onek, onek);
+    assert!(!ozet.contains(&gizli) && !onek.contains(&gizli));
+
+    let tanim = intrinsic::tanim(intrinsic::UYGULAMA_PAROLASI).expect("kayıt");
+    assert_eq!(tanim.yetkinlik, Yetkinlik::Kriptografi);
+    assert_eq!(tanim.etki, IntrinsicEtkisi::Saf);
+
+    // Kriptografi kapalı: C028, parola üretilmez.
+    use dil::yetkinlik::YetkinlikPolitikasi;
+    use dil::yorumlayici::PolitikaliIo;
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io =
+        PolitikaliIo::politikali(ToplayanIo::yeni(Vec::new()), YetkinlikPolitikasi::kapali());
+    assert_eq!(
+        calistir_io(&program, &mut io).expect_err("C028").kod,
+        "C028"
+    );
+}
+
+/// RFC-0047 E: görünen parola ize hiç girmez; kayıt açıkken üretim
+/// reddedilir (iç adaptör çağrılmaz), oynatıcı aynı reddi verir.
+#[test]
+fn uygulama_parolasi_io_izi_kaydinda_uretilmez() {
+    use dil::yorumlayici::{GirdiCikti, IzKaydedenIo, IzYenidenOynatici};
+    let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+    let hata = kaydeden.uygulama_parolasi_uret().expect_err("kayıtta red");
+    assert!(hata.contains("uygulama parolası"), "{hata}");
+    let iz = kaydeden.iz_metni().expect("iz");
+    assert!(!iz.contains("uygulama"), "olay yazılmaz: {iz}");
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz");
+    assert!(oynatici.uygulama_parolasi_uret().is_err());
+    oynatici.bitir().expect("iz tükenmeli");
+}
+
+fn up_rotasi(onsoz: &str, yontem: &str, govde: &str) -> String {
+    format!("8080 kapısında sunucu başlat\n\n{yontem} \"/cihaz\" adresine istek geldiğinde\n    {onsoz}\n{govde}")
+}
+
+/// RFC-0047 E (T063): üretim yalnız oturumlu/yetkili, durum değiştiren
+/// rotada (gövdede ya da geçişli işlemde) ya da rota dışı kodda.
+#[test]
+fn uygulama_parolasi_yalniz_oturumlu_durum_degistiren_rotada_t063() {
+    let uret = "    parola yeni uygulama parolası olsun\n    parolanın \"görünen\" değeri yanıtını gönder\n";
+    for (onsoz, yontem) in [
+        ("\"kullanıcı\" yetkisi gerekli", "POST"),
+        ("oturum gerekli", "PUT"),
+        ("\"yönetici\" yetkisi gerekli", "DELETE"),
+    ] {
+        dil::kaynagi_derle(&up_rotasi(onsoz, yontem, uret))
+            .unwrap_or_else(|h| panic!("{onsoz} {yontem}: {h:?}"));
+    }
+    // Rota dışı (CLI) serbest.
+    dil::kaynagi_derle("parola yeni uygulama parolası olsun\nparolanın \"önek\" değeri yaz\n")
+        .expect("rota dışı");
+    for (onsoz, yontem) in [
+        ("\"kullanıcı\" yetkisi gerekli", "GET"),
+        ("oturum gerekli", "HEAD"),
+        ("herkese açık", "POST"),
+        ("herkese açık makine uç noktası", "POST"),
+        ("herkese açık önbelleklenebilir 60 saniye", "GET"),
+    ] {
+        let hata = dil::kaynagi_derle(&up_rotasi(onsoz, yontem, uret)).expect_err(onsoz);
+        assert_eq!(hata.kod, "T063", "{onsoz} {yontem}: {}", hata.mesaj);
+        assert!(hata.oneri.as_deref().is_some_and(|o| o.contains("POST")));
+    }
+    // Geçişli: rota bir işlemle üretiyor.
+    let gecisli = "işlem parola üret\n    değer döndürür\n    sonuç yeni uygulama parolası olsun\n    sonucun \"önek\" değeri döndür\n\n8080 kapısında sunucu başlat\n\nGET \"/cihaz\" adresine istek geldiğinde\n    \"kullanıcı\" yetkisi gerekli\n    parola üret yanıtını gönder\n";
+    assert_eq!(
+        dil::kaynagi_derle(gecisli).expect_err("geçişli").kod,
+        "T063"
+    );
+}

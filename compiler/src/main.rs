@@ -1821,6 +1821,11 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().http_gizli_degiskenleri.clone())
             .unwrap_or_default();
+        io.uygulama_parolasi_anahtarlari = self
+            .proje
+            .as_ref()
+            .map(|proje| proje.ana_bildirim().uygulama_parolasi_anahtarlari.clone())
+            .unwrap_or_default();
         io.cok_parcali_yukleme = self
             .proje
             .as_ref()
@@ -2076,6 +2081,8 @@ struct GercekIo {
     eposta_baglanti_degiskeni: Option<String>,
     gizli_anahtar_degiskeni: Option<String>,
     http_gizli_degiskenleri: Vec<String>,
+    /// RFC-0047 E: `uygulama_parolası_anahtarları`; ilki etkin (ADR-182).
+    uygulama_parolasi_anahtarlari: Vec<dil::proje::UygulamaParolasiAnahtari>,
     /// K-378: proje `çok_parçalı_yükleme doğru olsun` bildirimi.
     cok_parcali_yukleme: bool,
     /// K-391: proje boyut ayarları (aşım rotası, geniş gövde, SQL parametresi)
@@ -2260,6 +2267,7 @@ impl GercekIo {
             eposta_baglanti_degiskeni,
             gizli_anahtar_degiskeni,
             http_gizli_degiskenleri: Vec::new(),
+            uygulama_parolasi_anahtarlari: Vec::new(),
             cok_parcali_yukleme: false,
             govde_siniri: Default::default(),
             bekleyen_govde_asimi: None,
@@ -5465,6 +5473,30 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::Kriptografi)?;
         dil::guvenlik::totp_anahtari_uret()
+    }
+    fn uygulama_parolasi_uret(
+        &mut self,
+    ) -> Result<dil::guvenlik::uygulama_parolasi::UretilenParola, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::Kriptografi)?;
+        // RFC-0047 E (ADR-182): etkin anahtar ilk bildirimdir; değer K-339
+        // credential/ortam modeliyle okunur, şifreleme anahtarından türetilmez.
+        let etkin = self
+            .uygulama_parolasi_anahtarlari
+            .first()
+            .ok_or_else(|| "proje bildiriminde `uygulama_parolası_anahtarları` yok".to_string())?;
+        let hex = gizli_degeri_oku(&etkin.credential, 4096, TekSatir).map_err(|h| {
+            sir_hatasi(
+                h,
+                &etkin.credential,
+                "uygulama parolası anahtarını taşımıyor",
+            )
+        })?;
+        let anahtar = dil::guvenlik::gizli::anahtar_coz(&hex)?;
+        let mut rastgele = [0u8; dil::guvenlik::uygulama_parolasi::RASTGELE_BAYT];
+        getrandom::fill(&mut rastgele)
+            .map_err(|hata| format!("işletim sistemi güvenli rastgelelik vermedi: {hata}"))?;
+        dil::guvenlik::uygulama_parolasi::uret(&anahtar, &etkin.kimlik, &rastgele)
     }
     fn eposta_gonder(
         &mut self,

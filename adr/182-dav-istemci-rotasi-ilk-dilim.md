@@ -1,13 +1,13 @@
 # ADR-182 — DAV istemci rotası: RFC-0047 uygulaması, dilim sırası ve açık soruların kapanışı
 
-- **Durum:** kabul — dilim A uygulandı (28 Kasım 2026); B, C, D aynı ADR'nin
+- **Durum:** kabul — dilim A ve B uygulandı (28 Kasım 2026); C, D aynı ADR'nin
   ekleriyle açılır
 - **Tarih:** 28 Kasım 2026
 - **İlgili kayıt:** K-364, [RFC-0047](../rfcs/0047-dav-istemci-rotasi-ilk-dilim.md),
   [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md), ADR-059 (core
   freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), ADR-163 K-406 eki
   (türlü metin yanıtı), ADR-178 (rota sonu), ADR-179 (makine uç noktası),
-  ADR-036 (kanonik proxy origin), spec/11 §4, spec/12 §RFC-0047, GB-185
+  ADR-036 (kanonik proxy origin), spec/11 §4, spec/12 §RFC-0047, GB-185, GB-186
 
 ## Bağlam
 
@@ -52,8 +52,8 @@ doğrulaması olmadan açılamaz (CSRF'siz, kimliksiz PUT/DELETE olurdu).
 | Dilim | İçerik | Durum |
 |---|---|---|
 | A | Durumlu türlü yanıt (her rota), `text/vcard`, 405 + `Allow` ve 501 (her rota), durum satırı açıklamaları, 204 gövdesizliği | **uygulandı** (bu ADR, GB-185) |
-| B | Uygulama parolası ilkeli: `yeni uygulama parolası`, HMAC anahtar credential'ı ve anahtar kimliği, `dav_kimlik_çözücüsü` bildirimi ve salt okuma kanıtı | açık (ADR-182 eki) |
-| C | `dav istemcisi gerekli` sınıfı: PROPFIND/REPORT kaydı, yöntem-politika tanıları, statik kapı, CSRF/Origin muafiyeti, `Sec-Fetch-Site` reddi, çerezsiz Basic doğrulaması, ayrı oran kovaları, salt okuma kapsamı, ayrı DAV origin'i, otomatik OPTIONS | açık (ADR-182 eki) |
+| B | Uygulama parolası ilkeli: `yeni uygulama parolası`, `uygulama_parolası_anahtarları` (kimlikli HMAC credential'ları, döndürme), doğrulama kitaplığı (biçim kapısı, sabit zamanlı özet, katı Basic, ASCII katlama) | **uygulandı** (dilim B eki, GB-186) |
+| C | `dav istemcisi gerekli` sınıfı ve `dav_kimlik_çözücüsü` bildirimi (salt okuma kanıtı): PROPFIND/REPORT kaydı, yöntem-politika tanıları, statik kapı, CSRF/Origin muafiyeti, `Sec-Fetch-Site` reddi, çerezsiz Basic doğrulaması, ayrı oran kovaları, salt okuma kapsamı, ayrı DAV origin'i, otomatik OPTIONS | açık (ADR-182 eki) |
 | D | `Depth`/`If-Match`/`If-None-Match` okuma, DAV ham gövdesi (tür ve tavan kuralları), `propfind-finite-depth` 403, `ETag` yazımı, korpus geçişi ve çözüm vakaları, RFC-0047 durumu | açık (ADR-182 eki) |
 
 Her dilim kendi spec maddesi, testi, tanı kataloğu, K-167 satırı, GB satırı
@@ -105,6 +105,49 @@ CSRF'siz kimlikli yüzey erken açılmaz (fail-closed sıra).
 | 11 | Salt okuma | **Kabul:** ilk uygulamada; çözücünün `kapsam` = `salt_okuma` kaydında PUT/DELETE 403. | C |
 | 12 | Başarılı DAV kovası | **Kabul (aday değerle):** anahtar uygulama parolası kimliği, aday eşik 600/60 sn; kesin sayı ürünle iOS/Thunderbird ilk eşitleme ölçümünde bağlanır. | C |
 | 13 | 405 + `Allow` ve 501 | **Kabul:** bütün rotalarda. | **A (uygulandı)** |
+
+## Ek — dilim B: uygulama parolası ilkeli (28 Kasım 2026, GB-186)
+
+1. **İfade.** `yeni uygulama parolası` (`kriptografi`, `guvenlik.uygulama_parolasi`
+   intrinsic'i, yeni kalıp kelimeleri `uygulama`, `parolası`) `{görünen, önek,
+   özet}` Metin sözlüğü verir. Biçim soru 3'ün kabulüdür: `zua1-` + 8 Base32
+   önek + 32 Base32 gizli, dörtlü gruplar; özet `zuah1:<kimlik>:<base64url
+   HMAC-SHA256>`, HMAC girdisi alan ayraçlı (`zee-uygulama-parolasi-1\0` ‖
+   önek ‖ gizli). Argon2id kullanılmaz, giriş kovasına dokunulmaz.
+2. **Üretim yeri (T063).** Yalnız `oturum gerekli`/`"<rol>" yetkisi gerekli`
+   önsözlü POST/PUT/PATCH/DELETE rotasında (gövde ya da geçişli işlem) ya da
+   rota dışı kodda. Herkese açık, makine ucu, önbelleklenebilir ve GET/HEAD
+   rotası derleme tanısıdır: parola CSRF korumalı bir kullanıcı eylemiyle
+   doğar, önbelleğe ya da çapraz kökenli okumaya düşmez.
+3. **Anahtarlar (soru 2'nin uygulaması).** RFC-0047'nin tek alanlı adayı
+   (`uygulama_parolası_anahtar_değişkeni`) döndürmeyi taşıyamadığı için
+   `uygulama_parolası_anahtarları "<kimlik> <credential>", …` listesi seçildi:
+   ilk öğe etkin, sonrakiler yalnız doğrulama; en çok 8; kimlik özete
+   gömülüdür, böylece döndürmede kayıt kendi anahtarını bulur ve eski anahtar
+   ona bağlı kayıt kaldıkça operatörce tutulur (dil süreyle silmez). Credential
+   öteki gizli değerlerle (şifreleme anahtarı, DKIM, TLS, veritabanı, HTTP,
+   veri kökü) aynı adı taşıyamaz (P015) — anahtar ayrımı.
+4. **IO izi.** Görünen değer üretim yanıtının gövdesine de gireceğinden kayıt
+   açıkken üretim reddedilir (C028; iç adaptör çağrılmaz, olay yok); oynatıcı
+   aynı reddi verir. Hermetik adaptör zee-io-1 tohumuyla deterministiktir.
+   Bu, RFC-0047 §8 "görünen ize hiç girmez" kabul ölçütünün en dar
+   karşılığıdır.
+5. **Doğrulama kitaplığı.** `guvenlik::uygulama_parolasi`: biçim kapısı (hesap
+   parolası yapısal olarak geçemez, soru 3 b), sabit zamanlı özet
+   karşılaştırması ve bilinmeyen kimlik/kayıt için sahte karşılaştırma, katı
+   RFC 7617 Basic çözümü, ASCII kullanıcı adı katlaması (soru 1). HMAC-SHA256
+   bağımlılıksız SHA-256 üstündedir (yeni crate yok, wasm dahil her hedefte).
+   Bu dilimde hiçbir rota Basic kabul etmez; kitaplık dilim C'de DAV kimlik
+   kararına bağlanır.
+6. **Kapsam dışı (dilim C'ye kaydı).** `dav_kimlik_çözücüsü` bildirimi ve
+   salt okuma kanıtı çözücüyü kullanan sınıfla birlikte açılır; tek başına
+   bildirilen ama çağrılmayan bir proje alanı açmamak için B'den C'ye alındı.
+
+Kanıt: `compiler/tests/urun_e_yetkinlik_testi.rs::uygulama_parolasi_*`,
+`compiler/tests/proje_testi.rs::uygulama_parolasi_anahtarlari_bildirimi_ve_p015`,
+`compiler/tests/systemd_credential_testi.rs::systemd_credential_uygulama_parolasi_etkin_anahtarla_uretilir`,
+`compiler/src/guvenlik/uygulama_parolasi.rs` birim testleri (RFC 4231
+vektörleri dahil).
 
 ## Değerlendirilen seçenekler
 

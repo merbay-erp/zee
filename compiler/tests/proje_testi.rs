@@ -233,6 +233,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             veri_koku_degiskeni: None,
             kamu_son_ekleri: None,
             dkim_anahtarlari: Vec::new(),
+            uygulama_parolasi_anahtarlari: Vec::new(),
         }
     );
 }
@@ -1910,5 +1911,70 @@ fn tls_bildirimi_okunur_ve_p021_ile_reddedilir() {
     ] {
         let tani = bildirimi_oku(&format!("{taban}{satir}\n")).unwrap_err();
         assert_eq!(tani.kod, "P021", "{satir}: {}", tani.mesaj);
+    }
+}
+
+/// RFC-0047 E (ADR-182 dilim B): `uygulama_parolası_anahtarları` kimlikli
+/// credential listesidir; ilki etkin, sonrakiler döndürme için doğrulama.
+#[test]
+fn uygulama_parolasi_anahtarlari_bildirimi_ve_p015() {
+    let taban = "proje \"posta\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let kripto = "yetkinlikler \"kriptografi\" listesi olsun\n";
+    let bildirim = bildirimi_oku(&format!(
+        "{taban}{kripto}uygulama_parolası_anahtarları \"k2026 zeemail_up_2026\", \"k2025 zeemail_up_2025\" listesi olsun\n"
+    ))
+    .expect("geçerli bildirim");
+    let anahtarlar = &bildirim.uygulama_parolasi_anahtarlari;
+    assert_eq!(anahtarlar.len(), 2);
+    assert_eq!(
+        (
+            anahtarlar[0].kimlik.as_str(),
+            anahtarlar[0].credential.as_str()
+        ),
+        ("k2026", "zeemail_up_2026")
+    );
+    for (ek, neden) in [
+        ("", "kriptografi"),
+        (kripto, "biçim"),
+        (kripto, "kimlik"),
+        (kripto, "credential"),
+        (kripto, "yinelenen kimlik"),
+        (kripto, "yinelenen credential"),
+        (kripto, "gizli anahtarla çakışma"),
+        (kripto, "dkim ile çakışma"),
+        (kripto, "dokuz anahtar"),
+    ] {
+        let liste = match neden {
+            "biçim" => "\"k1\"".to_string(),
+            "kimlik" => "\"K-1 up\"".to_string(),
+            "credential" => "\"k1 up/anahtar\"".to_string(),
+            "yinelenen kimlik" => "\"k1 a\", \"k1 b\"".to_string(),
+            "yinelenen credential" => "\"k1 a\", \"k2 a\"".to_string(),
+            "gizli anahtarla çakışma" | "dkim ile çakışma" => "\"k1 ORTAK\"".to_string(),
+            "dokuz anahtar" => (1..=9)
+                .map(|i| format!("\"k{i} c{i}\""))
+                .collect::<Vec<_>>()
+                .join(", "),
+            _ => "\"k1 up\"".to_string(),
+        };
+        let ekstra = match neden {
+            "gizli anahtarla çakışma" => "gizli_anahtar_değişkeni \"ORTAK\" olsun\n",
+            "dkim ile çakışma" => {
+                "dkim_anahtarları \"ornek.test s ed25519-sha256 ORTAK\" listesi olsun\n"
+            }
+            _ => "",
+        };
+        let hata = bildirimi_oku(&format!(
+            "{taban}{ek}{ekstra}uygulama_parolası_anahtarları {liste} listesi olsun\n"
+        ))
+        .expect_err(neden);
+        assert_eq!(hata.kod, "P015", "{neden}: {}", hata.mesaj);
+        if neden.contains("çakışma") {
+            assert!(
+                hata.mesaj.contains("başka bir gizli değer"),
+                "{}",
+                hata.mesaj
+            );
+        }
     }
 }

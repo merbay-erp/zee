@@ -76,8 +76,8 @@ use crate::intrinsic::{
     DOSYA_ILK_BAYTLAR, DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER,
     EPOSTA_GONDER_BAGLANTILI, EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT,
     HTTP_GETIR, ISTEMCI_ADRESI, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
-    SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, WEB_BIRINCIL_SUREC, WEB_DOSYA_YANITI,
-    WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
+    SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, UYGULAMA_PAROLASI, WEB_BIRINCIL_SUREC,
+    WEB_DOSYA_YANITI, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -576,6 +576,13 @@ pub trait GirdiCikti {
     /// K-210: Base32 TOTP gizli anahtarı üretir.
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {
         Err("IO adaptörü TOTP anahtarı üretmiyor".into())
+    }
+    /// RFC-0047 E (ADR-182 dilim B): etkin HMAC anahtarıyla cihaz başına
+    /// uygulama parolası üretir. Varsayılan adaptör üretmez.
+    fn uygulama_parolasi_uret(
+        &mut self,
+    ) -> Result<crate::guvenlik::uygulama_parolasi::UretilenParola, String> {
+        Err("IO adaptörü uygulama parolası üretmiyor".into())
     }
     /// K-210: adaptörün saatiyle RFC 6238 TOTP kodunu ±1 adım doğrular.
     fn totp_dogrula(&mut self, _gizli: &str, _kod: &str) -> bool {
