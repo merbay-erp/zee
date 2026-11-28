@@ -47,6 +47,7 @@ pub(super) fn web_istegini_calistir(
     let oturum_sozlugu = metin_sozlugu(oturum_bilgileri);
     let mut eslesti = false;
     let mut izinli = Vec::new();
+    let etkin_yontem = yontem_reddi::etkin_yontem(program, io, &gelen_yontem, &yol)?;
 
     for cumle in &program.program().cumleler {
         let Cumle::IstekGeldiginde {
@@ -72,7 +73,7 @@ pub(super) fn web_istegini_calistir(
         if uydu {
             izinli.push(beklenen);
         }
-        if !uydu || beklenen.yazimi() != gelen_yontem {
+        if !uydu || beklenen.yazimi() != etkin_yontem {
             continue;
         }
 

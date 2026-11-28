@@ -1695,3 +1695,60 @@ fn makine_uc_noktasi_csrfsiz_ham_govde_alir_siradan_post_degismez() {
     assert_eq!(io.sunucu_yanitlari[3].1, tavan);
     assert!(io.yazilan_cerezler.is_empty());
 }
+
+/// K-421 (RFC 9110 §9.3.2): GET'e izin veren rota HEAD'i örtük destekler;
+/// açık HEAD rotası önceliklidir; GET'siz yolda ve POST rotasında HEAD 405,
+/// `Allow` GET varsa HEAD'i de anar.
+#[test]
+fn head_get_rotasinda_ortuk_200_allow_head_icerir() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+GET \"/\" adresine istek geldiğinde
+    herkese açık
+    \"ana sayfa\" yanıtını gönder
+
+\"/eski\" adresine istek geldiğinde
+    \"eski yazım\" yanıtını gönder
+
+GET \"/statik/\" önekli adrese istek geldiğinde
+    herkese açık
+    \"dosya\" yanıtını gönder
+
+GET \"/acik\" adresine istek geldiğinde
+    herkese açık
+    \"get gövdesi\" yanıtını gönder
+
+HEAD \"/acik\" adresine istek geldiğinde
+    herkese açık
+    \"\" yanıtını 204 durumuyla gönder
+
+POST \"/form\" adresine istek geldiğinde
+    herkese açık
+    \"tamam\" yanıtını gönder
+
+PUT \"/kayit\" adresine istek geldiğinde
+    herkese açık
+    \"tamam\" yanıtını gönder
+
+DELETE \"/kayit\" adresine istek geldiğinde
+    herkese açık
+    \"silindi\" yanıtını gönder
+";
+    let io = sunucuyla(
+        kaynak,
+        vec![
+            "HEAD /",
+            "HEAD /eski",
+            "HEAD /statik/a.css",
+            "HEAD /acik",
+            "HEAD /form",
+            "HEAD /kayit",
+            "POST /",
+        ],
+    );
+    assert_eq!(io.sunucu_durumlari, vec![200, 200, 200, 204, 405, 405, 405]);
+    assert_eq!(io.sunucu_yanitlari[0].1, "ana sayfa", "GET rotası koşar");
+    assert_eq!(io.sunucu_yanitlari[2].1, "dosya");
+    assert_eq!(io.izinli_yontemler, ["POST", "PUT, DELETE", "GET, HEAD"]);
+}

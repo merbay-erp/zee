@@ -2368,6 +2368,17 @@ kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Etiket aaf9
 RC kapısı ve yayın kanıtı: [kayıt](surum-v1.0.0-rc.1-kaniti.md). Son `v1.0.0`
 için P27, P28 (11.11.2026), P29 Windows ve kısmi ürün kapıları kapanmalı.
 
+## K-421 — HEAD isteği GET rotasını örtük kullanır
+
+**Durum: KAPALI.** RFC-0047 dilim A (#149) yayıldıktan sonra GET-only
+rotalara HEAD 405 + `Allow: GET` aldı (önceki sürümde de `Allow`'suz 405);
+sağlık denetimleri düştü, filo geri alındı. RFC 9110 §9.3.2 uyarınca açık
+HEAD rotası olmayan yolda HEAD artık GET rotasıyla eşleşir, gövde yazılmaz,
+`Allow` GET varken HEAD'i anar; GET'siz yolda HEAD 405 kalır. Kanıt:
+`compiler/tests/web_testi.rs::head_get_rotasinda_ortuk_200_allow_head_icerir`,
+`compiler/tests/dosya_yaniti_testi.rs::head_get_rotasinda_gercek_surecte_200_govdesiz`,
+`regression/runtime/head-get-ortuk.dil`. GB-185 eki.
+
 ## K-420 — V1 ikinci sürüm adayı (v1.0.0-rc.2)
 
 **Durum: SÜRÜYOR — aday yayımlandı (27 Kasım 2026), son V1 kapıları açık.**
