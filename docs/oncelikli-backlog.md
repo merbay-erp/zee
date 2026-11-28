@@ -874,7 +874,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-178 | **KAPALI** | Ölçüm: yorumlayıcı çerçevesi debug ~194 KiB/düzey, release ~11 KiB/düzey (macOS arm64 = Linux aarch64). Eski 32 MiB yığın debug CLI'yı 167. düzeyde doğal taşmayla düşürüyordu; resmî yığın 256 MiB rezervasyon oldu, regresyon koşucusu ve derinlik testleri resmî yığında; `derinlik-499-resmi-yiginda` vakası ve bütçe testi kapıda |
 | K-179 | **KAPALI** | ADR-074 `dogfood/kelime-avi`: üçüncü ürün (etkileşimli CLI oyunu, 3 birim/7 test, `kelime_avi_testi` hermetik); sürtünme tekrarı ölçüldü — 2 yeni (F001 iyelikli döngü adı A003, F003 `metnin satırları` T028), 4 tekrar (F010 ×3 yer, F009, F013, F011), 5 kılavuzla önlenen; compiler değişikliği yok
 | K-180 | **KAPALI → K-386** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; 21 Kasım 2026 üçüncü ürün ürün H aynı sayaç yardımcısını yazdı (K-355/F002); bağımsız karşılaştırma raporu ikili aramayı O(n log n) buldu. 24 Kasım 2026 Mustafa kararı: "freeze içinde açılmaz" kaydı dört ürün kanıtıyla `dogfood-change` istisnasına çevrildi; RFC-0029 kabul edildi ve K-386 ile uygulandı (ADR-166). F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
-| K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil |
+| K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil. Ek (28.11.2026, test bakımı): 4×5 de Windows CI'da (run 46011821639) 5 sn'yi aştı — kuyruktaki yazar önündeki üç fsync'li yazımı bekler; yalnız bu testin yazar iş parçacıklarında kilit bütçesi 60 sn (test kancası), 20 artışın hepsi başarılı ve izinli sayı tam eşik iddiası aynı; 5 sn sözü `kalici_dosya` kilit testlerinde. Yerel 96 eşzamanlı süreç yükünde 5 sn bütçe 43/96 aynı imzayla düştü, düzeltmeli 192/192 |
 | K-184 | **KAPALI** | Public depo güvenliği: özel IO izi yazımı, platform izin/ACL testleri, SECURITY belgesi, Gitleaks geçmiş/ağaç CI taraması. ADR-026 ve güvenlik kayıtları GB-024/025. |
 | K-186 | **KAPALI** | ADR-077: Zee ERP korumalı rotalarında doğrulanmış kullanıcı → security-definer resolver → transaction-local `app.tenant_id`; aynı leased bağlantı, iç eylemlerde savepoint, hata/timeout rollback ve public rotada sıfır tenant bağlamı. |
 | K-187 | **KAPALI** | ADR-078: Migration transaction yasağı yalnız üst seviye SQL tokenlarında uygulanır; PL/pgSQL/dollar-quoted gövde, string, quoted identifier ve yorumlar yanlış C026 üretmez. |
@@ -3743,6 +3743,13 @@ ret bağlantısız), `eposta::mime::tests`, `proje_testi`,
 
 Açık (sonraki): `inline`, `ETag`/`Range`, orantılı okuma bütçesi, çok dosya,
 literal ek listesi için `dil denetle` uyarısı, antivirüs (ürün/operatör).
+
+Ek (28.11.2026, test bakımı; ürün davranışı değişmedi): olumlu akışta
+`.parca` varlığı ilk yarıdan sonra sabit 400 ms uykuyla ölçülüyordu; Windows
+CI'da (run 46065807908) sunucu ilk yarıyı o sürede diske akıtamadı
+(`ara` 0). Olumlu vaka artık `.parca` görünene kadar yoklar (tavan 20 sn);
+CSRF red vakalarının yokluk penceresi 400 ms aynı. Yerel 32 eşzamanlı süreç
+yükünde eski test 31/96 aynı imzayla düştü, yenisi 96/96.
 ## K-379 — Satır içi betik CSP özeti yalnız kaynak değişmezinden
 
 **Durum: KAPALI.** Kaynak: etkin dogfood ürünü `urun-h` (K-355) güvenlik

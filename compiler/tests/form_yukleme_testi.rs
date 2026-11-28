@@ -187,21 +187,37 @@ fn kapanis() -> Vec<u8> {
     format!("\r\n--{SINIR}--\r\n").into_bytes()
 }
 
+/// Olumlu akışta ilk yarı sonrası `.parca` için azami bekleme. Windows
+/// CI'da (run 46065807908) sunucu ilk yarıyı sabit 400 ms içinde diske
+/// akıtamadı; bekleme koşula bağlıdır, süre yalnız asılmaya karşı tavandır.
+const PARCA_BEKLEME_TAVANI: Duration = Duration::from_secs(20);
+
 /// Gövdeyi `once` + bekleme + `sonra` olarak yollar; beklemede `.parca`
-/// sayısını ölçer.
+/// sayısını ölçer. `parca_bekle` iken `.parca` görünene kadar (tavan
+/// [`PARCA_BEKLEME_TAVANI`]) yoklar; değilse yokluk 400 ms gözlem
+/// penceresinde ölçülür.
 fn yavas_gonder(
     kapi: u16,
     proje: &Proje,
     cerez: Option<&str>,
     once: &[u8],
     sonra: &[u8],
+    parca_bekle: bool,
 ) -> (u16, String, usize) {
     let mut akis = baglan(kapi);
     let mut ham = istek_basi(cerez, &mp_tur(), once.len() + sonra.len(), "");
     ham.extend_from_slice(once);
     akis.write_all(&ham).expect("ilk yarı");
-    std::thread::sleep(Duration::from_millis(400));
-    let ara = proje.parcalar();
+    let ara = if parca_bekle {
+        let baslangic = std::time::Instant::now();
+        while proje.parcalar() == 0 && baslangic.elapsed() < PARCA_BEKLEME_TAVANI {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        proje.parcalar()
+    } else {
+        std::thread::sleep(Duration::from_millis(400));
+        proje.parcalar()
+    };
     let _ = akis.write_all(sonra);
     let (durum, govde) = yanit_oku(akis);
     (durum, govde, ara)
@@ -239,7 +255,7 @@ fn form_yuklemesi_csrf_once_dogrular_dosyayi_parca_modeline_akitir() {
     once.extend_from_slice(&icerik[..50_000]);
     let mut sonra = icerik[50_000..].to_vec();
     sonra.extend(kapanis());
-    let (durum, govde, ara) = yavas_gonder(kapi, &proje, Some(&cerez), &once, &sonra);
+    let (durum, govde, ara) = yavas_gonder(kapi, &proje, Some(&cerez), &once, &sonra, true);
     assert_eq!(durum, 200, "{govde}");
     assert_eq!(ara, 1, "akış sırasında .parca vardır");
     let ozet = sha256_hex(&icerik);
@@ -267,7 +283,7 @@ fn form_yuklemesi_csrf_once_dogrular_dosyayi_parca_modeline_akitir() {
         sonra.extend_from_slice(b"\r\n");
         sonra.extend(sonraki);
         sonra.extend(format!("--{SINIR}--\r\n").into_bytes());
-        let (durum, govde, ara) = yavas_gonder(kapi, &proje, Some(&cerez), &once, &sonra);
+        let (durum, govde, ara) = yavas_gonder(kapi, &proje, Some(&cerez), &once, &sonra, false);
         assert_eq!(durum, 403, "{ad}: {govde}");
         assert!(govde.contains("CSRF"), "{ad}: {govde}");
         assert_eq!(ara, 0, "{ad}: dosya baytı diske akmamalı");
