@@ -7,34 +7,42 @@
 //! yanıtları `durum_yaniti_gonder` olarak kaydedilir (başlıklar programdan ve
 //! karardan deterministik türer).
 
-use super::codec::{bool_coz, bool_yaz};
+use super::codec::{birim_sonuc_coz, birim_sonuc_yaz, bool_coz, bool_yaz};
 use super::*;
 use crate::yorumlayici::{DavKimligi, DavKova};
 
+/// DAV kimlik kararı ve DAV isteği olayları.
+pub(super) const OLAYLAR: [&str; 5] = [
+    "dav_kimligi",
+    "dav_ozet_dogrula",
+    "dav_kovasi",
+    "etag_yaz",
+    "dav_istek_basliklari",
+];
+
+fn kova_gecerli(olay: &IzOlay) -> bool {
+    DavKova::ayristir(&olay.argumanlar[0]).is_some()
+        && olay.sonuc.len() <= 1
+        && olay.sonuc.iter().all(|s| s.parse::<i64>().is_ok())
+}
+
+fn sonuc_gecerli(olay: &IzOlay) -> bool {
+    match (olay.islem.as_str(), olay.argumanlar.len()) {
+        ("dav_kimligi", 0) => matches!(olay.sonuc.len(), 0 | 3),
+        ("dav_ozet_dogrula", 1) => olay.sonuc.len() == 1 && bool_coz(&olay.sonuc[0]).is_ok(),
+        ("dav_kovasi", 2) => kova_gecerli(olay),
+        ("etag_yaz", 1) => birim_sonuc_coz(&olay.sonuc).is_ok(),
+        ("dav_istek_basliklari", 0) => olay.sonuc.len().is_multiple_of(2),
+        _ => false,
+    }
+}
+
 /// Olay şeması.
 pub(super) fn sema(olay: &IzOlay) -> Result<(), String> {
-    let hata = |neden: &str| Err(format!("`{}` {neden} şeması geçersiz", olay.islem));
-    match olay.islem.as_str() {
-        "dav_kimligi" if olay.argumanlar.is_empty() => match olay.sonuc.as_slice() {
-            [] => Ok(()),
-            [kullanici, _, _] if !kullanici.is_empty() => Ok(()),
-            _ => hata("sonuç"),
-        },
-        "dav_ozet_dogrula" if olay.argumanlar.len() == 1 => match olay.sonuc.as_slice() {
-            [deger] if bool_coz(deger).is_ok() => Ok(()),
-            _ => hata("sonuç"),
-        },
-        "dav_kovasi" if olay.argumanlar.len() == 2 => {
-            if DavKova::ayristir(&olay.argumanlar[0]).is_none() {
-                return hata("kova");
-            }
-            match olay.sonuc.as_slice() {
-                [] => Ok(()),
-                [saniye] if saniye.parse::<i64>().is_ok() => Ok(()),
-                _ => hata("sonuç"),
-            }
-        }
-        _ => hata("argüman sayısı"),
+    if sonuc_gecerli(olay) {
+        Ok(())
+    } else {
+        Err(format!("`{}` DAV olay şeması geçersiz", olay.islem))
     }
 }
 
@@ -119,4 +127,41 @@ pub(super) fn oynat_kova(
         Some([saniye]) => Err(saniye.parse().unwrap_or(1)),
         _ => Ok(()),
     }
+}
+
+pub(super) fn kaydet_etag<T: GirdiCikti>(
+    io: &mut IzKaydedenIo<T>,
+    etag: &str,
+) -> Result<(), String> {
+    let sonuc = io.ic.etag_yaz(etag);
+    io.kaydet("etag_yaz", vec![etag.into()], birim_sonuc_yaz(&sonuc));
+    sonuc
+}
+
+pub(super) fn kaydet_basliklar<T: GirdiCikti>(io: &mut IzKaydedenIo<T>) -> Vec<(String, String)> {
+    let basliklar = io.ic.dav_istek_basliklari();
+    let alanlar = basliklar
+        .iter()
+        .flat_map(|(ad, deger)| [ad.clone(), deger.clone()])
+        .collect();
+    io.kaydet("dav_istek_basliklari", Vec::new(), alanlar);
+    basliklar
+}
+
+pub(super) fn oynat_etag(io: &mut IzYenidenOynatici, etag: &str) -> Result<(), String> {
+    match io.siradaki("etag_yaz", vec![etag.into()]) {
+        Some(alanlar) => birim_sonuc_coz(&alanlar).unwrap_or_else(Err),
+        None => Err("IO izi uyuşmuyor".into()),
+    }
+}
+
+pub(super) fn oynat_basliklar(io: &mut IzYenidenOynatici) -> Vec<(String, String)> {
+    io.siradaki("dav_istek_basliklari", Vec::new())
+        .unwrap_or_default()
+        .chunks(2)
+        .filter_map(|cift| match cift {
+            [ad, deger] => Some((ad.clone(), deger.clone())),
+            _ => None,
+        })
+        .collect()
 }

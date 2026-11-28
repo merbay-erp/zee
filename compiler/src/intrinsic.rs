@@ -26,6 +26,11 @@ pub const TOTP_ANAHTARI: &str = "guvenlik.totp_anahtari";
 /// RFC-0047 E (ADR-182 dilim B): `yeni uygulama parolası` — cihaz başına
 /// uygulama parolası; `{görünen, önek, özet}` sözlüğü.
 pub const UYGULAMA_PAROLASI: &str = "guvenlik.uygulama_parolasi";
+/// RFC-0047 B (ADR-182 dilim D): `isteğin "Depth" başlığı` — DAV rotasında.
+pub const WEB_ISTEK_DERINLIGI: &str = "web.istek_derinligi";
+/// RFC-0047 B (ADR-182 dilim D): `isteğin "If-Match" / "If-None-Match"
+/// başlığı` → Liste<Metin> (`*` ayrı değer); DAV rotasında.
+pub const WEB_ISTEK_KOSULU: &str = "web.istek_kosulu";
 /// K-210: `<kod> <gizli> anahtarıyla doğrulanıyorsa` — RFC 6238 TOTP doğrulaması.
 pub const TOTP_DOGRULA: &str = "guvenlik.totp_dogrula";
 pub const POSTGRESQL_OKU: &str = "veritabani.postgresql_oku";
@@ -495,6 +500,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::Metin,
         etki: IntrinsicEtkisi::WebAdaptoru,
         tur_hatasi: "İsteğin ham gövdesi argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_ISTEK_DERINLIGI,
+        yetkinlik: Yetkinlik::AgSunucusu,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::Metin,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "İsteğin Depth başlığı argüman almaz.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_ISTEK_KOSULU,
+        yetkinlik: Yetkinlik::AgSunucusu,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinListesi,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "Koşul başlığının adı Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: WEB_BIRINCIL_SUREC,

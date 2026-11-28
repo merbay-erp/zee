@@ -2131,6 +2131,8 @@ struct GercekIo {
     /// `dav_kökeni` (üretim profilinde zorunlu ayrı origin) ve çözücü adı.
     dav_kokeni: Option<AgHedefi>,
     dav_kimlik_cozucusu: Option<String>,
+    /// RFC-0047 dilim D: rotanın yazdığı ETag (yalnız 2xx yanıta girer).
+    bekleyen_etag: Option<String>,
     /// K-390: `dns` yetkinliğinin bildirilmiş loopback çözücüsü.
     dns: Option<dil::dns_teli::DnsAyari>,
 }
@@ -2286,6 +2288,7 @@ impl GercekIo {
             dav_istegi: None,
             dav_kokeni: None,
             dav_kimlik_cozucusu: None,
+            bekleyen_etag: None,
             son_istek: None,
             eylem_yedekleri: Vec::new(),
             web_guvenligi,
@@ -2681,7 +2684,7 @@ impl GercekIo {
                 (baslik, String::new())
             }
         };
-        let mut yanit = baslik.into_bytes();
+        let mut yanit = self.etag_ekle(baslik, status).into_bytes();
         if !head {
             yanit.extend_from_slice(govde.as_bytes());
         }
@@ -4942,6 +4945,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.bekleyen_govde_asimi = None;
         self.makine_istegi = false;
         self.dav_istegi = None;
+        self.bekleyen_etag = None;
         loop {
             #[cfg(unix)]
             if web_kapanisi_istendi(&self.web_kapanis) {
@@ -5342,6 +5346,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn dav_kimligi(&mut self) -> Option<dil::yorumlayici::DavKimligi> {
         self.dav_kimligi_ver()
+    }
+    fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+        self.dav_basliklarini_ver()
+    }
+    fn etag_yaz(&mut self, etag: &str) -> Result<(), String> {
+        // Değer yorumlayıcıda kapalı etagc kümesiyle doğrulandı (CR/LF yok).
+        self.bekleyen_etag = Some(etag.to_string());
+        Ok(())
     }
     fn dav_ozet_dogrula(&mut self, ozet: Option<&str>) -> bool {
         self.dav_ozetini_dogrula(ozet)

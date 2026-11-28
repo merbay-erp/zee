@@ -4224,8 +4224,13 @@ ayrımı P015) ve doğrulama kitaplığı (sabit zamanlı özet, katı Basic, AS
 katlama). **Dilim C kapandı** (GB-187): `dav istemcisi gerekli`,
 PROPFIND/REPORT, T064–T067, `dav_kimlik_çözücüsü`, çerezsiz Basic kimlik
 kararı, DAV kovaları, salt okuma, CSRF/Origin muafiyeti + `Sec-Fetch-Site`
-reddi, ayrı `dav_kökeni`, otomatik OPTIONS; `rfc0040-a-*` S036 → T064. Açık:
-D (başlık okuma, ham gövde, ETag, korpus geçişi ve çözüm vakaları).
+reddi, ayrı `dav_kökeni`, otomatik OPTIONS; `rfc0040-a-*` S036 → T064.
+**Dilim D kapandı** (GB-188): `isteğin "<ad>" başlığı` (Depth/If-Match/
+If-None-Match; S051/S052/T068), ham DAV gövdesi (yöntem tavanları, 415),
+ETag (S053/T069); korpus dokuz vakanın hepsi beklenen sonucunda. RFC-0047
+**kabul, uygulandı**. K-364 açık kalır: ürün çözüm vakaları, saha kabulü
+(Thunderbird/DAVx5/iOS, süre ve kova ölçümü) ve RFC-0040 D/G (XML ağacı,
+well-known) alt RFC'si.
 
 Önceki durum (taslak): [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
 `urun-h` takvim/kişi verisini standart masaüstü/telefon istemcilerine CalDAV

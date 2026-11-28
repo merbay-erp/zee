@@ -21,7 +21,8 @@ pub(super) fn ayir(
     };
     let yol = hedef.trim().split('?').next().unwrap_or_default();
     if !yontem.eq_ignore_ascii_case("POST") || !program.makine_uc_noktasi_yollari().contains(yol) {
-        return Ok(None);
+        // RFC-0047 (ADR-182 dilim D): DAV yolunun gövdesi de form değildir.
+        return super::dav_istegi::ayir(program, ilk_satir, govde);
     }
     if govde.len() > crate::agac::MAKINE_GOVDE_SINIRI {
         return Err((413, "makine uç noktası gövdesi 8 KiB sınırını aşıyor"));
@@ -34,11 +35,13 @@ pub(super) fn ayir(
 /// belirtecini bulamaz ve 403 ile kapanır.
 pub(super) fn ortama_ekle(
     rota_ortami: &mut HashMap<String, Deger>,
-    makine: bool,
+    kip: RotaKipi,
     ham_govde: &Option<String>,
     satir: usize,
 ) -> Result<(), Tani> {
-    if let (true, Some(govde)) = (makine, ham_govde) {
+    // RFC-0047 (ADR-182 dilim D): DAV rotası da ham gövdeyi alır.
+    let ham_govdeli = matches!(kip, RotaKipi::Makine | RotaKipi::Dav);
+    if let (true, Some(govde)) = (ham_govdeli, ham_govde) {
         let deger = Deger::Metin(govde.clone());
         ortama_yazma_butcesini_tuket(rota_ortami, HAM_GOVDE_ANAHTARI, &deger, satir)?;
         rota_ortami.insert(HAM_GOVDE_ANAHTARI.into(), deger);

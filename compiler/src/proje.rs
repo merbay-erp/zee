@@ -1135,6 +1135,7 @@ fn cumle_satiri(cumle: &Cumle) -> usize {
         | Cumle::BaglantiyaYaz { satir, .. }
         | Cumle::BaglantiyiKapat { satir }
         | Cumle::YanitGonder { satir, .. }
+        | Cumle::YanitEtagi { satir, .. }
         | Cumle::Yonlendir { satir, .. }
         | Cumle::CerezYaz { satir, .. }
         | Cumle::Sil { satir, .. }

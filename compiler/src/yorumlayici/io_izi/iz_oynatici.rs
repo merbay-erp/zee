@@ -247,6 +247,14 @@ impl GirdiCikti for IzYenidenOynatici {
         super::dav::oynat_kova(self, kova, anahtar)
     }
 
+    fn etag_yaz(&mut self, etag: &str) -> Result<(), String> {
+        super::dav::oynat_etag(self, etag)
+    }
+
+    fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+        super::dav::oynat_basliklar(self)
+    }
+
     fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
         let sonuc = self.siradaki(
             "turlu_durumlu_yanit_gonder",

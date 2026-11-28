@@ -6683,3 +6683,14 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yabancı Origin 403; üretimde ayrı `dav_kökeni` zorunlu; OPTIONS otomatik.
   GB-187.
 
+## K-364 — RFC-0047 dilim D uygulandı; RFC-0047 kabul, uygulandı (28 Kasım 2026)
+
+- `isteğin "<ad>" başlığı` (Depth → Metin, If-Match/If-None-Match →
+  Liste<Metin>), S051/S052/T068; ham DAV gövdesi (PUT 1 MiB, REPORT/PROPFIND
+  256 KiB, içerik türü 415); ETag cümlesi (S053/T069, güçlü etiket, C022).
+- Korpus: `rfc0040-b-depth-basligi` T068, `rfc0040-c-etag-basligi` T069,
+  `rfc0040-e-basic-kimlik` S052; dokuz vakanın hepsi beklenen sonucunda.
+  Çözüm vakaları ZeeMail'den istendi (ürün provenance'ı gelince eklenir).
+- D dalı #152 birleşmeden onun üstüne kuruldu (B'deki gibi); birleşince
+  master merge ile alınır. GB-188.
+

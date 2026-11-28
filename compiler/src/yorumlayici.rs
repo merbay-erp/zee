@@ -5,6 +5,7 @@
 
 mod baglanti;
 mod cumle;
+mod dav_istegi;
 mod dav_kimlik;
 mod dns;
 mod dosya;
@@ -42,6 +43,7 @@ pub use self::baglanti::{
     BOSALTMA_SURESI_MS,
 };
 use self::cumle::blok_calistir_async;
+pub use self::dav_istegi::govde_siniri as dav_govde_siniri;
 pub use self::dav_kimlik::{DavKimligi, DavKova, DAV_KIMLIK_REDDI, DAV_KOVA_REDDI};
 use self::eylem_hatasi::tani as transaction_hatasi;
 pub use self::eylem_hatasi::{EylemHataSinifi, EylemHatasi};
@@ -531,6 +533,17 @@ pub trait GirdiCikti {
     /// 429 + `Retry-After`; başlık yazamayan adaptör 429 verir.
     fn dav_kova_reddi_gonder(&mut self, _saniye: i64) {
         self.durum_yaniti_gonder(429, DAV_KOVA_REDDI);
+    }
+    /// RFC-0047 C (ADR-182 dilim D): sonraki 2xx yanıta `ETag` başlığı
+    /// (değer yorumlayıcıda doğrulandı). Başlık yazamayan adaptör reddeder.
+    fn etag_yaz(&mut self, _etag: &str) -> Result<(), String> {
+        Err("bu IO adaptörü yanıt başlığı yazamaz".into())
+    }
+    /// RFC-0047 B (ADR-182 dilim D): DAV isteğinin `Depth`, `If-Match`,
+    /// `If-None-Match` başlıkları (ham, alındığı sırayla; doğrulama
+    /// yorumlayıcıdadır).
+    fn dav_istek_basliklari(&mut self) -> Vec<(String, String)> {
+        Vec::new()
     }
     /// DAV öneki altında OPTIONS: 200 + `Allow` + `DAV`.
     fn secenekler_gonder(&mut self, _izinli: &str) {

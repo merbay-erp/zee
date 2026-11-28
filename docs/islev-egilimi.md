@@ -44,7 +44,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/gorsel.rs::kucult#1` | 82→82 (+0/+9) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/hir/lint.rs::blok#1` | 92→100 (+8/+10) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/hir/lint.rs::uyarilari#1` | 64→65 (+1/+8) | 13→13 (+0/+3) | PAY İÇİNDE |
-| `compiler/src/invariant/cumle.rs::cumleyi_dogrula#1` | 296→316 (+20/+24) | 13→14 (+1/+3) | PAY İÇİNDE |
+| `compiler/src/invariant/cumle.rs::cumleyi_dogrula#1` | 296→317 (+21/+24) | 13→14 (+1/+3) | PAY İÇİNDE |
 | `compiler/src/invariant/ifade.rs::ifadenin_faz_bagini_dogrula#1` | 126→126 (+0/+13) | 5→5 (+0/+2) | SABİT |
 | `compiler/src/invariant/ifade.rs::ifadeyi_dogrula#1` | 142→146 (+4/+15) | 4→4 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/lib.rs::birim_ozeti#1` | 52→52 (+0/+8) | 14→14 (+0/+3) | SABİT |
@@ -61,7 +61,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::govde#1` | 150→165 (+15/+15) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→113 (+5/+11) | 10→10 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/main.rs::istek_al#1` | 113→119 (+6/+12) | 12→14 (+2/+3) | PAY İÇİNDE |
+| `compiler/src/main.rs::istek_al#1` | 113→120 (+7/+12) | 12→14 (+2/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::istek_govdesini_oku#1` | 79→87 (+8/+8) | 12→11 (-1/+3) | İYİLEŞTİ |
 | `compiler/src/main.rs::web_istegini_baslat#1` | 85→66 (-19/+9) | 6→6 (+0/+2) | İYİLEŞTİ |
 | `compiler/src/main.rs::web_modunu_ayikla#1` | 88→16 (-72/+9) | 4→2 (-2/+2) | İYİLEŞTİ |
@@ -77,14 +77,14 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/registry.rs::targets_yapisini_dogrula#1` | 95→95 (+0/+10) | 5→5 (+0/+2) | SABİT |
 | `compiler/src/registry.rs::zinciri_dogrula#1` | 92→92 (+0/+10) | 1→1 (+0/+2) | SABİT |
 | `compiler/src/sozcukleyici.rs::sozcukle#1` | 320→331 (+11/+24) | 29→31 (+2/+5) | PAY İÇİNDE |
-| `compiler/src/test_kapsami/envanter.rs::cumle#1` | 219→231 (+12/+22) | 11→11 (+0/+3) | PAY İÇİNDE |
+| `compiler/src/test_kapsami/envanter.rs::cumle#1` | 219→232 (+13/+22) | 11→11 (+0/+3) | PAY İÇİNDE |
 | `compiler/src/test_kapsami/envanter.rs::ifade#1` | 95→98 (+3/+10) | 4→4 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/web_listener.rs::extract#1` | 104→89 (-15/+11) | 8→7 (-1/+2) | İYİLEŞTİ |
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→144 (+8/+14) | 2→2 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→821 (+6/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→813 (-2/+24) | 1→1 (+0/+2) | İYİLEŞTİ |
 | `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→856 (+6/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→163 (+14/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→163 (+14/+15) | 20→21 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/kimlik_iletisim.rs::intrinsic_degerlendir#1` | 125→126 (+1/+13) | 4→4 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→125 (+12/+12) | 9→10 (+1/+2) | PAY İÇİNDE |

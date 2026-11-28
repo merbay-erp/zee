@@ -1162,10 +1162,12 @@ fn dav_ham_istek(kapi: u16, host: &str, istek: &str) -> (String, Vec<u8>) {
     let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(5)).expect("bağlantı");
     akis.set_read_timeout(Some(Duration::from_secs(30)))
         .expect("okuma süresi");
+    let (istek, govde) = istek.split_once("<GÖVDE>").unwrap_or((istek, ""));
     let (satir, ek) = istek.split_once('\n').unwrap_or((istek, ""));
     write!(
         akis,
-        "{satir} HTTP/1.1\r\nHost: {host}\r\nForwarded: for=203.0.113.9;proto=https;host={host}\r\n{ek}Content-Length: 0\r\nConnection: close\r\n\r\n"
+        "{satir} HTTP/1.1\r\nHost: {host}\r\nForwarded: for=203.0.113.9;proto=https;host={host}\r\n{ek}Content-Length: {}\r\nConnection: close\r\n\r\n{govde}",
+        govde.len()
     )
     .expect("istek");
     let mut ham = Vec::new();
@@ -1215,7 +1217,7 @@ fn dav_istemci_rotasi_gercek_worker_ayri_origin_basic_ve_csrf_muafiyeti() {
     use dil::guvenlik::uygulama_parolasi::uret;
     let parola = uret(&[0xab; 32], "k1", &[3; 25]).expect("parola");
     let ana = format!(
-        "işlem kimlik_coz\n    kullanıcıyı Metin olarak al\n    öneki Metin olarak al\n    Metin sözlüğü döndürür\n    bilgi boş sözlük olsun\n    beklenen \"{onek}\" olsun\n    önek beklenene eşitse\n        bilginin \"özet\" değeri \"{ozet}\" olsun\n        bilginin \"kullanıcı\" değeri \"ali\" olsun\n        bilginin \"rol\" değeri \"kullanıcı\" olsun\n        bilginin \"kapsam\" değeri \"tam\" olsun\n        bilginin \"kimlik\" değeri \"cihaz-1\" olsun\n    bilgiyi döndür\n\n8080 kapısında sunucu başlat\n\nPROPFIND \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    \"<m/>\" metnini \"application/xml\" türünde 207 durumuyla gönder\n\nPUT \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    \"\" yanıtını 201 durumuyla gönder\n\nGET \"/\" adresine istek geldiğinde\n    herkese açık\n    \"web\" yanıtını gönder\n",
+        "işlem kimlik_coz\n    kullanıcıyı Metin olarak al\n    öneki Metin olarak al\n    Metin sözlüğü döndürür\n    bilgi boş sözlük olsun\n    beklenen \"{onek}\" olsun\n    önek beklenene eşitse\n        bilginin \"özet\" değeri \"{ozet}\" olsun\n        bilginin \"kullanıcı\" değeri \"ali\" olsun\n        bilginin \"rol\" değeri \"kullanıcı\" olsun\n        bilginin \"kapsam\" değeri \"tam\" olsun\n        bilginin \"kimlik\" değeri \"cihaz-1\" olsun\n    bilgiyi döndür\n\n8080 kapısında sunucu başlat\n\nPROPFIND \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    \"<m/>\" metnini \"application/xml\" türünde 207 durumuyla gönder\n\nPUT \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    takvim isteğin ham gövdesi olsun\n    yanıta \"ETag\" başlığını \"\\\"v1\\\"\" olarak ekle\n    takvim yanıtını 201 durumuyla gönder\n\nGET \"/\" adresine istek geldiğinde\n    herkese açık\n    \"web\" yanıtını gönder\n",
         onek = parola.onek,
         ozet = parola.ozet
     );
@@ -1297,17 +1299,41 @@ fn dav_istemci_rotasi_gercek_worker_ayri_origin_basic_ve_csrf_muafiyeti() {
     let (b, govde) = dav_ham_istek(
         kapi,
         "dav.example",
-        &format!("PROPFIND /dav/takvim/\n{dogru}"),
+        &format!("PROPFIND /dav/takvim/\n{dogru}Depth: 1\r\n"),
     );
     assert!(b.starts_with("HTTP/1.1 207 Multi-Status\r\n"), "{b}");
     assert_eq!(govde, b"<m/>");
     assert!(baslik(&b, "Set-Cookie").is_empty());
-    let (b, _) = dav_ham_istek(
+    let (b, g) = dav_ham_istek(
         kapi,
         "dav.example",
-        &format!("PUT /dav/takvim/a.ics\n{dogru}"),
+        &format!(
+            "PUT /dav/takvim/a.ics\n{dogru}Content-Type: text/calendar\r\n<GÖVDE>BEGIN:VCALENDAR"
+        ),
     );
-    assert!(b.starts_with("HTTP/1.1 201 Created\r\n"), "{b}");
+    assert!(
+        b.starts_with("HTTP/1.1 201 Created\r\n"),
+        "{b}{}",
+        String::from_utf8_lossy(&g)
+    );
+    // RFC-0047 dilim D: ham gövde rotaya bayt bayt, ETag başlığı 2xx yanıtta.
+    assert_eq!(g, b"BEGIN:VCALENDAR");
+    assert_eq!(baslik(&b, "ETag"), ["\"v1\""]);
+    // Eksik Depth: 403 propfind-finite-depth; yanlış tür ve charset 415.
+    let (b, g) = dav_ham_istek(kapi, "dav.example", &format!("PROPFIND /dav/\n{dogru}"));
+    assert!(b.starts_with("HTTP/1.1 403 "), "{b}");
+    assert_eq!(baslik(&b, "Content-Type"), ["application/xml"]);
+    assert!(String::from_utf8_lossy(&g).contains("propfind-finite-depth"));
+    for tur in ["text/plain", "text/calendar; charset=iso-8859-9"] {
+        let (b, _) = dav_ham_istek(
+            kapi,
+            "dav.example",
+            &format!("PUT /dav/a.ics\n{dogru}Content-Type: {tur}\r\n<GÖVDE>x"),
+        );
+        assert!(b.starts_with("HTTP/1.1 415 "), "{tur}: {b}");
+    }
+    let (b, _) = dav_ham_istek(kapi, "dav.example", &format!("PUT /dav/a.ics\n{dogru}"));
+    assert!(b.starts_with("HTTP/1.1 415 "), "Content-Type'sız PUT: {b}");
     // Hesap parolası ve yanlış parola: aynı 401.
     for yanlis in [
         dav_basic("ali", "hesap parolasi"),
@@ -1329,7 +1355,7 @@ fn dav_istemci_rotasi_gercek_worker_ayri_origin_basic_ve_csrf_muafiyeti() {
     let (b, _) = dav_ham_istek(
         kapi,
         "dav.example",
-        &format!("PUT /dav/a.ics\nOrigin: https://dav.example\r\n{dogru}"),
+        &format!("PUT /dav/a.ics\nOrigin: https://dav.example\r\n{dogru}Content-Type: text/vcard\r\n<GÖVDE>BEGIN:VCARD"),
     );
     assert!(b.starts_with("HTTP/1.1 201 "), "{b}");
     // OPTIONS kimliksiz: Allow + DAV.

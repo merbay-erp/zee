@@ -105,7 +105,7 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
         rota_onsozunu_denetle(yontem, govde, *satir)?;
         let dogrudan_rota = blok_bilgisi(govde);
         let toplam = toplam_bilgi(&dogrudan_rota, &etkiler);
-        dav::rotayi_denetle(cumle, yontem, &toplam.onbellek)?;
+        dav::rotayi_denetle(cumle, yontem, &dogrudan_rota.onbellek, &toplam.onbellek)?;
         makine::ozel_kipleri_denetle(cumle, yontem, &dogrudan_rota.onbellek, &toplam.onbellek)?;
 
         if yontem.guvenli() && toplam.durum_yazma {
@@ -349,7 +349,8 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
                 ifade_bilgisi(veri, bilgi);
             }
         }
-        Cumle::Olsun { deger, .. } => ifade_bilgisi(deger, bilgi),
+        // RFC-0047: ETag yalnız DAV rotasında (T069); izi `onbellek`te.
+        Cumle::Olsun { deger, .. } | Cumle::YanitEtagi { deger, .. } => ifade_bilgisi(deger, bilgi),
         Cumle::KezTekrarla { adet, govde, .. } => {
             ifade_bilgisi(adet, bilgi);
             bilgi.birlestir(&blok_bilgisi(govde));

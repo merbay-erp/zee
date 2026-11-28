@@ -287,9 +287,37 @@ PROPFIND "/dav/" önekli adrese istek geldiğinde
   yöntemleri (kanonik sırayla) ve `OPTIONS`, `DAV: calendar-access,
   addressbook`; CORS başlığı yazılmaz. DAV yolu olmayan yerde `OPTIONS`
   501'dir.
-- AÇIK (dilim D): DAV istek gövdesi bu dilimde okunur ve atılır (64 KiB
-  tavanı); `isteğin ham gövdesi` DAV rotasında hâlâ T062'dir. Başlık okuma
-  (`Depth`, `If-Match`, `If-None-Match`) ve `ETag` yazımı dilim D'dedir.
+- ZORUNLU (RFC-0047 B, dilim D): `isteğin "<ad>" başlığı` ifadesinde ad
+  kaynakta görünen tırnaklı literaldir ve kapalı listeyle (büyük/küçük harf
+  duyarsız) eşleşir: `Depth` → `Metin` (`0`, `1`, `infinity`; küçük harf;
+  yoksa boş), `If-Match` / `If-None-Match` → `Liste<Metin>` (`*` tek öğeli
+  ayrı değer; yoksa boş liste; etiketler tek boşluklu ayraçla normalize).
+  Liste dışı ya da hesaplanmış ad önerili **S051**, güven başlıkları
+  (`Authorization`, `Cookie`, `Forwarded`, `X-Forwarded-For`, `Host`,
+  `Origin`, `X-Zee-CSRF`) önerili **S052**'dir. İfade yalnız DAV rotasının
+  kendi gövdesinde okunur; başka rota, işlem/eylem ve rota dışı kod
+  **T068**'dir.
+- ZORUNLU (RFC-0047 B, dilim D): Çalışma zamanı başlıkları kimlik
+  kararından sonra, rota gövdesinden önce doğrular: tekrarlanan başlık,
+  görünür ASCII ve boşluk dışı bayt, 1 KiB'ı aşan değer, `Depth` dışı değer
+  ya da 16'yı aşan/biçimsiz entity-tag listesi 400'dür. PROPFIND'de `Depth`
+  yoksa ya da `infinity` ise yanıt 403 + `application/xml`
+  `DAV:propfind-finite-depth` gövdesidir (RFC 4918 §9.1); REPORT'ta eksik
+  `Depth` `0` sayılır. Koşul değerlendirmesi (`If-Match` ↔ kayıt ETag'i, 412)
+  Zee kodundadır.
+- ZORUNLU (RFC-0047 D, dilim D): DAV yoluna giden isteğin gövdesi form
+  olarak çözülmez; DAV rotası onu `isteğin ham gövdesi` ile `Metin` olarak
+  bayt bayt (CR, LF, CRLF dönüştürülmeden) okur ve T062 DAV rotasında
+  kalkar. Yöntem başına: PUT gövde zorunlu ve ≤ 1 MiB; REPORT gövde zorunlu
+  ve ≤ 256 KiB; PROPFIND isteğe bağlı ve ≤ 256 KiB; GET, HEAD ve DELETE
+  gövde taşıyamaz (400). Aşım 413'tür; gerçek adaptör `Content-Length`
+  ile gövde okunmadan reddeder.
+- ZORUNLU (RFC-0047 C, dilim D): `yanıta "ETag" başlığını <ifade> olarak
+  ekle` yalnız DAV rotasının kendi gövdesinde ve en çok bir kez yazılır
+  (aksi **T069**); başlık adı yalnız `ETag` olabilir (**S053**). Değer güçlü
+  entity-tag'tir (`"` + etagc* + `"`, etagc = %x21 / %x23-7E, ≤ 128 bayt;
+  `W/` yok); geçersiz değer başlığa girmez ve istek C022 ile 500 olur. ETag
+  yalnız 2xx yanıtın başlığına yazılır.
 - TANIMLI (RFC-0047 §8): IO izi kimlik kararını `dav_kimligi` (kullanıcı,
   önek, çözücü adı), `dav_ozet_dogrula` (kayıttaki özet → sonuç) ve
   `dav_kovasi` (kova, anahtar → karar) olaylarıyla kaydeder; 401, 429 ve

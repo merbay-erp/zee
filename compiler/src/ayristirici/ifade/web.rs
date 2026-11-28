@@ -39,7 +39,20 @@ pub(super) fn oturum_yonetimi_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>
 
 /// Contextual, zero-argument HTTP metadata expressions (K-209).
 /// K-405: `isteğin ham gövdesi` aynı yüzeyin üç kelimelik tek biçimidir.
-pub(super) fn sifir_argumanli(tokenlar: &[Token], ilk: Option<&str>, son: &str) -> Option<Ifade> {
+/// RFC-0047 (ADR-182 dilim D): `isteğin "<ad>" başlığı` de bu yüzeydedir.
+pub(super) fn sifir_argumanli(
+    tokenlar: &[Token],
+    ilk: Option<&str>,
+    son: &str,
+) -> Result<Option<Ifade>, Tani> {
+    if let Some(sonuc) = crate::ayristirici::dav_basligi::istek_basligi(tokenlar, tokenlar[0].satir)
+    {
+        return sonuc.map(Some);
+    }
+    Ok(sifir_argumanli_ic(tokenlar, ilk, son))
+}
+
+fn sifir_argumanli_ic(tokenlar: &[Token], ilk: Option<&str>, son: &str) -> Option<Ifade> {
     let n = tokenlar.len();
     if n == 3
         && ilk == Some("isteğin")

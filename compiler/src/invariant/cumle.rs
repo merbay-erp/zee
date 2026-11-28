@@ -86,6 +86,7 @@ impl Denetleyici<'_> {
                 satir,
             }
             | Cumle::YanitGonder { deger, satir, .. }
+            | Cumle::YanitEtagi { deger, satir }
             | Cumle::Yonlendir {
                 adres: deger,
                 satir,

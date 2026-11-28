@@ -185,7 +185,9 @@ pub(super) fn rota_sozlukleri(
     let bos = || Deger::Sozluk(Vec::new());
     Ok(match kip {
         RotaKipi::Olagan => Some((cerezler.clone(), oturum.clone())),
-        RotaKipi::Dav => kimligi_coz(program, io, yontem, satir)?.map(|oturum| (bos(), oturum)),
+        RotaKipi::Dav => kimligi_coz(program, io, yontem, satir)?
+            .filter(|_| super::dav_istegi::on_denetim(io, yontem))
+            .map(|oturum| (bos(), oturum)),
         RotaKipi::Onbellekli(_) | RotaKipi::Makine => Some((bos(), bos())),
     })
 }

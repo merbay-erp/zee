@@ -8,14 +8,44 @@
 //! parolasıdır: başlık burada çözülür, gizli kısım bu süreçte kalır ve
 //! yorumlayıcıya yalnız kullanıcı adı ile arama öneki verilir. Üretim
 //! profilinde (`--web-proxy`) DAV rotaları yalnız ayrı `dav_kökeni`
-//! origin'inde sunulur. Bu dilimde gövde okunur ve atılır (ham DAV gövdesi
-//! RFC-0047 dilim D'dir).
+//! origin'inde sunulur. Dilim D: gövde yöntem başına tavan ve içerik türüyle
+//! okunur, katı UTF-8 ham gövde olarak zarfa girer (form değil); `Depth`,
+//! `If-Match`, `If-None-Match` ham olarak yorumlayıcıya verilir.
 
 use super::*;
 use dil::guvenlik::uygulama_parolasi as up;
 
-/// Bu dilimde DAV gövdesinin okunup atıldığı tavan (spec/11 §5 varsayılanı).
-const DAV_GOVDE_SINIRI: usize = 64 * 1024;
+/// DAV isteğinden yorumlayıcıya geçen başlıklar (kapalı liste).
+const DAV_BASLIKLARI: [&str; 3] = ["Depth", "If-Match", "If-None-Match"];
+
+/// RFC-0047 §4: PUT `text/calendar`/`text/vcard`; PROPFIND (isteğe bağlı)
+/// ve REPORT `application/xml`/`text/xml`; `charset` varsa yalnız `utf-8`.
+fn dav_icerik_turu(baslik: &HttpIstekBasligi<'_>) -> Result<(), (u16, &'static str)> {
+    let yontem = baslik.yontem().to_ascii_uppercase();
+    let izinli: &[&str] = match yontem.as_str() {
+        "PUT" => &["text/calendar", "text/vcard"],
+        "PROPFIND" | "REPORT" => &["application/xml", "text/xml"],
+        _ => return Ok(()),
+    };
+    let tur = match baslik.baslik_degerleri("Content-Type").as_slice() {
+        [] if yontem == "PROPFIND" => return Ok(()),
+        [] => return Err((415, "DAV isteği Content-Type istiyor")),
+        [tur] => *tur,
+        _ => return Err((400, "birden çok Content-Type başlığı reddedildi")),
+    };
+    let mut parcalar = tur.split(';');
+    let medya = parcalar.next().unwrap_or_default().trim();
+    let utf8_disi = parcalar
+        .filter_map(|p| p.split_once('='))
+        .any(|(ad, deger)| {
+            ad.trim().eq_ignore_ascii_case("charset")
+                && !deger.trim().trim_matches('"').eq_ignore_ascii_case("utf-8")
+        });
+    if !izinli.iter().any(|t| medya.eq_ignore_ascii_case(t)) || utf8_disi {
+        return Err((415, "DAV isteğinin içerik türü bu yöntemde kabul edilmiyor"));
+    }
+    Ok(())
+}
 
 /// Geçerli isteğin DAV kimlik durumu. `kullanici` yoksa başlık eksik ya da
 /// bozuktur; `parola` biçim kapısından geçen (önek, gizli) çiftidir.
@@ -23,6 +53,8 @@ const DAV_GOVDE_SINIRI: usize = 64 * 1024;
 pub(super) struct DavIstegi {
     kullanici: Option<String>,
     parola: Option<(String, String)>,
+    /// `Depth`, `If-Match`, `If-None-Match` ham değerleri (tekrarlar dahil).
+    basliklar: Vec<(String, String)>,
 }
 
 impl GercekIo {
@@ -112,12 +144,25 @@ impl GercekIo {
             [deger] => up::basic_coz(deger),
             _ => None,
         };
+        let basliklar = DAV_BASLIKLARI
+            .iter()
+            .flat_map(|ad| {
+                baslik
+                    .baslik_degerleri(ad)
+                    .into_iter()
+                    .map(|deger| (ad.to_string(), deger.to_string()))
+            })
+            .collect();
         self.dav_istegi = Some(match kimlik {
             Some((kullanici, parola)) => DavIstegi {
                 kullanici: Some(kullanici),
                 parola: up::parolayi_coz(&parola),
+                basliklar,
             },
-            None => DavIstegi::default(),
+            None => DavIstegi {
+                basliklar,
+                ..DavIstegi::default()
+            },
         });
         true
     }
@@ -136,9 +181,17 @@ impl GercekIo {
         if !self.dav_on_kapisi(akis, baslik, https) {
             return None;
         }
-        let oturum_cerez_adi = self.oturum_cerez_adi().to_string();
         let head = baslik.yontem().eq_ignore_ascii_case("HEAD");
-        match istek_govdesini_oku(
+        if let Err((durum, mesaj)) = dav_icerik_turu(baslik) {
+            ham_http_hatasi_gonder(akis, durum, mesaj, head, https);
+            return None;
+        }
+        // Gövdesiz yöntemde (GET/HEAD/DELETE) gelen gövde yorumlayıcıda 400'dür.
+        let sinir = dil::agac::HttpYontemi::ayristir(&baslik.yontem().to_ascii_uppercase())
+            .and_then(dil::yorumlayici::dav_govde_siniri)
+            .unwrap_or(64 * 1024);
+        let oturum_cerez_adi = self.oturum_cerez_adi().to_string();
+        let govde = match istek_govdesini_oku(
             akis,
             &self.kok,
             baslik,
@@ -146,18 +199,18 @@ impl GercekIo {
             son_tarih,
             https,
             &oturum_cerez_adi,
-            DAV_GOVDE_SINIRI,
+            sinir,
         ) {
-            Ok(_) => {}
+            Ok((govde, _)) => govde,
             Err(GovdeReddi::Gonderildi) => return None,
             Err(red) => {
                 red.ham_gonder(akis, head, https);
                 return None;
             }
-        }
+        };
         self.web_istegini_baslat(akis, baslik, es, https)?;
-        let zarf = format!("{} {}\nçerez \n", baslik.yontem(), baslik.hedef());
-        Some((zarf, None, DAV_GOVDE_SINIRI))
+        let zarf = format!("{} {}\nçerez \n{govde}", baslik.yontem(), baslik.hedef());
+        Some((zarf, None, sinir))
     }
 
     /// Bildirilen HMAC anahtarları; okunamayan anahtar atlanır (o kimlikli
@@ -171,6 +224,13 @@ impl GercekIo {
                 Some((bildirim.kimlik.clone(), anahtar))
             })
             .collect()
+    }
+
+    pub(super) fn dav_basliklarini_ver(&self) -> Vec<(String, String)> {
+        self.dav_istegi
+            .as_ref()
+            .map(|istek| istek.basliklar.clone())
+            .unwrap_or_default()
     }
 
     pub(super) fn dav_kimligi_ver(&self) -> Option<dil::yorumlayici::DavKimligi> {
@@ -232,6 +292,18 @@ impl GercekIo {
             }
         }
         bekle.map_or(Ok(()), Err)
+    }
+
+    /// RFC-0047 dilim D: bekleyen ETag yalnız 2xx yanıtın başlığına girer.
+    pub(super) fn etag_ekle(&mut self, baslik: String, durum: u16) -> String {
+        match self.bekleyen_etag.take() {
+            Some(etag) if (200..300).contains(&durum) => baslik.replacen(
+                "Connection: close\r\n",
+                &format!("ETag: {etag}\r\nConnection: close\r\n"),
+                1,
+            ),
+            _ => baslik,
+        }
     }
 
     /// 401 ek başlığı: `WWW-Authenticate: Basic` ve kanonik origin realm'i.
