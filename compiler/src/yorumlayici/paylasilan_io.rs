@@ -144,6 +144,24 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
         self.ic.borrow_mut().yontem_reddi_gonder(izinli, yanit);
     }
+    fn dav_kimligi(&mut self) -> Option<super::DavKimligi> {
+        self.ic.borrow_mut().dav_kimligi()
+    }
+    fn dav_ozet_dogrula(&mut self, ozet: Option<&str>) -> bool {
+        self.ic.borrow_mut().dav_ozet_dogrula(ozet)
+    }
+    fn dav_kovasi(&mut self, kova: super::DavKova, anahtar: &str) -> Result<(), i64> {
+        self.ic.borrow_mut().dav_kovasi(kova, anahtar)
+    }
+    fn dav_kimlik_reddi_gonder(&mut self) {
+        self.ic.borrow_mut().dav_kimlik_reddi_gonder();
+    }
+    fn dav_kova_reddi_gonder(&mut self, saniye: i64) {
+        self.ic.borrow_mut().dav_kova_reddi_gonder(saniye);
+    }
+    fn secenekler_gonder(&mut self, izinli: &str) {
+        self.ic.borrow_mut().secenekler_gonder(izinli);
+    }
     fn dosya_yaniti_gonder(&mut self, yol: &str, tur: &str, ad: &str) -> Result<i64, String> {
         self.ic.borrow_mut().dosya_yaniti_gonder(yol, tur, ad)
     }

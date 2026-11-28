@@ -185,4 +185,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-178 | [Yanıt ve yönlendirme rota gövdesini bitirir](178-yanit-rota-sonu.md) | **kabul** (K-403/GB-176) |
 | ADR-179 | [Makine uç noktası: CSRF muafiyeti yalnız kimliksiz rotaya](179-makine-uc-noktasi.md) | **kabul** (K-405/GB-180; RFC-0046) |
 | ADR-181 | [`dil göçür` ileri kayıt toleransı (A/B kök geri dönüşü)](181-goc-ileri-kayit-toleransi.md) | **kabul** (K-407; `urun-i` dogfood) |
-| ADR-182 | [DAV istemci rotası: RFC-0047 uygulaması, dilim sırası ve açık soruların kapanışı](182-dav-istemci-rotasi-ilk-dilim.md) | **kabul** (K-364/GB-185, GB-186; RFC-0047 dilim A ve B uygulandı, C–D açık) |
+| ADR-182 | [DAV istemci rotası: RFC-0047 uygulaması, dilim sırası ve açık soruların kapanışı](182-dav-istemci-rotasi-ilk-dilim.md) | **kabul** (K-364/GB-185–187; RFC-0047 dilim A, B ve C uygulandı, D açık) |

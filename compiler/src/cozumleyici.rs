@@ -159,6 +159,13 @@ pub fn yetkinlikleri_denetle(
     yetkinlik::denetle(program, politika)
 }
 
+/// RFC-0047 (ADR-182 dilim C): proje kipinde `dav istemcisi gerekli` rotası
+/// `dav_kimlik_çözücüsü` ister; çözücü iki parametreli, değer döndüren, salt
+/// okuma bir `işlem`dir (T067). Resmî CLI proje kipinde zorunlu uygular.
+pub fn dav_cozucusunu_denetle(program: &Program, cozucu: Option<&str>) -> Result<(), Tani> {
+    etki::dav::cozucuyu_denetle(program, cozucu)
+}
+
 /// Programı denetler ve başarılı geçişin typed HIR lowering bilgisini verir.
 pub(crate) fn denetle_ve_hir_bilgisi(
     program: &mut Program,

@@ -80,6 +80,9 @@ pub enum HttpYontemi {
     Put,
     Patch,
     Delete,
+    /// RFC-0047 A (ADR-182 dilim C): yalnız `dav istemcisi gerekli` rotasında.
+    Propfind,
+    Report,
 }
 
 /// Rota erişim sözleşmesi. Güvenli olmayan her rota bunu gövdesinin ilk
@@ -106,6 +109,9 @@ pub enum RotaKipi {
     /// `herkese açık makine uç noktası` — CSRF/Origin, oturum ve çerez yüzeyi
     /// olmayan POST makine ucu (ADR-179).
     Makine,
+    /// RFC-0047 F (ADR-182 dilim C): `dav istemcisi gerekli` — çerezsiz Basic +
+    /// uygulama parolasıyla kimlikli, CSRF/Origin muafiyetli DAV istemci rotası.
+    Dav,
 }
 
 /// K-405: makine uç noktası isteğinin ham gövde tavanı (bayt); aşım 413'tür.
@@ -144,6 +150,39 @@ impl Program {
     }
 }
 
+impl Program {
+    /// RFC-0047 (ADR-182 dilim C): `dav istemcisi gerekli` rotalarının sabit
+    /// yolları ve önek bayrağı. Native adaptör isteği gövde/Origin/çerez
+    /// işinden önce bu kümeye göre DAV sınıfı sayar.
+    pub fn dav_yollari(&self) -> Vec<(String, bool)> {
+        let mut yollar: Vec<(String, bool)> = self
+            .cumleler
+            .iter()
+            .filter_map(|cumle| match cumle {
+                Cumle::IstekGeldiginde {
+                    yol, onekli, govde, ..
+                } if matches!(
+                    govde.first(),
+                    Some(Cumle::RotaPolitikasi {
+                        kip: RotaKipi::Dav,
+                        ..
+                    })
+                ) =>
+                {
+                    match yol.turu() {
+                        Ifade::MetinSabiti(yol) => Some((yol.clone(), *onekli)),
+                        _ => None,
+                    }
+                }
+                _ => None,
+            })
+            .collect();
+        yollar.sort();
+        yollar.dedup();
+        yollar
+    }
+}
+
 impl HttpYontemi {
     pub fn ayristir(yazim: &str) -> Option<Self> {
         match yazim {
@@ -153,6 +192,8 @@ impl HttpYontemi {
             "PUT" => Some(Self::Put),
             "PATCH" => Some(Self::Patch),
             "DELETE" => Some(Self::Delete),
+            "PROPFIND" => Some(Self::Propfind),
+            "REPORT" => Some(Self::Report),
             _ => None,
         }
     }
@@ -165,22 +206,33 @@ impl HttpYontemi {
             Self::Put => "PUT",
             Self::Patch => "PATCH",
             Self::Delete => "DELETE",
+            Self::Propfind => "PROPFIND",
+            Self::Report => "REPORT",
         }
     }
 
+    /// Salt okuma yöntemleri (T045): GET, HEAD ve RFC-0047 PROPFIND/REPORT.
     pub fn guvenli(self) -> bool {
-        matches!(self, Self::Get | Self::Head)
+        matches!(self, Self::Get | Self::Head | Self::Propfind | Self::Report)
+    }
+
+    /// RFC-0047 (ADR-182 dilim C): `dav istemcisi gerekli` rotasının
+    /// yazılabildiği yöntemler.
+    pub fn dav_yontemi(self) -> bool {
+        !matches!(self, Self::Post | Self::Patch)
     }
 
     /// RFC-0047 A (ADR-182): kapalı yöntem kaydı, `Allow` başlığının kanonik
     /// sırasıyla. Kayıtta olmayan yöntem yoldan bağımsız 501'dir.
-    pub const KAYIT: [Self; 6] = [
+    pub const KAYIT: [Self; 8] = [
         Self::Get,
         Self::Head,
         Self::Post,
         Self::Put,
         Self::Patch,
         Self::Delete,
+        Self::Propfind,
+        Self::Report,
     ];
 
     /// RFC-0047 A (ADR-182): yol eşleşip yöntem eşleşmediğinde 405 yanıtının

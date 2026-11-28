@@ -340,7 +340,7 @@ impl Ayristirici {
                         1,
                     )
                     .onerili(
-                        "Yöntemlerden birini açıkça yaz: GET, HEAD, POST, PUT, PATCH, DELETE."
+                        "Yöntemlerden birini açıkça yaz: GET, HEAD, POST, PUT, PATCH, DELETE; DAV rotasında PROPFIND, REPORT."
                             .into(),
                     ))
                 }

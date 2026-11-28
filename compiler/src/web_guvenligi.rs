@@ -152,6 +152,14 @@ pub enum RateLimitTuru {
     Ucnokta,
     Csrf,
     Giris,
+    /// RFC-0047 §7 (ADR-182 dilim C): başarısız DAV kimliği, istemci +
+    /// kullanıcı adı (60 sn / 10). Başarı sayacı sıfırlamaz.
+    DavBasarisiz,
+    /// Başarısız DAV kimliği, istemci geneli (60 sn / 30).
+    DavIstemci,
+    /// Başarılı DAV isteği, istemci + uygulama parolası kimliği (60 sn / 600;
+    /// aday eşik, ilk eşitleme ölçümüyle bağlanır).
+    DavBasarili,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -566,14 +574,8 @@ impl WebGuvenligi {
         self.istemci_kimligi = None;
     }
 
-    pub fn rate_limit_artir(
-        &self,
-        tur: RateLimitTuru,
-        kapsam: &str,
-        an_ms: i64,
-    ) -> Result<RateLimitKarari, String> {
+    fn rate_anahtari(&self, etiket: &str, kapsam: &str) -> String {
         let istemci = self.istemci_kimligi.as_deref().unwrap_or("bilinmeyen");
-        let (etiket, sinir, pencere_saniye) = rate_limit_profili(tur);
         let ham = format!(
             "zee-rate-1\0{}:{}\0{}:{}\0{}:{}",
             etiket.len(),
@@ -583,7 +585,49 @@ impl WebGuvenligi {
             kapsam.len(),
             kapsam
         );
-        let anahtar = crate::guvenlik::sha256_hex(ham.as_bytes());
+        crate::guvenlik::sha256_hex(ham.as_bytes())
+    }
+
+    /// RFC-0047 (ADR-182 dilim C): kovayı artırmadan denetler; pencere
+    /// içinde sınır kadar sayılmış kova doludur.
+    pub fn rate_limit_bak(
+        &self,
+        tur: RateLimitTuru,
+        kapsam: &str,
+        an_ms: i64,
+    ) -> Result<RateLimitKarari, String> {
+        let (etiket, sinir, _) = rate_limit_profili(tur);
+        let anahtar = self.rate_anahtari(etiket, kapsam);
+        let kayit = match &self.oran_bellek {
+            Some(depo) => depo.bak(&anahtar, an_ms)?,
+            None => self.depo.guncelle(|durum| {
+                Ok(durum
+                    .oranlar
+                    .get(&anahtar)
+                    .filter(|kayit| kayit.pencere_sonu_ms > an_ms)
+                    .map(|kayit| (kayit.sayi, kayit.pencere_sonu_ms)))
+            })?,
+        };
+        Ok(match kayit {
+            Some((sayi, son)) if sayi >= sinir => RateLimitKarari {
+                izinli: false,
+                yeniden_dene_saniye: son.saturating_sub(an_ms).saturating_add(999) / 1_000,
+            },
+            _ => RateLimitKarari {
+                izinli: true,
+                yeniden_dene_saniye: 0,
+            },
+        })
+    }
+
+    pub fn rate_limit_artir(
+        &self,
+        tur: RateLimitTuru,
+        kapsam: &str,
+        an_ms: i64,
+    ) -> Result<RateLimitKarari, String> {
+        let (etiket, sinir, pencere_saniye) = rate_limit_profili(tur);
+        let anahtar = self.rate_anahtari(etiket, kapsam);
         let pencere_ms = pencere_saniye.saturating_mul(1_000);
         let azami_anahtar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
             .web()
@@ -636,6 +680,9 @@ fn rate_limit_profili(tur: RateLimitTuru) -> (&'static str, u32, i64) {
             sinirlar.giris_orani(),
             sinirlar.giris_penceresi_saniye(),
         ),
+        RateLimitTuru::DavBasarisiz => ("dav-başarısız", 10, 60),
+        RateLimitTuru::DavIstemci => ("dav-istemci", 30, 60),
+        RateLimitTuru::DavBasarili => ("dav-başarılı", 600, 60),
     }
 }
 

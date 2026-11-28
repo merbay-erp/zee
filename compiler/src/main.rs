@@ -37,6 +37,8 @@ mod ag_izni;
 #[cfg(unix)]
 #[path = "cli/ag_tls.rs"]
 mod ag_tls;
+#[path = "cli/dav_ucu.rs"]
+mod dav_ucu;
 #[path = "cli/registry.rs"]
 mod dil_registry;
 #[path = "cli/dkim.rs"]
@@ -1176,6 +1178,7 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
         {
             if let Err(tani) =
                 dil::cozumleyici::yetkinlikleri_denetle(program.program(), &girdi.politikasi())
+                    .and_then(|()| girdi.dav_cozucusunu_denetle(program.program()))
             {
                 tanilar.push(tani);
             } else if lint {
@@ -1780,6 +1783,17 @@ impl KaynakGirdisi {
         }
     }
 
+    /// RFC-0047 (ADR-182 dilim C): proje kipinde DAV kimlik çözücüsü (T067).
+    fn dav_cozucusunu_denetle(&self, program: &dil::agac::Program) -> Result<(), dil::tani::Tani> {
+        match &self.proje {
+            Some(proje) => dil::cozumleyici::dav_cozucusunu_denetle(
+                program,
+                proje.ana_bildirim().dav.kimlik_cozucusu.as_deref(),
+            ),
+            None => Ok(()),
+        }
+    }
+
     fn dinleyiciler(&self) -> &[dil::proje::DinleyiciBildirimi] {
         self.proje
             .as_ref()
@@ -1826,6 +1840,13 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().uygulama_parolasi_anahtarlari.clone())
             .unwrap_or_default();
+        if let Some(dav) = self.proje.as_ref().map(|p| &p.ana_bildirim().dav) {
+            io.dav_kimlik_cozucusu = dav.kimlik_cozucusu.clone();
+            io.dav_kokeni = dav
+                .koken
+                .as_deref()
+                .and_then(|koken| AgHedefi::https_origininden(koken).ok());
+        }
         io.cok_parcali_yukleme = self
             .proje
             .as_ref()
@@ -2104,6 +2125,12 @@ struct GercekIo {
     guvenilir_betikler: GuvenilirBetikler,
     /// K-405: bu istek bir makine uç noktasına gidiyor (istek başında sıfırlanır).
     makine_istegi: bool,
+    /// RFC-0047 (ADR-182 dilim C): bu istek bir DAV istemci rotasına gidiyor;
+    /// çözülmüş Basic kimliği (istek başında sıfırlanır).
+    dav_istegi: Option<dav_ucu::DavIstegi>,
+    /// `dav_kökeni` (üretim profilinde zorunlu ayrı origin) ve çözücü adı.
+    dav_kokeni: Option<AgHedefi>,
+    dav_kimlik_cozucusu: Option<String>,
     /// K-390: `dns` yetkinliğinin bildirilmiş loopback çözücüsü.
     dns: Option<dil::dns_teli::DnsAyari>,
 }
@@ -2117,6 +2144,8 @@ type GuvenilirBetikler = std::sync::Arc<DerlemeKumeleri>;
 struct DerlemeKumeleri {
     betikler: std::sync::OnceLock<std::collections::BTreeSet<String>>,
     makine_yollari: std::sync::OnceLock<std::collections::BTreeSet<String>>,
+    /// RFC-0047: `dav istemcisi gerekli` rotalarının (yol, önekli) kümesi.
+    dav_yollari: std::sync::OnceLock<Vec<(String, bool)>>,
 }
 
 #[derive(Clone)]
@@ -2140,8 +2169,10 @@ enum WebYanitTaslagi {
     /// K-406: kayıtlı metin türüyle (Content-Type değeri) bellekteki gövde;
     /// RFC-0047 C (ADR-182): durum kapalı `TURLU_YANIT_DURUMLARI` kümesinde.
     Turlu(String, u16, String),
-    /// RFC-0047 A (ADR-182): 405 + kanonik `Allow` değeri ve gövde.
-    YontemReddi(String, String),
+    /// RFC-0047 (ADR-182 dilim C): çalışma zamanının yazdığı ek başlıklı
+    /// durum yanıtı (401 `WWW-Authenticate`, 429 `Retry-After`, OPTIONS
+    /// `Allow` + `DAV`); ek başlıklar sabit ya da kayıt adlarından kurulur.
+    Ozel(u16, String, String),
 }
 
 /// K-378: doğrulanmış, açık dosya tanıtıcısı ve çağrı anındaki uzunluğu.
@@ -2252,6 +2283,9 @@ impl GercekIo {
             bekleyen_head: false,
             guvenilir_betikler: GuvenilirBetikler::default(),
             makine_istegi: false,
+            dav_istegi: None,
+            dav_kokeni: None,
+            dav_kimlik_cozucusu: None,
             son_istek: None,
             eylem_yedekleri: Vec::new(),
             web_guvenligi,
@@ -2521,8 +2555,8 @@ impl GercekIo {
     }
 
     fn cerez_basliklarini_al(&mut self) -> String {
-        if self.makine_istegi {
-            // K-405: makine ucu hiçbir koşulda Set-Cookie göndermez.
+        if self.makine_istegi || self.dav_istegi.is_some() {
+            // K-405/RFC-0047: makine ucu ve DAV hiçbir koşulda Set-Cookie göndermez.
             self.bekleyen_cerezler.clear();
             self.bekleyen_silinen_cerezler.clear();
             self.kayar_oturum_belirteci = None;
@@ -2589,7 +2623,7 @@ impl GercekIo {
         let (taslak, asim) = govde_asimi_taslagi(self.bekleyen_govde_asimi.take(), taslak);
         let status = match &taslak {
             WebYanitTaslagi::Durum(status, _) | WebYanitTaslagi::Turlu(_, status, _) => *status,
-            WebYanitTaslagi::YontemReddi(..) => 405,
+            WebYanitTaslagi::Ozel(durum, ..) => *durum,
             WebYanitTaslagi::Yonlendirme(_) => 303,
             WebYanitTaslagi::Govde(_) if asim => 413,
             _ => 200,
@@ -2616,9 +2650,7 @@ impl GercekIo {
             WebYanitTaslagi::Turlu(tur, durum, govde) => {
                 (self.turlu_yanit_basligi(&tur, durum, govde.len()), govde)
             }
-            WebYanitTaslagi::YontemReddi(izinli, govde) => {
-                self.yontem_reddi_basligi(&izinli, govde)
-            }
+            WebYanitTaslagi::Ozel(durum, ek, govde) => self.ozel_basligi(durum, &ek, govde),
             WebYanitTaslagi::Durum(204, _) => (self.bos_204_basligi(), String::new()),
             WebYanitTaslagi::Durum(durum, govde) => {
                 let guvenlik_basliklari = self.guvenlik_basliklari();
@@ -2772,6 +2804,9 @@ impl GercekIo {
         if self.makine_istegi {
             return self.makine_zarfini_kur(akis, baslik, ilk_govde, es, son_tarih, https);
         }
+        if self.dav_istegi.is_some() {
+            return self.dav_zarfini_kur(akis, baslik, ilk_govde, es, son_tarih, https);
+        }
         let form_butcesi = self.form_butcesi(baslik);
         match self.govdeyi_oku_ve_istegi_baslat(akis, baslik, ilk_govde, es, son_tarih, https) {
             Ok((govde, yukleme, cerez_satiri)) => {
@@ -2860,12 +2895,13 @@ impl GercekIo {
         self.kayar_oturum_belirteci = None;
     }
     /// RFC-0047 A (ADR-182): 405 + kanonik `Allow`; çerez taslağı atılır.
-    fn yontem_reddi_basligi(&mut self, izinli: &str, govde: String) -> (String, String) {
+    /// RFC-0047: ek başlıklı durum yanıtı (405 `Allow`, 401, 429, OPTIONS).
+    fn ozel_basligi(&mut self, durum: u16, ek: &str, govde: String) -> (String, String) {
         let guvenlik_basliklari = self.guvenlik_basliklari();
         self.durum_cerezlerini_at();
         let baslik = format!(
-            "HTTP/1.1 405 Method Not Allowed\r\nAllow: {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
-            izinli,
+            "HTTP/1.1 {durum} {}\r\n{ek}Content-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
+            http_durum_aciklamasi(durum),
             govde.len(),
             guvenlik_basliklari
         );
@@ -2940,8 +2976,10 @@ impl GercekIo {
         let yontem = baslik.yontem();
         let hedef = baslik.hedef();
         let head = yontem.eq_ignore_ascii_case("HEAD");
-        let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
-            match guvenli_proxy_istegini_denetle(baslik, origin, yontem, self.makine_istegi) {
+        let istemci_kimligi = if let Some(origin) = self.beklenen_origin() {
+            // RFC-0047: DAV Origin zorunluluğundan muaftır (yabancı Origin önce 403).
+            let muaf = self.makine_istegi || self.dav_istegi.is_some();
+            match guvenli_proxy_istegini_denetle(baslik, origin, yontem, muaf) {
                 Ok(kimlik) => kimlik,
                 Err((durum, mesaj)) => {
                     ham_http_hatasi_gonder(akis, durum, mesaj, head, true);
@@ -2964,7 +3002,7 @@ impl GercekIo {
             return None;
         }
         // K-405: makine ucu çerezi hiç okumaz; oturum anonim, kayar yenileme yok.
-        let cerez = match self.makine_istegi {
+        let cerez = match self.makine_istegi || self.dav_istegi.is_some() {
             true => "",
             false => cerez_degerleri.first().copied().unwrap_or_default(),
         };
@@ -4819,6 +4857,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if self.web_modu == WebModu::Kapali {
             return Err("web yüzeyi kapalı; prototip için `--deneysel-web`, üretim için `--web-proxy https://host` kullan".into());
         }
+        self.dav_kokenini_denetle()?;
         let gercek_kapi = self.web_worker_kapisi().map(i64::from).unwrap_or(kapi);
         #[cfg(unix)]
         let inherited = if let WebModu::GuvenliProxy {
@@ -4902,6 +4941,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         // K-391: önceki isteğin yazılmamış aşım işareti sonrakine taşınmaz.
         self.bekleyen_govde_asimi = None;
         self.makine_istegi = false;
+        self.dav_istegi = None;
         loop {
             #[cfg(unix)]
             if web_kapanisi_istendi(&self.web_kapanis) {
@@ -4989,6 +5029,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 continue;
             }
             self.makine_istegi = self.makine_istegi_mi(&baslik);
+            self.dav_istegi = self
+                .dav_istegi_mi(&baslik)
+                .then(dav_ucu::DavIstegi::default);
             let Some((ham, yukleme, yorum_siniri)) = self.istek_zarfini_kur(
                 &mut akis,
                 &baslik,
@@ -5005,7 +5048,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
             self.son_istek = Some((baslik.yontem().to_string(), baslik.hedef().to_string()));
             (self.yanit_onbellegi, self.istek_oturuma_dokundu) = (None, false);
-            if self.makine_istegi {
+            if self.makine_istegi || self.dav_istegi.is_some() {
                 return Some(ham);
             }
             let bilgi = self.web_guvenligi.oturum_bilgisi(web_duvar_saati_ms());
@@ -5293,10 +5336,32 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.web_taslagini_birak(taslak);
     }
     fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
-        self.web_taslagini_birak(WebYanitTaslagi::YontemReddi(
-            izinli.to_string(),
-            yanit.to_string(),
-        ));
+        // RFC-0047 A (ADR-182): 405 + kanonik `Allow`.
+        let ek = format!("Allow: {izinli}\r\n");
+        self.web_taslagini_birak(WebYanitTaslagi::Ozel(405, ek, yanit.to_string()));
+    }
+    fn dav_kimligi(&mut self) -> Option<dil::yorumlayici::DavKimligi> {
+        self.dav_kimligi_ver()
+    }
+    fn dav_ozet_dogrula(&mut self, ozet: Option<&str>) -> bool {
+        self.dav_ozetini_dogrula(ozet)
+    }
+    fn dav_kovasi(&mut self, kova: dil::yorumlayici::DavKova, anahtar: &str) -> Result<(), i64> {
+        self.dav_kovasini_isle(kova, anahtar)
+    }
+    fn dav_kimlik_reddi_gonder(&mut self) {
+        let ek = self.dav_realm_basligi();
+        let govde = dil::yorumlayici::DAV_KIMLIK_REDDI.to_string();
+        self.web_taslagini_birak(WebYanitTaslagi::Ozel(401, ek, govde));
+    }
+    fn dav_kova_reddi_gonder(&mut self, saniye: i64) {
+        let ek = format!("Retry-After: {}\r\n", saniye.max(1));
+        let govde = dil::yorumlayici::DAV_KOVA_REDDI.to_string();
+        self.web_taslagini_birak(WebYanitTaslagi::Ozel(429, ek, govde));
+    }
+    fn secenekler_gonder(&mut self, izinli: &str) {
+        let ek = format!("Allow: {izinli}\r\nDAV: calendar-access, addressbook\r\n");
+        self.web_taslagini_birak(WebYanitTaslagi::Ozel(200, ek, String::new()));
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.web_istek_yedegi.is_some() {
@@ -6043,8 +6108,11 @@ fn calistir_io_ile(
         );
         let _ = kume.betikler.set(ozetler);
         let _ = kume.makine_yollari.set(program.makine_uc_noktasi_yollari());
+        let _ = kume.dav_yollari.set(program.dav_yollari());
     }
-    if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, politika) {
+    if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, politika)
+        .and_then(|()| girdi.dav_cozucusunu_denetle(&program))
+    {
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
     }
@@ -6125,6 +6193,7 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     // `dene` toplayan IO ile koşar, gerçek ağa çıkmaz (K-387 öncesi profil).
     if let Err(tani) =
         dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.yan_etkisiz_politika())
+            .and_then(|()| girdi.dav_cozucusunu_denetle(&program))
     {
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;

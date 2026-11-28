@@ -38,6 +38,9 @@ api	io-izi.baglanti_gunluk	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"b
 api	io-izi.baglanti_islemi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_islemi"
 api	io-izi.baglanti_kaydet	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"baglanti_kaydet"
 api	io-izi.birincil_surec	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"birincil_surec"
+api	io-izi.dav_kimligi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_kimligi"
+api	io-izi.dav_kovasi	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_kovasi"
+api	io-izi.dav_ozet_dogrula	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dav_ozet_dogrula"
 api	io-izi.dosya_araligi_oku	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_araligi_oku"
 api	io-izi.dosya_ilk_baytlari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_ilk_baytlari"
 api	io-izi.dosya_yaniti_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_yaniti_gonder"
@@ -63,7 +66,7 @@ api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_B
 api	web.dosya_yaniti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
 api	web.istek_ham_govdesi	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_HAM_GOVDE: &str = "web.istek_ham_govdesi";
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
-bicim	http-yontem-kaydi	aktif	1.0.0-dev	compiler/src/agac.rs	pub const KAYIT: [Self; 6] = [
+bicim	http-yontem-kaydi	aktif	1.0.0-dev	compiler/src/agac.rs	pub const KAYIT: [Self; 8] = [
 bicim	icerik-turu.csv	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/csv",
 bicim	icerik-turu.docx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 bicim	icerik-turu.ics	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/calendar",
@@ -157,7 +160,9 @@ kalip	JSON	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	MX	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	PATCH	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	POST	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	PROPFIND	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	PUT	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	REPORT	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	TLS	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	TLSA	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	TXT	aktif	1.0.0-dev	compiler/src/lsp.rs	-
@@ -197,6 +202,7 @@ kalip	bitir	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	bloğunu	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	böl	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	dakika	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	dav	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	dene	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	değilse	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	değişmişi	aktif	0.7.0	compiler/src/lsp.rs	-

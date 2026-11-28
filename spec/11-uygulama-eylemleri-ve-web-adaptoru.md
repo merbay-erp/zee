@@ -226,8 +226,9 @@ GET "/dav/" önekli adrese istek geldiğinde
   gerçek adaptör gövdeyi yazmaz. Açık HEAD rotası önceliklidir. GET rotası
   olmayan yolda (ör. yalnız POST) HEAD 405 + `Allow` alır.
 - ZORUNLU (RFC-0047 A): İstek yöntemi kapalı yöntem kaydında
-  (`HttpYontemi::KAYIT`) yoksa (ör. `PROPFIND`, `REPORT`, `OPTIONS`,
-  `LOCK`, `MKCALENDAR`, `PROPPATCH`, `MOVE`) yanıt yoldan bağımsız 501'dir
+  (`HttpYontemi::KAYIT`; dilim C'den beri `PROPFIND` ve `REPORT` dahil)
+  yoksa (ör. `LOCK`, `MKCALENDAR`, `PROPPATCH`, `MOVE`; DAV öneki dışında
+  `OPTIONS`) yanıt yoldan bağımsız 501'dir
   (RFC 9110 §15.6.2); rota eşleştirmesi, `_csrf` denetimi ve rota gövdesi
   hiç çalışmaz, `Allow` yazılmaz. Yöntem karşılaştırması bugünkü gibi büyük
   harfe çevrilmiş yazımla yapılır.
@@ -244,7 +245,60 @@ GET "/dav/" önekli adrese istek geldiğinde
   (405, gövde) olarak kalır: `Allow` program ve yoldan deterministik
   türediği için ize girmez, eski izler aynı biçimde yeniden oynar.
 
-Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`dir.
+### DAV istemci rotası — RFC-0047 dilim C
+
+Normatif kaynak: [ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md)
+dilim C eki; güvenlik sözleşmesi spec/12 §RFC-0047 dilim C.
+
+```text
+PROPFIND "/dav/" önekli adrese istek geldiğinde
+    dav istemcisi gerekli
+    kim oturumun "kullanıcı" değeri olsun
+    xml metnini "application/xml" türünde 207 durumuyla gönder
+```
+
+- ZORUNLU (RFC-0047 F): `dav istemcisi gerekli` rota önsözünün ilk ve tek
+  politika cümlesidir (T049/T050) ve yalnız GET, HEAD, PROPFIND, REPORT,
+  PUT ve DELETE rotalarında, sabit (tam ya da önekli) Metin yolla yazılır.
+  POST/PATCH rotası ya da sabit olmayan yol derlemede önerili **T065**'tir.
+  `PROPFIND` ve `REPORT` yalnız bu politikayla yazılır; başka politika,
+  politikasız ya da makine ucu birleşimi **T064**'tür. İki yöntem salt okuma
+  sınıfındadır (T045). Politika `ağ-sunucusu` ve `kriptografi` yetkinliği
+  ister.
+- ZORUNLU (RFC-0047 F): DAV rotası gövdesi ya da geçişli çağırdığı
+  işlemler çerez yazma/silme, `oturuma al`, `oturumu kapat`, `csrf
+  belirteci` ve web oturumu listeleme/iptal yüzeyini kullanamaz (**T066**,
+  ilk dokunuşun satırı) ve `yeni uygulama parolası` üretemez (T063).
+  Çalışma zamanı rotaya boş `çerezler` sözlüğü verir; `oturum` yalnız
+  kimlik kararından dolar: `kullanıcı` (çözücünün kanonik adı), `rol`,
+  `kimlik_türü` = `uygulama_parolası`, `uygulama_parolası_kimliği`,
+  `kapsam`. `_csrf` aranmaz.
+- ZORUNLU (RFC-0047 E): Proje kipinde DAV rotası olan program
+  `dav_kimlik_çözücüsü` bildirir. Çözücü iki parametreli, değer döndüren
+  bir `işlem`dir (eylem değil) ve geçişli olarak durum, web ya da geri
+  alınamaz etki taşımaz; aksi ve bildirimsiz/tanımsız çözücü önerili
+  **T067**'dir (`dil denetle`, `dil çalıştır`, `dil dene`). Çözücü her
+  istekte (önbelleksiz) ASCII küçük harfe katlanmış kullanıcı adı ve
+  uygulama parolası önekiyle çağrılır; `özet`, `kullanıcı`, `rol`,
+  `kapsam`, `kimlik` Metin alanlı sözlük döndürür, alanı eksik sonuç
+  "kayıt yok" sayılır.
+- ZORUNLU (RFC-0047 A, soru 4): DAV rotasının yolu altındaki `OPTIONS`
+  isteği kimlik ve rota çalışmadan 200 ile yanıtlanır: `Allow` o yolun
+  yöntemleri (kanonik sırayla) ve `OPTIONS`, `DAV: calendar-access,
+  addressbook`; CORS başlığı yazılmaz. DAV yolu olmayan yerde `OPTIONS`
+  501'dir.
+- AÇIK (dilim D): DAV istek gövdesi bu dilimde okunur ve atılır (64 KiB
+  tavanı); `isteğin ham gövdesi` DAV rotasında hâlâ T062'dir. Başlık okuma
+  (`Depth`, `If-Match`, `If-None-Match`) ve `ETag` yazımı dilim D'dedir.
+- TANIMLI (RFC-0047 §8): IO izi kimlik kararını `dav_kimligi` (kullanıcı,
+  önek, çözücü adı), `dav_ozet_dogrula` (kayıttaki özet → sonuç) ve
+  `dav_kovasi` (kova, anahtar → karar) olaylarıyla kaydeder; 401, 429 ve
+  OPTIONS yanıtları `durum_yaniti_gonder` biçimindedir. `Authorization`
+  değeri, gizli kısım ve HMAC anahtarı ize girmez. Hermetik adaptör
+  (`ToplayanIo.dav_basic`, `dene` anahtarı) aynı kararı verir.
+
+Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`; DAV
+rotasında ayrıca `PROPFIND` ve `REPORT`tir.
 Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; yeni kod
 yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla
 korunur ancak yönlendirme/yetki kararı değildir.

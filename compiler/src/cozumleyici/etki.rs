@@ -10,6 +10,7 @@ use crate::tani::Tani;
 use std::collections::{HashMap, HashSet};
 
 mod baglanti;
+pub(super) mod dav;
 mod makine;
 mod onbellek;
 use onbellek::OnbellekIzi;
@@ -104,6 +105,7 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
         rota_onsozunu_denetle(yontem, govde, *satir)?;
         let dogrudan_rota = blok_bilgisi(govde);
         let toplam = toplam_bilgi(&dogrudan_rota, &etkiler);
+        dav::rotayi_denetle(cumle, yontem, &toplam.onbellek)?;
         makine::ozel_kipleri_denetle(cumle, yontem, &dogrudan_rota.onbellek, &toplam.onbellek)?;
 
         if yontem.guvenli() && toplam.durum_yazma {

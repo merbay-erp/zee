@@ -2,6 +2,7 @@
 
 use super::*;
 
+mod dav;
 mod makine;
 
 fn onbellek_bicimi_tanisi(satir: usize) -> Tani {
@@ -24,6 +25,9 @@ fn onbellek_bicimi_tanisi(satir: usize) -> Tani {
 pub(super) fn onbellekli_politika(tokenlar: &[Token], satir: usize) -> Option<Result<Cumle, Tani>> {
     if let Some(makine) = makine::makine_politikasi(tokenlar, satir) {
         return Some(makine);
+    }
+    if let Some(dav) = dav::dav_politikasi(tokenlar, satir) {
+        return Some(dav);
     }
     if tokenlar.len() < 3
         || !kelime_mi(&tokenlar[0], "herkese")

@@ -150,6 +150,10 @@ kalır (ADR-025).
 | T061 | Makine uç noktası oturum, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; CSRF'siz rota tarayıcı kimliğine ulaşamaz, oturuma bağlı işi ayrı CSRF korumalı rotaya taşı (K-405) |
 | T062 | `isteğin ham gövdesi` makine uç noktası rotası dışında okunuyor | Gövdeyi makine rotasında `gövde isteğin ham gövdesi olsun` ile al, işleme argüman olarak geçir; sıradan rotada form alanlarını `istek` sözlüğünden oku (K-405) |
 | T063 | `yeni uygulama parolası` herkese açık, salt okuma (GET/HEAD) ya da makine/önbellekli rotada üretiliyor | Parolayı `"kullanıcı" yetkisi gerekli` ya da `oturum gerekli` ile başlayan POST/PUT/PATCH/DELETE (CSRF korumalı) rotasında ya da rota dışı kodda üret; gövdede ya da çağrılan işlemde olabilir (RFC-0047 E, ADR-182) |
+| T064 | PROPFIND ya da REPORT rotası `dav istemcisi gerekli` dışında | PROPFIND/REPORT kimlikli DAV istemci yöntemleridir; rotanın ilk satırına `dav istemcisi gerekli` yaz; makine ucu ya da oturumlu rota olamaz (RFC-0047, ADR-182) |
+| T065 | `dav istemcisi gerekli` POST/PATCH rotasında ya da sabit olmayan yolda | DAV yalnız GET, HEAD, PROPFIND, REPORT, PUT ve DELETE'tedir; durum değiştiren işi PUT/DELETE'e taşı, yolu sabit (tam ya da önekli) metin yap (RFC-0047, ADR-182) |
+| T066 | DAV istemci rotası çerez oturumu, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; kimliği `oturumun "kullanıcı" değeri` ile oku, oturum/çerez/CSRF işini ayrı CSRF korumalı rotaya taşı (RFC-0047, ADR-182) |
+| T067 | DAV kimlik çözücüsü bildirilmemiş, tanımsız ya da salt okuma değil | Proje kipinde `dav_kimlik_çözücüsü "kimlik_coz" olsun` yaz; işlem iki Metin parametreli, değer döndüren ve durum/web etkisiz olmalı, kayıt yoksa sözlüğün alanlarını boş bırak (RFC-0047, ADR-182) |
 
 ## C — Çalışma zamanı
 
