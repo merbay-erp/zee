@@ -68,6 +68,14 @@ pub(super) fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
         }));
     }
 
+    // yeni uygulama parolası — cihaz başına uygulama parolası (RFC-0047 E).
+    if n == 3 && k(0) == Some("yeni") && k(1) == Some("uygulama") && son == "parolası" {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: UYGULAMA_PAROLASI.into(),
+            argumanlar: Vec::new(),
+        }));
+    }
+
     // <alıcı> <konu> <gövde> ile ileti göndermeyi dene → TamSayı Sonucu (K-210).
     if n == 7
         && k(3) == Some("ile")

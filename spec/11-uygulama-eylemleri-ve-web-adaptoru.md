@@ -249,6 +249,14 @@ Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; ye
 yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla
 korunur ancak yönlendirme/yetki kararı değildir.
 
+ZORUNLU (RFC-0047 E, ADR-182 dilim B): `yeni uygulama parolası` ifadesi bir
+rota gövdesinde ya da rotanın geçişli çağırdığı bir işlemde yalnız rota önsözü
+`oturum gerekli` ya da `"<rol>" yetkisi gerekli` olan ve yöntemi POST, PUT,
+PATCH ya da DELETE olan (CSRF korumalı) rotada kullanılabilir. Herkese açık
+rota (makine uç noktası ve önbelleklenebilir biçimler dahil) ile GET/HEAD
+rotası derlemede önerili **T063** alır; rota dışı kod (CLI, `dil çalıştır`)
+serbesttir.
+
 GET ve HEAD salt okumadır. Doğrudan çerez/dosya/donanım yazması veya çağrı
 grafiğinde ulaşılabilen yazıcı eylem T045 ile derlemede reddedilir. Aynı
 yöntem+yol çifti iki kez tanımlanamaz (T047). HEAD gerçek TCP adaptöründe GET

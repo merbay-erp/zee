@@ -21,6 +21,19 @@ Bu kayıt yeni sürüm etiketi değildir.
   eklendi (web metin ve dosya yanıtı; e-posta eki değil). Takvim/kişi
   eşitlemesinin (CalDAV/CardDAV) ilk parçasıdır; kimlikli DAV rotası,
   PROPFIND/REPORT, başlık okuma ve ETag sonraki dilimlerdedir.
+- **Uygulama parolası (RFC-0047 dilim B, ADR-182):** `parola yeni uygulama
+  parolası olsun` cihaz başına bir uygulama parolası üretir (`kriptografi`):
+  `görünen` (`zua1-…`, kullanıcıya bir kez gösterilir), `önek` ve `özet`
+  (`zuah1:` HMAC-SHA256; veritabanına yalnız önek ve özet yazılır). HMAC
+  anahtarı yeni `uygulama_parolası_anahtarları "k2026 <credential>" listesi
+  olsun` bildirimiyle ayrı bir credential'dan okunur; ilk anahtar etkindir,
+  sonrakiler döndürme sırasında eski parolaları doğrulamak için tutulur.
+  Üretim yalnız oturumlu ya da yetkili POST/PUT/PATCH/DELETE rotasında ya da
+  rota dışı kodda yapılır (aksi T063); IO izi kaydı açıkken üretilmez. Takvim/
+  kişi istemcilerinin bu parolayla bağlanması sonraki dilimdedir.
+
+  **Göç:** Gerekmez. Argon2id ile saklanan eski IMAP uygulama parolaları
+  değişmez; yeni biçime geçiş ürün kararıdır.
 
 ### Değişenler
 

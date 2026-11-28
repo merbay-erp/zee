@@ -46,6 +46,7 @@ pub(super) fn intrinsic_degerlendir(
                 1,
             )
         }),
+        (UYGULAMA_PAROLASI, []) => uygulama_parolasi(io, satir),
         (TOTP_DOGRULA, [kod, gizli]) => Ok(Deger::Mantiksal(
             io.totp_dogrula(&metne_sinirli(gizli, satir)?, &metne_sinirli(kod, satir)?),
         )),
@@ -189,4 +190,22 @@ fn basarili(deger: i64) -> Deger {
         basarili: true,
         icerik: Box::new(Deger::TamSayi(deger)),
     }
+}
+
+/// RFC-0047 E (ADR-182 dilim B): `yeni uygulama parolası` sözlüğü.
+fn uygulama_parolasi(io: &mut dyn GirdiCikti, satir: usize) -> Result<Deger, Tani> {
+    let parola = io.uygulama_parolasi_uret().map_err(|hata| {
+        Tani::yeni(
+            "C028",
+            format!("Uygulama parolası üretilemedi: {}.", hata),
+            satir,
+            1,
+            1,
+        )
+    })?;
+    Ok(Deger::Sozluk(vec![
+        ("görünen".into(), Deger::Metin(parola.gorunen)),
+        ("önek".into(), Deger::Metin(parola.onek)),
+        ("özet".into(), Deger::Metin(parola.ozet)),
+    ]))
 }

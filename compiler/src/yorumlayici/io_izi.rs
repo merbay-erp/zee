@@ -867,6 +867,16 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         k181::kaydet_totp_anahtari_uret(self)
     }
 
+    /// RFC-0047 E (ADR-182): görünen parola ve gizli kısım ize hiç girmez.
+    /// Görünen değer üretim yanıtının gövdesinde de olacağından kayıt açıkken
+    /// üretim yapılmaz; iç adaptör çağrılmaz, olay yazılmaz. Oynatıcının
+    /// varsayılanı aynı reddi verir, böylece iz deterministik kalır.
+    fn uygulama_parolasi_uret(
+        &mut self,
+    ) -> Result<crate::guvenlik::uygulama_parolasi::UretilenParola, String> {
+        Err("IO adaptörü uygulama parolası üretmiyor".into())
+    }
+
     fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
         k181::kaydet_totp_dogrula(self, gizli, kod)
     }

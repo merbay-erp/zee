@@ -6,7 +6,7 @@
 
 use super::onbellek::{onbellekli_rotayi_denetle, OnbellekIzi};
 use super::Bilgi;
-use crate::agac::{Cumle, HttpYontemi, Ifade, Program, RotaKipi};
+use crate::agac::{Cumle, HttpYontemi, Ifade, Program, RotaErisimi, RotaKipi};
 use crate::tani::Tani;
 use std::collections::HashMap;
 
@@ -49,6 +49,7 @@ pub(super) fn ozel_kipleri_denetle(
     else {
         return Ok(());
     };
+    uygulama_parolasi_yerini_denetle(yontem, govde, toplam)?;
     onbellekli_rotayi_denetle(yontem, govde, dogrudan, toplam)?;
     let Some(satir) = makine_mi(govde) else {
         return match dogrudan.ham_govde() {
@@ -87,6 +88,43 @@ pub(super) fn ozel_kipleri_denetle(
         ));
     }
     Ok(())
+}
+
+/// RFC-0047 E (ADR-182): `yeni uygulama parolası` yalnız oturumlu ya da
+/// yetkili, durum değiştiren (CSRF korumalı) rotada — gövdesinde ya da
+/// geçişli çağırdığı işlemde — üretilir (T063). Rota dışı kod (CLI) serbesttir.
+fn uygulama_parolasi_yerini_denetle(
+    yontem: HttpYontemi,
+    govde: &[Cumle],
+    toplam: &OnbellekIzi,
+) -> Result<(), Tani> {
+    let Some(satir) = toplam.uygulama_parolasi else {
+        return Ok(());
+    };
+    let herkese_acik = !matches!(
+        govde.first(),
+        Some(Cumle::RotaPolitikasi {
+            erisim: RotaErisimi::Oturumlu | RotaErisimi::Rol(_),
+            ..
+        })
+    );
+    if !herkese_acik && !yontem.guvenli() {
+        return Ok(());
+    }
+    Err(Tani::yeni(
+        "T063",
+        format!(
+            "`yeni uygulama parolası` {} rotasında üretilemez; parola yalnız oturumlu, durum değiştiren rotada üretilir.",
+            if herkese_acik { "herkese açık" } else { yontem.yazimi() }
+        ),
+        satir,
+        1,
+        1,
+    )
+    .onerili(
+        "Parolayı `\"kullanıcı\" yetkisi gerekli` ile başlayan bir POST rotasında üret (CSRF korumalı form); GET, herkese açık ve makine ucu rotası üretemez."
+            .into(),
+    ))
 }
 
 /// İşlemlerin doğrudan etki bilgisi. İşlem/eylem gövdeleri ve rota dışı üst

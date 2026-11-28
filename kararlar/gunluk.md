@@ -6645,6 +6645,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `Sec-Fetch-Site: cross-site` reddi, salt okuma ilk uygulamada, 405 + `Allow`
   her rotada.
 
+## K-364 — RFC-0047 dilim B uygulandı: uygulama parolası ilkeli (28 Kasım 2026)
+
+- Merkez dilim sırasını kabul etti; B, #149'un dalı üstüne kuruldu.
+- `yeni uygulama parolası` (`zua1-` + 40 bit önek + 160 bit gizli; özet
+  `zuah1:<kimlik>:` HMAC-SHA256) yalnız oturumlu/yetkili durum değiştiren
+  rotada ya da rota dışı kodda (T063). IO izi kaydı açıkken üretim yok.
+- RFC-0047'nin tek alanlı anahtar adayı döndürmeyi taşımadığından
+  `uygulama_parolası_anahtarları "<kimlik> <credential>"` listesi seçildi;
+  ilki etkin, eski anahtarlar kayıt kaldıkça tutulur (ürün görüşü, soru 2).
+- Doğrulama kitaplığı (biçim kapısı, sabit zamanlı özet, sahte karşılaştırma,
+  katı Basic, ASCII katlama) bağımlılıksız; DAV kimlik kararına C'de bağlanır.
+  `dav_kimlik_çözücüsü` bildirimi kullanan sınıfla birlikte C'ye alındı. GB-186.
+
 ## K-421 — HEAD, GET rotasını örtük kullanır (28 Kasım 2026)
 
 - Merkez bildirimi: #149 (RFC-0047 dilim A) yayıldıktan sonra on bir sitede

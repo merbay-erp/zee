@@ -4217,9 +4217,13 @@ kapandı** (GB-185): durumlu türlü yanıt `… türünde <durum> durumuyla gö
 `text/vcard` metin türü, her rotada 405 + kanonik `Allow`, kayıt dışı yönteme
 yoldan bağımsız 501, kanonik durum satırları ve gövdesiz 204; kanıt
 `compiler/tests/dosya_yaniti_testi.rs::dav_a_*`, `rfc0040-c-207-xml`
-`basarili`. Açık: dilim B (uygulama parolası ilkeli), C (`dav istemcisi
-gerekli` sınıfı, Basic, kovalar, CSRF muafiyeti, ayrı origin, OPTIONS), D
-(başlık okuma, ham gövde, ETag, korpus geçişi).
+`basarili`. **Dilim B kapandı** (GB-186): `yeni uygulama parolası`
+(`zua1-` biçimi, `zuah1:` HMAC özeti, T063 üretim yeri, IO izi kaydında
+üretim yok), kimlikli `uygulama_parolası_anahtarları` (döndürme, anahtar
+ayrımı P015) ve doğrulama kitaplığı (sabit zamanlı özet, katı Basic, ASCII
+katlama). Açık: C (`dav istemcisi gerekli` sınıfı, `dav_kimlik_çözücüsü`,
+Basic, kovalar, CSRF muafiyeti, ayrı origin, OPTIONS), D (başlık okuma, ham
+gövde, ETag, korpus geçişi).
 
 Önceki durum (taslak): [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
 `urun-h` takvim/kişi verisini standart masaüstü/telefon istemcilerine CalDAV

@@ -224,6 +224,11 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {
         self.ic.borrow_mut().totp_anahtari_uret()
     }
+    fn uygulama_parolasi_uret(
+        &mut self,
+    ) -> Result<crate::guvenlik::uygulama_parolasi::UretilenParola, String> {
+        self.ic.borrow_mut().uygulama_parolasi_uret()
+    }
     fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
         self.ic.borrow_mut().totp_dogrula(gizli, kod)
     }

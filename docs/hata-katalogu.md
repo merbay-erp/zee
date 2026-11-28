@@ -149,6 +149,7 @@ kalır (ADR-025).
 | T060 | Makine uç noktası POST dışı rotada ya da sabit öneksiz yolda değil | Makine ucunu `POST "/tam/yol" adresine istek geldiğinde` biçiminde sabit, öneksiz yollu ayrı bir rota yap; adaptör yolu gövdeyi okumadan tanır (K-405) |
 | T061 | Makine uç noktası oturum, CSRF belirteci ya da çerez kullanıyor | Gövdede ya da çağırdığı işlemde olabilir; CSRF'siz rota tarayıcı kimliğine ulaşamaz, oturuma bağlı işi ayrı CSRF korumalı rotaya taşı (K-405) |
 | T062 | `isteğin ham gövdesi` makine uç noktası rotası dışında okunuyor | Gövdeyi makine rotasında `gövde isteğin ham gövdesi olsun` ile al, işleme argüman olarak geçir; sıradan rotada form alanlarını `istek` sözlüğünden oku (K-405) |
+| T063 | `yeni uygulama parolası` herkese açık, salt okuma (GET/HEAD) ya da makine/önbellekli rotada üretiliyor | Parolayı `"kullanıcı" yetkisi gerekli` ya da `oturum gerekli` ile başlayan POST/PUT/PATCH/DELETE (CSRF korumalı) rotasında ya da rota dışı kodda üret; gövdede ya da çağrılan işlemde olabilir (RFC-0047 E, ADR-182) |
 
 ## C — Çalışma zamanı
 

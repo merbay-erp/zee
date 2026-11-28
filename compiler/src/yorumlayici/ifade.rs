@@ -103,6 +103,7 @@ pub(super) fn degerlendir_async<'a>(
                     }
                     PAROLA_OZETI
                     | TOTP_ANAHTARI
+                    | UYGULAMA_PAROLASI
                     | TOTP_DOGRULA
                     | EPOSTA_GONDER
                     | EPOSTA_GONDER_BAGLANTILI

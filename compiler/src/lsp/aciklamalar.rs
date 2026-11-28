@@ -4,7 +4,7 @@
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-pub(super) const KELIME_ACIKLAMALARI: [(&str, &str); 93] = [
+pub(super) const KELIME_ACIKLAMALARI: [(&str, &str); 94] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -66,6 +66,7 @@ pub(super) const KELIME_ACIKLAMALARI: [(&str, &str); 93] = [
     ("görünüm", "`<ad> görünüm olsun` + girintili HTML ağacı: her satır `etiket öznitelik değer …`, `\"sabit\"`, `metin ifade` (kaçışlı) ya da `ham ifade` (kaçışsız); sonuç Metin.\n\n`form_html görünüm olsun\n    form method \"post\" action adres\n        input type \"email\" name \"eposta\" value eposta`"),
     ("üzerinden", "E-postayı ortam değişkeni yerine verilen SMTP bağlantı metniyle gönderir (panelden ayarlanan SMTP); ağ hedefi denetimi aynen uygulanır.\n\n`sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun`"),
     ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
+    ("parolası", "RFC-0047: `yeni uygulama parolası` — cihaz başına uygulama parolası (kriptografi + `uygulama_parolası_anahtarları`); `{görünen, önek, özet}` sözlüğü. `görünen` yalnız bir kez gösterilir, depoya önek ve özet yazılır. Yalnız oturumlu, durum değiştiren rotada ya da rota dışı kodda üretilir (T063); IO izi kaydı açıkken üretilmez.\n\n`parola yeni uygulama parolası olsun`"),
     ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
     ("sorgulamayı", "Bildirilmiş loopback çözücüye DNS sorgusu (`dns` yetkinliği, `dns_çözücü`, `dns_dnssec`): MX, TXT, TLSA ya da adres (A + AAAA) → kayıt başına satırlı Metin sözlük listesi Sonucu (`ad`, `ttl`, `doğrulanmış` + türe özgü alanlar). Kayıt/alan yoksa boş liste; geçici hata C033 `tür` verisiyle.\n\n`kayıtlar \"ornek.test\" için MX kayıtlarını sorgulamayı dene olsun`"),

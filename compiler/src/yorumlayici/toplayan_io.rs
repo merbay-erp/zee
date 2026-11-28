@@ -765,6 +765,16 @@ impl GirdiCikti for ToplayanIo {
     fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
         crate::guvenlik::gizli::coz(&HERMETIK_GIZLI_ANAHTAR, sifreli)
     }
+    fn uygulama_parolasi_uret(
+        &mut self,
+    ) -> Result<crate::guvenlik::uygulama_parolasi::UretilenParola, String> {
+        // zee-io-1: tohumlu sayaçtan 25 bayt, hermetik anahtar `dene`.
+        self.guvenli_belirtec_sirasi = self.guvenli_belirtec_sirasi.saturating_add(1);
+        let mut baytlar = [0u8; crate::guvenlik::uygulama_parolasi::RASTGELE_BAYT];
+        baytlar[..8].copy_from_slice(&self.guvenli_belirtec_sirasi.to_be_bytes());
+        baytlar[8..].copy_from_slice(b"zee-io-1-uygulama");
+        crate::guvenlik::uygulama_parolasi::uret(&HERMETIK_GIZLI_ANAHTAR, "dene", &baytlar)
+    }
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {
         // zee-io-1: tohumlu sayaçtan türetilen 20 bayt; aynı program aynı anahtar.
         self.guvenli_belirtec_sirasi = self.guvenli_belirtec_sirasi.saturating_add(1);
