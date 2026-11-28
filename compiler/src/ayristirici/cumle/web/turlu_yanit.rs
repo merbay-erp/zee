@@ -1,4 +1,5 @@
-//! K-406 (ADR-163 eki, ZM-F048): `<ifade> metnini "<tür>" türünde gönder`.
+//! K-406 (ADR-163 eki, ZM-F048): `<ifade> metnini "<tür>" türünde gönder`;
+//! RFC-0047 C (ADR-182): durumlu kardeşi `… türünde <durum> durumuyla gönder`.
 
 use super::super::*;
 use super::yanit_bicimi_tanisi;
@@ -6,7 +7,7 @@ use super::yanit_bicimi_tanisi;
 /// K-406: türlü metin yanıtının S037 tanısı; öneri kapalı kümeyi listeler.
 fn turlu_metin_tanisi(mesaj: String, satir: usize) -> Tani {
     Tani::yeni("S037", mesaj, satir, 1, 1).onerili(
-        "Metin yanıtı türü yalnız \"text/plain\", \"text/csv\", \"text/calendar\" ya da \"application/xml\" olabilir; örnek: `takvim metnini \"text/calendar\" türünde gönder`. HTML/SVG/betik türleri yoktur, ikili içerik için dosya yanıtı kullanılır."
+        "Metin yanıtı türü yalnız \"text/plain\", \"text/csv\", \"text/calendar\", \"text/vcard\" ya da \"application/xml\" olabilir; örnek: `takvim metnini \"text/calendar\" türünde gönder`. HTML/SVG/betik türleri yoktur, ikili içerik için dosya yanıtı kullanılır."
             .into(),
     )
 }
@@ -34,7 +35,14 @@ impl Ayristirici {
         satir: usize,
     ) -> Result<Option<Cumle>, Tani> {
         // Son token `gönder`dir (çağıran seçti).
-        let tokenlar = &tokenlar[..tokenlar.len().saturating_sub(1)];
+        let mut tokenlar = &tokenlar[..tokenlar.len().saturating_sub(1)];
+        let durum = match self.turlu_durumu(tokenlar, satir)? {
+            Some(durum) => {
+                tokenlar = &tokenlar[..tokenlar.len() - 2];
+                Some(durum)
+            }
+            None => None,
+        };
         let n = tokenlar.len();
         if n < 3 || !kelime_mi(&tokenlar[n - 1], "türünde") {
             return Ok(None);
@@ -69,9 +77,42 @@ impl Ayristirici {
         let deger = ile_ifadesi(&tokenlar[..metnini], satir, &self.islem_adlari)?;
         Ok(Some(Cumle::YanitGonder {
             deger,
-            durum: None,
+            durum,
             tur: Some(tur),
             satir,
         }))
+    }
+
+    /// RFC-0047 C (ADR-182): `… türünde <durum> durumuyla` son eki. Durum
+    /// kaynakta görünen TamSayı literalidir ve kapalı
+    /// `TURLU_YANIT_DURUMLARI` kümesinden olmak zorundadır; aksi S037.
+    /// `None`, son ekin türlü biçime ait olmadığını söyler.
+    fn turlu_durumu(&self, tokenlar: &[Token], satir: usize) -> Result<Option<u16>, Tani> {
+        let n = tokenlar.len();
+        if n < 3
+            || !kelime_mi(&tokenlar[n - 1], "durumuyla")
+            || !kelime_mi(&tokenlar[n - 3], "türünde")
+        {
+            return Ok(None);
+        }
+        match tokenlar[n - 2].tur {
+            TokenTur::TamSayi(kod)
+                if u16::try_from(kod)
+                    .is_ok_and(|kod| crate::agac::TURLU_YANIT_DURUMLARI.contains(&kod)) =>
+            {
+                Ok(Some(kod as u16))
+            }
+            _ => Err(Tani::yeni(
+                "S037",
+                "Türlü metin yanıtının durumu kapalı kümeden sabit bir TamSayı olmalı.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili(
+                "Durum yalnız 200, 201, 207, 400, 403, 404, 409, 412 ya da 415 olabilir; örnek: `xml metnini \"application/xml\" türünde 207 durumuyla gönder`. Gövdesiz yanıt için `\"\" yanıtını 204 durumuyla gönder` kullanılır."
+                    .into(),
+            )),
+        }
     }
 }

@@ -41,6 +41,8 @@ pub struct ToplayanIo {
     /// K-406: hermetik türlü metin yanıtlarının `Content-Type` değerleri.
     /// Gövde `sunucu_yanitlari`na bayt bayt yazılır.
     pub turlu_yanitlar: Vec<String>,
+    /// RFC-0047 A (ADR-182): 405 yanıtlarının `Allow` değerleri, sırayla.
+    pub izinli_yontemler: Vec<String>,
     /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
     pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
@@ -134,6 +136,7 @@ impl ToplayanIo {
             onbellek_izinleri: Vec::new(),
             dosya_yanitlari: Vec::new(),
             turlu_yanitlar: Vec::new(),
+            izinli_yontemler: Vec::new(),
             istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
@@ -548,6 +551,31 @@ impl GirdiCikti for ToplayanIo {
         } else {
             self.sunucu_yanitini_uygula(taslak);
         }
+    }
+    fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
+        // Gerçek adaptörle aynı kapalı kümeler (RFC-0047 C); kayıt dışı tür
+        // ya da durum 500 olur.
+        let Some(kayit) = crate::icerik_turu::web_metin_turu(tur)
+            .filter(|_| crate::agac::TURLU_YANIT_DURUMLARI.contains(&durum))
+        else {
+            self.durum_yaniti_gonder(500, "istek işlenemedi; sunucu hatası");
+            return;
+        };
+        if self.web_istek_yedegi.is_some() && self.bekleyen_sunucu_yaniti.is_some() {
+            return;
+        }
+        self.turlu_yanitlar
+            .push(crate::icerik_turu::baslik_degeri(kayit));
+        let taslak = SunucuYanitTaslagi::Durum(durum, yanit.to_string());
+        if self.web_istek_yedegi.is_some() {
+            self.bekleyen_sunucu_yaniti = Some(taslak);
+        } else {
+            self.sunucu_yanitini_uygula(taslak);
+        }
+    }
+    fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
+        self.izinli_yontemler.push(izinli.to_string());
+        self.durum_yaniti_gonder(405, yanit);
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         let taslak = SunucuYanitTaslagi::Durum(durum, yanit.to_string());

@@ -220,12 +220,15 @@ yapılandırma XML'i ve Apple profili için `application/xml` ile
 ekledi. K-406 (ADR-163 eki, ZM-F048) bellekteki metni aynı kaydın metin
 satırlarıyla (`text/plain`, `text/csv`, `text/calendar`, `application/xml`)
 `… metnini "<tür>" türünde gönder` cümlesiyle 200 yanıtı yaptı (dosya
-yanıtının güvenlik başlıkları, ek yok, gövde bayt bayt). K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
+yanıtının güvenlik başlıkları, ek yok, gövde bayt bayt). RFC-0047 dilim A
+([ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md), K-364) durumlu
+kardeşini (`… türünde 207 durumuyla gönder`, kapalı dokuz durum),
+`text/vcard`, her rotada 405 + `Allow` ve kayıt dışı yönteme 501'i ekledi. K-391 ([ADR-168](../adr/168-istek-boyut-sinirlari-ve-govde-asimi.md)
 Dilim 1, ZM-F037) multipart metin alanlarını sıradan form alanı yaptı
 (dosyasız form, metin toplamı 64 KiB) ve `gövde_aşımı_rotası` ile gövde
 boyutu 413'ünü salt okuma GET sayfasına bağladı. **Açık:** `inline`/Range/ETag
-sonrası; kimlikli DAV için CSRF muafiyeti (RFC-0040 #5(c); Outlook POX'un
-kimliksiz yarısı K-405/ADR-179 `herkese açık makine uç noktası` ile kapandı);
+sonrası; kimlikli DAV için CSRF muafiyeti (RFC-0040 #5(c), RFC-0047 dilim C;
+Outlook POX'un kimliksiz yarısı K-405/ADR-179 `herkese açık makine uç noktası` ile kapandı);
 `sandbox allow-downloads`. K-391 Dilim 2 rota bazlı gövde sınırını
 (`geniş_gövde_*`, ≤ 1 MiB), alınan bayta orantılı multipart okuma bütçesini
 ve `veritabanı_parametre_sınırı`nı (≤ 4 MiB, toplam 6 400 KiB) ekledi;

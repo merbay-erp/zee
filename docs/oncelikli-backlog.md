@@ -4197,7 +4197,20 @@ ayrı fix adayı).
 
 ## K-364 — WebDAV/CalDAV/CardDAV web adaptörü RFC taslağı
 
-**Durum: AÇIK (taslak).** [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
+**Durum: AÇIK (uygulama sürüyor).** 28 Kasım 2026: proje sahibi
+“RFC-0047 ilk dilimini uygula” kararını verdi; uygulama `dogfood-change`
+olarak [ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md) ile dört dilimde
+açılır ve on üç açık soru orada kabul/gerekçeli retle kapandı. **Dilim A
+kapandı** (GB-185): durumlu türlü yanıt `… türünde <durum> durumuyla gönder`
+(kapalı küme 200, 201, 207, 400, 403, 404, 409, 412, 415; her rota),
+`text/vcard` metin türü, her rotada 405 + kanonik `Allow`, kayıt dışı yönteme
+yoldan bağımsız 501, kanonik durum satırları ve gövdesiz 204; kanıt
+`compiler/tests/dosya_yaniti_testi.rs::dav_a_*`, `rfc0040-c-207-xml`
+`basarili`. Açık: dilim B (uygulama parolası ilkeli), C (`dav istemcisi
+gerekli` sınıfı, Basic, kovalar, CSRF muafiyeti, ayrı origin, OPTIONS), D
+(başlık okuma, ham gövde, ETag, korpus geçişi).
+
+Önceki durum (taslak): [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
 `urun-h` takvim/kişi verisini standart masaüstü/telefon istemcilerine CalDAV
 (RFC 4791) ve CardDAV (RFC 6352) ile sunmak istiyor. Ürünün çıkardığı altı
 eksik 83d48cb kaynağıyla tek tek doğrulandı: kapalı yöntem kümesi (PROPFIND/

@@ -50,6 +50,7 @@ api	io-izi.istemci_adresi	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"is
 api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"parola_ozeti_uret"
 api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
 api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
+api	io-izi.turlu_durumlu_yanit_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"turlu_durumlu_yanit_gonder"
 api	io-izi.turlu_yanit_gonder	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"turlu_yanit_gonder"
 api	posta.dkim_dogrula	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOGRULA: &str = "posta.dkim_dogrula";
 api	posta.dkim_dosya_govde_ozeti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const POSTA_DKIM_DOSYA_GOVDE_OZETI: &str = "posta.dkim_dosya_govde_ozeti";
@@ -61,6 +62,7 @@ api	web.birincil_surec	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_B
 api	web.dosya_yaniti	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_DOSYA_YANITI: &str = "web.dosya_yaniti";
 api	web.istek_ham_govdesi	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const WEB_HAM_GOVDE: &str = "web.istek_ham_govdesi";
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
+bicim	http-yontem-kaydi	aktif	1.0.0-dev	compiler/src/agac.rs	pub const KAYIT: [Self; 6] = [
 bicim	icerik-turu.csv	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/csv",
 bicim	icerik-turu.docx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 bicim	icerik-turu.ics	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/calendar",
@@ -71,6 +73,7 @@ bicim	icerik-turu.pdf	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "applica
 bicim	icerik-turu.png	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "image/png",
 bicim	icerik-turu.pptx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 bicim	icerik-turu.txt	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/plain",
+bicim	icerik-turu.vcf	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "text/vcard",
 bicim	icerik-turu.webp	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "image/webp",
 bicim	icerik-turu.xlsx	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 bicim	icerik-turu.xml	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "application/xml",
@@ -78,8 +81,9 @@ bicim	icerik-turu.zip	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	mime: "applica
 bicim	multipart-yukleme-alanlari	aktif	1.0.0-dev	compiler/src/main.rs	"yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}&yukleme_dosya_adi={}&yukleme_bildirilen_tur={}",
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	smtp-yerel-ek-reddi	aktif	1.0.0-dev	compiler/src/eposta.rs	pub const MIME_EK_REDDI_ONEKI: &str = "MIME e-posta gönderilemedi: ek reddedildi (";
+bicim	turlu-yanit-durumlari	aktif	1.0.0-dev	compiler/src/agac.rs	pub const TURLU_YANIT_DURUMLARI: [u16; 9] = [200, 201, 207, 400, 403, 404, 409, 412, 415];
 bicim	web-dosya-yaniti-disposition	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	"attachment; filename=\"{}\"; filename*=UTF-8''{}",
-bicim	web-metin-yaniti-turleri	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "xml"];
+bicim	web-metin-yaniti-turleri	aktif	1.0.0-dev	compiler/src/icerik_turu.rs	pub const WEB_METIN_TURLERI: &[&str] = &["txt", "csv", "ics", "vcf", "xml"];
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 bicim	zee-active-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-active-1
 bicim	zee-app-dispatch-inflight-1	aktif	0.8.0-dev	scripts/dispatcher-service.py	zee-app-dispatch-inflight-1

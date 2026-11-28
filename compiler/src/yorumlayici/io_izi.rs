@@ -80,6 +80,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "yanit_gonder"
             | "durum_yaniti_gonder"
             | "turlu_yanit_gonder"
+            | "turlu_durumlu_yanit_gonder"
             | "yonlendir_gonder"
             | "cerez_yaz"
             | "cerez_sil"
@@ -181,10 +182,29 @@ fn turlu_yanit_semasi(olay: &IzOlay) -> Result<(), String> {
     }
 }
 
+/// RFC-0047 C: türlü durumlu yanıt olayı (tür, durum, gövde); tür kapalı
+/// metin kümesinde, durum `TURLU_YANIT_DURUMLARI` içinde kanonik u16.
+fn turlu_durumlu_yanit_semasi(olay: &IzOlay) -> Result<(), String> {
+    alan_sayisi(olay, 3, 0)?;
+    if crate::icerik_turu::web_metin_turu(&olay.argumanlar[0]).is_none() {
+        return Err("türlü metin yanıtının türü kayıtlı metin satırı olmalı".into());
+    }
+    match olay.argumanlar[1].parse::<u16>() {
+        Ok(durum)
+            if kanonik_tamsayi::<u16>(&olay.argumanlar[1])
+                && crate::agac::TURLU_YANIT_DURUMLARI.contains(&durum) =>
+        {
+            Ok(())
+        }
+        _ => Err("türlü metin yanıtının durumu kapalı kümede kanonik u16 olmalı".into()),
+    }
+}
+
 fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
     match olay.islem.as_str() {
         "yazdir" | "yanit_gonder" => alan_sayisi(olay, 1, 0),
         "turlu_yanit_gonder" => turlu_yanit_semasi(olay),
+        "turlu_durumlu_yanit_gonder" => turlu_durumlu_yanit_semasi(olay),
         "durum_yaniti_gonder" => {
             alan_sayisi(olay, 2, 0)?;
             if kanonik_tamsayi::<u16>(&olay.argumanlar[0]) {
@@ -642,6 +662,27 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         self.kaydet(
             "turlu_yanit_gonder",
             vec![tur.into(), yanit.into()],
+            Vec::new(),
+        );
+    }
+
+    fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
+        self.ic.turlu_durumlu_yanit_gonder(tur, durum, yanit);
+        self.kaydet(
+            "turlu_durumlu_yanit_gonder",
+            vec![tur.into(), durum.to_string(), yanit.into()],
+            Vec::new(),
+        );
+    }
+
+    /// RFC-0047 A: `Allow` değeri program ve yoldan deterministik türediği
+    /// için iz olayı değişmez (`durum_yaniti_gonder` 405); eski izler aynı
+    /// biçimde yeniden oynar.
+    fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
+        self.ic.yontem_reddi_gonder(izinli, yanit);
+        self.kaydet(
+            "durum_yaniti_gonder",
+            vec!["405".into(), yanit.into()],
             Vec::new(),
         );
     }

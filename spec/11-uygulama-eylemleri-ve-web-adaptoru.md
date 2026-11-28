@@ -164,10 +164,11 @@ GET "/takvim/yayin.ics" adresine istek geldiğinde
   kaynakta görünen tırnaklı Metin literalidir ve kapalı `icerik_turu`
   kaydının web metin satırlarından biriyle exact, küçük harf, parametresiz
   eşleşmek ZORUNDADIR: `text/plain`, `text/csv`, `text/calendar`,
-  `application/xml`. Değişken/hesaplanmış tür, boş tür, öteki kayıt satırları
-  (ikili türler, `application/octet-stream`, `application/x-apple-aspen-config`),
-  kayıt dışı türler ve `text/html`, SVG, XHTML, betik türleri derlemede
-  önerili **S037**'dir. Durum her zaman 200'dür; durumlu biçimle birleşmez.
+  `text/vcard` (RFC-0047), `application/xml`. Değişken/hesaplanmış tür, boş
+  tür, öteki kayıt satırları (ikili türler, `application/octet-stream`,
+  `application/x-apple-aspen-config`), kayıt dışı türler ve `text/html`, SVG,
+  XHTML, betik türleri derlemede önerili **S037**'dir. Durum eki olmayan
+  biçimin durumu 200'dür; durumlu kardeşi aşağıdaki RFC-0047 bölümündedir.
 - ZORUNLU (K-406): Yanıt dosya yanıtının başlık kümesini taşır:
   `Content-Type` (metin türlerine `charset=utf-8`, `application/xml`e
   parametre eklenmez), `X-Content-Type-Options: nosniff`, `Cache-Control:
@@ -190,6 +191,52 @@ GET "/takvim/yayin.ics" adresine istek geldiğinde
   içeren iz okunmaz ve adaptöre doğrudan verilen kayıt dışı tür 500 durum
   yanıtına düşer (HTML koklamasına açılmaz).
 
+### Durumlu türlü yanıt, 405 + `Allow` ve 501 — RFC-0047 dilim A
+
+Normatif kaynak: [ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md)
+(K-364, RFC-0047 A ve dar C). DAV multistatus 207 + `application/xml` ister;
+kural her rota sınıfında geçerlidir:
+
+```text
+GET "/dav/" önekli adrese istek geldiğinde
+    herkese açık
+    xml metnini "application/xml" türünde 207 durumuyla gönder
+```
+
+- ZORUNLU (RFC-0047 C): `<ifade> metnini "<tür>" türünde <durum> durumuyla
+  gönder` cümlesinde tür K-406 web metin satırlarından biri, durum kaynakta
+  görünen bir `TamSayı` literali olmak ve kapalı kümeden seçilmek
+  ZORUNDADIR: 200, 201, 207, 400, 403, 404, 409, 412, 415. Kayıt dışı
+  durum (204, 3xx, 5xx dahil), değişken ya da tırnaklı durum derlemede
+  önerili **S037**'dir. Başlık kümesi, gövdenin bayt bayt gitmesi, rota sonu
+  (K-403), T044 ve yetkinlik kuralı durumsuz türlü yanıtla aynıdır; durum
+  satırı `HTTP/1.1 <durum> <kanonik açıklama>` olur.
+- ZORUNLU (RFC-0047 A): Yol bir ya da daha çok rotayla eşleşip istek
+  yöntemi hiçbiriyle eşleşmezse yanıt 405'tir ve `Allow` başlığı o yolda
+  tanımlı yöntemleri kanonik kayıt sırasıyla (`GET, HEAD, POST, PUT, PATCH,
+  DELETE` alt kümesi), virgül ve tek boşlukla, tekrarsız taşır (RFC 9110
+  §15.5.6). Kural her rota sınıfında (oturumlu, herkese açık, makine ucu,
+  önbelleklenebilir) aynıdır. Yöntemsiz tarihsel rota `GET` sayılır. Hiçbir
+  yol eşleşmezse yanıt 404'tür ve `Allow` taşımaz.
+- ZORUNLU (RFC-0047 A): İstek yöntemi kapalı yöntem kaydında
+  (`HttpYontemi::KAYIT`) yoksa (ör. `PROPFIND`, `REPORT`, `OPTIONS`,
+  `LOCK`, `MKCALENDAR`, `PROPPATCH`, `MOVE`) yanıt yoldan bağımsız 501'dir
+  (RFC 9110 §15.6.2); rota eşleştirmesi, `_csrf` denetimi ve rota gövdesi
+  hiç çalışmaz, `Allow` yazılmaz. Yöntem karşılaştırması bugünkü gibi büyük
+  harfe çevrilmiş yazımla yapılır.
+- ZORUNLU (RFC-0047 C): Gerçek adaptörün durum satırı 200 `OK`, 201
+  `Created`, 204 `No Content`, 207 `Multi-Status`, 409 `Conflict`, 412
+  `Precondition Failed`, 415 `Unsupported Media Type` ve 501 `Not
+  Implemented` açıklamalarını taşır (öncekiler değişmez; tabloda olmayan
+  kod `Error` kalır). 204 yanıtı gövde, `Content-Type` ve `Content-Length`
+  taşımaz (RFC 9110 §6.4.1, §8.6); programın verdiği gövde yazılmaz.
+- TANIMLI (RFC-0047): IO izi durumlu türlü yanıtı `turlu_durumlu_yanit_gonder`
+  olayına (tür, durum, gövde) yazar; iz şeması ve hermetik adaptör (`dil
+  dene`) aynı kapalı kümeleri uygular, adaptöre doğrudan verilen kayıt dışı
+  tür ya da durum 500 durum yanıtına düşer. 405 olayı `durum_yaniti_gonder`
+  (405, gövde) olarak kalır: `Allow` program ve yoldan deterministik
+  türediği için ize girmez, eski izler aynı biçimde yeniden oynar.
+
 Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`dir.
 Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; yeni kod
 yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla
@@ -200,7 +247,8 @@ grafiğinde ulaşılabilen yazıcı eylem T045 ile derlemede reddedilir. Aynı
 yöntem+yol çifti iki kez tanımlanamaz (T047). HEAD gerçek TCP adaptöründe GET
 ile aynı başlık hesabını yapar ama yanıt gövdesi göndermez.
 
-Yol eşleşip yöntem eşleşmezse 405, yol eşleşmezse 404 döner. PUT/PATCH/DELETE
+Yol eşleşip yöntem eşleşmezse 405 + `Allow`, yol eşleşmezse 404, kayıt dışı
+yöntem yoldan bağımsız 501 döner (RFC-0047 dilim A). PUT/PATCH/DELETE
 form gövdesi POST ile aynı sınırlı alan çözümlemesini kullanır. Makine uç noktasının
 (spec/12 §K-405) gövdesi form olarak çözülmez; rota onu `isteğin ham gövdesi`
 ile en çok 8 KiB katı UTF-8 `Metin` olarak okur.

@@ -6624,3 +6624,24 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   uygulama ADR'si kabul ya da gerekçeli retle kapatır. Uygulama yok, dil
   davranışı değişmedi.
 
+## K-364 — RFC-0047 dilim A uygulandı: 405 + `Allow`, 501, durumlu türlü yanıt (28 Kasım 2026)
+
+- Proje sahibi 28 Kasım 2026'da “RFC-0047 ilk dilimini uygula” kararını
+  verdi. Uygulama `dogfood-change` (ürün `urun-h`, K-364) olarak dört PR'a
+  bölündü; sıra ve on üç açık sorunun kapanışı
+  [ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md)'dedir. Kimlik
+  olmadan CSRF'siz sınıf açılamayacağı ve başlık/ETag sınıfa bağlı olduğu
+  için sıra A → B (uygulama parolası) → C (sınıf + kimlik) → D (başlık, ham
+  gövde, ETag) oldu.
+- Dilim A: durumlu türlü yanıt (her rota, kapalı dokuz durum, aksi S037),
+  `text/vcard`, her rotada 405 + `Allow`, kayıt dışı yönteme 501, kanonik
+  durum satırları ve gövdesiz 204. IO izi `turlu_durumlu_yanit_gonder`; 405
+  olayı değişmedi. GB-185. `rfc0040-c-207-xml` başarılıya döndü; öteki sekiz
+  vaka dilim C/D'ye kadar bugünkü tanılarıyla kalır.
+- Ürün kilitleri ADR'ye bağlandı: kullanıcı adı ASCII küçük harfe katlanır,
+  HMAC anahtarı ayrı credential ve döndürme kayda bağlı, PUT 1 MiB / REPORT
+  ve PROPFIND 256 KiB, üretimde ayrı DAV origin'i, `If-Match`/`If-None-Match`
+  `Liste<Metin>` (`*` ayrı değer), `--deneysel-web`'de Basic yalnız loopback,
+  `Sec-Fetch-Site: cross-site` reddi, salt okuma ilk uygulamada, 405 + `Allow`
+  her rotada.
+

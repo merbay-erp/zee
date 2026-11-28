@@ -60,7 +60,8 @@ pub(super) fn yanit_cumlesini_gonder<C: super::GirdiCikti + ?Sized>(
     metin: &str,
 ) {
     match (tur, durum) {
-        (Some(tur), _) => cikti.turlu_yanit_gonder(tur, metin),
+        (Some(tur), None) => cikti.turlu_yanit_gonder(tur, metin),
+        (Some(tur), Some(durum)) => cikti.turlu_durumlu_yanit_gonder(tur, durum, metin),
         (None, Some(durum)) => cikti.durum_yaniti_gonder(durum, metin),
         (None, None) => cikti.yanit_gonder(metin),
     }
