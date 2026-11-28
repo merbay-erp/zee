@@ -6656,5 +6656,5 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   olmayan yolda HEAD, GET rotasıyla eşleşir; gerçek adaptör gövdeyi yazmaz,
   açık HEAD rotası önceliklidir, `Allow` GET varken HEAD'i anar. GET rotası
   salt okumadır (T045), örtük çalıştırma yeni etki açmaz. Regresyon vakası
-  `regression/runtime/head-get-ortuk.dil`; GB-185 sınırı güncellendi.
+  `regression/security/head-get-ortuk.dil`; GB-185 sınırı güncellendi.
 

@@ -88,3 +88,4 @@ islemde-yanit-rota-sonu	K-403	a43436fc225e37de7b214858e1cea0af0d56cae5	-	0.8.0-d
 gizli-kanonik-olmayan-dolgu	K-410	01af7facc2418c90d0e1a36dd55f9bbd2abfd69a	-	0.8.0-dev	runtime	run	-	-	0	sentetik-k410\ngizli değer base64 biçimi bozuk	regression/runtime/gizli-kanonik-olmayan-dolgu.dil
 base64-pencere-toplam-otesi	K-414	5bd6263bb7abcab5960d5a2132243147dca8c464	ab34540e8a104b3b4dde12fc06d0ce9696ec0047	0.8.0-dev	runtime	baglanti	-	-	0	0	regression/runtime/base64-pencere-toplam-otesi.dil
 dkim-anahtari-kanonik-olmayan-us	K-419	db0a429d1406d1027d694c7d54bbb3f37f41a217	d7cfa26a99bf26ffa337046b2a937ba51c39d260	0.8.0-dev	runtime	run	-	-	0	doğru\n2048\nC034\nanahtar_bozuk	regression/runtime/dkim-anahtari-kanonik-olmayan-us.dil
+head-get-ortuk	K-421	ced203808dab6371d94d15ad07c22b268d475b87	5930928a9b47a7816980514a4f50df1a4d83cff7	0.8.0-dev	security	web	-	-	0	200 ana sayfa	regression/security/head-get-ortuk.dil

@@ -1,0 +1,8 @@
+# web-istegi: HEAD /
+# K-421: GET'e izin veren rota HEAD'i örtük destekler (RFC 9110 §9.3.2); 405 değil 200.
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    herkese açık
+    "ana sayfa" yanıtını gönder

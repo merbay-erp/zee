@@ -2377,7 +2377,7 @@ HEAD rotası olmayan yolda HEAD artık GET rotasıyla eşleşir, gövde yazılma
 `Allow` GET varken HEAD'i anar; GET'siz yolda HEAD 405 kalır. Kanıt:
 `compiler/tests/web_testi.rs::head_get_rotasinda_ortuk_200_allow_head_icerir`,
 `compiler/tests/dosya_yaniti_testi.rs::head_get_rotasinda_gercek_surecte_200_govdesiz`,
-`regression/runtime/head-get-ortuk.dil`. GB-185 eki.
+`regression/security/head-get-ortuk.dil`. GB-185 eki.
 
 ## K-420 — V1 ikinci sürüm adayı (v1.0.0-rc.2)
 
