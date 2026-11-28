@@ -1156,6 +1156,7 @@ fn head_get_rotasinda_gercek_surecte_200_govdesiz() {
 /// RFC-0047 E/F (ADR-182 dilim C): gerçek worker'da DAV istemci rotası.
 /// `--web-proxy` profilinde DAV ayrı `dav_kökeni` origin'indedir; Basic +
 /// uygulama parolası credential dosyasındaki HMAC anahtarıyla doğrulanır.
+#[cfg(unix)]
 fn dav_ham_istek(kapi: u16, host: &str, istek: &str) -> (String, Vec<u8>) {
     let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
     let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(5)).expect("bağlantı");
@@ -1180,6 +1181,7 @@ fn dav_ham_istek(kapi: u16, host: &str, istek: &str) -> (String, Vec<u8>) {
     )
 }
 
+#[cfg(unix)]
 fn dav_basic(kullanici: &str, parola: &str) -> String {
     let b64 = |veri: &[u8]| {
         const A: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
