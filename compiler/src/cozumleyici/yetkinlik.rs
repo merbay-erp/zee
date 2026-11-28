@@ -192,6 +192,7 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
         }
         Cumle::RotaPolitikasi { satir, .. } | Cumle::RotaAlaniGerekli { satir, .. } => {
             bilgi.ekle(Yetkinlik::AgSunucusu, (*satir, 1, 1));
+            bilgi.dav_politikasi_ekle(cumle);
         }
         Cumle::OturumAc {
             kullanici,

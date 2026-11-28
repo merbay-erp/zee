@@ -5,6 +5,7 @@
 
 mod baglanti;
 mod cumle;
+mod dav_kimlik;
 mod dns;
 mod dosya;
 mod eylem_hatasi;
@@ -41,6 +42,7 @@ pub use self::baglanti::{
     BOSALTMA_SURESI_MS,
 };
 use self::cumle::blok_calistir_async;
+pub use self::dav_kimlik::{DavKimligi, DavKova, DAV_KIMLIK_REDDI, DAV_KOVA_REDDI};
 use self::eylem_hatasi::tani as transaction_hatasi;
 pub use self::eylem_hatasi::{EylemHataSinifi, EylemHatasi};
 use self::hir_gecisi::CalistirmaProgrami;
@@ -507,6 +509,32 @@ pub trait GirdiCikti {
     /// §15.5.6). Başlık yazamayan adaptör yine 405 durum yanıtı verir.
     fn yontem_reddi_gonder(&mut self, _izinli: &str, yanit: &str) {
         self.durum_yaniti_gonder(405, yanit);
+    }
+    /// RFC-0047 (ADR-182 dilim C): DAV isteğinin çözülmüş Basic kimliği.
+    /// Gizli kısım adaptörde kalır. Varsayılan adaptörde kimlik yoktur (401).
+    fn dav_kimligi(&mut self) -> Option<DavKimligi> {
+        None
+    }
+    /// Bu isteğin gizli kısmını kayıttaki özetle sabit zamanlı karşılaştırır;
+    /// `None` aynı maliyette sahte karşılaştırmadır. Varsayılan fail-closed.
+    fn dav_ozet_dogrula(&mut self, _ozet: Option<&str>) -> bool {
+        false
+    }
+    /// DAV oran kovası; `Err` yeniden deneme saniyesidir.
+    fn dav_kovasi(&mut self, _kova: DavKova, _anahtar: &str) -> Result<(), i64> {
+        Ok(())
+    }
+    /// 401 + `WWW-Authenticate: Basic`; başlık yazamayan adaptör 401 verir.
+    fn dav_kimlik_reddi_gonder(&mut self) {
+        self.durum_yaniti_gonder(401, DAV_KIMLIK_REDDI);
+    }
+    /// 429 + `Retry-After`; başlık yazamayan adaptör 429 verir.
+    fn dav_kova_reddi_gonder(&mut self, _saniye: i64) {
+        self.durum_yaniti_gonder(429, DAV_KOVA_REDDI);
+    }
+    /// DAV öneki altında OPTIONS: 200 + `Allow` + `DAV`.
+    fn secenekler_gonder(&mut self, _izinli: &str) {
+        self.durum_yaniti_gonder(200, "");
     }
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
     /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.

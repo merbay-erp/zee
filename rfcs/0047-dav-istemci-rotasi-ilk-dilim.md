@@ -5,8 +5,9 @@
   olarak [ADR-182](../adr/182-dav-istemci-rotasi-ilk-dilim.md) ile dört
   dilimde açılır. Dilim A (durumlu türlü yanıt, `text/vcard`, 405 + `Allow`,
   501) ve B (uygulama parolası üretimi, kimlikli HMAC anahtarları, doğrulama
-  kitaplığı) uygulandı; C (`dav istemcisi gerekli` sınıfı, çözücü, kimlik,
-  CSRF muafiyeti) ve D (başlık okuma, ham gövde, ETag) açık. Açık
+  kitaplığı) ve C (`dav istemcisi gerekli` sınıfı, PROPFIND/REPORT, çözücü,
+  Basic kimliği, kovalar, CSRF muafiyeti, ayrı origin, OPTIONS) uygulandı;
+  D (başlık okuma, ham gövde, ETag) açık. Açık
   soruların kapanışı ADR-182'dedir. Taslak durumu: 27 Kasım 2026. V1 sözü
   değildir.
 - **Tarih:** 27 Kasım 2026

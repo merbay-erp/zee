@@ -154,6 +154,21 @@ impl OranBellek {
     }
 }
 
+impl OranBellek {
+    /// RFC-0047: kaydı artırmadan okur; süresi geçmiş kayıt yok sayılır.
+    pub(super) fn bak(&self, anahtar: &str, an_ms: i64) -> Result<Option<(u32, i64)>, String> {
+        let durum = self
+            .durum
+            .lock()
+            .map_err(|_| "bellek oran deposu kilidi zehirlendi")?;
+        Ok(durum
+            .kayitlar
+            .get(anahtar)
+            .filter(|kayit| kayit.pencere_sonu_ms > an_ms)
+            .map(|kayit| (kayit.sayi, kayit.pencere_sonu_ms)))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -41,6 +41,11 @@ impl OnbellekIzi {
         en_erken(toplam.dokunus, dogrudan.degisken)
     }
 
+    /// Geçişli oturum/CSRF/çerez yazma dokunuşu (RFC-0047 DAV, T066).
+    pub(in crate::cozumleyici::etki) fn dokunus(&self) -> Option<usize> {
+        self.dokunus
+    }
+
     pub(in crate::cozumleyici::etki) fn ham_govde(&self) -> Option<usize> {
         self.ham_govde
     }

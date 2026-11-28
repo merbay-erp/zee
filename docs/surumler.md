@@ -34,6 +34,23 @@ Bu kayıt yeni sürüm etiketi değildir.
 
   **Göç:** Gerekmez. Argon2id ile saklanan eski IMAP uygulama parolaları
   değişmez; yeni biçime geçiş ürün kararıdır.
+- **Takvim/kişi istemci rotası (RFC-0047 dilim C, ADR-182):** rotanın ilk
+  satırı `dav istemcisi gerekli` olduğunda Thunderbird, DAVx5 ve Apple
+  takvim/kişi istemcileri çerez ve CSRF olmadan, `Authorization: Basic` ve
+  uygulama parolasıyla bağlanır. `PROPFIND` ve `REPORT` yöntemleri yalnız bu
+  rotalarda yazılır (aksi T064); POST/PATCH bu rotada olamaz (T065); rota
+  çerez/oturum/CSRF kullanamaz (T066). Kimliği ürünün `dav_kimlik_çözücüsü`
+  işlemi bulur (proje kipinde T067); parola sabit zamanlı doğrulanır,
+  kullanıcı adı ASCII büyük/küçük harf duyarsızdır, hesap parolası kabul
+  edilmez, salt okuma parolası PUT/DELETE yapamaz, başarısız denemeler 429
+  ile sınırlanır. Çapraz kökenli tarayıcı isteği 403'tür. Üretimde DAV
+  ayrı bir adreste sunulur: `dav_kökeni "https://dav.<alan>" olsun`. DAV
+  yolu altında `OPTIONS` otomatik yanıtlanır. İstek gövdesi, `Depth`/
+  `If-Match` başlıkları ve ETag sonraki dilimdedir.
+
+  **Göç:** Gerekmez. `PROPFIND`/`REPORT` artık kayıtlı yöntemdir: DAV
+  rotası olmayan ama tanımlı bir adreste 501 yerine 405 + `Allow`, tanımsız
+  adreste 404 alır.
 
 ### Değişenler
 

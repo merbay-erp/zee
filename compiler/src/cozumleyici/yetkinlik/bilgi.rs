@@ -13,6 +13,18 @@ pub(super) struct Bilgi {
     pub(super) baglanti_islemi: Option<Konum>,
 }
 impl Bilgi {
+    /// RFC-0047 (ADR-182 dilim C): DAV kimliği HMAC'li uygulama parolasıdır.
+    pub(super) fn dav_politikasi_ekle(&mut self, cumle: &Cumle) {
+        if let Cumle::RotaPolitikasi {
+            kip: crate::agac::RotaKipi::Dav,
+            satir,
+            ..
+        } = cumle
+        {
+            self.ekle(Yetkinlik::Kriptografi, (*satir, 1, 1));
+        }
+    }
+
     pub(super) fn baglanti_islemi_ekle(&mut self, konum: Konum) {
         self.baglanti_islemi = Some(self.baglanti_islemi.map_or(konum, |k| k.min(konum)));
     }

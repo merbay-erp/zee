@@ -1,13 +1,13 @@
 # ADR-182 — DAV istemci rotası: RFC-0047 uygulaması, dilim sırası ve açık soruların kapanışı
 
-- **Durum:** kabul — dilim A ve B uygulandı (28 Kasım 2026); C, D aynı ADR'nin
-  ekleriyle açılır
+- **Durum:** kabul — dilim A, B ve C uygulandı (28 Kasım 2026); D aynı ADR'nin
+  ekiyle açılır
 - **Tarih:** 28 Kasım 2026
 - **İlgili kayıt:** K-364, [RFC-0047](../rfcs/0047-dav-istemci-rotasi-ilk-dilim.md),
   [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md), ADR-059 (core
   freeze), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu), ADR-163 K-406 eki
   (türlü metin yanıtı), ADR-178 (rota sonu), ADR-179 (makine uç noktası),
-  ADR-036 (kanonik proxy origin), spec/11 §4, spec/12 §RFC-0047, GB-185, GB-186
+  ADR-036 (kanonik proxy origin), spec/11 §4, spec/12 §RFC-0047, GB-185, GB-186, GB-187
 
 ## Bağlam
 
@@ -53,7 +53,7 @@ doğrulaması olmadan açılamaz (CSRF'siz, kimliksiz PUT/DELETE olurdu).
 |---|---|---|
 | A | Durumlu türlü yanıt (her rota), `text/vcard`, 405 + `Allow` ve 501 (her rota), durum satırı açıklamaları, 204 gövdesizliği | **uygulandı** (bu ADR, GB-185) |
 | B | Uygulama parolası ilkeli: `yeni uygulama parolası`, `uygulama_parolası_anahtarları` (kimlikli HMAC credential'ları, döndürme), doğrulama kitaplığı (biçim kapısı, sabit zamanlı özet, katı Basic, ASCII katlama) | **uygulandı** (dilim B eki, GB-186) |
-| C | `dav istemcisi gerekli` sınıfı ve `dav_kimlik_çözücüsü` bildirimi (salt okuma kanıtı): PROPFIND/REPORT kaydı, yöntem-politika tanıları, statik kapı, CSRF/Origin muafiyeti, `Sec-Fetch-Site` reddi, çerezsiz Basic doğrulaması, ayrı oran kovaları, salt okuma kapsamı, ayrı DAV origin'i, otomatik OPTIONS | açık (ADR-182 eki) |
+| C | `dav istemcisi gerekli` sınıfı ve `dav_kimlik_çözücüsü` bildirimi (salt okuma kanıtı): PROPFIND/REPORT kaydı, yöntem-politika tanıları, statik kapı, CSRF/Origin muafiyeti, `Sec-Fetch-Site` reddi, çerezsiz Basic doğrulaması, ayrı oran kovaları, salt okuma kapsamı, ayrı DAV origin'i, otomatik OPTIONS | **uygulandı** (dilim C eki, GB-187) |
 | D | `Depth`/`If-Match`/`If-None-Match` okuma, DAV ham gövdesi (tür ve tavan kuralları), `propfind-finite-depth` 403, `ETag` yazımı, korpus geçişi ve çözüm vakaları, RFC-0047 durumu | açık (ADR-182 eki) |
 
 Her dilim kendi spec maddesi, testi, tanı kataloğu, K-167 satırı, GB satırı
@@ -148,6 +148,44 @@ Kanıt: `compiler/tests/urun_e_yetkinlik_testi.rs::uygulama_parolasi_*`,
 `compiler/tests/systemd_credential_testi.rs::systemd_credential_uygulama_parolasi_etkin_anahtarla_uretilir`,
 `compiler/src/guvenlik/uygulama_parolasi.rs` birim testleri (RFC 4231
 vektörleri dahil).
+
+## Ek — dilim C: `dav istemcisi gerekli` sınıfı (28 Kasım 2026, GB-187)
+
+1. **Yüzey.** Politika cümlesi `dav istemcisi gerekli` (AST:
+   `RotaPolitikasi { erisim: HerkeseAcik, kip: Dav }`; yeni kalıp kelimesi
+   `dav`), yöntem kaydı `PROPFIND`, `REPORT` (salt okuma sınıfı). Statik
+   kapılar T064 (PROPFIND/REPORT DAV dışında; `rfc0040-a-*` S036 → T064),
+   T065 (DAV + POST/PATCH ya da sabit olmayan yol), T066 (DAV rotası/işlemleri
+   çerez/oturum/CSRF yüzeyine dokunuyor), T063 (DAV'da parola üretimi).
+   Erişim `herkese açık` sayılır çünkü karar çerez oturumundan değil, rota
+   öncesi kimlik kararından gelir; politika `kriptografi` ister.
+2. **Kimlik çözücü (soru 1).** Proje alanı `dav_kimlik_çözücüsü`; çözücü iki
+   parametreli, değer döndüren, durum/web/geri alınamaz etkisiz `işlem`
+   (proje kipinde T067). Her istekte önbelleksiz çağrılır.
+3. **Karar (RFC-0047 §6).** Adaptör Basic'i çözer, gizli kısmı tutar;
+   yorumlayıcı kova bakışı → çözücü (biçimli parolada) → sabit zamanlı
+   özet karşılaştırması + ASCII katlanmış kullanıcı eşitliği → başarısız
+   kovalar ya da başarılı kova → salt okuma (soru 11) → istek yerel `oturum`.
+   Kovalar (soru 12, aday eşikler) `RateLimitTuru::Dav*` ve artırmadan bakan
+   `rate_limit_bak`; başarı başarısız sayacı sıfırlamaz.
+4. **CSRF/Origin (soru 10).** CSRF ve Origin zorunluluğu yok; `Sec-Fetch-Site:
+   cross-site` ve yabancı `Origin` 403; `Cookie` okunmaz, `Set-Cookie` yok.
+5. **Ayrı origin (soru 8).** `dav_kökeni` üretim profilinde zorunlu ve web
+   origin'inden farklı; proxy Host/Forwarded denetimi DAV isteğinde
+   `dav_kökeni`ne, öteki isteklerde web origin'ine göre yapılır. Deneysel
+   profil zaten yalnız loopback'tir (soru 9).
+6. **OPTIONS (soru 4).** DAV yolu altında kimliksiz 200 + `Allow` + `DAV:
+   calendar-access, addressbook`, CORS yok; başka yolda 501.
+7. **IO izi.** `dav_kimligi`, `dav_ozet_dogrula`, `dav_kovasi` olayları;
+   gizli kısım ve görünen parola ize girmez; 401/429/OPTIONS
+   `durum_yaniti_gonder` biçiminde.
+8. **Bu dilimde açık.** DAV gövdesi okunur ve atılır (64 KiB); ham gövde,
+   başlık okuma ve ETag dilim D'dir. 401 süre dağılımı ve istemci kabulü
+   ürünle ölçülecek.
+
+Kanıt: `compiler/tests/web_testi.rs::dav_*`,
+`compiler/tests/dosya_yaniti_testi.rs::dav_istemci_rotasi_gercek_worker_ayri_origin_basic_ve_csrf_muafiyeti`,
+`compiler/tests/proje_testi.rs::dav_bildirimi_p015_ve_cozucu_t067`.
 
 ## Değerlendirilen seçenekler
 

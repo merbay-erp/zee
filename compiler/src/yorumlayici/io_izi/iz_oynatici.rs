@@ -235,6 +235,18 @@ impl GirdiCikti for IzYenidenOynatici {
         self.bos_sonuc("turlu_yanit_gonder", sonuc);
     }
 
+    fn dav_kimligi(&mut self) -> Option<crate::yorumlayici::DavKimligi> {
+        super::dav::oynat_kimlik(self)
+    }
+
+    fn dav_ozet_dogrula(&mut self, ozet: Option<&str>) -> bool {
+        super::dav::oynat_ozet(self, ozet)
+    }
+
+    fn dav_kovasi(&mut self, kova: crate::yorumlayici::DavKova, anahtar: &str) -> Result<(), i64> {
+        super::dav::oynat_kova(self, kova, anahtar)
+    }
+
     fn turlu_durumlu_yanit_gonder(&mut self, tur: &str, durum: u16, yanit: &str) {
         let sonuc = self.siradaki(
             "turlu_durumlu_yanit_gonder",

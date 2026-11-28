@@ -34,10 +34,10 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/cozumleyici/cumle.rs::blok_denetle#1` | 1121→1134 (+13/+24) | 3→3 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/donus.rs::donusleri_birlestir#1` | 87→87 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/etki.rs::cumle_bilgisi#1` | 178→187 (+9/+18) | 12→13 (+1/+3) | PAY İÇİNDE |
-| `compiler/src/cozumleyici/etki.rs::denetle#1` | 133→131 (-2/+14) | 5→5 (+0/+2) | İYİLEŞTİ |
+| `compiler/src/cozumleyici/etki.rs::denetle#1` | 133→132 (-1/+14) | 5→5 (+0/+2) | İYİLEŞTİ |
 | `compiler/src/cozumleyici/etki.rs::ifade_bilgisi#1` | 119→125 (+6/+12) | 7→7 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/ifade.rs::ifade_denetle_ic#1` | 964→983 (+19/+24) | 37→38 (+1/+5) | PAY İÇİNDE |
-| `compiler/src/cozumleyici/yetkinlik.rs::cumle_bilgisi#1` | 173→177 (+4/+18) | 8→9 (+1/+2) | PAY İÇİNDE |
+| `compiler/src/cozumleyici/yetkinlik.rs::cumle_bilgisi#1` | 173→178 (+5/+18) | 8→9 (+1/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/yetkinlik.rs::ifade_bilgisi#1` | 112→116 (+4/+12) | 6→6 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/eposta.rs::gonder_ic#1` | 87→87 (+0/+9) | 7→7 (+0/+2) | SABİT |
 | `compiler/src/eposta/mime.rs::ileti_kur#1` | 93→98 (+5/+10) | 8→8 (+0/+2) | PAY İÇİNDE |
@@ -56,14 +56,14 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/lsp.rs::yeniden_adlandirma_plani#1` | 81→80 (-1/+9) | 12→12 (+0/+3) | İYİLEŞTİ |
 | `compiler/src/lsp/esitleme.rs::degisim_parametreleri#1` | 39→39 (+0/+8) | 13→13 (+0/+3) | SABİT |
 | `compiler/src/main.rs::cikar_komutu#1` | 99→99 (+0/+10) | 6→6 (+0/+2) | SABİT |
-| `compiler/src/main.rs::dene_komutu#1` | 80→82 (+2/+8) | 11→11 (+0/+3) | PAY İÇİNDE |
-| `compiler/src/main.rs::denetle_yolu#1` | 69→69 (+0/+8) | 12→12 (+0/+3) | SABİT |
+| `compiler/src/main.rs::dene_komutu#1` | 80→83 (+3/+8) | 11→11 (+0/+3) | PAY İÇİNDE |
+| `compiler/src/main.rs::denetle_yolu#1` | 69→70 (+1/+8) | 12→12 (+0/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::govde#1` | 150→165 (+15/+15) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→113 (+5/+11) | 10→10 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/main.rs::istek_al#1` | 113→115 (+2/+12) | 12→14 (+2/+3) | PAY İÇİNDE |
+| `compiler/src/main.rs::istek_al#1` | 113→119 (+6/+12) | 12→14 (+2/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::istek_govdesini_oku#1` | 79→87 (+8/+8) | 12→11 (-1/+3) | İYİLEŞTİ |
-| `compiler/src/main.rs::web_istegini_baslat#1` | 85→65 (-20/+9) | 6→6 (+0/+2) | İYİLEŞTİ |
+| `compiler/src/main.rs::web_istegini_baslat#1` | 85→66 (-19/+9) | 6→6 (+0/+2) | İYİLEŞTİ |
 | `compiler/src/main.rs::web_modunu_ayikla#1` | 88→16 (-72/+9) | 4→2 (-2/+2) | İYİLEŞTİ |
 | `compiler/src/main.rs::web_modunu_ayikla_temel#1` | 90→90 (+0/+9) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/morfoloji.rs::eki_uydur#1` | 63→63 (+0/+8) | 13→13 (+0/+3) | SABİT |
@@ -71,7 +71,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/paket.rs::ziyaret_et#1` | 186→186 (+0/+19) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/paket/uzak.rs::paketleri_hazirla#1` | 171→171 (+0/+18) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/postgresql.rs::migration_ust_seviye_kelimeleri#1` | 77→77 (+0/+8) | 19→19 (+0/+4) | SABİT |
-| `compiler/src/proje.rs::bildirimi_oku#1` | 209→225 (+16/+21) | 4→3 (-1/+2) | İYİLEŞTİ |
+| `compiler/src/proje.rs::bildirimi_oku#1` | 209→226 (+17/+21) | 4→3 (-1/+2) | İYİLEŞTİ |
 | `compiler/src/proje.rs::uzak_bagimliliklari_guncelle#1` | 94→94 (+0/+10) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/proje.rs::veritabani_bildirimini_al#1` | 92→92 (+0/+10) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/registry.rs::targets_yapisini_dogrula#1` | 95→95 (+0/+10) | 5→5 (+0/+2) | SABİT |
@@ -84,10 +84,10 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→821 (+6/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→856 (+6/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→162 (+13/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→163 (+14/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/kimlik_iletisim.rs::intrinsic_degerlendir#1` | 125→126 (+1/+13) | 4→4 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→117 (+4/+12) | 9→11 (+2/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→125 (+12/+12) | 9→10 (+1/+2) | PAY İÇİNDE |
 
 Eşik aşımı otomatik bir tasarım hükmü değildir; işi durdurup işlevi bölme veya
 gerekçeli yeni tabanı aynı kod incelemesinde kabul etme zorunluluğudur. Düşüşler

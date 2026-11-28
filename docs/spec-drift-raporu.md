@@ -16,8 +16,8 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/08-kalici-dosya.md` | 9 | 8 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
-| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 38 | 38 | 0 | 0 |
-| `spec/12-web-guvenlik-profili.md` | 98 | 90 | 0 | 8 |
+| `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 44 | 43 | 0 | 1 |
+| `spec/12-web-guvenlik-profili.md` | 102 | 93 | 0 | 9 |
 | `spec/13-surumlu-morfoloji-profili.md` | 9 | 8 | 0 | 1 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
@@ -37,7 +37,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
 | `spec/30-editor-analizi-ve-lint.md` | 13 | 12 | 0 | 1 |
 | `spec/31-dns-ve-posta-kimlik-dogrulama.md` | 44 | 41 | 0 | 3 |
-| **Toplam** | **484** | **456** | **6** | **22** |
+| **Toplam** | **494** | **464** | **6** | **24** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -53,6 +53,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/03-adlar-ve-kapsam.md#548b78fc716d5ccb` — AÇIK (K-398): iki adımlı geri çevrim (`kaybı → kayıp`, `kaydı → kayıt`),… — K-398: sözlüksüz kural iki adımlı geri çevrimi, l/m sonlu ünlü düşmesini (-lı sıfatlarıyla çakışır) ve iyelik+belirtme çakışmasını ayırt edemez; sözlük ya da zee-tr-2 kararı ister.
 - `spec/07-birimler.md#5a223c7685111c87` — AÇIK: Göreli IO kökünü proje klasörüne taşıyan bir bildirim alanı yoktur… — K-382/K-394: göreli IO kökü taşınmaz; projeler arası paylaşılan veri K-394 veri_kökü (mutlak, işletimce verilen kök) ile açıldı.
 - `spec/07-birimler.md#ea02c119dae2926d` — AÇIK: Veri kökünde dizin listeleme, görsel küçültme, bağlantı blok dosya… — K-394: listeleme ve görsel küçültme açık ret iletisi verir (veri_kokunde_yazma_tasima_silme_ve_okuma_ailesi_calisir listeleme reddini sınar); Windows/wasm yok.
+- `spec/11-uygulama-eylemleri-ve-web-adaptoru.md#5520a9bd6be5b261` — - AÇIK (dilim D): DAV istek gövdesi bu dilimde okunur ve atılır (64 KiB … — RFC-0047 dilim D: ham DAV gövdesi, başlık okuma ve ETag açık; bu dilimde yalnız 64 KiB okunup atılır.
 - `spec/12-web-guvenlik-profili.md#f0003f30d3695cf6` — AÇIK: Parola ve TOTP doğrulaması aşımda rotaya `yanlış` döndürüp rotayı … — K-368 kapsamı dışı: aşımı Zee koduna ayrı değerle göstermek ya da rotayı kesmek GirdiCikti bool sözleşmesini ve IO izi şemasını değiştirir; ZM-F021 hesap kilidi sayacı etkisi bu madde altında izlenir.
 - `spec/12-web-guvenlik-profili.md#2e5226f743e35a39` — AÇIK (K-400): Host'u `127.0.0.1` ya da `localhost` olarak yeniden yazan … — K-400: Host yeniden yazan yerel proxy/tünel çalışma zamanınca ayırt edilemez; operatör kuralı ve filo süreç denetimi (25.11.2026: hiçbir üretim sürecinde --deneysel-web yok) ile kapsanır.
 - `spec/12-web-guvenlik-profili.md#5d930da7687a2f1e` — AÇIK: Windows'ta paylaşılan dinleyici devri yoktur; `--web-isci-sayisi` … — Windows paylaşılan dinleyici devri, dengeli dağılım, ağ dosya sistemi ve çok hostlu birincillik açık (K-340 `zee.ayar` alanını, K-341 tek makinede elle kurulumda tek birincili bu maddeden çıkardı); Windows'taki çıkış 2 reddi web_cok_surec_testi::isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir cfg(windows) vakasıyla Windows CI'da koşar.
@@ -60,6 +61,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 - `spec/12-web-guvenlik-profili.md#1cbfffe0b684d7eb` — AÇIK: Bağlantı görevi içindeki PostgreSQL, dosya ve HTTP çağrıları ile b… — Katman C, bağlantılar arası uyandırma, Unix dışı ret, RSS ölçümü ve ham dosyanın kısmi aktarımı açık (base64 kodlu kısmi getirme K-396 A2d). K-388: birimler arası canlı değer birikimi ve birim içi atılan değer iadesi açık.
 - `spec/12-web-guvenlik-profili.md#d0c68c44c7c98c4b` — AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek t… — K-335 kapsamı dışı; Vary/ETag/purge ve sorgu anahtarı ön kapının sorumluluğundadır.
 - `spec/12-web-guvenlik-profili.md#b794607bf1fe922f` — AÇIK: Dil XML ya da JSON ayrıştırmaz; ürün gövdeyi metin işlemleriyle iş… — K-405 kapsamı dışı (kullanıcıya göre yanıt K-406 türlü metin yanıtıyla); harfe duyarsız yol, PUT/PATCH ve CORS ayrı iştir; günlük ve sayım ürün kuralıdır (RFC-0046 tehdit modeli).
+- `spec/12-web-guvenlik-profili.md#38977a718837f94f` — AÇIK: Kova eşikleri adaydır; başarılı kova eşiği ürünle iOS/Thunderbird … — RFC-0047 kabul ölçütleri 3-4: ölçüm ürünle; dilim C'de yapılmadı.
 - `spec/12-web-guvenlik-profili.md#a969792eb3d50575` — AÇIK: Kaynak değişmezindeki bir betiği gövdeye yansıtan istemci o betiği… — K-379 kapsamı dışı: özet CSP'nin genel sınırı (yalnız geliştirici betikleri); öznitelikli script özetlenmez; durum yanıtı satır içi betik izni taşımaz.
 - `spec/13-surumlu-morfoloji-profili.md#8a414db8b5ca5b82` — AÇIK: `zee-tr-1` `â`, `î`, `û` harflerini ünlü saymaz. Bu harfleri taşıy… — K-367: düzeltme uyumluluk kaydını değiştirir (53.248 üretimin 10.306'sı, 2.865 çözüm kümesi); zee-tr-1 içinde yapılamaz, zee-tr-2 adayı (RFC + yeni kayıt + kilit geçişi + edition). Çözücü doğru yazımı kabul eder.
 - `spec/23-yetkinlik-ve-outbound-guvenligi.md#15b3c0c87713d1ae` — AÇIK: Gerçek systemd servis kurulumu ile canlı kabul, çalışan süreçte ro… — K-339 kapsamı dışı; canlı systemd servis kabulü ve rotasyon ürün/işletim tarafında.

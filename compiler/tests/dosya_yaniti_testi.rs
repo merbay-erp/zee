@@ -979,10 +979,17 @@ fn dav_a_turlu_durumlu_yanit_405_allow_501_ve_204_gercek_surecte() {
     );
     assert!(baslik(&basliklar, "Allow").is_empty());
 
+    // RFC-0047 dilim C: PROPFIND/REPORT kayıtlı; DAV rotası olmayan yolda 405.
+    for yontem in ["PROPFIND", "REPORT"] {
+        let (basliklar, _) = originli_istek(kapi, yontem, "/dav/takvimler/");
+        assert!(
+            basliklar.starts_with("HTTP/1.1 405 "),
+            "{yontem}: {basliklar}"
+        );
+        assert_eq!(baslik(&basliklar, "Allow"), ["GET, HEAD"], "{yontem}");
+    }
     // 501: kayıt dışı yöntem yoldan bağımsız; Allow yok, rota çalışmaz.
     for (yontem, hedef) in [
-        ("PROPFIND", "/dav/takvimler/"),
-        ("REPORT", "/dav/takvimler/"),
         ("MKCALENDAR", "/dav/yeni/"),
         ("LOCK", "/notlar"),
         ("PROPPATCH", "/yok"),
@@ -1047,16 +1054,17 @@ fn dav_a_hermetik_adaptor_ve_io_izi_ayni_kural() {
         "GET /kart.vcf".to_string(),
         "PATCH /notlar".to_string(),
         "PROPFIND /dav/a/".to_string(),
+        "LOCK /dav/a/".to_string(),
         "GET /yok".to_string(),
     ]
     .into();
     calistir_io(&program, &mut io).expect("çalışmalı");
-    assert_eq!(io.sunucu_durumlari, [207, 201, 405, 501, 404]);
+    assert_eq!(io.sunucu_durumlari, [207, 201, 405, 405, 501, 404]);
     assert_eq!(
         io.turlu_yanitlar,
         ["application/xml", "text/vcard; charset=utf-8"]
     );
-    assert_eq!(io.izinli_yontemler, ["GET, HEAD, DELETE"]);
+    assert_eq!(io.izinli_yontemler, ["GET, HEAD, DELETE", "GET, HEAD"]);
 
     // Gömme yolu kapalı kümeleri uygular: kayıt dışı durum ya da tür 500.
     for (tur, durum) in [("application/xml", 500), ("text/html", 207)] {
@@ -1103,8 +1111,8 @@ fn dav_a_yontem_reddi_proxy_kapisindan_sonra_cerezsiz() {
     // Origin'siz kayıt dışı yöntem durum değiştiren yöntem sayılır: 403.
     let (basliklar, _) = istek(kapi, "PROPFIND", "/dav/takvimler/");
     assert!(basliklar.starts_with("HTTP/1.1 403 "), "{basliklar}");
-    // Origin'li: 501, çerezsiz.
-    let (basliklar, _) = originli_istek(kapi, "PROPFIND", "/dav/takvimler/");
+    // Origin'li: 501, çerezsiz (RFC-0047 dilim C'den beri PROPFIND kayıtlı).
+    let (basliklar, _) = originli_istek(kapi, "MKCALENDAR", "/dav/takvimler/");
     assert!(basliklar.starts_with("HTTP/1.1 501 "), "{basliklar}");
     assert!(baslik(&basliklar, "Set-Cookie").is_empty(), "{basliklar}");
     // 405: Allow yalnız kayıt adları; yol ve yöntem baytı başlığa girmez.
@@ -1143,4 +1151,200 @@ fn head_get_rotasinda_gercek_surecte_200_govdesiz() {
     let (head, _) = istek(kapi, "HEAD", "/form");
     assert!(head.starts_with("HTTP/1.1 405 "), "{head}");
     assert_eq!(baslik(&head, "Allow"), ["POST"]);
+}
+
+/// RFC-0047 E/F (ADR-182 dilim C): gerçek worker'da DAV istemci rotası.
+/// `--web-proxy` profilinde DAV ayrı `dav_kökeni` origin'indedir; Basic +
+/// uygulama parolası credential dosyasındaki HMAC anahtarıyla doğrulanır.
+fn dav_ham_istek(kapi: u16, host: &str, istek: &str) -> (String, Vec<u8>) {
+    let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+    let mut akis = TcpStream::connect_timeout(&adres, Duration::from_secs(5)).expect("bağlantı");
+    akis.set_read_timeout(Some(Duration::from_secs(30)))
+        .expect("okuma süresi");
+    let (satir, ek) = istek.split_once('\n').unwrap_or((istek, ""));
+    write!(
+        akis,
+        "{satir} HTTP/1.1\r\nHost: {host}\r\nForwarded: for=203.0.113.9;proto=https;host={host}\r\n{ek}Content-Length: 0\r\nConnection: close\r\n\r\n"
+    )
+    .expect("istek");
+    let mut ham = Vec::new();
+    akis.read_to_end(&mut ham).expect("yanıt");
+    let son = ham
+        .windows(4)
+        .position(|p| p == b"\r\n\r\n")
+        .expect("başlık sonu")
+        + 4;
+    (
+        String::from_utf8(ham[..son].to_vec()).expect("başlık"),
+        ham[son..].to_vec(),
+    )
+}
+
+fn dav_basic(kullanici: &str, parola: &str) -> String {
+    let b64 = |veri: &[u8]| {
+        const A: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let mut cikti = String::new();
+        for grup in veri.chunks(3) {
+            let b = [
+                grup[0],
+                *grup.get(1).unwrap_or(&0),
+                *grup.get(2).unwrap_or(&0),
+            ];
+            let n = (u32::from(b[0]) << 16) | (u32::from(b[1]) << 8) | u32::from(b[2]);
+            for i in 0..4 {
+                if i <= grup.len() {
+                    cikti.push(A[((n >> (18 - 6 * i)) & 63) as usize] as char);
+                } else {
+                    cikti.push('=');
+                }
+            }
+        }
+        cikti
+    };
+    format!(
+        "Authorization: Basic {}\r\n",
+        b64(format!("{kullanici}:{parola}").as_bytes())
+    )
+}
+
+#[cfg(unix)]
+#[test]
+fn dav_istemci_rotasi_gercek_worker_ayri_origin_basic_ve_csrf_muafiyeti() {
+    use dil::guvenlik::uygulama_parolasi::uret;
+    let parola = uret(&[0xab; 32], "k1", &[3; 25]).expect("parola");
+    let ana = format!(
+        "işlem kimlik_coz\n    kullanıcıyı Metin olarak al\n    öneki Metin olarak al\n    Metin sözlüğü döndürür\n    bilgi boş sözlük olsun\n    beklenen \"{onek}\" olsun\n    önek beklenene eşitse\n        bilginin \"özet\" değeri \"{ozet}\" olsun\n        bilginin \"kullanıcı\" değeri \"ali\" olsun\n        bilginin \"rol\" değeri \"kullanıcı\" olsun\n        bilginin \"kapsam\" değeri \"tam\" olsun\n        bilginin \"kimlik\" değeri \"cihaz-1\" olsun\n    bilgiyi döndür\n\n8080 kapısında sunucu başlat\n\nPROPFIND \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    \"<m/>\" metnini \"application/xml\" türünde 207 durumuyla gönder\n\nPUT \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    \"\" yanıtını 201 durumuyla gönder\n\nGET \"/\" adresine istek geldiğinde\n    herkese açık\n    \"web\" yanıtını gönder\n",
+        onek = parola.onek,
+        ozet = parola.ozet
+    );
+    let proje = Proje::yeni(&ana);
+    let cred = proje.0.join("cred");
+    std::fs::create_dir_all(&cred).expect("cred");
+    std::fs::write(cred.join("ZEE_K364_DAV"), "ab".repeat(32)).expect("anahtar");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let kip = |yol: &Path, kip: u32| {
+            std::fs::set_permissions(yol, std::fs::Permissions::from_mode(kip)).expect("kip")
+        };
+        kip(&cred.join("ZEE_K364_DAV"), 0o400);
+        kip(&cred, 0o500);
+    }
+    // macOS geçici dizini sembolik bağdır; credential dizini kanonik olmalı.
+    let cred = cred.canonicalize().expect("kanonik cred");
+    let bildirim = |dav_koken: &str| {
+        format!("proje \"dav\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"ağ-sunucusu\", \"kriptografi\" listesi olsun\nağ_hedefleri boş liste olsun\nuygulama_parolası_anahtarları \"k1 ZEE_K364_DAV\" listesi olsun\ndav_kimlik_çözücüsü \"kimlik_coz\" olsun\n{dav_koken}")
+    };
+    let baslat = |kapi: u16| {
+        kopma::dinleyene_dek_baslat(|| {
+            let mut komut = std::process::Command::new(env!("CARGO_BIN_EXE_dil"));
+            komut
+                .args([
+                    "çalıştır",
+                    "--web-proxy",
+                    kopma::PROXY,
+                    "--web-worker-port",
+                    &kapi.to_string(),
+                    proje.0.to_str().expect("UTF-8"),
+                ])
+                .env("CREDENTIALS_DIRECTORY", &cred)
+                .stderr(Stdio::null());
+            komut
+        })
+    };
+
+    // dav_kökeni olmadan üretim profili açılmaz.
+    std::fs::write(proje.0.join("proje.dil"), bildirim("")).expect("proje.dil");
+    let cikti = std::process::Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args([
+            "çalıştır",
+            "--web-proxy",
+            kopma::PROXY,
+            "--web-worker-port",
+            "1",
+        ])
+        .arg(&proje.0)
+        .env("CREDENTIALS_DIRECTORY", &cred)
+        .output()
+        .expect("dil");
+    assert!(!cikti.status.success());
+    assert!(String::from_utf8_lossy(&cikti.stderr).contains("dav_kökeni"));
+
+    std::fs::write(
+        proje.0.join("proje.dil"),
+        bildirim("dav_kökeni \"https://dav.example\" olsun\n"),
+    )
+    .expect("proje.dil");
+    let kapi = kopma::bos_kapi();
+    let _sunucu = Sunucu(baslat(kapi));
+    let dogru = dav_basic("ALI", &parola.gorunen);
+
+    // Kimliksiz: 401 + realm, Set-Cookie yok; çerez yok sayılır.
+    let (b, _) = dav_ham_istek(
+        kapi,
+        "dav.example",
+        "PROPFIND /dav/takvim/\nCookie: __Host-zee-oturum=x\r\n",
+    );
+    assert!(b.starts_with("HTTP/1.1 401 Unauthorized\r\n"), "{b}");
+    assert_eq!(
+        baslik(&b, "WWW-Authenticate"),
+        ["Basic realm=\"https://dav.example\", charset=\"UTF-8\""]
+    );
+    assert!(baslik(&b, "Set-Cookie").is_empty());
+    // Doğru parola: 207; PUT Origin'siz ve CSRF'siz 201; Set-Cookie yok.
+    let (b, govde) = dav_ham_istek(
+        kapi,
+        "dav.example",
+        &format!("PROPFIND /dav/takvim/\n{dogru}"),
+    );
+    assert!(b.starts_with("HTTP/1.1 207 Multi-Status\r\n"), "{b}");
+    assert_eq!(govde, b"<m/>");
+    assert!(baslik(&b, "Set-Cookie").is_empty());
+    let (b, _) = dav_ham_istek(
+        kapi,
+        "dav.example",
+        &format!("PUT /dav/takvim/a.ics\n{dogru}"),
+    );
+    assert!(b.starts_with("HTTP/1.1 201 Created\r\n"), "{b}");
+    // Hesap parolası ve yanlış parola: aynı 401.
+    for yanlis in [
+        dav_basic("ali", "hesap parolasi"),
+        dav_basic("veli", &parola.gorunen),
+    ] {
+        let (b, govde) = dav_ham_istek(kapi, "dav.example", &format!("PROPFIND /dav/\n{yanlis}"));
+        assert!(b.starts_with("HTTP/1.1 401 "), "{b}");
+        assert_eq!(govde, dil::yorumlayici::DAV_KIMLIK_REDDI.as_bytes());
+    }
+    // Yabancı Origin ve çapraz kökenli tarayıcı isteği rota çalışmadan 403.
+    for ek in [
+        format!("Origin: https://kotu.example\r\n{dogru}"),
+        format!("Sec-Fetch-Site: cross-site\r\n{dogru}"),
+    ] {
+        let (b, _) = dav_ham_istek(kapi, "dav.example", &format!("PUT /dav/a.ics\n{ek}"));
+        assert!(b.starts_with("HTTP/1.1 403 "), "{b}");
+    }
+    // Kendi Origin'i kabul.
+    let (b, _) = dav_ham_istek(
+        kapi,
+        "dav.example",
+        &format!("PUT /dav/a.ics\nOrigin: https://dav.example\r\n{dogru}"),
+    );
+    assert!(b.starts_with("HTTP/1.1 201 "), "{b}");
+    // OPTIONS kimliksiz: Allow + DAV.
+    let (b, _) = dav_ham_istek(kapi, "dav.example", "OPTIONS /dav/takvim/");
+    assert!(b.starts_with("HTTP/1.1 200 OK\r\n"), "{b}");
+    assert_eq!(baslik(&b, "Allow"), ["PUT, PROPFIND, OPTIONS"]);
+    assert_eq!(baslik(&b, "DAV"), ["calendar-access, addressbook"]);
+    // Ayrı origin: DAV yolu web origin'inde sunulmaz; web rotası DAV origin'inde sunulmaz.
+    let (b, _) = dav_ham_istek(kapi, "panel.example", &format!("PROPFIND /dav/\n{dogru}"));
+    assert!(b.starts_with("HTTP/1.1 400 "), "{b}");
+    let (b, _) = dav_ham_istek(kapi, "dav.example", "GET /");
+    assert!(b.starts_with("HTTP/1.1 400 "), "{b}");
+    let (b, _) = dav_ham_istek(kapi, "panel.example", "GET /");
+    assert!(b.starts_with("HTTP/1.1 200 "), "{b}");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let _ = std::fs::set_permissions(&cred, std::fs::Permissions::from_mode(0o700));
+    }
 }

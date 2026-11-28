@@ -35,6 +35,9 @@ pub(super) fn web_istegini_calistir(
                 return Ok(None);
             }
         };
+    if gelen_yontem == "OPTIONS" {
+        return dav_kimlik::secenekler(program, io, &yol).map(|()| None);
+    }
     let (cerezler, oturum_bilgileri) = match oturum_cerezlerini_ayir(cerezler) {
         Ok(deger) => deger,
         Err((durum, mesaj)) => {
@@ -86,28 +89,33 @@ pub(super) fn web_istegini_calistir(
             .iter()
             .find(|(ad, _)| ad == "_csrf")
             .map(|(_, deger)| deger.as_str());
-        if let Err(red) = io.rota_guvenligini_denetle(&erisim, csrf, !beklenen.guvenli() && !makine)
-        {
+        let csrf_gerekli = !beklenen.guvenli() && !makine && kip != RotaKipi::Dav;
+        if let Err(red) = io.rota_guvenligini_denetle(&erisim, csrf, csrf_gerekli) {
             io.durum_yaniti_gonder(red.durum, red.mesaj);
             eslesti = true;
             break;
         }
+        // K-335/K-405: önbelleklenebilir ve makine rotası oturum/çerez görmez;
+        // RFC-0047: DAV rotasının `oturum`u yalnız Basic + uygulama parolası kararıdır.
+        let Some((cerez_sozlugu, oturum_sozlugu)) = dav_kimlik::rota_sozlukleri(
+            kip,
+            (program, &mut *io, beklenen, *satir),
+            &cerez_sozlugu,
+            &oturum_sozlugu,
+        )?
+        else {
+            eslesti = true;
+            break;
+        };
         if let Some(ad) = eksik_zorunlu_alan(govde, &veriler) {
             io.durum_yaniti_gonder(400, &format!("zorunlu istek alanı eksik ya da boş: {}", ad));
             eslesti = true;
             break;
         }
 
-        // K-335/K-405: önbelleklenebilir ve makine rotası oturum/çerez görmez;
-        // T057/T061 statik kapısını aşan bir yol olsa bile yanıt kimliğe bağlanamaz.
         if let RotaKipi::Onbellekli(saniye) = kip {
             io.yanit_onbellegine_izin_ver(saniye);
         }
-        let (cerez_sozlugu, oturum_sozlugu) = if kip != RotaKipi::Olagan {
-            (Deger::Sozluk(Vec::new()), Deger::Sozluk(Vec::new()))
-        } else {
-            (cerez_sozlugu.clone(), oturum_sozlugu.clone())
-        };
         makine_istegi::ortama_ekle(&mut rota_ortami, makine, &ham_govde, *satir)?;
         ortama_yazma_butcesini_tuket(&rota_ortami, "istek", &istek_sozlugu, *satir)?;
         rota_ortami.insert("istek".into(), istek_sozlugu.clone());

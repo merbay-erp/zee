@@ -3,6 +3,7 @@
 
 mod baglanti;
 mod codec;
+mod dav;
 mod dns;
 mod eylem;
 mod http;
@@ -81,6 +82,9 @@ fn gecerli_islem(islem: &str) -> bool {
             | "durum_yaniti_gonder"
             | "turlu_yanit_gonder"
             | "turlu_durumlu_yanit_gonder"
+            | "dav_kimligi"
+            | "dav_ozet_dogrula"
+            | "dav_kovasi"
             | "yonlendir_gonder"
             | "cerez_yaz"
             | "cerez_sil"
@@ -205,6 +209,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         "yazdir" | "yanit_gonder" => alan_sayisi(olay, 1, 0),
         "turlu_yanit_gonder" => turlu_yanit_semasi(olay),
         "turlu_durumlu_yanit_gonder" => turlu_durumlu_yanit_semasi(olay),
+        "dav_kimligi" | "dav_ozet_dogrula" | "dav_kovasi" => dav::sema(olay),
         "durum_yaniti_gonder" => {
             alan_sayisi(olay, 2, 0)?;
             if kanonik_tamsayi::<u16>(&olay.argumanlar[0]) {
@@ -671,6 +676,47 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         self.kaydet(
             "turlu_durumlu_yanit_gonder",
             vec![tur.into(), durum.to_string(), yanit.into()],
+            Vec::new(),
+        );
+    }
+
+    fn dav_kimligi(&mut self) -> Option<crate::yorumlayici::DavKimligi> {
+        dav::kaydet_kimlik(self)
+    }
+
+    fn dav_ozet_dogrula(&mut self, ozet: Option<&str>) -> bool {
+        dav::kaydet_ozet(self, ozet)
+    }
+
+    fn dav_kovasi(&mut self, kova: crate::yorumlayici::DavKova, anahtar: &str) -> Result<(), i64> {
+        dav::kaydet_kova(self, kova, anahtar)
+    }
+
+    /// RFC-0047 C: 401/429/OPTIONS başlıkları karardan deterministik türer;
+    /// olay `durum_yaniti_gonder` biçimindedir.
+    fn dav_kimlik_reddi_gonder(&mut self) {
+        self.ic.dav_kimlik_reddi_gonder();
+        self.kaydet(
+            "durum_yaniti_gonder",
+            vec!["401".into(), crate::yorumlayici::DAV_KIMLIK_REDDI.into()],
+            Vec::new(),
+        );
+    }
+
+    fn dav_kova_reddi_gonder(&mut self, saniye: i64) {
+        self.ic.dav_kova_reddi_gonder(saniye);
+        self.kaydet(
+            "durum_yaniti_gonder",
+            vec!["429".into(), crate::yorumlayici::DAV_KOVA_REDDI.into()],
+            Vec::new(),
+        );
+    }
+
+    fn secenekler_gonder(&mut self, izinli: &str) {
+        self.ic.secenekler_gonder(izinli);
+        self.kaydet(
+            "durum_yaniti_gonder",
+            vec!["200".into(), String::new()],
             Vec::new(),
         );
     }

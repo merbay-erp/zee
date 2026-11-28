@@ -53,6 +53,16 @@ fn ogeyi_ayristir(yazim: &str) -> Result<UygulamaParolasiAnahtari, String> {
 pub(super) fn alanlari_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
     yetkinlik_yazimlari: &[String],
+) -> Result<(Vec<UygulamaParolasiAnahtari>, usize, super::DavBildirimi), Tani> {
+    let (anahtarlar, satir) = anahtarlari_al(alanlar, yetkinlik_yazimlari)?;
+    // RFC-0047 dilim C: DAV bildirimi anahtar listesine bağlıdır.
+    let dav = super::dav::alanlari_al(alanlar, yetkinlik_yazimlari, !anahtarlar.is_empty())?;
+    Ok((anahtarlar, satir, dav))
+}
+
+fn anahtarlari_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    yetkinlik_yazimlari: &[String],
 ) -> Result<(Vec<UygulamaParolasiAnahtari>, usize), Tani> {
     let (yazimlar, satir) = metin_listesini_al(alanlar, "uygulama_parolası_anahtarları", "P015")?;
     if yazimlar.is_empty() {

@@ -4221,9 +4221,11 @@ yoldan bağımsız 501, kanonik durum satırları ve gövdesiz 204; kanıt
 (`zua1-` biçimi, `zuah1:` HMAC özeti, T063 üretim yeri, IO izi kaydında
 üretim yok), kimlikli `uygulama_parolası_anahtarları` (döndürme, anahtar
 ayrımı P015) ve doğrulama kitaplığı (sabit zamanlı özet, katı Basic, ASCII
-katlama). Açık: C (`dav istemcisi gerekli` sınıfı, `dav_kimlik_çözücüsü`,
-Basic, kovalar, CSRF muafiyeti, ayrı origin, OPTIONS), D (başlık okuma, ham
-gövde, ETag, korpus geçişi).
+katlama). **Dilim C kapandı** (GB-187): `dav istemcisi gerekli`,
+PROPFIND/REPORT, T064–T067, `dav_kimlik_çözücüsü`, çerezsiz Basic kimlik
+kararı, DAV kovaları, salt okuma, CSRF/Origin muafiyeti + `Sec-Fetch-Site`
+reddi, ayrı `dav_kökeni`, otomatik OPTIONS; `rfc0040-a-*` S036 → T064. Açık:
+D (başlık okuma, ham gövde, ETag, korpus geçişi ve çözüm vakaları).
 
 Önceki durum (taslak): [RFC-0040](../rfcs/0040-webdav-caldav-carddav-adaptoru.md):
 `urun-h` takvim/kişi verisini standart masaüstü/telefon istemcilerine CalDAV

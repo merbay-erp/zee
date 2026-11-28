@@ -10,7 +10,10 @@ pub(super) fn kayitli_yontem<T>(
     istek: (String, String, T, T),
 ) -> Result<(String, String, T, T), (u16, &'static str)> {
     match HttpYontemi::ayristir(&istek.0) {
+        // RFC-0047 (ADR-182 dilim C): OPTIONS yalnız DAV öneki altında
+        // çalışma zamanınca yanıtlanır; karar `dav_kimlik::secenekler`dedir.
         Some(_) => Ok(istek),
+        None if istek.0 == "OPTIONS" => Ok(istek),
         None => Err((501, "bu HTTP yöntemi desteklenmiyor")),
     }
 }

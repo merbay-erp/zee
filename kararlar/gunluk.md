@@ -6671,3 +6671,15 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   salt okumadır (T045), örtük çalıştırma yeni etki açmaz. Regresyon vakası
   `regression/security/head-get-ortuk.dil`; GB-185 sınırı güncellendi.
 
+## K-364 — RFC-0047 dilim C uygulandı: DAV istemci rotası (28 Kasım 2026)
+
+- `dav istemcisi gerekli` sınıfı, PROPFIND/REPORT ve T064–T067 açıldı;
+  `rfc0040-a-propfind`/`rfc0040-a-report` S036 → T064 (bilinçli ret; çözüm
+  vakaları dilim D'de ürün kaynağından alınacak).
+- Kimlik rota öncesi: native adaptör Basic'i çözer, gizli kısmı tutar;
+  yorumlayıcı çözücüyü önbelleksiz çağırır, özet sabit zamanlı, kullanıcı ASCII
+  katlanmış; kovalar (aday eşikler 10/30/600 per 60 sn) ve salt okuma.
+- CSRF/Origin muafiyeti yalnız bu sınıfta; `Sec-Fetch-Site: cross-site` ve
+  yabancı Origin 403; üretimde ayrı `dav_kökeni` zorunlu; OPTIONS otomatik.
+  GB-187.
+

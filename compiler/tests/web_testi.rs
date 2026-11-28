@@ -1752,3 +1752,198 @@ DELETE \"/kayit\" adresine istek geldiğinde
     assert_eq!(io.sunucu_yanitlari[2].1, "dosya");
     assert_eq!(io.izinli_yontemler, ["POST", "PUT, DELETE", "GET, HEAD"]);
 }
+
+/// RFC-0047 E/F (ADR-182 dilim C): DAV istemci rotası — çözücü, sabit zamanlı
+/// özet, ASCII katlanmış kullanıcı adı, salt okuma kapsamı, kovalar ve
+/// otomatik OPTIONS; hermetik adaptörde (`dene` anahtarı).
+fn dav_programi() -> (String, String, String) {
+    use dil::guvenlik::uygulama_parolasi::uret;
+    let yazar = uret(&[0x5a; 32], "dene", &[1; 25]).expect("parola");
+    let okur = uret(&[0x5a; 32], "dene", &[2; 25]).expect("parola");
+    let kaynak = format!(
+        "\
+işlem kimlik_coz
+    kullanıcıyı Metin olarak al
+    öneki Metin olarak al
+    Metin sözlüğü döndürür
+    bilgi boş sözlük olsun
+    yazar_önek \"{yo}\" olsun
+    okur_önek \"{oo}\" olsun
+    önek yazar_öneke eşitse
+        bilginin \"özet\" değeri \"{yz}\" olsun
+        bilginin \"kullanıcı\" değeri \"Ali@Ornek.Test\" olsun
+        bilginin \"rol\" değeri \"kullanıcı\" olsun
+        bilginin \"kapsam\" değeri \"tam\" olsun
+        bilginin \"kimlik\" değeri \"cihaz-1\" olsun
+    önek okur_öneke eşitse
+        bilginin \"özet\" değeri \"{oz}\" olsun
+        bilginin \"kullanıcı\" değeri \"ali@ornek.test\" olsun
+        bilginin \"rol\" değeri \"kullanıcı\" olsun
+        bilginin \"kapsam\" değeri \"salt_okuma\" olsun
+        bilginin \"kimlik\" değeri \"cihaz-2\" olsun
+    bilgiyi döndür
+
+8080 kapısında sunucu başlat
+
+PROPFIND \"/dav/\" önekli adrese istek geldiğinde
+    dav istemcisi gerekli
+    kim oturumun \"kullanıcı\" değeri ile \" \" ile oturumun \"kimlik_türü\" değeri olsun
+    kim metnini \"application/xml\" türünde 207 durumuyla gönder
+
+PUT \"/dav/\" önekli adrese istek geldiğinde
+    dav istemcisi gerekli
+    \"\" yanıtını 201 durumuyla gönder
+",
+        yo = yazar.onek,
+        oo = okur.onek,
+        yz = yazar.ozet,
+        oz = okur.ozet
+    );
+    (kaynak, yazar.gorunen, okur.gorunen)
+}
+
+#[test]
+fn dav_istemci_rotasi_kimlik_kapsam_ve_secenekler_hermetik() {
+    let (kaynak, yazar, okur) = dav_programi();
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.dav_kimlik_cozucusu = Some("kimlik_coz".into());
+    io.istekler = [
+        "PROPFIND /dav/takvim/",
+        "PROPFIND /dav/takvim/",
+        "PROPFIND /dav/takvim/",
+        "PROPFIND /dav/takvim/",
+        "PUT /dav/takvim/a.ics",
+        "PUT /dav/takvim/a.ics",
+        "OPTIONS /dav/takvim/",
+        "OPTIONS /baska",
+    ]
+    .map(String::from)
+    .into();
+    io.dav_basic = [
+        // Büyük harfli kullanıcı adı ASCII katlanır; kanonik ad çözücüden.
+        Some(format!("ALI@ornek.test:{yazar}")),
+        None,
+        Some("ali@ornek.test:hesap-parolasi".into()),
+        Some(format!("veli@ornek.test:{yazar}")),
+        Some(format!("ali@ornek.test:{yazar}")),
+        Some(format!("ali@ornek.test:{okur}")),
+    ]
+    .into();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(
+        io.sunucu_durumlari,
+        [207, 401, 401, 401, 201, 403, 200, 501],
+        "{:?}",
+        io.sunucu_yanitlari
+    );
+    assert_eq!(io.sunucu_yanitlari[0].1, "Ali@Ornek.Test uygulama_parolası");
+    assert_eq!(
+        io.dav_kararlari,
+        [
+            "401 WWW-Authenticate: Basic",
+            "401 WWW-Authenticate: Basic",
+            "401 WWW-Authenticate: Basic",
+            "200 Allow: PUT, PROPFIND, OPTIONS"
+        ]
+    );
+    // Çerez ve CSRF hiç yazılmaz.
+    assert!(io.yazilan_cerezler.is_empty());
+}
+
+#[test]
+fn dav_basarisiz_kimlik_kovasi_onuncu_denemeden_sonra_429() {
+    let (kaynak, yazar, _) = dav_programi();
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.dav_kimlik_cozucusu = Some("kimlik_coz".into());
+    io.istekler = std::iter::repeat_n("PROPFIND /dav/".to_string(), 12).collect();
+    io.dav_basic = (0..11)
+        .map(|_| Some("ali@ornek.test:zua1-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".to_string()))
+        .chain([Some(format!("ali@ornek.test:{yazar}"))])
+        .collect();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    let mut beklenen = vec![401; 10];
+    // 11. yanlış deneme kovayı aşar; 12. doğru parola bile çözücüye ulaşmaz.
+    beklenen.extend([429, 429]);
+    assert_eq!(io.sunucu_durumlari, beklenen);
+    assert!(io
+        .dav_kararlari
+        .last()
+        .is_some_and(|k| k.starts_with("429")));
+}
+
+#[test]
+fn dav_sinifi_statik_kapilari_t064_t065_t066_ve_t063() {
+    let rota = |onsoz: &str, yontem: &str, govde: &str| {
+        format!("8080 kapısında sunucu başlat\n\n{yontem} \"/dav/\" önekli adrese istek geldiğinde\n    {onsoz}\n{govde}    \"x\" yanıtını gönder\n")
+    };
+    for (onsoz, yontem) in [
+        ("herkese açık", "PROPFIND"),
+        ("herkese açık makine uç noktası", "REPORT"),
+        ("\"kullanıcı\" yetkisi gerekli", "PROPFIND"),
+    ] {
+        let hata = dil::kaynagi_derle(&rota(onsoz, yontem, "")).expect_err(onsoz);
+        assert_eq!(hata.kod, "T064", "{onsoz} {yontem}: {}", hata.mesaj);
+    }
+    for yontem in ["POST", "PATCH"] {
+        let hata =
+            dil::kaynagi_derle(&rota("dav istemcisi gerekli", yontem, "")).expect_err(yontem);
+        assert_eq!(hata.kod, "T065", "{yontem}: {}", hata.mesaj);
+    }
+    for dokunus in [
+        "    \"a\" çerezine \"b\" yaz\n",
+        "    \"ali\" kullanıcısını \"kullanıcı\" rolüyle oturuma al\n",
+        "    belirteç csrf belirteci olsun\n",
+    ] {
+        let hata =
+            dil::kaynagi_derle(&rota("dav istemcisi gerekli", "PUT", dokunus)).expect_err(dokunus);
+        assert_eq!(hata.kod, "T066", "{dokunus}: {}", hata.mesaj);
+    }
+    let hata = dil::kaynagi_derle(&rota(
+        "dav istemcisi gerekli",
+        "PUT",
+        "    p yeni uygulama parolası olsun\n",
+    ))
+    .expect_err("T063");
+    assert_eq!(hata.kod, "T063");
+    for yontem in ["GET", "HEAD", "PROPFIND", "REPORT", "PUT", "DELETE"] {
+        dil::kaynagi_derle(&rota("dav istemcisi gerekli", yontem, ""))
+            .unwrap_or_else(|h| panic!("{yontem}: {h:?}"));
+    }
+}
+
+/// RFC-0047 §8: DAV kimlik kararı IO izinde kullanıcı adı, önek ve sonuç
+/// olarak durur; gizli kısım ve görünen parola ize girmez; iz aynı yanıtlarla
+/// yeniden oynar.
+#[test]
+fn dav_kimlik_karari_io_izinde_gizlisiz_kaydedilir_ve_oynar() {
+    use dil::yorumlayici::{IzKaydedenIo, IzYenidenOynatici};
+    let (kaynak, yazar, _) = dav_programi();
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban.dav_kimlik_cozucusu = Some("kimlik_coz".into());
+    taban.istekler = ["PROPFIND /dav/a/", "PROPFIND /dav/a/", "OPTIONS /dav/a/"]
+        .map(String::from)
+        .into();
+    taban.dav_basic = [
+        Some(format!("ali@ornek.test:{yazar}")),
+        Some("ali@ornek.test:yanlis".into()),
+    ]
+    .into();
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    calistir_io(&program, &mut kaydeden).expect("çalışmalı");
+    let iz = kaydeden.iz_metni().expect("iz");
+    let hex = |m: &str| m.bytes().map(|b| format!("{b:02x}")).collect::<String>();
+    let (onek, gizli) = dil::guvenlik::uygulama_parolasi::parolayi_coz(&yazar).expect("biçim");
+    assert!(
+        iz.contains("dav_kimligi") && iz.contains("dav_kovasi"),
+        "{iz}"
+    );
+    assert!(iz.contains(&hex(&onek)), "önek izde");
+    assert!(!iz.contains(&hex(&gizli)), "gizli kısım ize girmez");
+    assert!(!iz.contains(&hex(&yazar)), "görünen parola ize girmez");
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    calistir_io(&program, &mut oynatici).expect("oynamalı");
+    oynatici.bitir().expect("iz tükenmeli");
+}

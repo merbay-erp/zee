@@ -234,6 +234,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             kamu_son_ekleri: None,
             dkim_anahtarlari: Vec::new(),
             uygulama_parolasi_anahtarlari: Vec::new(),
+            dav: Default::default(),
         }
     );
 }
@@ -1977,4 +1978,65 @@ fn uygulama_parolasi_anahtarlari_bildirimi_ve_p015() {
             );
         }
     }
+}
+
+/// RFC-0047 (ADR-182 dilim C): DAV bildirimi P015 kuralları ve proje kipinde
+/// kimlik çözücü denetimi (T067) gerçek `dil denetle` ile.
+#[test]
+fn dav_bildirimi_p015_ve_cozucu_t067() {
+    let taban = "proje \"posta\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let kripto = "yetkinlikler \"ağ-sunucusu\", \"kriptografi\" listesi olsun\nağ_hedefleri boş liste olsun\n";
+    let anahtar = "uygulama_parolası_anahtarları \"k1 up\" listesi olsun\n";
+    let bildirim = bildirimi_oku(&format!(
+        "{taban}{kripto}{anahtar}dav_kimlik_çözücüsü \"kimlik_coz\" olsun\ndav_kökeni \"https://dav.ornek.test\" olsun\n"
+    ))
+    .expect("geçerli");
+    assert_eq!(bildirim.dav.kimlik_cozucusu.as_deref(), Some("kimlik_coz"));
+    assert_eq!(
+        bildirim.dav.koken.as_deref(),
+        Some("https://dav.ornek.test")
+    );
+    for (ek, neden) in [
+        (
+            "dav_kimlik_çözücüsü \"k\" olsun\n".to_string(),
+            "anahtarsız",
+        ),
+        (
+            format!("{anahtar}dav_kökeni \"http://dav.ornek.test\" olsun\n"),
+            "http",
+        ),
+        (
+            format!("{anahtar}dav_kökeni \"https://dav.ornek.test/yol\" olsun\n"),
+            "yol",
+        ),
+    ] {
+        let hata = bildirimi_oku(&format!("{taban}{kripto}{ek}")).expect_err(neden);
+        assert_eq!(hata.kod, "P015", "{neden}: {}", hata.mesaj);
+    }
+
+    let gecici = GeciciKlasor::yeni();
+    let denetle = |cozucu: Option<&str>, ana: &str| {
+        let mut proje = format!("{taban}{kripto}{anahtar}");
+        if let Some(cozucu) = cozucu {
+            proje.push_str(&format!("dav_kimlik_çözücüsü \"{cozucu}\" olsun\n"));
+        }
+        std::fs::write(gecici.yol().join("proje.dil"), proje).expect("proje");
+        std::fs::write(gecici.yol().join("ana.dil"), ana).expect("ana");
+        let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args(["denetle", gecici.yol().to_str().expect("utf8")])
+            .output()
+            .expect("dil");
+        String::from_utf8_lossy(&cikti.stdout).into_owned()
+            + &String::from_utf8_lossy(&cikti.stderr)
+    };
+    let rota = "8080 kapısında sunucu başlat\n\nPROPFIND \"/dav/\" önekli adrese istek geldiğinde\n    dav istemcisi gerekli\n    \"x\" yanıtını 207 durumuyla gönder\n";
+    let iyi = "işlem kimlik_coz\n    kullanıcıyı Metin olarak al\n    öneki Metin olarak al\n    Metin sözlüğü döndürür\n    bilgi boş sözlük olsun\n    bilginin \"önek\" değeri önek olsun\n    bilgiyi döndür\n\n";
+    assert!(denetle(Some("kimlik_coz"), &format!("{iyi}{rota}")).contains("temiz"));
+    assert!(denetle(None, rota).contains("T067"));
+    assert!(denetle(Some("yok"), rota).contains("T067"));
+    let tek_parametre = "işlem kimlik_coz\n    kullanıcıyı Metin olarak al\n    Metin sözlüğü döndürür\n    bilgi boş sözlük olsun\n    bilginin \"önek\" değeri kullanıcı olsun\n    bilgiyi döndür\n\n";
+    assert!(denetle(Some("kimlik_coz"), &format!("{tek_parametre}{rota}")).contains("T067"));
+    let yazici = "işlem kimlik_coz\n    kullanıcıyı Metin olarak al\n    öneki Metin olarak al\n    Metin sözlüğü döndürür\n    \"iz.txt\" dosyasına kullanıcı yaz\n    bilgi boş sözlük olsun\n    bilginin \"önek\" değeri önek olsun\n    bilgiyi döndür\n\n";
+    let sonuc = denetle(Some("kimlik_coz"), &format!("{yazici}{rota}"));
+    assert!(sonuc.contains("T067") || sonuc.contains("T054"), "{sonuc}");
 }

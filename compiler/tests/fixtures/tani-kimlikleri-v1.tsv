@@ -120,6 +120,10 @@ aktif	T060	tur.makine_rotasi	Makine uç noktası POST dışı rotada ya da sabit
 aktif	T061	tur.makine_oturumu	Makine uç noktası oturum, CSRF belirteci ya da çerez kullanıyor
 aktif	T062	tur.ham_govde_yeri	`isteğin ham gövdesi` makine uç noktası rotası dışında okunuyor
 aktif	T063	tur.uygulama_parolasi_yeri	`yeni uygulama parolası` herkese açık, salt okuma (GET/HEAD) ya da makine/önbellekli rotada üretiliyor
+aktif	T064	tur.dav_yontemi	PROPFIND ya da REPORT rotası `dav istemcisi gerekli` dışında
+aktif	T065	tur.dav_rotasi	`dav istemcisi gerekli` POST/PATCH rotasında ya da sabit olmayan yolda
+aktif	T066	tur.dav_oturumu	DAV istemci rotası çerez oturumu, CSRF belirteci ya da çerez kullanıyor
+aktif	T067	tur.dav_cozucusu	DAV kimlik çözücüsü bildirilmemiş, tanımsız ya da salt okuma değil
 aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
 aktif	C001	calisma.eksik_deger	Değer bulunamadı
 aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması

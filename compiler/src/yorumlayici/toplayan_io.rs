@@ -43,6 +43,14 @@ pub struct ToplayanIo {
     pub turlu_yanitlar: Vec<String>,
     /// RFC-0047 A (ADR-182): 405 yanıtlarının `Allow` değerleri, sırayla.
     pub izinli_yontemler: Vec<String>,
+    /// RFC-0047 (ADR-182 dilim C): DAV isteklerinin `kullanıcı:parola` Basic
+    /// kimlikleri (`None` = başlık yok), DAV rotası çağrıldıkça sırayla.
+    pub dav_basic: VecDeque<Option<String>>,
+    /// `dav_kimlik_çözücüsü` bildirimi ve hermetik HMAC anahtarı (`dene`).
+    pub dav_kimlik_cozucusu: Option<String>,
+    /// 401/429 kararları ve OPTIONS `Allow` değerleri, sırayla.
+    pub dav_kararlari: Vec<String>,
+    dav_parolasi: Option<(String, String)>,
     /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
     pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
@@ -137,6 +145,10 @@ impl ToplayanIo {
             dosya_yanitlari: Vec::new(),
             turlu_yanitlar: Vec::new(),
             izinli_yontemler: Vec::new(),
+            dav_basic: VecDeque::new(),
+            dav_kimlik_cozucusu: None,
+            dav_kararlari: Vec::new(),
+            dav_parolasi: None,
             istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
@@ -576,6 +588,63 @@ impl GirdiCikti for ToplayanIo {
     fn yontem_reddi_gonder(&mut self, izinli: &str, yanit: &str) {
         self.izinli_yontemler.push(izinli.to_string());
         self.durum_yaniti_gonder(405, yanit);
+    }
+    fn dav_kimligi(&mut self) -> Option<super::DavKimligi> {
+        use crate::guvenlik::uygulama_parolasi as up;
+        let basic = self.dav_basic.pop_front().flatten()?;
+        let (kullanici, parola) = basic.split_once(':')?;
+        self.dav_parolasi = up::parolayi_coz(parola);
+        Some(super::DavKimligi {
+            kullanici: kullanici.to_string(),
+            onek: self.dav_parolasi.as_ref().map(|(onek, _)| onek.clone()),
+            cozucu: self.dav_kimlik_cozucusu.clone(),
+        })
+    }
+    fn dav_ozet_dogrula(&mut self, ozet: Option<&str>) -> bool {
+        use crate::guvenlik::uygulama_parolasi as up;
+        let anahtarlar = [("dene".to_string(), HERMETIK_GIZLI_ANAHTAR)];
+        let sahte = ("AAAAAAAA".to_string(), "A".repeat(up::GIZLI_KARAKTERI));
+        let parola = self.dav_parolasi.take();
+        let (onek, gizli) = parola.as_ref().unwrap_or(&sahte);
+        up::ozet_dogrula(&anahtarlar, onek, gizli, ozet) && parola.is_some()
+    }
+    fn dav_kovasi(&mut self, kova: super::DavKova, anahtar: &str) -> Result<(), i64> {
+        use crate::web_guvenligi::RateLimitTuru::{DavBasarili, DavBasarisiz, DavIstemci};
+        let an = self.an_son_degeri;
+        let guv = &self.web_guvenligi;
+        let kararlar = match kova {
+            super::DavKova::Bak => vec![
+                guv.rate_limit_bak(DavBasarisiz, anahtar, an),
+                guv.rate_limit_bak(DavIstemci, "", an),
+            ],
+            super::DavKova::Basarisiz => vec![
+                guv.rate_limit_artir(DavBasarisiz, anahtar, an),
+                guv.rate_limit_artir(DavIstemci, "", an),
+            ],
+            super::DavKova::Basarili => vec![guv.rate_limit_artir(DavBasarili, anahtar, an)],
+        };
+        match kararlar
+            .into_iter()
+            .find(|karar| !karar.as_ref().is_ok_and(|k| k.izinli))
+        {
+            Some(Ok(karar)) => Err(karar.yeniden_dene_saniye.max(1)),
+            Some(Err(_)) => Err(1),
+            None => Ok(()),
+        }
+    }
+    fn dav_kimlik_reddi_gonder(&mut self) {
+        self.dav_kararlari
+            .push("401 WWW-Authenticate: Basic".into());
+        self.durum_yaniti_gonder(401, super::DAV_KIMLIK_REDDI);
+    }
+    fn dav_kova_reddi_gonder(&mut self, saniye: i64) {
+        self.dav_kararlari
+            .push(format!("429 Retry-After: {saniye}"));
+        self.durum_yaniti_gonder(429, super::DAV_KOVA_REDDI);
+    }
+    fn secenekler_gonder(&mut self, izinli: &str) {
+        self.dav_kararlari.push(format!("200 Allow: {izinli}"));
+        self.durum_yaniti_gonder(200, "");
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         let taslak = SunucuYanitTaslagi::Durum(durum, yanit.to_string());
