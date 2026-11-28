@@ -87,7 +87,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→162 (+13/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/kimlik_iletisim.rs::intrinsic_degerlendir#1` | 125→126 (+1/+13) | 4→4 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→116 (+3/+12) | 9→11 (+2/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→117 (+4/+12) | 9→11 (+2/+2) | PAY İÇİNDE |
 
 Eşik aşımı otomatik bir tasarım hükmü değildir; işi durdurup işlevi bölme veya
 gerekçeli yeni tabanı aynı kod incelemesinde kabul etme zorunluluğudur. Düşüşler
