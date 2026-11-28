@@ -16,7 +16,7 @@ Kaynak: `regression/v2.tsv`
 | morphology | 2 |
 | parser | 5 |
 | runtime | 23 |
-| security | 32 |
+| security | 33 |
 
 | Tanı | Vaka |
 | --- | --- |
@@ -29,9 +29,9 @@ Kaynak: `regression/v2.tsv`
 | T017 | 1 |
 | T036 | 1 |
 | T054 | 2 |
-| - | 75 |
+| - | 76 |
 
-Toplam 88 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 88/88.
+Toplam 89 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 89/89.
 
 ## Güvenlik bulguları
 
@@ -63,7 +63,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/08-kalici-dosya.md | 8 | 1 | 0 | 9 | 88 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
-| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 36 | 0 | 0 | 36 | 100 |
+| spec/11-uygulama-eylemleri-ve-web-adaptoru.md | 37 | 0 | 0 | 37 | 100 |
 | spec/12-web-guvenlik-profili.md | 86 | 0 | 8 | 94 | 91 |
 | spec/13-surumlu-morfoloji-profili.md | 8 | 0 | 1 | 9 | 88 |
 | spec/14-yapilandirilmis-eszamanlilik.md | 2 | 0 | 0 | 2 | 100 |
@@ -84,7 +84,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
 | spec/31-dns-ve-posta-kimlik-dogrulama.md | 41 | 0 | 3 | 44 | 93 |
-| **Toplam** | 450 | 6 | 22 | 478 | 94 |
+| **Toplam** | 451 | 6 | 22 | 479 | 94 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -150,15 +150,15 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 171 |
-| semantic-bugfix | 47 |
+| semantic-bugfix | 48 |
 | semantic-change | 87 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 3 |
-| correctness | 46 |
+| correctness | 47 |
 | dogfood-change | 59 |
 | maintenance | 168 |
 | security | 25 |
 
-Toplam: 305 compiler değişiklik beyanı, 301 core freeze beyanı.
+Toplam: 306 compiler değişiklik beyanı, 302 core freeze beyanı.

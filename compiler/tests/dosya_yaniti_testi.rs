@@ -1114,3 +1114,33 @@ fn dav_a_yontem_reddi_proxy_kapisindan_sonra_cerezsiz() {
     assert_eq!(baslik(&basliklar, "Allow"), ["GET, HEAD, DELETE"]);
     assert!(!basliklar.contains("PATCH"), "{basliklar}");
 }
+
+/// K-421 (RFC 9110 §9.3.2): gerçek süreçte GET rotasına HEAD 200, aynı
+/// başlıklar, gövdesiz; GET'siz yolda HEAD 405 ve `Allow`.
+#[test]
+fn head_get_rotasinda_gercek_surecte_200_govdesiz() {
+    let proje = Proje::yeni(
+        "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    herkese açık\n    \"<!doctype html><p>ana sayfa</p>\" yanıtını gönder\n\nGET \"/takvim.ics\" adresine istek geldiğinde\n    herkese açık\n    \"BEGIN:VCALENDAR\" metnini \"text/calendar\" türünde gönder\n\nPOST \"/form\" adresine istek geldiğinde\n    herkese açık\n    \"tamam\" yanıtını gönder\n",
+    );
+    let kapi = kopma::bos_kapi();
+    let _sunucu = baslat(&proje.0, kapi);
+    let (get, get_govde) = istek(kapi, "GET", "/");
+    let (head, head_govde) = istek(kapi, "HEAD", "/");
+    assert!(head.starts_with("HTTP/1.1 200 OK\r\n"), "{head}");
+    assert!(head_govde.is_empty(), "HEAD gövdesiz");
+    assert!(!get_govde.is_empty());
+    for ad in ["Content-Type", "Content-Length", "Content-Security-Policy"] {
+        assert_eq!(baslik(&head, ad), baslik(&get, ad), "{ad}");
+    }
+    let (head, govde) = istek(kapi, "HEAD", "/takvim.ics");
+    assert!(head.starts_with("HTTP/1.1 200 OK\r\n"), "{head}");
+    assert_eq!(
+        baslik(&head, "Content-Type"),
+        ["text/calendar; charset=utf-8"]
+    );
+    assert_eq!(baslik(&head, "Content-Length"), ["15"]);
+    assert!(govde.is_empty());
+    let (head, _) = istek(kapi, "HEAD", "/form");
+    assert!(head.starts_with("HTTP/1.1 405 "), "{head}");
+    assert_eq!(baslik(&head, "Allow"), ["POST"]);
+}

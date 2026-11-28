@@ -34,6 +34,18 @@ Bu kayıt yeni sürüm etiketi değildir.
   `Error` yerine kanonik açıklamayı taşır; 204 yanıtı gövde,
   `Content-Type` ve `Content-Length` taşımaz.
 
+### Düzeltilenler
+
+- **HEAD isteği GET rotasını kullanır (K-421):** GET rotası olan her adres
+  HEAD isteğine de GET ile aynı durum ve başlıklarla, gövdesiz yanıt verir
+  (RFC 9110 §9.3.2); statik, önekli, dosya ve metin yanıtlı rotalar dahil.
+  Önceden ayrı HEAD rotası yazılmadıkça HEAD 405 alıyordu; 405 + `Allow`
+  düzeltmesiyle (`Allow: GET`) bu canlı sağlık denetimlerinde görünür oldu.
+  Açık HEAD rotası yazılmışsa o kullanılır. `Allow` artık GET varken HEAD'i
+  de anar (`GET, HEAD`). Yalnız POST gibi GET'siz adreslerde HEAD 405 kalır.
+
+  **Göç:** Gerekmez; yalnız HEAD için yazılmış özdeş rotalar silinebilir.
+
   **Göç:** Gerekmez. Bilinmeyen yöntemde 404/405 bekleyen istemci ya da
   izleme kuralı varsa 501'e güncellenmelidir.
 

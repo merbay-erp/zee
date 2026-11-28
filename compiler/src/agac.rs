@@ -184,11 +184,14 @@ impl HttpYontemi {
     ];
 
     /// RFC-0047 A (ADR-182): yol eşleşip yöntem eşleşmediğinde 405 yanıtının
-    /// `Allow` değeri; yöntemler kanonik kayıt sırasıyla, tekrarsız.
+    /// `Allow` değeri; yöntemler kanonik kayıt sırasıyla, tekrarsız. GET'e
+    /// izin veren yol HEAD'i örtük destekler (RFC 9110 §9.3.2).
     pub fn allow_degeri(izinli: &[Self]) -> String {
         Self::KAYIT
             .iter()
-            .filter(|yontem| izinli.contains(yontem))
+            .filter(|yontem| {
+                izinli.contains(yontem) || (**yontem == Self::Head && izinli.contains(&Self::Get))
+            })
             .map(|yontem| yontem.yazimi())
             .collect::<Vec<_>>()
             .join(", ")

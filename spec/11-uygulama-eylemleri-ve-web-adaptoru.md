@@ -216,8 +216,15 @@ GET "/dav/" önekli adrese istek geldiğinde
   tanımlı yöntemleri kanonik kayıt sırasıyla (`GET, HEAD, POST, PUT, PATCH,
   DELETE` alt kümesi), virgül ve tek boşlukla, tekrarsız taşır (RFC 9110
   §15.5.6). Kural her rota sınıfında (oturumlu, herkese açık, makine ucu,
-  önbelleklenebilir) aynıdır. Yöntemsiz tarihsel rota `GET` sayılır. Hiçbir
-  yol eşleşmezse yanıt 404'tür ve `Allow` taşımaz.
+  önbelleklenebilir) aynıdır. Yöntemsiz tarihsel rota `GET` sayılır. Yolda
+  GET rotası varsa `Allow` HEAD'i de taşır. Hiçbir yol eşleşmezse yanıt
+  404'tür ve `Allow` taşımaz.
+- ZORUNLU (K-421, RFC 9110 §9.3.2): GET'e izin veren yol HEAD'i örtük olarak
+  destekler. HEAD isteği için o yolda açık HEAD rotası yoksa ve GET rotası
+  (yöntemsiz tarihsel, önekli ve dosya/türlü yanıtlı rotalar dahil) varsa,
+  istek GET rotasıyla eşleşir. Rota GET ile aynı durum ve başlıkları üretir,
+  gerçek adaptör gövdeyi yazmaz. Açık HEAD rotası önceliklidir. GET rotası
+  olmayan yolda (ör. yalnız POST) HEAD 405 + `Allow` alır.
 - ZORUNLU (RFC-0047 A): İstek yöntemi kapalı yöntem kaydında
   (`HttpYontemi::KAYIT`) yoksa (ör. `PROPFIND`, `REPORT`, `OPTIONS`,
   `LOCK`, `MKCALENDAR`, `PROPPATCH`, `MOVE`) yanıt yoldan bağımsız 501'dir
@@ -245,7 +252,8 @@ korunur ancak yönlendirme/yetki kararı değildir.
 GET ve HEAD salt okumadır. Doğrudan çerez/dosya/donanım yazması veya çağrı
 grafiğinde ulaşılabilen yazıcı eylem T045 ile derlemede reddedilir. Aynı
 yöntem+yol çifti iki kez tanımlanamaz (T047). HEAD gerçek TCP adaptöründe GET
-ile aynı başlık hesabını yapar ama yanıt gövdesi göndermez.
+ile aynı başlık hesabını yapar ama yanıt gövdesi göndermez; açık HEAD rotası
+olmayan yolda GET rotasıyla örtük eşleşir (K-421).
 
 Yol eşleşip yöntem eşleşmezse 405 + `Allow`, yol eşleşmezse 404, kayıt dışı
 yöntem yoldan bağımsız 501 döner (RFC-0047 dilim A). PUT/PATCH/DELETE

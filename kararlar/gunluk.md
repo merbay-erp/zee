@@ -6645,3 +6645,16 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `Sec-Fetch-Site: cross-site` reddi, salt okuma ilk uygulamada, 405 + `Allow`
   her rotada.
 
+## K-421 — HEAD, GET rotasını örtük kullanır (28 Kasım 2026)
+
+- Merkez bildirimi: #149 (RFC-0047 dilim A) yayıldıktan sonra on bir sitede
+  GET rotalarına HEAD isteği 405 + `Allow: GET` aldı; filo 106d939'a geri
+  alındı. İnceleme: #149 öncesinde de açık HEAD rotası yazılmamış yolda HEAD
+  405 alıyordu (`Allow`'suz); dilim A durum satırını ve `Allow`'u ekleyerek
+  durumu görünür kıldı, sağlık denetimleri düştü.
+- Düzeltme (semantic-bugfix): RFC 9110 §9.3.2 uyarınca açık HEAD rotası
+  olmayan yolda HEAD, GET rotasıyla eşleşir; gerçek adaptör gövdeyi yazmaz,
+  açık HEAD rotası önceliklidir, `Allow` GET varken HEAD'i anar. GET rotası
+  salt okumadır (T045), örtük çalıştırma yeni etki açmaz. Regresyon vakası
+  `regression/security/head-get-ortuk.dil`; GB-185 sınırı güncellendi.
+
